@@ -6,6 +6,24 @@ gsap.registerPlugin(ScrollTrigger);
 const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 let ctx: gsap.Context | undefined;
 let cursorCleanup: (() => void) | undefined;
+let logoPlayed = false; // la intro sólo corre en la primera carga de la sesión de navegación
+
+/** Aparición del logo: las letras suben en cascada y la barra se dibuja. */
+function initLogo(still: boolean) {
+  document.querySelectorAll<SVGSVGElement>('[data-logo]').forEach((svg) => {
+    if (logoPlayed || still) return void svg.classList.add('is-ready');
+    const letters = svg.querySelectorAll('.l');
+    const bar = svg.querySelector('.bar');
+    gsap.set([...letters, bar], { opacity: 0 });
+    svg.classList.add('is-ready');
+    const tl = gsap.timeline({ defaults: { ease: 'expo.out' }, delay: 0.15,
+      onComplete: () => { gsap.set([...letters, bar], { clearProps: 'all' }); } });
+    tl.fromTo(letters, { opacity: 0, y: 28, scaleY: 1.25 },
+      { opacity: 1, y: 0, scaleY: 1, duration: 1.1, stagger: 0.09 })
+      .fromTo(bar, { opacity: 0, scaleX: 0 }, { opacity: 0.22, scaleX: 1, duration: 0.9, transformOrigin: '0% 50%' }, '-=0.5');
+    logoPlayed = true;
+  });
+}
 
 /** Divide un titular en palabras enmascaradas por línea, respetando <br>/<em>. */
 function splitWords(el: HTMLElement) {
@@ -93,6 +111,7 @@ export function initMotion() {
     if (!still) hero.fromTo(heroItems, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1.1, stagger: 0.12 }, 0.5);
     else gsap.set(heroItems, { opacity: 1 });
 
+    initLogo(still);
     if (still) { initHeader(); return; }
 
     // Reveal al scroll

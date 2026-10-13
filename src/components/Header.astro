@@ -1,6 +1,7 @@
 ---
 import { site } from '../data/site';
 import Icon from './Icon.astro';
+import Logo from './Logo.astro';
 import { copy, paths, type Lang } from '../lib/i18n';
 
 const { lang, section, altHref } = Astro.props as { lang: Lang; section: string; altHref: string };
@@ -10,7 +11,8 @@ const navHref = { home: paths.home(lang), works: paths.works(lang), contact: pat
 <header class="header" data-header>
   <div class="wrap header__in">
     <a href={paths.home(lang)} class="brand" aria-label={`${site.studio} — ${c.nav[0].label}`}>
-      <span class="brand__name">{site.studio}</span>
+      <Logo label={site.studio} />
+      <span class="brand__name">Design</span>
     </a>
     <nav aria-label="Principal" class="nav">
       {c.nav.map((i) => <a href={navHref[i.key]} class="link" aria-current={i.key === section ? 'page' : undefined}>{i.label}</a>)}
@@ -28,7 +30,7 @@ const navHref = { home: paths.home(lang), works: paths.works(lang), contact: pat
   .header.is-solid { background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(14px); }
   .header__in { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; height: 4.5rem; font-size: .85rem; }
   .brand { display: flex; align-items: center; gap: .75rem; }
-  .brand__name { font-size: 1.15rem; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+  .brand__name { font-size: .72rem; font-weight: 400; letter-spacing: .24em; text-transform: uppercase; color: var(--muted); }
   .nav { display: flex; gap: clamp(1rem, 3vw, 2.5rem); }
   .nav a { color: var(--muted); transition: color .4s; }
   .nav a:hover, .nav a[aria-current='page'] { color: var(--fg); }
@@ -39,5 +41,5 @@ const navHref = { home: paths.home(lang), works: paths.works(lang), contact: pat
   .soc { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; color: var(--muted); transition: color .4s var(--ease), background .4s var(--ease); }
   .soc :global(.ico) { width: 1.15rem; height: 1.15rem; }
   .soc:hover { color: var(--bg); background: var(--fg); }
-  @media (max-width: 640px) { .soc { display: none; } .lang { border: 0; padding: 0; margin: 0; } .brand__name { font-size: 1rem; } }
+  @media (max-width: 640px) { .soc { display: none; } .lang { border: 0; padding: 0; margin: 0; }  }
 </style>

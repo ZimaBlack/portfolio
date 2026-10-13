@@ -1,0 +1,34 @@
+---
+// Logo ZMA BLK (SVG original, limpiado). Los trazos usan currentColor para seguir el tema.
+// Cada letra es un <path> sin transform propio, así se puede animar por CSS/GSAP.
+const { class: cls, label = 'ZMA BLK' } = Astro.props;
+---
+<svg class:list={['logo', cls]} viewBox="180 222 465 338" role="img" aria-label={label} data-logo>
+  <g transform="matrix(1.195951,0,0,1.195951,-80.778466,40.428012)">
+    <g transform="matrix(3.279186,0,0,3.279186,-436.684048,-361.096768)"><path class="l" style="--i:0" d="M204.068,168.182L217.968,168.182L201.668,195.632L229.718,195.632L229.718,188.382L214.968,188.382L231.518,160.632L204.068,160.632L204.068,168.182Z"/></g>
+    <g transform="matrix(3.279186,0,0,3.279186,-432.550983,-361.096768)"><path class="l" style="--i:1" d="M244.918,177.782L254.468,192.382L264.068,177.782L266.168,195.632L275.068,195.632L269.418,158.882L254.468,180.232L239.568,158.882L233.918,195.632L242.818,195.632L244.918,177.782Z"/></g>
+    <g transform="matrix(3.279186,0,0,3.279186,-427.665721,-361.096768)"><path class="l" style="--i:2" fill-rule="nonzero" d="M285.968,188.882L304.468,188.882L303.918,182.432L286.568,182.432L285.968,188.882ZM295.118,173.482L300.068,184.832L299.768,186.982L303.968,195.632L313.568,195.632L295.118,158.432L276.718,195.632L286.268,195.632L290.618,186.632L290.218,184.782L295.118,173.482Z"/></g>
+    <g transform="matrix(3.279186,0,0,3.279186,-447.341403,-450.976893)"><path class="l" style="--i:3" d="M211.218,250.482L217.768,250.482C220.202,250.482 222.343,250.141 224.193,249.457C226.043,248.774 227.51,247.782 228.593,246.482C229.677,245.182 230.218,243.616 230.218,241.782C230.218,239.782 229.677,238.124 228.593,236.807C227.51,235.491 226.043,234.507 224.193,233.857C222.343,233.207 220.202,232.882 217.768,232.882L204.918,232.882L204.918,267.882L218.618,267.882C221.385,267.882 223.785,267.541 225.818,266.857C227.852,266.174 229.427,265.116 230.543,263.682C231.66,262.249 232.218,260.366 232.218,258.032C232.218,256.266 231.827,254.757 231.043,253.507C230.26,252.257 229.218,251.224 227.918,250.407C226.618,249.591 225.168,248.999 223.568,248.632C221.968,248.266 220.318,248.082 218.618,248.082L211.218,248.082L211.218,252.682L217.668,252.682C218.502,252.682 219.26,252.757 219.943,252.907C220.627,253.057 221.235,253.299 221.768,253.632C222.302,253.966 222.718,254.399 223.018,254.932C223.318,255.466 223.468,256.099 223.468,256.832C223.468,257.966 223.21,258.857 222.693,259.507C222.177,260.157 221.485,260.624 220.618,260.907C219.752,261.191 218.768,261.332 217.668,261.332L213.368,261.332L213.368,239.432L216.868,239.432C218.302,239.432 219.427,239.732 220.243,240.332C221.06,240.932 221.468,241.832 221.468,243.032C221.468,243.832 221.285,244.507 220.918,245.057C220.552,245.607 220.027,246.032 219.343,246.332C218.66,246.632 217.835,246.782 216.868,246.782L211.218,246.782L211.218,250.482Z"/></g>
+    <g transform="matrix(3.279186,0,0,3.279186,-446.323564,-450.976893)"><path class="l" style="--i:4" d="M238.118,232.882L238.118,267.882L260.944,267.882L260.944,260.022L246.568,260.022L246.568,232.882L238.118,232.882Z"/></g>
+    <g transform="matrix(3.279186,0,0,3.279186,-387.653711,-450.976893)"><path class="l" style="--i:5" d="M264.518,232.882L264.518,267.882L273.268,267.882L273.268,232.882L264.518,232.882ZM285.168,232.882L270.818,249.532L285.568,267.882L295.818,267.882L280.868,249.282L295.068,232.882L285.168,232.882Z"/></g>
+    <g transform="matrix(0.606555,0,0,1,220.952616,21.037369)"><rect class="bar" x="334.629" y="380.843" width="74.922" height="25.822"/></g>
+  </g>
+</svg>
+
+<style>
+  .logo { display: block; height: 2rem; width: auto; aspect-ratio: 465 / 338; overflow: visible; }
+  .logo .l { fill: currentColor; fill-rule: nonzero; transform-box: fill-box; transform-origin: 50% 100%; }
+  /* La barra era gris oscuro (#363636) sobre fondo negro: aquí se deriva del color de texto */
+  .logo .bar { fill: currentColor; opacity: .22; transform-box: fill-box; transform-origin: 0 50%; transition: opacity .5s var(--ease); }
+
+  /* Hover: las letras saltan en cascada y la barra se extiende */
+  @media (hover: hover) {
+    :global(a:hover) > .logo .l, :global(a:focus-visible) > .logo .l { animation: logo-hop .7s var(--ease) both; animation-delay: calc(var(--i) * 45ms); }
+    :global(a:hover) > .logo .bar, :global(a:focus-visible) > .logo .bar { animation: logo-bar .8s var(--ease) both; }
+  }
+  @keyframes logo-hop { 0% { transform: translateY(0); } 35% { transform: translateY(-16%) scaleY(1.06); } 100% { transform: translateY(0); } }
+  @keyframes logo-bar { 0% { transform: scaleX(1); opacity: .22; } 40% { transform: scaleX(2.4); opacity: 1; } 100% { transform: scaleX(1); opacity: .22; } }
+
+  /* Aparición (la dispara motion.ts): estado inicial oculto sólo con JS */
+  :global(.js) .logo:not(.is-ready) .l, :global(.js) .logo:not(.is-ready) .bar { opacity: 0; }
+</style>
