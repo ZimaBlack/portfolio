@@ -13,7 +13,7 @@ import Icon from './Icon.astro';
     </div>
     <div class="footer__base">
       <span class="muted">© {new Date().getFullYear()} {site.studio} — {site.location}</span>
-      <ul>{site.social.map((s) => <li><a class="link" href={s.href} target="_blank" rel="noopener noreferrer">{s.label}</a></li>)}</ul>
+      <ul>{site.social.map((s) => <li><a class="link foot-soc" href={s.href} target="_blank" rel="noopener noreferrer"><Icon name={s.icon} /> {s.label}</a></li>)}</ul>
     </div>
   </div>
 </footer>
@@ -23,5 +23,6 @@ import Icon from './Icon.astro';
   .footer .display { margin: 1.5rem 0 3rem; max-width: 12ch; font-size: clamp(3rem, 9vw, 10rem); }
   .footer__row { display: flex; flex-wrap: wrap; gap: .75rem; }
   .footer__base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-top: clamp(5rem, 10vw, 9rem); font-size: .85rem; }
+  .foot-soc { display: inline-flex; align-items: center; gap: .45rem; }
   .footer__base ul { display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0; }
 </style>

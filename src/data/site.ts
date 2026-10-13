@@ -1,18 +1,18 @@
 export const site = {
   name: 'Pablo Ponce García',
-  studio: 'Blackroom Design',
+  studio: 'ZMA BLK Design',
   role: 'Director de Arte · Visual Designer · UX/UI',
   tagline: 'Marcas, interfaces y movimiento con criterio.',
   location: 'Mendoza, Argentina',
-  email: 'blackroom.design@gmail.com',
+  email: 'zma.blk.design@gmail.com',
   // Formato internacional sin "+": 54 9 + característica + número
   whatsapp: '5492614712481',
   whatsappText: 'Hola Pablo, vi tu portfolio y me gustaría conversar sobre un proyecto.',
   cv: '/Pablo-Ponce-Garcia-CV.pdf',
   social: [
-    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/pabloponcegarcia/' },
-    { label: 'Behance', href: 'https://www.behance.net/BkRoom' },
-    { label: 'Substack', href: 'https://substack.com/' }, // TODO: tu URL de Substack
+    { icon: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/pabloponcegarcia/' },
+    { icon: 'behance', label: 'Behance', href: 'https://www.behance.net/BkRoom' },
+    { icon: 'substack', label: 'Substack', href: 'https://substack.com/' }, // TODO: tu URL de Substack
   ],
   nav: [
     { label: 'Inicio', href: '/' },

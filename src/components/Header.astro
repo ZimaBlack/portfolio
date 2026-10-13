@@ -1,19 +1,19 @@
 ---
 import { site } from '../data/site';
+import Icon from './Icon.astro';
 const path = Astro.url.pathname;
 const active = (href: string) => href === '/' ? path === '/' : href.startsWith('/#') ? false : path.startsWith(href);
 ---
 <header class="header" data-header>
   <div class="wrap header__in">
     <a href="/" class="brand" aria-label={`${site.name} — inicio`}>
-      <span class="brand__mark">PP</span>
       <span class="brand__name">{site.studio}</span>
     </a>
     <nav aria-label="Principal" class="nav">
       {site.nav.map((i) => <a href={i.href} class="link" aria-current={active(i.href) ? 'page' : undefined}>{i.label}</a>)}
     </nav>
     <ul class="social" aria-label="Redes">
-      {site.social.map((s) => <li><a class="link" href={s.href} target="_blank" rel="noopener noreferrer">{s.label}</a></li>)}
+      {site.social.map((s) => <li><a class="soc" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}><Icon name={s.icon} /></a></li>)}
     </ul>
   </div>
 </header>
@@ -24,11 +24,13 @@ const active = (href: string) => href === '/' ? path === '/' : href.startsWith('
   .header.is-solid { background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(14px); }
   .header__in { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; height: 4.5rem; font-size: .85rem; }
   .brand { display: flex; align-items: center; gap: .75rem; }
-  .brand__mark { font-family: var(--serif); font-size: 1.5rem; line-height: 1; }
-  .brand__name { color: var(--muted); }
+  .brand__name { font-size: 1.15rem; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
   .nav { display: flex; gap: clamp(1rem, 3vw, 2.5rem); }
   .nav a { color: var(--muted); transition: color .4s; }
   .nav a:hover, .nav a[aria-current='page'] { color: var(--fg); }
-  .social { display: flex; gap: 1.25rem; list-style: none; margin: 0; padding: 0; color: var(--muted); }
-  @media (max-width: 860px) { .brand__name, .social { display: none; } .header__in { justify-content: space-between; } }
+  .social { display: flex; gap: .4rem; list-style: none; margin: 0; padding: 0; }
+  .soc { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; color: var(--muted); transition: color .4s var(--ease), background .4s var(--ease); }
+  .soc :global(.ico) { width: 1.15rem; height: 1.15rem; }
+  .soc:hover { color: var(--bg); background: var(--fg); }
+  @media (max-width: 640px) { .social { display: none; } .brand__name { font-size: 1rem; } }
 </style>
