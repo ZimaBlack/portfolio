@@ -1,0 +1,21 @@
+---
+import Icon from './Icon.astro';
+import { site, waLink } from '../data/site';
+---
+<div class="fab" transition:persist>
+  <a class="fab__btn" href={site.cv} download aria-label="Descargar CV">
+    <Icon name="download" /><span>CV</span>
+  </a>
+  <a class="fab__btn fab__btn--wa" href={waLink()} target="_blank" rel="noopener noreferrer" aria-label="Contacto por WhatsApp">
+    <Icon name="whatsapp" /><span>WhatsApp</span>
+  </a>
+</div>
+
+<style>
+  .fab { position: fixed; right: var(--gutter); bottom: var(--gutter); z-index: 60; display: flex; flex-direction: column; align-items: flex-end; gap: .6rem; }
+  .fab__btn { display: inline-flex; align-items: center; gap: .55rem; height: 3rem; padding-inline: 1rem; border-radius: 999px; font-size: .85rem; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(14px); transition: background .4s var(--ease), color .4s var(--ease), border-color .4s; }
+  .fab__btn:hover { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .fab__btn--wa { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .fab__btn--wa:hover { background: transparent; color: var(--fg); }
+  @media (max-width: 640px) { .fab__btn span { display: none; } .fab__btn { width: 3rem; padding: 0; justify-content: center; } }
+</style>

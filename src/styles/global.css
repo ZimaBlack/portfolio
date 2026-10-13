@@ -1,0 +1,76 @@
+@import '@fontsource-variable/inter-tight';
+@import '@fontsource/instrument-serif';
+
+:root {
+  --bg: #0b0b0a;
+  --fg: #ecebe6;
+  --muted: #8a8982;
+  --line: rgb(236 235 230 / 0.14);
+  --accent: #e8e2d2;
+  --gutter: clamp(1.25rem, 3vw, 3rem);
+  --max: 1680px;
+  --sans: 'Inter Tight Variable', system-ui, sans-serif;
+  --serif: 'Instrument Serif', 'Times New Roman', serif;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --bg: #f4f2ec; --fg: #0e0e0c; --muted: #77756d; --line: rgb(14 14 12 / 0.14); --accent: #0e0e0c;
+    color-scheme: light;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { overflow-x: clip; -webkit-text-size-adjust: 100%; scroll-behavior: auto; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 400 1rem/1.55 var(--sans); -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+img, video, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+::selection { background: var(--fg); color: var(--bg); }
+:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
+
+.wrap { width: 100%; max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
+.section { padding-block: clamp(6rem, 14vw, 14rem); }
+
+/* Jerarquía tipográfica */
+.display { font-family: var(--serif); font-weight: 400; line-height: 0.92; letter-spacing: -0.02em; font-size: clamp(3.4rem, 11vw, 12rem); margin: 0; }
+.h2 { font-family: var(--serif); font-weight: 400; line-height: 1; letter-spacing: -0.015em; font-size: clamp(2.2rem, 5.5vw, 5.5rem); margin: 0; }
+.h3 { font-size: clamp(1.25rem, 2vw, 1.75rem); font-weight: 400; letter-spacing: -0.01em; line-height: 1.2; margin: 0; }
+.lead { font-size: clamp(1.1rem, 1.6vw, 1.5rem); line-height: 1.4; max-width: 38ch; margin: 0; }
+.eyebrow { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.muted { color: var(--muted); }
+.serif-i { font-family: var(--serif); font-style: italic; }
+
+/* Enlaces con subrayado animado */
+.link { position: relative; display: inline-block; }
+.link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px; background: currentColor; transform-origin: right; transform: scaleX(0); transition: transform 0.6s var(--ease); }
+.link:hover::after { transform-origin: left; transform: scaleX(1); }
+
+/* Botones */
+.btn { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.95rem 1.5rem; border: 1px solid var(--fg); border-radius: 999px; font-size: 0.9rem; transition: background 0.4s var(--ease), color 0.4s var(--ease); }
+.btn:hover { background: var(--fg); color: var(--bg); }
+.btn--solid { background: var(--fg); color: var(--bg); }
+.btn--solid:hover { background: transparent; color: var(--fg); }
+.btn svg, .ico { width: 1em; height: 1em; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Enmascarado para reveal por palabras */
+.split-line { display: block; overflow: hidden; padding: 0 0.1em 0.08em; margin: 0 -0.1em -0.08em; }
+.split-word { display: inline-block; will-change: transform; }
+
+/* Estado inicial sólo con JS activo (evita contenido oculto sin JS) */
+.js [data-reveal] { opacity: 0; transform: translateY(32px); }
+.js [data-hero] { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal], .js [data-hero] { opacity: 1; transform: none; }
+}
+.js [data-hero-title] { opacity: 0; }
+
+/* Cursor personalizado */
+.cursor { position: fixed; left: 0; top: 0; z-index: 90; pointer-events: none; width: 92px; height: 92px; margin: -46px 0 0 -46px; border-radius: 50%; background: var(--fg); color: var(--bg); display: grid; place-items: center; font-size: 0.78rem; letter-spacing: 0.04em; transform: scale(0); transition: transform 0.5s var(--ease); mix-blend-mode: normal; }
+.cursor.is-on { transform: scale(1); }
