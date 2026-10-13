@@ -1,18 +1,22 @@
 ---
 import { site } from '../data/site';
 import Icon from './Icon.astro';
-const path = Astro.url.pathname;
-const active = (href: string) => href === '/' ? path === '/' : href.startsWith('/#') ? false : path.startsWith(href);
+import { copy, paths, type Lang } from '../lib/i18n';
+
+const { lang, section, altHref } = Astro.props as { lang: Lang; section: string; altHref: string };
+const c = copy[lang];
+const navHref = { home: paths.home(lang), works: paths.works(lang), contact: paths.contact(lang) } as Record<string, string>;
 ---
 <header class="header" data-header>
   <div class="wrap header__in">
-    <a href="/" class="brand" aria-label={`${site.name} — inicio`}>
+    <a href={paths.home(lang)} class="brand" aria-label={`${site.studio} — ${c.nav[0].label}`}>
       <span class="brand__name">{site.studio}</span>
     </a>
     <nav aria-label="Principal" class="nav">
-      {site.nav.map((i) => <a href={i.href} class="link" aria-current={active(i.href) ? 'page' : undefined}>{i.label}</a>)}
+      {c.nav.map((i) => <a href={navHref[i.key]} class="link" aria-current={i.key === section ? 'page' : undefined}>{i.label}</a>)}
     </nav>
     <ul class="social" aria-label="Redes">
+      <li><a class="lang" href={altHref} hreflang={lang === 'es' ? 'en' : 'es'} lang={lang === 'es' ? 'en' : 'es'}>{c.switchTo}</a></li>
       {site.social.map((s) => <li><a class="soc" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}><Icon name={s.icon} /></a></li>)}
     </ul>
   </div>
@@ -29,8 +33,11 @@ const active = (href: string) => href === '/' ? path === '/' : href.startsWith('
   .nav a { color: var(--muted); transition: color .4s; }
   .nav a:hover, .nav a[aria-current='page'] { color: var(--fg); }
   .social { display: flex; gap: .4rem; list-style: none; margin: 0; padding: 0; }
+  .social { align-items: center; }
+  .lang { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-right: .6rem; margin-right: .2rem; border-right: 1px solid var(--line); transition: color .4s; }
+  .lang:hover { color: var(--fg); }
   .soc { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; color: var(--muted); transition: color .4s var(--ease), background .4s var(--ease); }
   .soc :global(.ico) { width: 1.15rem; height: 1.15rem; }
   .soc:hover { color: var(--bg); background: var(--fg); }
-  @media (max-width: 640px) { .social { display: none; } .brand__name { font-size: 1rem; } }
+  @media (max-width: 640px) { .soc { display: none; } .lang { border: 0; padding: 0; margin: 0; } .brand__name { font-size: 1rem; } }
 </style>

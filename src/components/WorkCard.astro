@@ -1,16 +1,18 @@
 ---
 import Frame from './Frame.astro';
-const { work, index = 0, ratio = '4 / 5' } = Astro.props;
+import { loc, paths, copy } from '../lib/i18n';
+const { work, lang, index = 0, ratio = '4 / 5' } = Astro.props;
 const d = work.data;
+const disc = loc(d.discipline, lang);
 ---
-<a class="card" href={`/trabajos/${work.id}`} data-cursor="Ver" data-reveal>
+<a class="card" href={paths.work(lang, work.id)} data-cursor={copy[lang].detail.view} data-reveal>
   <div class="card__media">
-    <div class="card__zoom"><Frame src={d.cover} alt={d.title} tones={d.tones} ratio={ratio} label={d.discipline} /></div>
+    <div class="card__zoom"><Frame src={d.cover} alt={d.title} tones={d.tones} ratio={ratio} label={disc} /></div>
   </div>
   <div class="card__meta">
     <span class="muted">{String(index + 1).padStart(2, '0')}</span>
     <h3 class="h3 card__title"><span>{d.title}</span></h3>
-    <span class="muted card__tag">{d.discipline} · {d.year}</span>
+    <span class="muted card__tag">{disc}{d.year ? ` · ${d.year}` : ''}</span>
   </div>
 </a>
 

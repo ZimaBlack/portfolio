@@ -1,15 +1,19 @@
 ---
 import { site, waLink } from '../data/site';
+import { copy, type Lang } from '../lib/i18n';
 import Icon from './Icon.astro';
+const { lang } = Astro.props as { lang: Lang };
+const c = copy[lang];
+const cv = import.meta.env.BASE_URL.replace(/\/$/, '') + site.cv[lang];
 ---
 <footer class="footer section" id="contacto">
   <div class="wrap">
-    <p class="eyebrow" data-reveal>Contacto</p>
-    <h2 class="display" data-split-scroll>Hablemos de tu próximo proyecto.</h2>
+    <p class="eyebrow" data-reveal>{c.footer.eyebrow}</p>
+    <h2 class="display" data-split-scroll>{c.footer.title}</h2>
     <div class="footer__row" data-reveal>
-      <a class="btn btn--solid" href={waLink()} target="_blank" rel="noopener noreferrer">Escribir por WhatsApp <Icon name="arrow-up-right" /></a>
+      <a class="btn btn--solid" href={waLink(lang)} target="_blank" rel="noopener noreferrer">{c.footer.wa} <Icon name="arrow-up-right" /></a>
       <a class="btn" href={`mailto:${site.email}`}>{site.email}</a>
-      <a class="btn" href={site.cv} download>Descargar CV <Icon name="download" /></a>
+      <a class="btn" href={cv} download>{c.footer.cv} <Icon name="download" /></a>
     </div>
     <div class="footer__base">
       <span class="muted">© {new Date().getFullYear()} {site.studio} — {site.location}</span>

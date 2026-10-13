@@ -1,0 +1,95 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Frame from '../components/Frame.astro';
+import VideoEmbed from '../components/VideoEmbed.astro';
+import Icon from '../components/Icon.astro';
+import { copy, loc, paths, type Lang } from '../lib/i18n';
+
+const { lang, work } = Astro.props as { lang: Lang; work: CollectionEntry<'works'> };
+const c = copy[lang];
+const d = work.data;
+const all = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
+const next = all[(all.findIndex((w) => w.id === work.id) + 1) % all.length];
+const isCode = d.kind === 'code';
+const alt = lang === 'es' ? 'en' : 'es';
+---
+<Base lang={lang} section="works" title={d.title} description={loc(d.summary, lang)}
+  altHref={paths.work(alt, work.id)} esHref={paths.work('es', work.id)} enHref={paths.work('en', work.id)}>
+  <article>
+    <header class="wrap intro">
+      <p class="eyebrow" data-hero><a class="link" href={paths.works(lang)}>{c.works.back}</a> · {loc(d.discipline, lang)}</p>
+      <h1 class="display" data-hero-title>{d.title}</h1>
+      <p class="lead" data-hero>{loc(d.summary, lang)}</p>
+      <dl class="meta" data-hero>
+        {d.year && <div><dt>{c.detail.year}</dt><dd>{d.year}</dd></div>}
+        <div><dt>{c.detail.role}</dt><dd>{loc(d.role, lang)}</dd></div>
+        {d.client && <div><dt>{c.detail.client}</dt><dd>{d.client}</dd></div>}
+        {isCode && d.stack.length > 0 && <div class="meta__stack"><dt>{c.detail.stack}</dt><dd><ul>{d.stack.map((s) => <li>{s}</li>)}</ul></dd></div>}
+      </dl>
+      {isCode && (d.repo || d.live) && (
+        <div class="cta" data-hero>
+          {d.repo && <a class="btn btn--solid" href={d.repo} target="_blank" rel="noopener noreferrer"><Icon name="github" /> {c.detail.repo}</a>}
+          {d.live && <a class="btn" href={d.live} target="_blank" rel="noopener noreferrer">{c.detail.live} <Icon name="arrow-up-right" /></a>}
+        </div>
+      )}
+    </header>
+
+    <div class="hero-img" data-reveal><Frame src={d.cover} alt={d.title} tones={d.tones} ratio="21 / 9" label={c.detail.cover} parallax={8} /></div>
+
+    <div class="wrap prose" data-reveal><p>{loc(d.text, lang)}</p></div>
+
+    {d.video && <section class="wrap vid" data-reveal><VideoEmbed {...d.video} title={d.title} play={c.detail.play} /></section>}
+
+    {!isCode && d.gallery.length > 0 && (
+      <section class="gallery" aria-label={c.detail.gallery}>
+        {d.gallery.map((b) => (
+          <figure class:list={['blk', `blk--${b.kind}`]} data-reveal>
+            {b.kind === 'pair' ? (
+              <div class="pair">
+                <Frame src={b.src} alt={b.alt} tones={d.tones} ratio="4 / 5" label={loc(b.caption, lang)} />
+                <Frame src={b.src2} alt={b.alt} tones={[d.tones[1], d.tones[0]]} ratio="4 / 5" label={loc(b.caption, lang)} />
+              </div>
+            ) : (
+              <Frame src={b.src} alt={b.alt} tones={d.tones} ratio={b.ratio} label={loc(b.caption, lang)} parallax={b.kind === 'full' ? 6 : 0} />
+            )}
+            {b.caption && <figcaption class="muted">{loc(b.caption, lang)}</figcaption>}
+          </figure>
+        ))}
+      </section>
+    )}
+
+    <a class="next" href={paths.work(lang, next.id)} data-cursor={c.detail.nextCursor}>
+      <div class="wrap next__in">
+        <span class="eyebrow">{c.detail.next}</span>
+        <span class="display next__t">{next.data.title}</span>
+      </div>
+    </a>
+  </article>
+</Base>
+
+<style>
+  .intro { padding-top: clamp(9rem, 16vw, 14rem); display: grid; gap: 2rem; }
+  .intro .display { font-size: clamp(3rem, 9vw, 9rem); max-width: 16ch; }
+  .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1.5rem; margin: 1rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--line); font-size: .9rem; }
+  .meta dt { color: var(--muted); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; margin-bottom: .35rem; }
+  .meta dd { margin: 0; }
+  .meta ul { display: flex; flex-wrap: wrap; gap: .4rem; list-style: none; margin: 0; padding: 0; }
+  .meta li { border: 1px solid var(--line); border-radius: 999px; padding: .15rem .7rem; font-size: .8rem; }
+  .meta__stack { grid-column: span 2; }
+  .cta { display: flex; flex-wrap: wrap; gap: .75rem; }
+  .hero-img { margin-top: clamp(3rem, 6vw, 6rem); }
+  .prose { max-width: 60rem; padding-block: clamp(4rem, 8vw, 8rem); font-size: clamp(1.1rem, 1.5vw, 1.35rem); color: var(--muted); }
+  .vid { padding-bottom: clamp(3rem, 6vw, 6rem); }
+  .gallery { display: grid; gap: clamp(2rem, 5vw, 5rem); }
+  .blk { margin: 0; }
+  .blk--inset { max-width: 70rem; margin-inline: auto; padding-inline: var(--gutter); }
+  .blk--pair .pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); padding-inline: var(--gutter); }
+  .blk figcaption { font-size: .8rem; padding: .75rem var(--gutter) 0; }
+  .next { display: block; margin-top: clamp(6rem, 12vw, 12rem); border-top: 1px solid var(--line); padding-block: clamp(4rem, 8vw, 8rem); transition: background .6s var(--ease), color .6s var(--ease); }
+  .next:hover { background: var(--fg); color: var(--bg); }
+  .next:hover .eyebrow { color: inherit; }
+  .next__in { display: grid; gap: 1rem; }
+  .next__t { font-size: clamp(2.5rem, 7vw, 7rem); }
+  @media (max-width: 640px) { .meta__stack { grid-column: auto; } .blk--pair .pair { grid-template-columns: 1fr; } }
+</style>

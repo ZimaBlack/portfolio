@@ -1,14 +1,14 @@
 ---
 // Reproductor responsivo 16:9 con carga diferida (facade por click).
-const { provider, id, title = 'Video del proyecto' } = Astro.props;
+const { provider, id, title = 'Video', play = 'Play' } = Astro.props;
 const src = provider === 'vimeo'
   ? `https://player.vimeo.com/video/${id}?autoplay=1&title=0&byline=0&portrait=0&dnt=1`
   : `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
 ---
 <div class="video" data-video data-src={src} data-title={title}>
-  <button type="button" class="video__play" aria-label={`Reproducir: ${title}`}>
+  <button type="button" class="video__play" aria-label={`${play}: ${title}`}>
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l12 7-12 7z" /></svg>
-    <span>Reproducir</span>
+    <span>{play}</span>
   </button>
 </div>
 

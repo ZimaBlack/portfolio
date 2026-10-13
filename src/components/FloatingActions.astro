@@ -1,12 +1,15 @@
 ---
 import Icon from './Icon.astro';
 import { site, waLink } from '../data/site';
+import { copy, type Lang } from '../lib/i18n';
+const { lang } = Astro.props as { lang: Lang };
+const c = copy[lang];
 ---
 <div class="fab" transition:persist>
-  <a class="fab__btn" href={site.cv} download aria-label="Descargar CV">
+  <a class="fab__btn" href={import.meta.env.BASE_URL.replace(/\/$/, '') + site.cv[lang]} download aria-label={c.fab.cv}>
     <Icon name="download" /><span>CV</span>
   </a>
-  <a class="fab__btn fab__btn--wa" href={waLink()} target="_blank" rel="noopener noreferrer" aria-label="Contacto por WhatsApp">
+  <a class="fab__btn fab__btn--wa" href={waLink(lang)} target="_blank" rel="noopener noreferrer" aria-label={c.fab.wa}>
     <Icon name="whatsapp" /><span>WhatsApp</span>
   </a>
 </div>
