@@ -37,13 +37,20 @@ function textNodes(root: Element) {
   return out;
 }
 
-/** Vacía el contenedor y devuelve una función que lo "tipea". La altura se reserva para evitar saltos. */
+/**
+ * Vacía el contenedor y devuelve una función que lo "tipea".
+ * Cada bloque (párrafo) permanece oculto hasta que el tipeo llega a él, así el espaciado entre
+ * párrafos es siempre el mismo y el contenedor crece de a poco, a medida que se escribe.
+ */
 export function prepareTyping(root: HTMLElement, caret: HTMLElement) {
   const nodes = textNodes(root);
   const full = nodes.map((n) => n.data);
-  root.style.minHeight = `${root.offsetHeight}px`;
+  const blocks = Array.from(root.children).filter((el) => el !== caret) as HTMLElement[];
+  const blockOf = nodes.map((n) => Math.max(0, blocks.findIndex((b) => b.contains(n))));
   nodes.forEach((n) => (n.data = ''));
-  root.append(caret);
+  blocks.forEach((b, i) => { if (i > 0) b.style.display = 'none'; });
+  blocks[0]?.append(caret);
+  const reveal = (upTo: number) => blocks.forEach((b, i) => { if (i <= upTo) b.style.display = ''; });
 
   return (cps = 220, ctl: TypeControl = { skip: false }) =>
     new Promise<void>((resolve) => {
@@ -59,15 +66,16 @@ export function prepareTyping(root: HTMLElement, caret: HTMLElement) {
           if (left >= len) { nodes[idx].data = full[idx]; left -= len; }
           else { nodes[idx].data = full[idx].slice(0, left); break; }
         }
-        const cur = nodes[Math.min(idx, nodes.length - 1)];
-        if (idx !== lastIdx && cur?.parentElement) { cur.after(caret); lastIdx = idx; }
+        const ci = Math.min(idx, nodes.length - 1);
+        const cur = nodes[ci];
+        if (idx !== lastIdx && cur?.parentElement) { reveal(blockOf[ci]); cur.after(caret); lastIdx = idx; }
         return idx >= nodes.length;
       };
       const tick = (now: number) => {
-        if (ctl.skip) { paint(times.length); root.style.minHeight = ''; return resolve(); }
+        if (ctl.skip) { paint(times.length); reveal(blocks.length); return resolve(); }
         const elapsed = now - t0;
         while (shown < times.length && times[shown] <= elapsed) shown++;
-        if (paint(shown)) { root.style.minHeight = ''; resolve(); }
+        if (paint(shown)) { reveal(blocks.length); resolve(); }
         else requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);

@@ -19,6 +19,7 @@ const parts = (t: string) => t.split(/(\{cv\}|\{mail\})/);
 const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.63 12 0 12 6.63 12 12 6.63 12 0Z';
 ---
 <figure class="chat" data-chat data-state="idle" data-lang={lang} data-endpoint={endpoint} data-sitekey={siteKey} data-wa={`https://wa.me/${site.whatsapp}`} data-strings={strings} data-variants={JSON.stringify(p.variants)} data-cvhref={paths.cv(lang)} data-cvlabel={p.cvLabel} data-mail={site.email} data-reveal>
+  <div class="chat__in">
   <figcaption class="chat__bar">
     <span class="chat__credit">{p.aiLabel}</span>
     <AiIcons />
@@ -62,6 +63,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
     <input class="chat__hp" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
     <div class="chat__turnstile"></div>
   </form>
+  </div>
 
 </figure>
 
@@ -76,6 +78,8 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
     .chat[data-state='idle']:hover, .chat[data-state='idle']:focus-within { border-color: color-mix(in srgb, var(--fg) 40%, var(--line)); background: color-mix(in srgb, var(--fg) 5%, var(--bg)); }
     .chat[data-state='idle']:hover .chat__stream, .chat[data-state='idle']:focus-within .chat__stream { min-height: 12rem; }
   }
+  /* Mientras se escribe, la altura sigue al contenido con una transición suave */
+  .chat.is-growing { transition: height .55s var(--ease), border-color .6s var(--ease), background .6s var(--ease); }
   .chat[data-state='idle'].is-peek .chat__stream { min-height: 12rem; } /* pantallas táctiles */
   .chat:not([data-state='idle']) .chat__stream { transition: none; }
   .msg { display: flex; gap: .85rem; align-items: flex-start; }
@@ -107,7 +111,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
   @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
 
   /* Respuesta: misma tipografía que el resto del chat, con el arranque de cada párrafo en peso medio */
-  .term { font-family: var(--chat-font); font-size: inherit; line-height: 1.55; display: grid; gap: .85rem; min-width: 0; flex: 1; text-align: left; }
+  .term { font-family: var(--chat-font); font-size: inherit; line-height: 1.55; display: grid; align-content: start; gap: .85rem; min-width: 0; flex: 1; text-align: left; }
   .t-sym { color: var(--muted); user-select: none; }
   .term p { margin: 0; color: color-mix(in srgb, var(--fg) 88%, var(--bg)); }
   .term strong { font-weight: 500; color: var(--fg); }
@@ -224,18 +228,29 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
         word.textContent = words[1] ?? words[0];
         await wait(quick ? 250 : 2000);
 
-        if (quick) { go('answering'); finish(); return; }
-        // La tarjeta se estira hasta su altura final mientras el texto empieza a escribirse.
-        let run!: ReturnType<typeof prepareTyping>;
-        grow(() => { go('answering'); renderVariant(); run = prepareTyping(body, caret); }, 1300);
+        if (quick) { go('answering'); renderVariant(); finish(); return; }
+
+        // La tarjeta crece de a poco, a medida que se escribe: la altura sigue al contenido interno.
+        const inner = $<HTMLElement>('.chat__in');
+        chat.style.height = `${chat.getBoundingClientRect().height}px`;
+        void chat.offsetHeight;
+        chat.classList.add('is-growing');
+        const ro = new ResizeObserver(() => { chat.style.height = `${inner.offsetHeight + 2}px`; });
+        go('answering');
+        renderVariant();
+        const run = prepareTyping(body, caret);
+        ro.observe(inner);
         chat.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         const ctl: TypeControl = { skip: false };
-        const skip = () => (ctl.skip = true);
         chat.classList.add('is-typing');
-        answer.addEventListener('click', skip, { once: true });
+        answer.addEventListener('click', () => (ctl.skip = true), { once: true });
         await run(220, ctl); // caracteres por segundo base: bajar para tipear más lento
         chat.classList.remove('is-typing');
         caret.remove();
+        await wait(650);
+        ro.disconnect();
+        chat.style.height = '';
+        chat.classList.remove('is-growing');
         finish();
       };
       const finish = () => {
