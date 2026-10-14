@@ -34,9 +34,9 @@ export const copy = {
     featured: { eyebrow: 'Selección', title: 'Trabajos destacados', all: 'Ver todos los trabajos' },
     profile: {
       eyebrow: 'Perfil',
-      title: 'Estrategia y oficio, en la misma mesa.',
+      title: 'Estrategia y oficio',
       prompt: {
-        aiLabel: 'Esto fue desarrollado con la asistencia de',
+        aiLabel: 'Este portfolio fue desarrollado con la asistencia de',
         intro: 'Con gusto. Sé que tu usuario es detallista: aquí tienes datos y criterio, no adjetivos.',
         greeting: 'Hola, soy el asistente de IA de Pablo. Para saber más de él, haz clic en Enviar.',
         suggest: 'Háblame de Pablo',
@@ -97,9 +97,9 @@ export const copy = {
     featured: { eyebrow: 'Selected', title: 'Featured work', all: 'View all work' },
     profile: {
       eyebrow: 'Profile',
-      title: 'Strategy and craft, at the same table.',
+      title: 'Strategy and craft',
       prompt: {
-        aiLabel: 'This was developed with the assistance of',
+        aiLabel: 'This portfolio was developed with the assistance of',
         intro: 'Gladly. I know your user is detail-oriented: here are facts and judgement, not adjectives.',
         greeting: 'Hi, I’m Pablo’s AI assistant. To learn more about him, hit Send.',
         suggest: 'Tell me about Pablo',
