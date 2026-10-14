@@ -54,6 +54,15 @@ export const cv = {
     I(L('2010'), L('Identidad Corporativa, Marca País', 'Corporate Identity, Country Brand'), L('Norberto Chaves')),
   ],
 
+  ai: {
+    title: L('LLM e IA Generativa', 'LLM & Generative AI'),
+    items: [
+      L('Uso diario de Claude y Gemini como apoyo en investigación, redacción, programación y dirección de arte.', 'Daily use of Claude and Gemini to support research, writing, coding and art direction.'),
+      L('Desarrollo de sitios e interfaces asistido por IA: prompting, revisión crítica y criterio sobre el código generado.', 'AI-assisted development of websites and interfaces: prompting, critical review and judgement over generated code.'),
+      L('IA integrada al proceso con trazabilidad: los proyectos previos a su uso se identifican con la etiqueta “pre-ia”.', 'AI integrated into the process with traceability: projects predating its use are tagged “pre-ia”.'),
+    ],
+  },
+
   // ── Página 2 · detalle ────────────────────────────────────────
   current: [
     I(L('2009 — hoy', '2009 — present'), L('Labor de Diseñador Freelancer', 'Freelance Designer'), L('Blackroom Design'), true),

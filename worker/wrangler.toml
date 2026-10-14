@@ -1,0 +1,12 @@
+name = "portfolio-question-relay"
+main = "question-relay.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+# Orígenes que pueden llamar al worker (separados por coma, sin barra final)
+ALLOWED_ORIGINS = "https://TU-USUARIO.github.io"
+
+# Opcional, para el límite por IP:
+# [[kv_namespaces]]
+# binding = "RATE"
+# id = "<id del KV>"

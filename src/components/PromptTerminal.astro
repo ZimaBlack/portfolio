@@ -1,0 +1,202 @@
+---
+import { copy, type Lang } from '../lib/i18n';
+import { site } from '../data/site';
+import Icon from './Icon.astro';
+import AiIcons from './AiIcons.astro';
+
+const { lang } = Astro.props as { lang: Lang };
+const p = copy[lang].profile.prompt;
+const a = copy[lang].profile.ask;
+const endpoint = import.meta.env.PUBLIC_QUESTION_ENDPOINT ?? '';
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+const strings = JSON.stringify(a);
+---
+<figure class="term" data-term data-lang={lang} data-endpoint={endpoint} data-sitekey={siteKey} data-wa={`https://wa.me/${site.whatsapp}`} data-strings={strings} data-reveal>
+  <figcaption class="term__bar">
+    <span class="badge">{p.label}</span>
+    <span class="term__route"><b>{p.from}</b> <Icon name="arrow-up-right" class="term__arrow" /> <b>{p.to}</b></span>
+    <span class="term__ai"><span class="muted">{p.aiLabel}</span><AiIcons /></span>
+  </figcaption>
+
+  <div class="term__body" data-typed>
+    <p class="t-intro"><span class="t-sym">&gt;</span> {p.intro}</p>
+    {p.sections.map((x) => (
+      <section class="t-sec">
+        <h4># {x.h}</h4>
+        <p>{x.t}</p>
+      </section>
+    ))}
+    <p class="t-close"><span class="t-sym">$</span> {p.close} <a class="link" href={`mailto:${site.email}`}>{site.email}</a>.</p>
+  </div>
+
+  <div class="term__log" aria-live="polite"></div>
+
+  <form class="term__form" novalidate autocomplete="off">
+    <label class="term__row">
+      <span class="t-sym" aria-hidden="true">&gt;</span>
+      <input class="term__q" name="question" type="text" maxlength="500" placeholder={a.placeholder} aria-label={a.placeholder} required />
+      <button class="term__send" type="submit"><span>{a.send}</span> <Icon name="arrow-up-right" /></button>
+    </label>
+    <label class="term__row term__row--sub">
+      <span class="t-sym" aria-hidden="true">@</span>
+      <input class="term__c" name="contact" type="text" maxlength="120" placeholder={a.contact} aria-label={a.contact} autocomplete="email" />
+    </label>
+    <!-- Honeypot: invisible para personas; los bots suelen completarlo -->
+    <input class="term__hp" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    <div class="term__turnstile"></div>
+    <p class="term__note">{a.note}</p>
+  </form>
+</figure>
+
+<style>
+  .term { --mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace; margin: 0; max-width: 76rem; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: color-mix(in srgb, var(--fg) 3%, var(--bg)); }
+  .term__bar { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.25rem; padding: .9rem clamp(1.25rem, 3vw, 2rem); border-bottom: 1px solid var(--line); font-size: .8rem; color: var(--muted); }
+  .term__route { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+  .term__route b { font-weight: 500; color: var(--fg); }
+  .term__route :global(.term__arrow) { transform: rotate(45deg); }
+  .term__ai { margin-left: auto; display: inline-flex; align-items: center; gap: .9rem; }
+
+  .term__body, .term__log, .term__form { font-family: var(--mono); font-size: clamp(.8rem, 1.05vw, .9rem); line-height: 1.7; }
+  .term__body { padding: clamp(1.25rem, 3vw, 2rem); display: grid; gap: 1.1rem; }
+  .term__body p, .term__body h4 { margin: 0; }
+  .t-sym { color: var(--muted); user-select: none; }
+  .t-intro { color: var(--fg); }
+  .t-sec { display: grid; gap: .15rem; }
+  .t-sec h4 { font-size: inherit; font-weight: 500; color: var(--muted); letter-spacing: .02em; }
+  .t-sec p { color: var(--fg); padding-left: 2ch; }
+  .t-close { color: var(--fg); }
+  :global(.term__caret) { display: inline-block; width: .6em; height: 1.1em; margin-left: .15em; vertical-align: -.2em; background: var(--fg); animation: caret 1s steps(1) infinite; }
+  @keyframes caret { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { :global(.term__caret) { animation: none; } }
+
+  .term__log { padding: 0 clamp(1.25rem, 3vw, 2rem); display: grid; gap: .6rem; }
+  .term__log:not(:empty) { padding-bottom: 1.25rem; }
+  :global(.term__log .l-q) { color: var(--muted); }
+  :global(.term__log .l-a) { color: var(--fg); }
+  :global(.term__log .l-e) { color: #e0705f; }
+
+  .term__form { display: grid; gap: .25rem; padding: 1rem clamp(1.25rem, 3vw, 2rem) 1.25rem; border-top: 1px solid var(--line); }
+  .term__row { display: flex; align-items: center; gap: .9ch; }
+  .term__row--sub { font-size: .92em; }
+  .term__form input[type='text'] { flex: 1; min-width: 0; font: inherit; color: var(--fg); background: transparent; border: 0; outline: 0; padding: .55rem 0; border-bottom: 1px solid transparent; }
+  .term__form input::placeholder { color: var(--muted); }
+  .term__form input:focus { border-bottom-color: var(--fg); }
+  .term__hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .term__send { display: inline-flex; align-items: center; gap: .4rem; font: inherit; font-size: .85em; padding: .45rem 1rem; border: 1px solid var(--fg); border-radius: 999px; transition: background .35s var(--ease), color .35s var(--ease); white-space: nowrap; }
+  .term__send:hover, .term__send:focus-visible { background: var(--fg); color: var(--bg); }
+  .term__send:disabled { opacity: .5; pointer-events: none; }
+  .term__note { margin: .35rem 0 0; font-size: .78em; color: var(--muted); }
+  .term__turnstile:empty { display: none; }
+</style>
+
+<script>
+  import { prepareTyping, makeCaret, typeText } from '../scripts/typewriter';
+
+  const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const LS = {
+    get: (k: string) => { try { return localStorage.getItem(k); } catch { return null; } },
+    set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* sin storage */ } },
+  };
+
+  function init() {
+    document.querySelectorAll<HTMLElement>('[data-term]:not([data-ready])').forEach((term) => {
+      term.dataset.ready = '1';
+      const body = term.querySelector<HTMLElement>('[data-typed]')!;
+      const caret = makeCaret();
+
+      // ── Tipeo del prompt al entrar en pantalla ──
+      if (!reduce()) {
+        const run = prepareTyping(body, caret);
+        const io = new IntersectionObserver((es) => {
+          if (es.some((e) => e.isIntersecting)) { io.disconnect(); run(1100).then(() => caret.remove()); }
+        }, { threshold: 0.15 });
+        io.observe(term);
+      }
+
+      // ── Formulario ──
+      const S = JSON.parse(term.dataset.strings!) as Record<string, string>;
+      const lang = term.dataset.lang!;
+      const endpoint = term.dataset.endpoint!;
+      const siteKey = term.dataset.sitekey!;
+      const wa = term.dataset.wa!;
+      const form = term.querySelector<HTMLFormElement>('.term__form')!;
+      const q = form.querySelector<HTMLInputElement>('.term__q')!;
+      const c = form.querySelector<HTMLInputElement>('.term__c')!;
+      const hp = form.querySelector<HTMLInputElement>('.term__hp')!;
+      const btn = form.querySelector<HTMLButtonElement>('.term__send')!;
+      const log = term.querySelector<HTMLElement>('.term__log')!;
+      const slot = form.querySelector<HTMLElement>('.term__turnstile')!;
+      let openedAt = 0;
+      let token = '';
+
+      // Turnstile (opcional): se carga recién cuando la persona interactúa con el campo.
+      const loadTurnstile = () => {
+        if (!siteKey || document.querySelector('script[data-turnstile]')) return;
+        const s = document.createElement('script');
+        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        s.async = true; s.dataset.turnstile = '1';
+        s.onload = () => (window as any).turnstile?.render(slot, { sitekey: siteKey, appearance: 'interaction-only', callback: (t: string) => (token = t), 'expired-callback': () => (token = '') });
+        document.head.append(s);
+      };
+      form.addEventListener('focusin', () => { if (!openedAt) openedAt = Date.now(); loadTurnstile(); }, { once: false });
+
+      const say = (cls: string, text: string) => {
+        const p = document.createElement('p');
+        p.className = cls; p.style.margin = '0';
+        log.append(p);
+        return typeText(p, text, caret, 1400).then(() => caret.remove());
+      };
+      const fail = (m: string) => { log.querySelector('.l-e')?.remove(); const p = document.createElement('p'); p.className = 'l-e'; p.style.margin = '0'; p.textContent = S[m]; log.append(p); };
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        log.querySelector('.l-e')?.remove();
+        const question = q.value.trim().replace(/\s+/g, ' ');
+        const contact = c.value.trim();
+        const elapsed = openedAt ? Date.now() - openedAt : 0;
+
+        if (hp.value) return;                                            // bot: honeypot
+        if (question.length < 8) return fail('errShort');
+        if (/https?:\/\/|www\.|\.(com|net|org|ru|xyz|top)\b/i.test(question)) return fail('errLinks');
+        const okMail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact);
+        const okTel = contact.replace(/\D/g, '').length >= 8 && /^[+\d\s()\-.]+$/.test(contact);
+        if (!okMail && !okTel) return fail('errContact');
+        if (elapsed < 2500) return fail('errWait');                      // demasiado rápido para una persona
+
+        const last = Number(LS.get('ask:last') || 0);
+        const day = new Date().toDateString();
+        const [d, n] = (LS.get('ask:day') || '|0').split('|');
+        const count = d === day ? Number(n) : 0;
+        if (Date.now() - last < 60_000) return fail('errWait');
+        if (count >= 3) return fail('errLimit');
+        if (siteKey && !token) return fail('errVerify');
+
+        btn.disabled = true;
+        const qLine = document.createElement('p'); qLine.className = 'l-q'; qLine.style.margin = '0'; qLine.textContent = '> ' + question; log.append(qLine);
+
+        let viaWa = false;
+        if (endpoint) {
+          try {
+            const r = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ question, contact, website: hp.value, t: elapsed, token, lang }) });
+            if (!r.ok) throw new Error(String(r.status));
+          } catch {
+            btn.disabled = false; qLine.remove(); return fail('errFail');
+          }
+        } else {
+          // Sin servidor configurado: se abre WhatsApp con la pregunta ya escrita.
+          viaWa = true;
+          window.open(`${wa}?text=${encodeURIComponent(`${question}\n\n${contact}`)}`, '_blank', 'noopener');
+        }
+
+        LS.set('ask:last', String(Date.now()));
+        LS.set('ask:day', `${day}|${count + 1}`);
+        q.value = ''; c.value = '';
+        (window as any).turnstile?.reset?.(); token = '';
+        await say('l-a', viaWa ? S.replyWa : S.reply);
+        btn.disabled = false;
+      });
+    });
+  }
+  document.addEventListener('astro:page-load', init);
+</script>
