@@ -11,6 +11,7 @@ const p = copy[lang].profile.prompt;
 const a = copy[lang].profile.ask;
 const endpoint = import.meta.env.PUBLIC_QUESTION_ENDPOINT ?? '';
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+const written = a.placeholder.replace(/…$/, ''); // texto "ya escrito" en el campo
 const strings = JSON.stringify({ ...a, thinking: p.thinking });
 const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.63 12 0 12 6.63 12 12 6.63 12 0Z';
 ---
@@ -27,7 +28,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
       <p class="msg__txt">{p.greeting}</p>
     </div>
 
-    <div class="msg msg--user"><p class="msg__txt" data-user>{p.suggest}</p></div>
+    <div class="msg msg--user"><p class="msg__txt" data-user>{written}</p></div>
 
     <div class="msg msg--ai chat__think" role="status">
       <span class="msg__av msg__av--spin" aria-hidden="true"><svg viewBox="0 0 24 24"><path d={Spark} /></svg></span>
@@ -53,7 +54,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
 
   <form class="chat__composer" novalidate autocomplete="off">
     <div class="chat__row">
-      <input class="chat__q" name="question" type="text" maxlength="500" placeholder={a.placeholder} aria-label={a.placeholder} readonly />
+      <input class="chat__q" name="question" type="text" maxlength="500" value={written} aria-label={a.placeholder} readonly />
       <button class="chat__send" type="submit" aria-label={a.send}><Icon name="arrow-up" /></button>
     </div>
     <div class="chat__row chat__row--sub">
@@ -65,9 +66,6 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
     <div class="chat__turnstile"></div>
   </form>
 
-  <div class="chat__suggest">
-    <button type="button" class="chat__chip">{p.suggest}</button>
-  </div>
 </figure>
 
 <style>
@@ -88,11 +86,10 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
   .msg--user .msg__txt { padding: .6rem 1.1rem; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--fg) 7%, var(--bg)); }
 
   /* Estados de la simulación */
-  .msg--user, .chat__think, .chat__suggest, .chat .chat__row--sub { display: none; }
-  .chat[data-state='hint'] .chat__suggest { display: flex; }
+  .msg--user, .chat__think, .chat .chat__row--sub { display: none; }
   .chat[data-state='thinking'] .msg--user, .chat[data-state='answering'] .msg--user, .chat[data-state='ask'] .msg--user { display: flex; }
   .chat[data-state='thinking'] .chat__think { display: flex; }
-  .chat[data-state='idle'] .chat__answer, .chat[data-state='hint'] .chat__answer, .chat[data-state='thinking'] .chat__answer { display: none; }
+  .chat[data-state='idle'] .chat__answer, .chat[data-state='thinking'] .chat__answer { display: none; }
   .chat[data-state='ask'] .chat__row--sub { display: flex; }
 
   /* "Pensando…" */
@@ -125,7 +122,8 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
   .chat__row--sub { font-family: var(--mono); font-size: .8rem; padding-inline: 1.25rem; }
   .chat input[type='text'] { flex: 1; min-width: 0; font: inherit; color: var(--fg); background: transparent; border: 0; outline: 0; padding: .45rem 0; }
   .chat input::placeholder { color: var(--muted); }
-  .chat__q[readonly] { cursor: default; }
+  .chat__q[readonly] { cursor: pointer; }
+  .chat[data-state='idle'] .chat__row:first-child { cursor: pointer; }
   .chat__hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
   .chat__send { flex: none; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--fg); color: var(--bg); transition: transform .4s var(--ease), opacity .3s; }
   .chat__send :global(.ico) { width: 1.1rem; height: 1.1rem; stroke-width: 2; }
@@ -135,12 +133,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
   @keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--fg) 45%, transparent); } 70%, 100% { box-shadow: 0 0 0 .8rem transparent; } }
   .chat__turnstile:empty { display: none; }
 
-  /* Sugerencia */
-  .chat__suggest { justify-content: center; padding: 0 1.25rem 1.5rem; animation: rise .6s var(--ease); }
-  @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
-  .chat__chip { padding: .6rem 1.2rem; border: 1px solid var(--fg); border-radius: 999px; font-size: .9rem; transition: background .35s var(--ease), color .35s var(--ease); animation: pulse 2.2s var(--ease) infinite; }
-  .chat__chip:hover, .chat__chip:focus-visible { background: var(--fg); color: var(--bg); }
-  .chat:not([data-state='hint']) .chat__composer { padding-bottom: 1.5rem; }
+  .chat__composer { padding-bottom: 1.5rem; }
 
   @media (prefers-reduced-motion: reduce) { .chat *, .chat *::after { animation: none !important; } }
 </style>
@@ -165,7 +158,6 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
       const c = $<HTMLInputElement>('.chat__c');
       const hp = $<HTMLInputElement>('.chat__hp');
       const send = $<HTMLButtonElement>('.chat__send');
-      const chip = $<HTMLButtonElement>('.chat__chip');
       const word = $<HTMLElement>('.chat__word');
       const body = $<HTMLElement>('[data-typed]');
       const log = $<HTMLElement>('.chat__log');
@@ -177,9 +169,9 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
       const go = (s: string) => { state = s; set(s); };
       go('idle');
 
-      // ── Simulación: idle → hint → thinking → answering → ask ──
+      // ── Simulación: idle → thinking → answering → ask ──
       const start = async () => {
-        if (state === 'thinking' || state === 'answering' || state === 'ask') return;
+        if (state !== 'idle') return;
         go('thinking');
         const words: string[] = S.thinking;
         const quick = reduce();
@@ -203,7 +195,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
         q.value = '';
       };
 
-      chip.addEventListener('click', start);
+      q.addEventListener('click', () => { if (state === 'idle') start(); });
 
       // ── Formulario real (después de la simulación) ──
       let openedAt = 0, token = '';
@@ -228,8 +220,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
         e.preventDefault();
 
         // Antes de la respuesta, "Enviar" solo hace avanzar la simulación.
-        if (state === 'idle') { go('hint'); return; }
-        if (state === 'hint') { start(); return; }
+        if (state === 'idle') { start(); return; }
         if (state !== 'ask') return;
 
         log.querySelector('.l-e')?.remove();
