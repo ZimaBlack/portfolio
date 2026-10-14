@@ -58,6 +58,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .btn--solid:hover { background: transparent; color: var(--fg); }
 .btn svg, .ico { width: 1em; height: 1em; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
+/* Badge de proyecto */
+.badge { display: inline-flex; align-items: center; gap: .4rem; padding: .2rem .7rem; border: 1px solid currentColor; border-radius: 999px; font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; line-height: 1.4; white-space: nowrap; }
+.badge::before { content: ''; width: .4rem; height: .4rem; border-radius: 50%; background: currentColor; }
+
 /* Enmascarado para reveal por palabras */
 .split-line { display: block; overflow: hidden; padding: 0 0.1em 0.08em; margin: 0 -0.1em -0.08em; }
 .split-word { display: inline-block; will-change: transform; }

@@ -7,6 +7,7 @@ const disc = loc(d.discipline, lang);
 ---
 <a class="card" href={paths.work(lang, work.id)} data-cursor={copy[lang].detail.view} data-reveal>
   <div class="card__media">
+    {d.badge && <span class="badge card__badge">{d.badge}</span>}
     <div class="card__zoom"><Frame src={d.cover} alt={d.title} tones={d.tones} ratio={ratio} label={disc} /></div>
   </div>
   <div class="card__meta">
@@ -18,7 +19,8 @@ const disc = loc(d.discipline, lang);
 
 <style>
   .card { display: block; }
-  .card__media { overflow: hidden; }
+  .card__media { overflow: hidden; position: relative; }
+  .card__badge { position: absolute; z-index: 2; top: .9rem; left: .9rem; color: #fff; background: rgb(0 0 0 / .45); backdrop-filter: blur(8px); border-color: rgb(255 255 255 / .55); }
   .card__zoom { transition: transform 1.1s var(--ease), filter .6s; }
   .card:hover .card__zoom { transform: scale(1.06); }
   .card:hover .card__zoom { filter: brightness(1.12); }

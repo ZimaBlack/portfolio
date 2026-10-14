@@ -25,6 +25,7 @@ const works = defineCollection({
     discipline: t,
     summary: t,
     text: t,
+    badge: z.string().optional(), // etiqueta destacada, ej. "pre-ia"
     featured: z.boolean().default(false),
     order: z.number().default(99),
     cover: z.string().optional(),
