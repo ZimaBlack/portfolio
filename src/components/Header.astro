@@ -14,13 +14,19 @@ const navHref = { home: paths.home(lang), works: paths.works(lang), cv: paths.cv
       <Logo label={site.studio} />
       <span class="brand__name">Design</span>
     </a>
-    <nav aria-label="Principal" class="nav">
-      {c.nav.map((i) => <a href={navHref[i.key]} class="link" aria-current={i.key === section ? 'page' : undefined}>{i.label}</a>)}
-    </nav>
-    <ul class="social" aria-label="Redes">
-      <li><a class="lang" href={altHref} hreflang={lang === 'es' ? 'en' : 'es'} lang={lang === 'es' ? 'en' : 'es'}>{c.switchTo}</a></li>
-      {site.social.map((s) => <li><a class="soc" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}><Icon name={s.icon} /></a></li>)}
-    </ul>
+
+    <!-- En escritorio el panel es transparente para el layout; en móvil es un menú a pantalla completa -->
+    <div class="panel" id="menu">
+      <nav aria-label="Principal" class="nav">
+        {c.nav.map((i, n) => <a href={navHref[i.key]} class="link" style={`--i:${n}`} aria-current={i.key === section ? 'page' : undefined}>{i.label}</a>)}
+      </nav>
+      <ul class="social" aria-label="Redes">
+        <li><a class="lang" href={altHref} hreflang={lang === 'es' ? 'en' : 'es'} lang={lang === 'es' ? 'en' : 'es'}>{c.switchTo}</a></li>
+        {site.social.map((s) => <li><a class="soc" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}><Icon name={s.icon} /></a></li>)}
+      </ul>
+    </div>
+
+    <button class="burger" type="button" aria-label={c.menu} aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
   </div>
 </header>
 
@@ -29,17 +35,66 @@ const navHref = { home: paths.home(lang), works: paths.works(lang), cv: paths.cv
   .header.is-hidden { transform: translateY(-100%); }
   .header.is-solid { background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(14px); }
   .header__in { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; height: 4.5rem; font-size: .85rem; }
-  .brand { display: flex; align-items: center; gap: .75rem; }
+  .brand { display: flex; align-items: center; gap: .75rem; position: relative; z-index: 2; }
   .brand__name { font-size: .72rem; font-weight: 400; letter-spacing: .24em; text-transform: uppercase; color: var(--muted); }
+  .panel { display: contents; }
   .nav { display: flex; gap: clamp(1rem, 3vw, 2.5rem); }
   .nav a { color: var(--muted); transition: color .4s; }
   .nav a:hover, .nav a[aria-current='page'] { color: var(--fg); }
-  .social { display: flex; gap: .4rem; list-style: none; margin: 0; padding: 0; }
-  .social { align-items: center; }
+  .social { display: flex; gap: .4rem; list-style: none; margin: 0; padding: 0; align-items: center; }
   .lang { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-right: .6rem; margin-right: .2rem; border-right: 1px solid var(--line); transition: color .4s; }
   .lang:hover { color: var(--fg); }
   .soc { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; color: var(--muted); transition: color .4s var(--ease), background .4s var(--ease); }
   .soc :global(.ico) { width: 1.15rem; height: 1.15rem; }
   .soc:hover { color: var(--bg); background: var(--fg); }
-  @media (max-width: 640px) { .soc { display: none; } .lang { border: 0; padding: 0; margin: 0; }  }
+  .burger { display: none; }
+
+  @media (max-width: 760px) {
+    .brand__name { display: none; }
+    .burger { display: grid; align-content: center; justify-items: center; gap: .42rem; width: 2.75rem; height: 2.75rem; margin-right: -.6rem; position: relative; z-index: 2; }
+    .burger span { display: block; width: 1.5rem; height: 1.5px; background: var(--fg); transition: transform .5s var(--ease); }
+    .header.is-open .burger span:first-child { transform: translateY(.23rem) rotate(45deg); }
+    .header.is-open .burger span:last-child { transform: translateY(-.23rem) rotate(-45deg); }
+
+    /* Menú a pantalla completa */
+    .panel { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 2.75rem; position: fixed; inset: 0; z-index: 1; padding: 6rem var(--gutter) 3rem; background: var(--bg); opacity: 0; visibility: hidden; transition: opacity .5s var(--ease), visibility 0s .5s; }
+    .header.is-open .panel { opacity: 1; visibility: visible; transition: opacity .5s var(--ease), visibility 0s; }
+    /* backdrop-filter / transform crearían un contenedor para el panel fijo: se anulan con el menú abierto */
+    .header.is-open { backdrop-filter: none; background: transparent; transform: none; }
+
+    .nav { flex-direction: column; gap: 1.1rem; }
+    .nav a { font-size: clamp(1.9rem, 9vw, 2.6rem); font-weight: 300; letter-spacing: -.02em; color: var(--fg); opacity: 0; transform: translateY(18px); transition: opacity .6s var(--ease), transform .7s var(--ease); transition-delay: calc(var(--i) * 70ms + 120ms); }
+    .nav a[aria-current='page'] { color: var(--muted); }
+    .header.is-open .nav a { opacity: 1; transform: none; }
+    .social { gap: .6rem; flex-wrap: wrap; opacity: 0; transition: opacity .6s var(--ease) .45s; }
+    .header.is-open .social { opacity: 1; }
+    .lang { font-size: .85rem; padding-right: 1rem; margin-right: .4rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .nav a, .social { transition: none !important; opacity: 1; transform: none; } }
 </style>
+
+<script>
+  const close = () => {
+    document.querySelector('[data-header]')?.classList.remove('is-open');
+    document.querySelector('.burger')?.setAttribute('aria-expanded', 'false');
+    document.documentElement.classList.remove('menu-open');
+  };
+  const init = () => {
+    close();
+    const header = document.querySelector<HTMLElement>('[data-header]');
+    const burger = header?.querySelector<HTMLButtonElement>('.burger');
+    if (!header || !burger || burger.dataset.bound) return;
+    burger.dataset.bound = '1';
+    burger.addEventListener('click', () => {
+      const open = !header.classList.contains('is-open');
+      header.classList.toggle('is-open', open);
+      burger.setAttribute('aria-expanded', String(open));
+      document.documentElement.classList.toggle('menu-open', open);
+    });
+    header.querySelectorAll('.panel a').forEach((a) => a.addEventListener('click', close));
+    addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    matchMedia('(min-width: 761px)').addEventListener('change', close);
+  };
+  document.addEventListener('astro:page-load', init);
+  document.addEventListener('astro:before-swap', close);
+</script>
