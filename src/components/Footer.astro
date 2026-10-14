@@ -6,7 +6,7 @@ const { lang } = Astro.props as { lang: Lang };
 const c = copy[lang];
 ---
 <footer class="footer section" id="contacto">
-  <img class="footer__photo" src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/portrait.png`} alt="" aria-hidden="true" width="1200" height="983" loading="lazy" decoding="async" />
+  <img class="footer__photo" src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/portrait.jpg`} alt="" aria-hidden="true" width="1386" height="1135" loading="lazy" decoding="async" />
   <div class="wrap footer__content">
     <p class="eyebrow" data-reveal>{c.footer.eyebrow}</p>
     <h2 class="display" data-split-scroll>{c.footer.title}</h2>
@@ -25,8 +25,9 @@ const c = copy[lang];
 <style>
   .footer { border-top: 1px solid var(--line); position: relative; overflow: hidden; isolation: isolate; }
   /* Retrato a la derecha, detrás del contenido, al 80% de opacidad; el borde izquierdo se desvanece */
-  .footer__photo { position: absolute; z-index: -1; right: 0; bottom: 0; height: 100%; width: auto; max-width: 75%; object-fit: contain; object-position: right bottom; opacity: .8; pointer-events: none; user-select: none;
+  .footer__photo { position: absolute; z-index: -1; right: 0; bottom: 0; height: 100%; width: auto; max-width: 75%; object-fit: contain; object-position: right bottom; opacity: .8; mix-blend-mode: lighten; /* el negro de la foto se funde con el fondo */ pointer-events: none; user-select: none;
     -webkit-mask-image: linear-gradient(to right, transparent 0, #000 28%); mask-image: linear-gradient(to right, transparent 0, #000 28%); }
+  @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .footer__photo { display: none; } } /* la foto está pensada para fondo oscuro */
   .footer__content { position: relative; z-index: 1; }
   @media (max-width: 760px) { .footer { padding-bottom: 17rem; } .footer__photo { height: 20rem; max-width: 100%; } }
   .footer .display { margin: 1.5rem 0 2.5rem; }
