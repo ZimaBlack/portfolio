@@ -6,7 +6,7 @@ import { copy, paths, type Lang } from '../lib/i18n';
 
 const { lang, section, altHref } = Astro.props as { lang: Lang; section: string; altHref: string };
 const c = copy[lang];
-const navHref = { home: paths.home(lang), works: paths.works(lang), contact: paths.contact(lang) } as Record<string, string>;
+const navHref = { home: paths.home(lang), works: paths.works(lang), cv: paths.cv(lang), contact: paths.contact(lang) } as Record<string, string>;
 ---
 <header class="header" data-header>
   <div class="wrap header__in">

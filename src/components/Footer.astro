@@ -1,10 +1,9 @@
 ---
 import { site, waLink } from '../data/site';
-import { copy, type Lang } from '../lib/i18n';
+import { copy, paths, type Lang } from '../lib/i18n';
 import Icon from './Icon.astro';
 const { lang } = Astro.props as { lang: Lang };
 const c = copy[lang];
-const cv = import.meta.env.BASE_URL.replace(/\/$/, '') + site.cv[lang];
 ---
 <footer class="footer section" id="contacto">
   <div class="wrap">
@@ -13,7 +12,7 @@ const cv = import.meta.env.BASE_URL.replace(/\/$/, '') + site.cv[lang];
     <div class="footer__row" data-reveal>
       <a class="btn btn--solid" href={waLink(lang)} target="_blank" rel="noopener noreferrer">{c.footer.wa} <Icon name="arrow-up-right" /></a>
       <a class="btn" href={`mailto:${site.email}`}>{site.email}</a>
-      <a class="btn" href={cv} download>{c.footer.cv} <Icon name="download" /></a>
+      <a class="btn" href={paths.cv(lang)}>{c.footer.cv} <Icon name="arrow-up-right" /></a>
     </div>
     <div class="footer__base">
       <span class="muted">© {new Date().getFullYear()} {site.studio} — {site.location}</span>

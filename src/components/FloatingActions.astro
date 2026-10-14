@@ -6,9 +6,6 @@ const { lang } = Astro.props as { lang: Lang };
 const c = copy[lang];
 ---
 <div class="fab" transition:persist>
-  <a class="fab__btn" href={import.meta.env.BASE_URL.replace(/\/$/, '') + site.cv[lang]} download aria-label={c.fab.cv}>
-    <Icon name="download" /><span>CV</span>
-  </a>
   <a class="fab__btn fab__btn--wa" href={waLink(lang)} target="_blank" rel="noopener noreferrer" aria-label={c.fab.wa}>
     <Icon name="whatsapp" /><span>WhatsApp</span>
   </a>

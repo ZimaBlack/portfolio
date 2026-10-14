@@ -1,0 +1,166 @@
+---
+import { cv, type Item } from '../data/cv';
+import { copy, loc, type Lang } from '../lib/i18n';
+import { site, waLink } from '../data/site';
+import Icon from './Icon.astro';
+import SocialIcons from './SocialIcons.astro';
+
+const { lang } = Astro.props as { lang: Lang };
+const c = copy[lang].cvSection;
+const pdf = import.meta.env.BASE_URL.replace(/\/$/, '') + site.cv[lang];
+const rows = (items: Item[]) => items;
+---
+<section class="section wrap cv" id="cv">
+  <header class="cv__head">
+    <div>
+      <p class="eyebrow" data-reveal>{c.eyebrow}</p>
+      <h2 class="h2" data-split-scroll>{c.title}</h2>
+    </div>
+    <div class="cv__actions" data-reveal>
+      <a class="btn btn--solid" href={pdf} download>{c.download} <Icon name="download" /></a>
+      <SocialIcons />
+    </div>
+  </header>
+
+  <!-- Página 1 del CV -->
+  <div class="sheet" data-reveal>
+    <div class="sheet__top">
+      <h3 class="sheet__name">{cv.name}</h3>
+      <p class="sheet__title">{cv.headline.map((h) => <span>{loc(h, lang)}</span>)}</p>
+    </div>
+
+    <div class="sheet__cols">
+      <aside class="side">
+        <div class="blockc">
+          <h4>{c.contact}</h4>
+          <ul class="plain">
+            <li><a class="link" href={`mailto:${site.email}`}>{site.email}</a></li>
+            <li><a class="link" href={waLink(lang)} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+          </ul>
+        </div>
+        <div class="blockc">
+          <h4>{c.languages}</h4>
+          <ul class="plain">{cv.languages.map((l) => <li>{loc(l.n, lang)} <span class="muted">— {loc(l.l, lang)}</span></li>)}</ul>
+        </div>
+        <div class="blockc">
+          <h4>{c.education}</h4>
+          <ul class="plain plain--gap">
+            {cv.education.map((e) => (
+              <li><strong>{loc(e.t, lang)}</strong>{e.note && <span class="muted">{loc(e.note, lang)}</span>}<span class="muted">{loc(e.o, lang)}</span></li>
+            ))}
+          </ul>
+        </div>
+        <div class="blockc">
+          <h4>{c.software}</h4>
+          {cv.software.map((group) => (
+            <ul class="skills">
+              {group.map(([name, lvl]) => (
+                <li>
+                  <span>{name}</span>
+                  <span class="dots" role="img" aria-label={`${c.level} ${lvl}/6`}>
+                    {Array.from({ length: 6 }, (_, i) => <i class:list={{ on: i < lvl }} />)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+        <div class="blockc">
+          <h4>{c.soft}</h4>
+          <ul class="plain">{cv.softSkills.map((s) => <li>{loc(s, lang)}</li>)}</ul>
+        </div>
+      </aside>
+
+      <div class="main">
+        <div class="blockc">
+          <h4>{c.relevantExp}</h4>
+          <ul class="tl">
+            {rows(cv.relevantExperience).map((i) => (
+              <li class:list={{ strong: i.strong }}><span class="tl__p">{loc(i.p, lang)}</span><span class="tl__t">{loc(i.t, lang)}{i.o && <em>{loc(i.o, lang)}</em>}</span></li>
+            ))}
+          </ul>
+        </div>
+        <div class="blockc">
+          <h4>{c.relevantSem}</h4>
+          <ul class="tl">
+            {rows(cv.relevantSeminars).map((i) => (
+              <li class:list={{ strong: i.strong }}><span class="tl__p">{loc(i.p, lang)}</span><span class="tl__t">{loc(i.t, lang)}{i.o && <em>{loc(i.o, lang)}</em>}</span></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Página 2 del CV -->
+  <div class="detail">
+    <p class="eyebrow" data-reveal>{c.detail}</p>
+
+    <section class="drow" data-reveal>
+      <h4>{c.current}</h4>
+      <ul class="tl">{cv.current.map((i) => <li class:list={{ strong: i.strong }}><span class="tl__p">{loc(i.p, lang)}</span><span class="tl__t">{loc(i.t, lang)}{i.o && <em>{loc(i.o, lang)}</em>}</span></li>)}</ul>
+    </section>
+    <section class="drow" data-reveal>
+      <h4>{c.professional}</h4>
+      <ul class="tl">{cv.professional.map((i) => <li class:list={{ strong: i.strong }}><span class="tl__p">{loc(i.p, lang)}</span><span class="tl__t">{loc(i.t, lang)}{i.o && <em>{loc(i.o, lang)}</em>}</span></li>)}</ul>
+    </section>
+    <section class="drow" data-reveal>
+      <h4>{c.higherEd}</h4>
+      <ul class="tl">
+        {cv.higherEducation.map((e) => (
+          <li class="strong"><span class="tl__p">{loc(e.p, lang)}</span>
+            <span class="tl__t">{loc(e.t, lang)}{e.lines.map((l) => <em>{loc(l, lang)}</em>)}<em>{loc(e.o, lang)}</em></span></li>
+        ))}
+      </ul>
+    </section>
+    <section class="drow" data-reveal>
+      <h4>{c.courses}</h4>
+      <ul class="tl">{cv.courses.map((i) => <li class:list={{ strong: i.strong }}><span class="tl__p">{loc(i.p, lang)}</span><span class="tl__t">{loc(i.t, lang)}{i.o && <em>{loc(i.o, lang)}</em>}</span></li>)}</ul>
+    </section>
+  </div>
+</section>
+
+<style>
+  .cv__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 2rem; margin-bottom: clamp(2.5rem, 5vw, 4.5rem); }
+  .cv__head > div:first-child { display: grid; gap: 1rem; }
+  .cv__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.75rem; }
+
+  h4 { margin: 0 0 1rem; font-size: .72rem; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .plain { list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; font-size: .95rem; }
+  .plain--gap { gap: 1rem; }
+  .plain--gap li { display: grid; gap: .1rem; }
+
+  .sheet { border: 1px solid var(--line); border-radius: 4px; padding: clamp(1.5rem, 4vw, 3.5rem); }
+  .sheet__top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 1rem 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--line); }
+  .sheet__name { margin: 0; font-weight: 300; font-size: clamp(2rem, 4.5vw, 3.75rem); letter-spacing: -.03em; line-height: 1; }
+  .sheet__title { margin: 0; display: grid; gap: .15rem; text-align: right; font-size: 1rem; }
+  .sheet__title span:first-child { font-weight: 500; }
+  .sheet__cols { display: grid; grid-template-columns: minmax(14rem, 1fr) 2fr; gap: 3rem clamp(2rem, 5vw, 5rem); padding-top: 2.5rem; }
+  .side { display: grid; gap: 2.25rem; align-content: start; }
+  .blockc + .blockc { margin-top: 2.25rem; }
+  .side .blockc + .blockc { margin-top: 0; }
+
+  .skills { list-style: none; margin: 0 0 1rem; padding: 0 0 1rem; border-bottom: 1px solid var(--line); display: grid; gap: .45rem; font-size: .95rem; }
+  .skills:last-of-type { border: 0; padding-bottom: 0; margin-bottom: 0; }
+  .skills li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .dots { display: inline-flex; gap: .3rem; }
+  .dots i { width: .55rem; height: .55rem; border-radius: 50%; border: 1px solid var(--muted); }
+  .dots i.on { background: var(--fg); border-color: var(--fg); }
+
+  .tl { list-style: none; margin: 0; padding: 0; display: grid; gap: .9rem; }
+  .tl li { display: grid; grid-template-columns: 8.5rem 1fr; gap: 1rem; font-size: .95rem; line-height: 1.4; color: var(--muted); }
+  .tl li.strong { color: var(--fg); }
+  .tl li.strong .tl__t { font-weight: 500; }
+  .tl__t { display: grid; gap: .1rem; }
+  .tl__t em { font-style: normal; font-weight: 400; color: var(--muted); }
+
+  .detail { margin-top: clamp(4rem, 8vw, 7rem); display: grid; gap: 0; }
+  .drow { display: grid; grid-template-columns: minmax(12rem, 1fr) 3fr; gap: 1rem clamp(2rem, 5vw, 5rem); padding-block: 2.5rem; border-top: 1px solid var(--line); }
+  .drow h4 { margin: .15rem 0 0; }
+
+  @media (max-width: 900px) {
+    .sheet__cols, .drow { grid-template-columns: 1fr; }
+    .sheet__title { text-align: left; }
+  }
+  @media (max-width: 560px) { .tl li { grid-template-columns: 1fr; gap: .1rem; } }
+</style>
