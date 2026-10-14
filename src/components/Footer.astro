@@ -35,12 +35,15 @@ const c = copy[lang];
   :global(.js) .footer.is-in .footer__photo { opacity: .4; transform: none; }
   @media (prefers-reduced-motion: reduce) { :global(.js) .footer__photo { opacity: .4; transform: none; transition: none; } }
 
-  /* Móvil: el retrato pasa a ser una franja a todo el ancho, recortada sobre el rostro y fundida en sus cuatro bordes */
+  /* Móvil: el retrato es el protagonista. Ocupa todo el ancho, con el contacto arriba (sobre el pelo)
+     y los enlaces abajo (sobre el buzo). Se funde en todos sus bordes. */
   @media (max-width: 760px) {
-    .footer { padding-bottom: 27rem; }
-    .footer__photo { left: 0; right: 0; width: 100%; max-width: none; height: 27rem; object-fit: cover; object-position: 54% 18%;
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 34%, #000 78%, transparent 100%), linear-gradient(to right, transparent 0, #000 20%, #000 80%, transparent 100%); -webkit-mask-composite: source-in;
-      mask-image: linear-gradient(to bottom, transparent 0, #000 34%, #000 78%, transparent 100%), linear-gradient(to right, transparent 0, #000 20%, #000 80%, transparent 100%); mask-composite: intersect; }
+    .footer { display: flex; flex-direction: column; min-height: min(calc(200vw + 6.5rem), 78rem); padding-block: 5rem 2.25rem; }
+    .footer__content { flex: 1; display: flex; flex-direction: column; }
+    .footer .footer__base { margin-top: auto; padding-top: 4rem; } /* más específico: gana a la regla base que va después */
+    .footer__photo { top: auto; bottom: 6.5rem; left: -13%; right: auto; width: 126%; max-width: none; height: auto; object-fit: fill;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24%, #000 80%, transparent 100%); -webkit-mask-composite: source-in;
+      mask-image: linear-gradient(to bottom, transparent 0, #000 24%, #000 80%, transparent 100%); }
   }
   .footer__content { position: relative; z-index: 1; }
   .footer .display { margin: 1.5rem 0 2.5rem; }
