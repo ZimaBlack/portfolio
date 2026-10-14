@@ -1,5 +1,5 @@
 ---
-import { copy, type Lang } from '../lib/i18n';
+import { copy, paths, type Lang } from '../lib/i18n';
 import { site } from '../data/site';
 import Icon from './Icon.astro';
 import AiIcons from './AiIcons.astro';
@@ -13,9 +13,12 @@ const endpoint = import.meta.env.PUBLIC_QUESTION_ENDPOINT ?? '';
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
 const written = a.placeholder.replace(/…$/, ''); // texto "ya escrito" en el campo
 const strings = JSON.stringify({ ...a, thinking: p.thinking });
+// Variante inicial (la que ven quienes no ejecutan JavaScript); en el navegador se sortea una al azar.
+const first = p.variants[0];
+const parts = (t: string) => t.split(/(\{cv\}|\{mail\})/);
 const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.63 12 0 12 6.63 12 12 6.63 12 0Z';
 ---
-<figure class="chat" data-chat data-state="idle" data-lang={lang} data-endpoint={endpoint} data-sitekey={siteKey} data-wa={`https://wa.me/${site.whatsapp}`} data-strings={strings} data-reveal>
+<figure class="chat" data-chat data-state="idle" data-lang={lang} data-endpoint={endpoint} data-sitekey={siteKey} data-wa={`https://wa.me/${site.whatsapp}`} data-strings={strings} data-variants={JSON.stringify(p.variants)} data-cvhref={paths.cv(lang)} data-cvlabel={p.cvLabel} data-mail={site.email} data-reveal>
   <figcaption class="chat__bar">
     <span class="chat__credit">{p.aiLabel}</span>
     <AiIcons />
@@ -37,14 +40,9 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
     <div class="msg msg--ai chat__answer">
       <span class="msg__av" aria-hidden="true"><svg viewBox="0 0 24 24"><path d={Spark} /></svg></span>
       <div class="term" data-typed>
-        <p class="t-intro"><span class="t-sym">&gt;</span> {p.intro}</p>
-        {p.sections.map((x) => (
-          <section class="t-sec">
-            <h4># {x.h}</h4>
-            <p>{x.t}</p>
-          </section>
-        ))}
-        <p class="t-close"><span class="t-sym">$</span> {p.close} <a class="link" href={`mailto:${site.email}`}>{site.email}</a>.</p>
+        <p>{first.intro}</p>
+        {first.blocks.map((b) => <p><strong>{b.lead}</strong> {b.text}</p>)}
+        <p>{parts(first.close).map((x) => x === '{cv}' ? <a class="link" href={paths.cv(lang)}>{p.cvLabel}</a> : x === '{mail}' ? <a class="link" href={`mailto:${site.email}`}>{site.email}</a> : x)}</p>
       </div>
     </div>
 
@@ -68,7 +66,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
 </figure>
 
 <style>
-  .chat { --mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace; margin: 0 auto; width: 100%; max-width: 52rem; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--fg) 3%, var(--bg)); overflow: hidden; transition: border-color .6s var(--ease), background .6s var(--ease); }
+  .chat { --chat-font: var(--sans); /* cambiar por una monoespaciada para volver al look de terminal */ margin: 0 auto; width: 100%; max-width: 52rem; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--fg) 3%, var(--bg)); overflow: hidden; transition: border-color .6s var(--ease), background .6s var(--ease); }
   .chat__bar { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .6rem 1.25rem; padding: .9rem 1.25rem; border-bottom: 1px solid var(--line); font-size: .8rem; color: var(--muted); }
   .chat__credit { font-size: .8rem; }
 
@@ -81,6 +79,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
   .chat[data-state='idle'].is-peek .chat__stream { min-height: 12rem; } /* pantallas táctiles */
   .chat:not([data-state='idle']) .chat__stream { transition: none; }
   .msg { display: flex; gap: .85rem; align-items: flex-start; }
+  .chat { font-size: clamp(.98rem, 1.25vw, 1.08rem); }
   .msg__txt { margin: 0; line-height: 1.5; }
   .msg__av { flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%; display: grid; place-items: center; background: var(--fg); color: var(--bg); }
   .msg__av svg { width: .95rem; height: .95rem; fill: currentColor; }
@@ -107,17 +106,15 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
   .dots::after { content: ''; color: var(--muted); animation: dots 1.2s steps(1) infinite; }
   @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
 
-  /* Respuesta con estética de terminal */
-  .term { font-family: var(--mono); font-size: clamp(.78rem, 1vw, .88rem); line-height: 1.7; display: grid; gap: 1rem; min-width: 0; flex: 1; text-align: left; }
-  .term p, .term h4 { margin: 0; }
+  /* Respuesta: misma tipografía que el resto del chat, con el arranque de cada párrafo en peso medio */
+  .term { font-family: var(--chat-font); font-size: inherit; line-height: 1.55; display: grid; gap: .85rem; min-width: 0; flex: 1; text-align: left; }
   .t-sym { color: var(--muted); user-select: none; }
-  .t-sec { display: grid; gap: .15rem; }
-  .t-sec h4 { font-size: inherit; font-weight: 500; color: var(--muted); letter-spacing: .02em; }
-  .t-sec p { padding-left: 2ch; }
+  .term p { margin: 0; color: color-mix(in srgb, var(--fg) 88%, var(--bg)); }
+  .term strong { font-weight: 500; color: var(--fg); }
   :global(.term__caret) { display: inline-block; width: .6em; height: 1.1em; margin-left: .15em; vertical-align: -.2em; background: var(--fg); animation: caret 1s steps(1) infinite; }
   @keyframes caret { 50% { opacity: 0; } }
 
-  .chat__log { display: grid; gap: .8rem; font-family: var(--mono); font-size: clamp(.78rem, 1vw, .88rem); line-height: 1.7; }
+  .chat__log { display: grid; gap: .8rem; line-height: 1.55; }
   .chat__log:empty { display: none; }
   :global(.chat__log .l-q) { color: var(--muted); text-align: right; margin: 0; }
   :global(.chat__log .l-a) { margin: 0; }
@@ -128,7 +125,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
   .chat__row { display: flex; align-items: center; gap: .75rem; }
   .chat__row:first-child { padding: .45rem .45rem .45rem 1.25rem; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); transition: border-color .35s; }
   .chat__row:first-child:focus-within { border-color: var(--fg); }
-  .chat__row--sub { font-family: var(--mono); font-size: .8rem; padding-inline: 1.25rem; }
+  .chat__row--sub { font-size: .85rem; padding-inline: 1.25rem; }
   .chat input[type='text'] { flex: 1; min-width: 0; font: inherit; color: var(--fg); background: transparent; border: 0; outline: 0; padding: .45rem 0; }
   .chat input::placeholder { color: var(--muted); }
   .chat__q[readonly] { cursor: pointer; }
@@ -174,6 +171,28 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
       const slot = $<HTMLElement>('.chat__turnstile');
       const endpoint = chat.dataset.endpoint!, siteKey = chat.dataset.sitekey!, wa = chat.dataset.wa!, lang = chat.dataset.lang!;
       const caret = makeCaret();
+      const variants = JSON.parse(chat.dataset.variants!) as { intro: string; blocks: { lead: string; text: string }[]; close: string }[];
+
+      // Elige una variante al azar (distinta de la última vista) y arma el mensaje.
+      const renderVariant = () => {
+        let i = Math.floor(Math.random() * variants.length);
+        try {
+          const last = Number(sessionStorage.getItem('chat:variant') ?? -1);
+          if (variants.length > 1 && i === last) i = (i + 1 + Math.floor(Math.random() * (variants.length - 1))) % variants.length;
+          sessionStorage.setItem('chat:variant', String(i));
+        } catch { /* sin storage */ }
+        const v = variants[i];
+        const p = (html?: (el: HTMLElement) => void) => { const el = document.createElement('p'); html?.(el); return el; };
+        const link = (href: string, label: string) => { const a = document.createElement('a'); a.className = 'link'; a.href = href; a.textContent = label; return a; };
+        const nodes: HTMLElement[] = [p((el) => (el.textContent = v.intro))];
+        v.blocks.forEach((b) => nodes.push(p((el) => { const st = document.createElement('strong'); st.textContent = b.lead; el.append(st, ' ' + b.text); })));
+        nodes.push(p((el) => v.close.split(/(\{cv\}|\{mail\})/).forEach((x) => {
+          if (x === '{cv}') el.append(link(chat.dataset.cvhref!, chat.dataset.cvlabel!));
+          else if (x === '{mail}') el.append(link('mailto:' + chat.dataset.mail, chat.dataset.mail!));
+          else el.append(x);
+        })));
+        body.replaceChildren(...nodes);
+      };
       const set = (s: string) => (chat.dataset.state = s);
       let state = 'idle';
       const go = (s: string) => { state = s; set(s); };
@@ -208,7 +227,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
         if (quick) { go('answering'); finish(); return; }
         // La tarjeta se estira hasta su altura final mientras el texto empieza a escribirse.
         let run!: ReturnType<typeof prepareTyping>;
-        grow(() => { go('answering'); run = prepareTyping(body, caret); }, 1300);
+        grow(() => { go('answering'); renderVariant(); run = prepareTyping(body, caret); }, 1300);
         chat.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         const ctl: TypeControl = { skip: false };
         const skip = () => (ctl.skip = true);

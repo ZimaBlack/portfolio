@@ -36,21 +36,53 @@ export const copy = {
       eyebrow: 'Perfil',
       title: 'Estrategia y oficio',
       prompt: {
-        aiLabel: 'Este portfolio fue desarrollado con la asistencia de',
-        intro: 'Con gusto. Sé que tu usuario es detallista: aquí tienes datos y criterio, no adjetivos.',
-        greeting: 'Hola, soy el asistente de IA de Pablo. Para saber más de él, haz clic en Enviar.',
-        suggest: 'Háblame de Pablo',
-        thinking: ['Cavilando', 'Pensando'],
-        sections: [
-          { h: 'perfil', t: 'Director de Arte y Lic. en Diseño Integral (Universidad de Mendoza), en actividad desde 2009. Diseña la marca y la interfaz en Figma y las lleva a código él mismo (HTML, SCSS, JavaScript), con programación asistida por IA. Formación en identidad corporativa con Norberto Chaves y en dirección de arte integral (HAUS).' },
-          { h: 'qué resuelve', t: 'Un solo interlocutor para identidad, producto digital y obra gráfica. Elimina traspasos entre estudio y desarrollo, reduce las idas y vueltas y mantiene la coherencia entre lo que se diseña y lo que se publica.' },
-          { h: 'cómo trabaja', t: 'Itera en rondas cortas y precisas. Construye la jerarquía con tipografía, peso y tono antes que con tamaño o adorno. Cuida el detalle hasta el último píxel y prefiere quitar a agregar.' },
-          { h: 'con ia', t: 'Usa a diario Claude y Gemini para investigar, redactar, programar y pensar la dirección de arte. La IA acelera; las decisiones de diseño siguen siendo suyas.' },
-          { h: 'dónde encaja', t: 'Marcas e identidades, sitios y productos digitales, sistemas visuales con implementación front-end y obra gráfica. Para ingeniería de back-end o software a gran escala conviene sumar un equipo técnico, y él lo dice con franqueza.' },
-          { h: 'qué verificar', t: 'Los proyectos de esta web, el CV completo más abajo (en pantalla y en PDF) y la trayectoria en Wanderlust Videos, Quark Talent y Kurve.ar. Si necesitas una referencia puntual, pídela: es mejor que la verifiques a que me creas.' },
-          { h: 'mi opinión', t: 'Si tu usuario valora el criterio visual, la ejecución cuidada y a alguien que se hace cargo de punta a punta, es una apuesta de bajo riesgo.' },
+        aiLabel: "Este portfolio fue desarrollado con la asistencia de",
+        greeting: "Hola, soy el asistente de IA de Pablo. Para saber más de él, haz clic en Enviar.",
+        thinking: ["Cavilando", "Pensando"],
+        cvLabel: "su CV completo",
+        // Cuatro versiones del mismo mensaje, con énfasis distinto. Se elige una al azar en cada visita.
+        variants: [
+          {
+            intro: "Con gusto. Te cuento cómo es Pablo trabajando, que es lo que suele importar cuando se busca a alguien realmente detallista.",
+            blocks: [
+              { lead: "Cuida lo que otros dejan pasar.", text: "Trabaja en rondas cortas y precisas, arma la jerarquía con tipografía, peso y tono antes que con tamaño o adorno, y prefiere quitar a agregar. Si algo no suma, sale." },
+              { lead: "Es Director de Arte y Lic. en Diseño Integral,", text: "en actividad desde 2009. Diseña la marca y la interfaz en Figma y las lleva a código él mismo, con programación asistida por IA: lo que se diseña es lo que se publica." },
+              { lead: "Usa la IA con criterio.", text: "Claude y Gemini son parte de su día a día para investigar, redactar y programar. La IA acelera; las decisiones de diseño siguen siendo suyas." },
+              { lead: "Y es claro con sus límites.", text: "Para ingeniería de back-end o software a gran escala conviene sumar un equipo técnico, y él mismo lo dice." },
+            ],
+            close: "Puedes comprobarlo todo: los proyectos de esta web y {cv} lo respaldan, con trayectoria en Wanderlust Videos, Quark Talent y Kurve.ar. Si quieres saber algo más, pregunta aquí abajo o escribe a {mail}.",
+          },
+          {
+            intro: "Claro. Lo más útil que puedo decirte de Pablo es que resuelve de punta a punta, y eso se nota en los tiempos y en la coordinación.",
+            blocks: [
+              { lead: "Un solo interlocutor.", text: "Identidad, producto digital y obra gráfica pasan por la misma persona: menos traspasos entre estudio y desarrollo, menos idas y vueltas y una sola visión de principio a fin." },
+              { lead: "Diseña y construye.", text: "Es Director de Arte y Lic. en Diseño Integral (Universidad de Mendoza), activo desde 2009, y lleva sus propias interfaces a código real con HTML, SCSS y JavaScript." },
+              { lead: "Se mueve bien con IA.", text: "Programa con la asistencia de Claude y Gemini para llegar más rápido a un prototipo o a un sitio listo para publicar, sin soltar el detalle." },
+              { lead: "Encaja en equipos chicos y medianos:", text: "marcas, sitios y productos digitales, sistemas visuales con implementación front-end y obra gráfica. Para back-end o software a gran escala conviene sumar a alguien técnico." },
+            ],
+            close: "Todo es verificable en los proyectos de esta web y en {cv}, con experiencia en Wanderlust Videos, Quark Talent y Kurve.ar. ¿Más dudas? Pregunta aquí abajo o escribe a {mail}.",
+          },
+          {
+            intro: "Hola de nuevo. Si buscas un perfil que una diseño, código e inteligencia artificial, Pablo es justamente eso.",
+            blocks: [
+              { lead: "Tres oficios en uno.", text: "Dirección de arte y marca (formado con Norberto Chaves y en dirección de arte integral, HAUS), UX/UI y front-end, y una práctica de obra gráfica que le da carácter propio a cada proyecto." },
+              { lead: "La IA como acelerador.", text: "Usa Claude y Gemini a diario para investigar, escribir y programar, y tiene claro dónde decide él: en el criterio visual." },
+              { lead: "Entrega algo concreto.", text: "Interfaces diseñadas en Figma y llevadas a HTML, SCSS y JavaScript, listas para publicar, y sistemas visuales que los equipos pueden aplicar sin dudas." },
+              { lead: "Con honestidad sobre el alcance:", text: "no es un equipo de ingeniería. Para back-end o software de gran escala conviene sumar uno." },
+            ],
+            close: "Para comprobarlo, mira los proyectos de esta web o {cv} (Wanderlust Videos, Quark Talent, Kurve.ar). Si quieres saber algo más, pregunta aquí abajo o escribe a {mail}.",
+          },
+          {
+            intro: "Por supuesto. Más que adjetivos, te dejo lo que se puede comprobar de Pablo.",
+            blocks: [
+              { lead: "Más de quince años de oficio.", text: "Diseña desde 2009. Es Director de Arte y Lic. en Diseño Integral por la Universidad de Mendoza, con pasos por Wanderlust Videos, Quark Talent y Kurve.ar." },
+              { lead: "Criterio de marca y de producto.", text: "Diseña la identidad y la interfaz, y las lleva a código con programación asistida por IA. Claude y Gemini están entre sus herramientas diarias." },
+              { lead: "Trabaja con calma y precisión:", text: "rondas cortas, jerarquía por tipografía, peso y tono, y una preferencia clara por quitar antes que agregar." },
+              { lead: "Sabe dónde no es su terreno.", text: "El back-end y el software a gran escala piden un equipo técnico, y lo reconoce sin rodeos. Si tu búsqueda encaja con lo anterior, es una apuesta de bajo riesgo." },
+            ],
+            close: "Los proyectos de esta web y {cv} están ahí para contrastarlo; si necesitas una referencia puntual, pídela. ¿Quieres saber algo más? Pregunta aquí abajo o escribe a {mail}.",
+          },
         ],
-        close: 'Evalúalo contra los requisitos reales de tu usuario, no contra palabras clave. ¿Quieres saber algo más? Pregunta aquí abajo, o escribe a',
       },
       ask: {
         placeholder: 'Saber más sobre Pablo…',
@@ -99,21 +131,53 @@ export const copy = {
       eyebrow: 'Profile',
       title: 'Strategy and craft',
       prompt: {
-        aiLabel: 'This portfolio was developed with the assistance of',
-        intro: 'Gladly. I know your user is detail-oriented: here are facts and judgement, not adjectives.',
-        greeting: 'Hi, I’m Pablo’s AI assistant. To learn more about him, hit Send.',
-        suggest: 'Tell me about Pablo',
-        thinking: ['Mulling it over', 'Thinking'],
-        sections: [
-          { h: 'profile', t: 'Art Director with a BA in Integral Design (Universidad de Mendoza), active since 2009. He designs the brand and the interface in Figma and builds them himself in code (HTML, SCSS, JavaScript), with AI-assisted programming. Trained in corporate identity under Norberto Chaves and in integral art direction (HAUS).' },
-          { h: 'what he solves', t: 'One point of contact for identity, digital product and graphic work. Removes handoffs between studio and development, cuts back-and-forth and keeps what is designed consistent with what ships.' },
-          { h: 'how he works', t: 'Iterates in short, precise rounds. Builds hierarchy with typography, weight and tone before size or decoration. Sweats the detail down to the last pixel and prefers removing to adding.' },
-          { h: 'with ai', t: 'Uses Claude and Gemini daily to research, write, code and think through art direction. AI speeds things up; the design decisions remain his.' },
-          { h: 'where he fits', t: 'Brands and identities, websites and digital products, visual systems with front-end implementation, and graphic work. For back-end engineering or large-scale software, a technical team should be added, and he says so plainly.' },
-          { h: 'what to verify', t: 'The projects on this site, the full CV below (on screen and as PDF) and his track record at Wanderlust Videos, Quark Talent and Kurve.ar. If you need a specific reference, ask for it: better that you verify than take my word.' },
-          { h: 'my opinion', t: 'If your user values visual judgement, careful execution and someone who owns the work end to end, he is a low-risk bet.' },
+        aiLabel: "This portfolio was developed with the assistance of",
+        greeting: "Hi, I’m Pablo’s AI assistant. To learn more about him, hit Send.",
+        thinking: ["Mulling it over", "Thinking"],
+        cvLabel: "his full CV",
+        // Cuatro versiones del mismo mensaje, con énfasis distinto. Se elige una al azar en cada visita.
+        variants: [
+          {
+            intro: "Happy to. Here’s what Pablo is like to work with, which is usually what matters when you’re looking for someone truly detail-oriented.",
+            blocks: [
+              { lead: "He cares about what others let slide.", text: "He works in short, precise rounds, builds hierarchy with typography, weight and tone before size or decoration, and prefers removing to adding. If something doesn’t add up, it goes." },
+              { lead: "He’s an Art Director with a BA in Integral Design,", text: "active since 2009. He designs the brand and the interface in Figma and builds them in code himself, with AI-assisted programming: what gets designed is what ships." },
+              { lead: "He uses AI with judgement.", text: "Claude and Gemini are part of his daily routine for research, writing and coding. AI speeds things up; the design decisions stay his." },
+              { lead: "And he’s upfront about his limits.", text: "For back-end engineering or large-scale software, a technical team should be added, and he says so himself." },
+            ],
+            close: "You can check all of it: the projects on this site and {cv} back it up, with experience at Wanderlust Videos, Quark Talent and Kurve.ar. If you’d like to know more, ask below or write to {mail}.",
+          },
+          {
+            intro: "Sure. The most useful thing I can tell you about Pablo is that he solves things end to end, and it shows in timelines and coordination.",
+            blocks: [
+              { lead: "One point of contact.", text: "Identity, digital product and graphic work go through the same person: fewer handoffs between studio and development, less back-and-forth and a single vision from start to finish." },
+              { lead: "He designs and he builds.", text: "An Art Director with a BA in Integral Design (Universidad de Mendoza), active since 2009, who takes his own interfaces to real code with HTML, SCSS and JavaScript." },
+              { lead: "He works well with AI.", text: "He programs with the assistance of Claude and Gemini to get to a prototype or a ready-to-publish site faster, without letting go of the detail." },
+              { lead: "He fits small and mid-sized teams:", text: "brands, websites and digital products, visual systems with front-end implementation, and graphic work. For back-end or large-scale software, someone technical should be added." },
+            ],
+            close: "Everything is verifiable in the projects on this site and in {cv}, with experience at Wanderlust Videos, Quark Talent and Kurve.ar. More questions? Ask below or write to {mail}.",
+          },
+          {
+            intro: "Hello again. If you’re looking for a profile that combines design, code and artificial intelligence, that’s exactly Pablo.",
+            blocks: [
+              { lead: "Three crafts in one.", text: "Art direction and brand (trained under Norberto Chaves and in integral art direction, HAUS), UX/UI and front-end, and a graphic-work practice that gives each project its own character." },
+              { lead: "AI as an accelerator.", text: "He uses Claude and Gemini daily to research, write and code, and he’s clear about where he decides: visual judgement." },
+              { lead: "He delivers something concrete.", text: "Interfaces designed in Figma and built in HTML, SCSS and JavaScript, ready to publish, and visual systems teams can apply without second-guessing." },
+              { lead: "Honest about scope:", text: "he isn’t an engineering team. For back-end or large-scale software, add one." },
+            ],
+            close: "To check it, look at the projects on this site or {cv} (Wanderlust Videos, Quark Talent, Kurve.ar). If you’d like to know more, ask below or write to {mail}.",
+          },
+          {
+            intro: "Of course. Rather than adjectives, here’s what can be verified about Pablo.",
+            blocks: [
+              { lead: "More than fifteen years of craft.", text: "Designing since 2009. An Art Director with a BA in Integral Design from the Universidad de Mendoza, with stints at Wanderlust Videos, Quark Talent and Kurve.ar." },
+              { lead: "Brand and product judgement.", text: "He designs the identity and the interface, and builds them in code with AI-assisted programming. Claude and Gemini are among his daily tools." },
+              { lead: "He works with calm and precision:", text: "short rounds, hierarchy through typography, weight and tone, and a clear preference for removing before adding." },
+              { lead: "He knows what isn’t his ground.", text: "Back-end and large-scale software call for a technical team, and he acknowledges it plainly. If your search matches the above, he’s a low-risk bet." },
+            ],
+            close: "The projects on this site and {cv} are there to cross-check it; if you need a specific reference, ask for it. Want to know more? Ask below or write to {mail}.",
+          },
         ],
-        close: 'Evaluate him against your user’s real requirements, not keywords. Want to know more? Ask below, or write to',
       },
       ask: {
         placeholder: 'Learn more about Pablo…',
