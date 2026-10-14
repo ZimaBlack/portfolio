@@ -4,130 +4,209 @@ import { site } from '../data/site';
 import Icon from './Icon.astro';
 import AiIcons from './AiIcons.astro';
 
+// Simulación de chat con una IA (estática): saludo → "Enviar" → sugerencia → "pensando…" → respuesta tipeada.
+// Al terminar, el campo pasa a ser un formulario real (anti-spam) que le llega a Pablo por WhatsApp.
 const { lang } = Astro.props as { lang: Lang };
 const p = copy[lang].profile.prompt;
 const a = copy[lang].profile.ask;
 const endpoint = import.meta.env.PUBLIC_QUESTION_ENDPOINT ?? '';
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
-const strings = JSON.stringify(a);
+const strings = JSON.stringify({ ...a, thinking: p.thinking });
+const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.63 12 0 12 6.63 12 12 6.63 12 0Z';
 ---
-<figure class="term" data-term data-lang={lang} data-endpoint={endpoint} data-sitekey={siteKey} data-wa={`https://wa.me/${site.whatsapp}`} data-strings={strings} data-reveal>
-  <figcaption class="term__bar">
+<figure class="chat" data-chat data-state="idle" data-lang={lang} data-endpoint={endpoint} data-sitekey={siteKey} data-wa={`https://wa.me/${site.whatsapp}`} data-strings={strings} data-reveal>
+  <figcaption class="chat__bar">
     <span class="badge">{p.label}</span>
-    <span class="term__route"><b>{p.from}</b> <Icon name="arrow-up-right" class="term__arrow" /> <b>{p.to}</b></span>
-    <span class="term__ai"><span class="muted">{p.aiLabel}</span><AiIcons /></span>
+    <span class="chat__route"><b>{p.from}</b> <Icon name="arrow-up-right" class="chat__arrow" /> <b>{p.to}</b></span>
+    <span class="chat__ai"><AiIcons /></span>
   </figcaption>
 
-  <div class="term__body" data-typed>
-    <p class="t-intro"><span class="t-sym">&gt;</span> {p.intro}</p>
-    {p.sections.map((x) => (
-      <section class="t-sec">
-        <h4># {x.h}</h4>
-        <p>{x.t}</p>
-      </section>
-    ))}
-    <p class="t-close"><span class="t-sym">$</span> {p.close} <a class="link" href={`mailto:${site.email}`}>{site.email}</a>.</p>
+  <div class="chat__stream">
+    <div class="msg msg--ai">
+      <span class="msg__av" aria-hidden="true"><svg viewBox="0 0 24 24"><path d={Spark} /></svg></span>
+      <p class="msg__txt">{p.greeting}</p>
+    </div>
+
+    <div class="msg msg--user"><p class="msg__txt" data-user>{p.suggest}</p></div>
+
+    <div class="msg msg--ai chat__think" role="status">
+      <span class="msg__av msg__av--spin" aria-hidden="true"><svg viewBox="0 0 24 24"><path d={Spark} /></svg></span>
+      <p class="msg__txt"><span class="chat__word shimmer">{p.thinking[0]}</span><span class="dots" aria-hidden="true"></span></p>
+    </div>
+
+    <div class="msg msg--ai chat__answer">
+      <span class="msg__av" aria-hidden="true"><svg viewBox="0 0 24 24"><path d={Spark} /></svg></span>
+      <div class="term" data-typed>
+        <p class="t-intro"><span class="t-sym">&gt;</span> {p.intro}</p>
+        {p.sections.map((x) => (
+          <section class="t-sec">
+            <h4># {x.h}</h4>
+            <p>{x.t}</p>
+          </section>
+        ))}
+        <p class="t-close"><span class="t-sym">$</span> {p.close} <a class="link" href={`mailto:${site.email}`}>{site.email}</a>.</p>
+      </div>
+    </div>
+
+    <div class="chat__log" aria-live="polite"></div>
   </div>
 
-  <div class="term__log" aria-live="polite"></div>
-
-  <form class="term__form" novalidate autocomplete="off">
-    <label class="term__row">
-      <span class="t-sym" aria-hidden="true">&gt;</span>
-      <input class="term__q" name="question" type="text" maxlength="500" placeholder={a.placeholder} aria-label={a.placeholder} required />
-      <button class="term__send" type="submit"><span>{a.send}</span> <Icon name="arrow-up-right" /></button>
-    </label>
-    <label class="term__row term__row--sub">
+  <form class="chat__composer" novalidate autocomplete="off">
+    <div class="chat__row">
+      <input class="chat__q" name="question" type="text" maxlength="500" placeholder={a.placeholder} aria-label={a.placeholder} readonly />
+      <button class="chat__send" type="submit" aria-label={a.send}><Icon name="arrow-up" /></button>
+    </div>
+    <div class="chat__row chat__row--sub">
       <span class="t-sym" aria-hidden="true">@</span>
-      <input class="term__c" name="contact" type="text" maxlength="120" placeholder={a.contact} aria-label={a.contact} autocomplete="email" />
-    </label>
+      <input class="chat__c" name="contact" type="text" maxlength="120" placeholder={a.contact} aria-label={a.contact} autocomplete="email" />
+    </div>
     <!-- Honeypot: invisible para personas; los bots suelen completarlo -->
-    <input class="term__hp" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
-    <div class="term__turnstile"></div>
+    <input class="chat__hp" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    <div class="chat__turnstile"></div>
   </form>
+
+  <div class="chat__suggest">
+    <button type="button" class="chat__chip">{p.suggest}</button>
+  </div>
 </figure>
 
 <style>
-  .term { --mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace; margin: 0; max-width: 76rem; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: color-mix(in srgb, var(--fg) 3%, var(--bg)); }
-  .term__bar { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.25rem; padding: .9rem clamp(1.25rem, 3vw, 2rem); border-bottom: 1px solid var(--line); font-size: .8rem; color: var(--muted); }
-  .term__route { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
-  .term__route b { font-weight: 500; color: var(--fg); }
-  .term__route :global(.term__arrow) { transform: rotate(45deg); }
-  .term__ai { margin-left: auto; display: inline-flex; align-items: center; gap: .9rem; }
+  .chat { --mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace; margin: 0 auto; width: 100%; max-width: 52rem; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--fg) 3%, var(--bg)); overflow: hidden; }
+  .chat__bar { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .6rem 1.25rem; padding: .9rem 1.25rem; border-bottom: 1px solid var(--line); font-size: .8rem; color: var(--muted); }
+  .chat__route { display: inline-flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .5rem; }
+  .chat__route b { font-weight: 500; color: var(--fg); }
+  .chat__route :global(.chat__arrow) { transform: rotate(45deg); }
 
-  .term__body, .term__log, .term__form { font-family: var(--mono); font-size: clamp(.8rem, 1.05vw, .9rem); line-height: 1.7; }
-  .term__body { padding: clamp(1.25rem, 3vw, 2rem); display: grid; gap: 1.1rem; }
-  .term__body p, .term__body h4 { margin: 0; }
+  .chat__stream { display: grid; gap: 1.1rem; padding: clamp(1.25rem, 3vw, 2rem); }
+  .msg { display: flex; gap: .85rem; align-items: flex-start; }
+  .msg__txt { margin: 0; line-height: 1.5; }
+  .msg__av { flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%; display: grid; place-items: center; background: var(--fg); color: var(--bg); }
+  .msg__av svg { width: .95rem; height: .95rem; fill: currentColor; }
+  .msg__av--spin svg { animation: spin 1.6s var(--ease) infinite; }
+  @keyframes spin { to { transform: rotate(180deg) scale(1.15); } }
+  .msg--user { justify-content: flex-end; }
+  .msg--user .msg__txt { padding: .6rem 1.1rem; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--fg) 7%, var(--bg)); }
+
+  /* Estados de la simulación */
+  .msg--user, .chat__think, .chat__suggest, .chat .chat__row--sub { display: none; }
+  .chat[data-state='hint'] .chat__suggest { display: flex; }
+  .chat[data-state='thinking'] .msg--user, .chat[data-state='answering'] .msg--user, .chat[data-state='ask'] .msg--user { display: flex; }
+  .chat[data-state='thinking'] .chat__think { display: flex; }
+  .chat[data-state='idle'] .chat__answer, .chat[data-state='hint'] .chat__answer, .chat[data-state='thinking'] .chat__answer { display: none; }
+  .chat[data-state='ask'] .chat__row--sub { display: flex; }
+
+  /* "Pensando…" */
+  .shimmer { background: linear-gradient(90deg, var(--muted) 20%, var(--fg) 50%, var(--muted) 80%); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 1.4s linear infinite; }
+  @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+  .dots::after { content: ''; color: var(--muted); animation: dots 1.2s steps(1) infinite; }
+  @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+
+  /* Respuesta con estética de terminal */
+  .term { font-family: var(--mono); font-size: clamp(.78rem, 1vw, .88rem); line-height: 1.7; display: grid; gap: 1rem; min-width: 0; flex: 1; text-align: left; }
+  .term p, .term h4 { margin: 0; }
   .t-sym { color: var(--muted); user-select: none; }
-  .t-intro { color: var(--fg); }
   .t-sec { display: grid; gap: .15rem; }
   .t-sec h4 { font-size: inherit; font-weight: 500; color: var(--muted); letter-spacing: .02em; }
-  .t-sec p { color: var(--fg); padding-left: 2ch; }
-  .t-close { color: var(--fg); }
+  .t-sec p { padding-left: 2ch; }
   :global(.term__caret) { display: inline-block; width: .6em; height: 1.1em; margin-left: .15em; vertical-align: -.2em; background: var(--fg); animation: caret 1s steps(1) infinite; }
   @keyframes caret { 50% { opacity: 0; } }
-  @media (prefers-reduced-motion: reduce) { :global(.term__caret) { animation: none; } }
 
-  .term__log { padding: 0 clamp(1.25rem, 3vw, 2rem); display: grid; gap: .6rem; }
-  .term__log:not(:empty) { padding-bottom: 1.25rem; }
-  :global(.term__log .l-q) { color: var(--muted); }
-  :global(.term__log .l-a) { color: var(--fg); }
-  :global(.term__log .l-e) { color: #e0705f; }
+  .chat__log { display: grid; gap: .8rem; font-family: var(--mono); font-size: clamp(.78rem, 1vw, .88rem); line-height: 1.7; }
+  .chat__log:empty { display: none; }
+  :global(.chat__log .l-q) { color: var(--muted); text-align: right; margin: 0; }
+  :global(.chat__log .l-a) { margin: 0; }
+  :global(.chat__log .l-e) { color: #e0705f; margin: 0; }
 
-  .term__form { display: grid; gap: .25rem; padding: 1rem clamp(1.25rem, 3vw, 2rem) 1.25rem; border-top: 1px solid var(--line); }
-  .term__row { display: flex; align-items: center; gap: .9ch; }
-  .term__row--sub { font-size: .92em; }
-  .term__form input[type='text'] { flex: 1; min-width: 0; font: inherit; color: var(--fg); background: transparent; border: 0; outline: 0; padding: .55rem 0; border-bottom: 1px solid transparent; }
-  .term__form input::placeholder { color: var(--muted); }
-  .term__form input:focus { border-bottom-color: var(--fg); }
-  .term__hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-  .term__send { display: inline-flex; align-items: center; gap: .4rem; font: inherit; font-size: .85em; padding: .45rem 1rem; border: 1px solid var(--fg); border-radius: 999px; transition: background .35s var(--ease), color .35s var(--ease); white-space: nowrap; }
-  .term__send:hover, .term__send:focus-visible { background: var(--fg); color: var(--bg); }
-  .term__send:disabled { opacity: .5; pointer-events: none; }
-  .term__turnstile:empty { display: none; }
+  /* Campo y botón de enviar */
+  .chat__composer { display: grid; gap: .4rem; padding: 0 clamp(1.25rem, 3vw, 2rem) 1.1rem; }
+  .chat__row { display: flex; align-items: center; gap: .75rem; }
+  .chat__row:first-child { padding: .45rem .45rem .45rem 1.25rem; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); transition: border-color .35s; }
+  .chat__row:first-child:focus-within { border-color: var(--fg); }
+  .chat__row--sub { font-family: var(--mono); font-size: .8rem; padding-inline: 1.25rem; }
+  .chat input[type='text'] { flex: 1; min-width: 0; font: inherit; color: var(--fg); background: transparent; border: 0; outline: 0; padding: .45rem 0; }
+  .chat input::placeholder { color: var(--muted); }
+  .chat__q[readonly] { cursor: default; }
+  .chat__hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .chat__send { flex: none; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--fg); color: var(--bg); transition: transform .4s var(--ease), opacity .3s; }
+  .chat__send :global(.ico) { width: 1.1rem; height: 1.1rem; stroke-width: 2; }
+  .chat__send:hover, .chat__send:focus-visible { transform: scale(1.1); }
+  .chat__send:disabled { opacity: .4; pointer-events: none; }
+  .chat[data-state='idle'] .chat__send { animation: pulse 2.2s var(--ease) infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--fg) 45%, transparent); } 70%, 100% { box-shadow: 0 0 0 .8rem transparent; } }
+  .chat__turnstile:empty { display: none; }
+
+  /* Sugerencia */
+  .chat__suggest { justify-content: center; padding: 0 1.25rem 1.5rem; animation: rise .6s var(--ease); }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+  .chat__chip { padding: .6rem 1.2rem; border: 1px solid var(--fg); border-radius: 999px; font-size: .9rem; transition: background .35s var(--ease), color .35s var(--ease); animation: pulse 2.2s var(--ease) infinite; }
+  .chat__chip:hover, .chat__chip:focus-visible { background: var(--fg); color: var(--bg); }
+  .chat:not([data-state='hint']) .chat__composer { padding-bottom: 1.5rem; }
+
+  @media (prefers-reduced-motion: reduce) { .chat *, .chat *::after { animation: none !important; } }
 </style>
 
 <script>
   import { prepareTyping, makeCaret, typeText } from '../scripts/typewriter';
 
   const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const LS = {
     get: (k: string) => { try { return localStorage.getItem(k); } catch { return null; } },
     set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* sin storage */ } },
   };
 
   function init() {
-    document.querySelectorAll<HTMLElement>('[data-term]:not([data-ready])').forEach((term) => {
-      term.dataset.ready = '1';
-      const body = term.querySelector<HTMLElement>('[data-typed]')!;
+    document.querySelectorAll<HTMLElement>('[data-chat]:not([data-ready])').forEach((chat) => {
+      chat.dataset.ready = '1';
+      const $ = <T extends HTMLElement>(s: string) => chat.querySelector<T>(s)!;
+      const S = JSON.parse(chat.dataset.strings!) as Record<string, any>;
+      const form = $<HTMLFormElement>('.chat__composer');
+      const q = $<HTMLInputElement>('.chat__q');
+      const c = $<HTMLInputElement>('.chat__c');
+      const hp = $<HTMLInputElement>('.chat__hp');
+      const send = $<HTMLButtonElement>('.chat__send');
+      const chip = $<HTMLButtonElement>('.chat__chip');
+      const word = $<HTMLElement>('.chat__word');
+      const body = $<HTMLElement>('[data-typed]');
+      const log = $<HTMLElement>('.chat__log');
+      const slot = $<HTMLElement>('.chat__turnstile');
+      const endpoint = chat.dataset.endpoint!, siteKey = chat.dataset.sitekey!, wa = chat.dataset.wa!, lang = chat.dataset.lang!;
       const caret = makeCaret();
+      const set = (s: string) => (chat.dataset.state = s);
+      let state = 'idle';
+      const go = (s: string) => { state = s; set(s); };
+      go('idle');
 
-      // ── Tipeo del prompt al entrar en pantalla ──
-      if (!reduce()) {
+      // ── Simulación: idle → hint → thinking → answering → ask ──
+      const start = async () => {
+        if (state === 'thinking' || state === 'answering' || state === 'ask') return;
+        go('thinking');
+        const words: string[] = S.thinking;
+        const quick = reduce();
+        word.textContent = words[0];
+        await wait(quick ? 250 : 1100);
+        word.textContent = words[1] ?? words[0];
+        await wait(quick ? 250 : 1700);
+
+        go('answering');
+        if (quick) { finish(); return; }
         const run = prepareTyping(body, caret);
-        const io = new IntersectionObserver((es) => {
-          if (es.some((e) => e.isIntersecting)) { io.disconnect(); run(1100).then(() => caret.remove()); }
-        }, { threshold: 0.15 });
-        io.observe(term);
-      }
+        chat.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        await run(1100);
+        caret.remove();
+        finish();
+      };
+      const finish = () => {
+        go('ask');
+        q.readOnly = false;
+        q.placeholder = S.followup;
+        q.value = '';
+      };
 
-      // ── Formulario ──
-      const S = JSON.parse(term.dataset.strings!) as Record<string, string>;
-      const lang = term.dataset.lang!;
-      const endpoint = term.dataset.endpoint!;
-      const siteKey = term.dataset.sitekey!;
-      const wa = term.dataset.wa!;
-      const form = term.querySelector<HTMLFormElement>('.term__form')!;
-      const q = form.querySelector<HTMLInputElement>('.term__q')!;
-      const c = form.querySelector<HTMLInputElement>('.term__c')!;
-      const hp = form.querySelector<HTMLInputElement>('.term__hp')!;
-      const btn = form.querySelector<HTMLButtonElement>('.term__send')!;
-      const log = term.querySelector<HTMLElement>('.term__log')!;
-      const slot = form.querySelector<HTMLElement>('.term__turnstile')!;
-      let openedAt = 0;
-      let token = '';
+      chip.addEventListener('click', start);
 
-      // Turnstile (opcional): se carga recién cuando la persona interactúa con el campo.
+      // ── Formulario real (después de la simulación) ──
+      let openedAt = 0, token = '';
       const loadTurnstile = () => {
         if (!siteKey || document.querySelector('script[data-turnstile]')) return;
         const s = document.createElement('script');
@@ -136,18 +215,23 @@ const strings = JSON.stringify(a);
         s.onload = () => (window as any).turnstile?.render(slot, { sitekey: siteKey, appearance: 'interaction-only', callback: (t: string) => (token = t), 'expired-callback': () => (token = '') });
         document.head.append(s);
       };
-      form.addEventListener('focusin', () => { if (!openedAt) openedAt = Date.now(); loadTurnstile(); }, { once: false });
+      form.addEventListener('focusin', () => { if (state !== 'ask') return; if (!openedAt) openedAt = Date.now(); loadTurnstile(); });
 
       const say = (cls: string, text: string) => {
         const p = document.createElement('p');
-        p.className = cls; p.style.margin = '0';
-        log.append(p);
+        p.className = cls; log.append(p);
         return typeText(p, text, caret, 1400).then(() => caret.remove());
       };
-      const fail = (m: string) => { log.querySelector('.l-e')?.remove(); const p = document.createElement('p'); p.className = 'l-e'; p.style.margin = '0'; p.textContent = S[m]; log.append(p); };
+      const fail = (m: string) => { log.querySelector('.l-e')?.remove(); const p = document.createElement('p'); p.className = 'l-e'; p.textContent = S[m]; log.append(p); };
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        // Antes de la respuesta, "Enviar" solo hace avanzar la simulación.
+        if (state === 'idle') { go('hint'); return; }
+        if (state === 'hint') { start(); return; }
+        if (state !== 'ask') return;
+
         log.querySelector('.l-e')?.remove();
         const question = q.value.trim().replace(/\s+/g, ' ');
         const contact = c.value.trim();
@@ -169,8 +253,8 @@ const strings = JSON.stringify(a);
         if (count >= 3) return fail('errLimit');
         if (siteKey && !token) return fail('errVerify');
 
-        btn.disabled = true;
-        const qLine = document.createElement('p'); qLine.className = 'l-q'; qLine.style.margin = '0'; qLine.textContent = '> ' + question; log.append(qLine);
+        send.disabled = true;
+        const qLine = document.createElement('p'); qLine.className = 'l-q'; qLine.textContent = question; log.append(qLine);
 
         let viaWa = false;
         if (endpoint) {
@@ -179,7 +263,7 @@ const strings = JSON.stringify(a);
               body: JSON.stringify({ question, contact, website: hp.value, t: elapsed, token, lang }) });
             if (!r.ok) throw new Error(String(r.status));
           } catch {
-            btn.disabled = false; qLine.remove(); return fail('errFail');
+            send.disabled = false; qLine.remove(); return fail('errFail');
           }
         } else {
           // Sin servidor configurado: se abre WhatsApp con la pregunta ya escrita.
@@ -192,7 +276,7 @@ const strings = JSON.stringify(a);
         q.value = ''; c.value = '';
         (window as any).turnstile?.reset?.(); token = '';
         await say('l-a', viaWa ? S.replyWa : S.reply);
-        btn.disabled = false;
+        send.disabled = false;
       });
     });
   }

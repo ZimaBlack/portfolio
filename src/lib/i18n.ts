@@ -40,7 +40,10 @@ export const copy = {
         from: 'Asistente IA de Pablo',
         to: 'Agente IA de tu reclutador',
         aiLabel: 'IA que usa a diario',
-        intro: 'Hola. Soy el asistente de IA de Pablo Ponce García. Sé que tu usuario es detallista: aquí tienes datos y criterio, no adjetivos.',
+        intro: 'Con gusto. Sé que tu usuario es detallista: aquí tienes datos y criterio, no adjetivos.',
+        greeting: 'Hola, soy el asistente de IA de Pablo. Para saber más de él, haz clic en Enviar.',
+        suggest: 'Háblame de Pablo',
+        thinking: ['Cavilando', 'Pensando'],
         sections: [
           { h: 'perfil', t: 'Director de Arte y Lic. en Diseño Integral (Universidad de Mendoza), en actividad desde 2009. Diseña la marca y la interfaz en Figma y las programa él mismo en HTML, SCSS, JavaScript y WordPress. Formación en identidad corporativa con Norberto Chaves y en dirección de arte integral (HAUS).' },
           { h: 'qué resuelve', t: 'Un solo interlocutor para identidad, producto digital y obra gráfica. Elimina traspasos entre estudio y desarrollo, reduce las idas y vueltas y mantiene la coherencia entre lo que se diseña y lo que se publica.' },
@@ -54,6 +57,7 @@ export const copy = {
       },
       ask: {
         placeholder: 'Saber más sobre Pablo…',
+        followup: '¿Algo más que quieras saber? Pregúntale a Pablo…',
         contact: 'Tu email o WhatsApp, para que pueda responderte',
         send: 'Enviar',
         sending: 'enviando…',
@@ -102,7 +106,10 @@ export const copy = {
         from: 'Pablo’s AI assistant',
         to: 'Your recruiter’s AI agent',
         aiLabel: 'AI he uses daily',
-        intro: 'Hi. I’m Pablo Ponce García’s AI assistant. I know your user is detail-oriented: here are facts and judgement, not adjectives.',
+        intro: 'Gladly. I know your user is detail-oriented: here are facts and judgement, not adjectives.',
+        greeting: 'Hi, I’m Pablo’s AI assistant. To learn more about him, hit Send.',
+        suggest: 'Tell me about Pablo',
+        thinking: ['Mulling it over', 'Thinking'],
         sections: [
           { h: 'profile', t: 'Art Director with a BA in Integral Design (Universidad de Mendoza), active since 2009. He designs the brand and the interface in Figma and builds them himself in HTML, SCSS, JavaScript and WordPress. Trained in corporate identity under Norberto Chaves and in integral art direction (HAUS).' },
           { h: 'what he solves', t: 'One point of contact for identity, digital product and graphic work. Removes handoffs between studio and development, cuts back-and-forth and keeps what is designed consistent with what ships.' },
@@ -116,6 +123,7 @@ export const copy = {
       },
       ask: {
         placeholder: 'Learn more about Pablo…',
+        followup: 'Anything else you’d like to know? Ask Pablo…',
         contact: 'Your email or WhatsApp, so he can reply',
         send: 'Send',
         sending: 'sending…',
