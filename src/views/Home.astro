@@ -16,20 +16,12 @@ const alt = lang === 'es' ? 'en' : 'es';
 <Base lang={lang} section="home" altHref={paths.home(alt)} esHref={paths.home('es')} enHref={paths.home('en')}>
   <section class="hero">
     <div class="wrap hero__in">
-      <p class="eyebrow" data-hero>{site.location}</p>
-      <h1 class="hero__title" data-hero-title>
-        <span class="display hero__name">{cv.name}</span>
-        <span class="hero__role">{c.role}</span>
-      </h1>
+      <h1 class="hero__line hero__name" data-hero>{cv.name}</h1>
+      <p class="hero__line hero__role" data-hero>{c.role}</p>
+      <p class="hero__line hero__loc" data-hero>{site.location}</p>
       <a class="hero__scroll" href="#trabajos" data-hero aria-label={c.featured.title}>
         <span>{c.hero.cta}</span><Icon name="arrow-up-right" class="rot" />
       </a>
-    </div>
-  </section>
-
-  <section class="section marquee-sec" aria-hidden="true">
-    <div class="marquee" data-marquee>
-      {c.marquee.map((w, i) => <><span class:list={{ 'serif-i': i % 2 === 1 }}>{w}</span><i>—</i></>)}
     </div>
   </section>
 
@@ -70,17 +62,18 @@ const alt = lang === 'es' ? 'en' : 'es';
 
 <style>
   .hero { min-height: 100svh; display: flex; align-items: flex-end; padding-block: 7rem 3rem; }
-  .hero__in { display: grid; gap: clamp(1.5rem, 4vw, 3rem); }
-  .hero__title { margin: 0; display: grid; gap: clamp(.75rem, 1.5vw, 1.5rem); font-weight: 300; }
-  .hero__name { display: block; font-size: clamp(3rem, 10.5vw, 11rem); }
-  .hero__role { display: block; font-size: clamp(1.1rem, 2.4vw, 2.25rem); letter-spacing: -.01em; color: var(--muted); line-height: 1.2; }
+  .hero__in { display: grid; align-content: end; }
+  /* Misma medida para los tres textos; la jerarquía sale del peso y del blanco/gris */
+  .hero__in { gap: .35rem; }
+  .hero__line { margin: 0; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; line-height: 1.6; }
+  .hero__name { font-weight: 700; color: var(--fg); }
+  .hero__role { font-weight: 400; color: color-mix(in srgb, var(--fg) 72%, var(--bg)); }
+  .hero__loc { font-weight: 400; color: var(--muted); }
+  .hero__scroll { margin-top: 1.5rem; }
   .hero__scroll { display: inline-flex; align-items: center; gap: .5rem; font-size: .85rem; }
   .hero__scroll :global(.rot) { transform: rotate(90deg); animation: nudge 2.2s var(--ease) infinite; }
   @keyframes nudge { 50% { transform: rotate(90deg) translate(3px, -3px); } }
 
-  .marquee-sec { padding-block: 2rem; overflow: hidden; border-block: 1px solid var(--line); }
-  .marquee { display: flex; gap: 2.5rem; white-space: nowrap; font-family: var(--serif); font-weight: 300; font-size: clamp(3rem, 8vw, 8rem); line-height: 1; width: max-content; padding-left: var(--gutter); }
-  .marquee i { color: var(--muted); font-style: normal; }
 
   .head { margin-bottom: clamp(3rem, 7vw, 7rem); display: grid; gap: 1rem; }
   .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: clamp(3rem, 7vw, 7rem) var(--gutter); }

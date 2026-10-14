@@ -140,12 +140,6 @@ export function initMotion() {
         scrollTrigger: { trigger: l, start: 'top 92%', once: true } });
     });
 
-    // Marquee horizontal ligado al scroll
-    gsap.utils.toArray<HTMLElement>('[data-marquee]').forEach((m) => {
-      gsap.to(m, { xPercent: -18, ease: 'none',
-        scrollTrigger: { trigger: m, start: 'top bottom', end: 'bottom top', scrub: 0.6 } });
-    });
-
     initHeader();
   });
 
