@@ -3,6 +3,7 @@ title: "Pirulo Coleccionables"
 kind: design
 discipline: { es: "Rebrand", en: "Rebrand" }
 role: { es: "Rediseño de marca", en: "Brand redesign" }
+badge: "pre-ia"
 summary:
   es: "[Breve descripción del impacto del proyecto]"
   en: "[Short description of the project's impact]"

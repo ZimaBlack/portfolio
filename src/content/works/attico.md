@@ -3,6 +3,7 @@ title: "Attico"
 kind: design
 discipline: { es: "Editorial", en: "Editorial" }
 role: { es: "Diseño de marca y producto", en: "Brand and product design" }
+badge: "pre-ia"
 summary:
   es: "[Breve descripción del impacto del proyecto]"
   en: "[Short description of the project's impact]"

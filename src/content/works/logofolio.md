@@ -3,6 +3,7 @@ title: "LogoFolio"
 kind: design
 discipline: { es: "Branding", en: "Branding" }
 role: { es: "Identidad visual", en: "Visual identity" }
+badge: "pre-ia"
 summary:
   es: "[Breve descripción del impacto del proyecto]"
   en: "[Short description of the project's impact]"
