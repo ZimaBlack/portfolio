@@ -6,7 +6,8 @@ const { lang } = Astro.props as { lang: Lang };
 const c = copy[lang];
 ---
 <footer class="footer section" id="contacto">
-  <div class="wrap">
+  <img class="footer__photo" src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/portrait.png`} alt="" aria-hidden="true" width="1200" height="983" loading="lazy" decoding="async" />
+  <div class="wrap footer__content">
     <p class="eyebrow" data-reveal>{c.footer.eyebrow}</p>
     <h2 class="display" data-split-scroll>{c.footer.title}</h2>
     <div class="footer__row" data-reveal>
@@ -22,7 +23,12 @@ const c = copy[lang];
 </footer>
 
 <style>
-  .footer { border-top: 1px solid var(--line); }
+  .footer { border-top: 1px solid var(--line); position: relative; overflow: hidden; isolation: isolate; }
+  /* Retrato a la derecha, detrás del contenido, al 80% de opacidad; el borde izquierdo se desvanece */
+  .footer__photo { position: absolute; z-index: -1; right: 0; bottom: 0; height: 100%; width: auto; max-width: 75%; object-fit: contain; object-position: right bottom; opacity: .8; pointer-events: none; user-select: none;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 28%); mask-image: linear-gradient(to right, transparent 0, #000 28%); }
+  .footer__content { position: relative; z-index: 1; }
+  @media (max-width: 760px) { .footer { padding-bottom: 17rem; } .footer__photo { height: 20rem; max-width: 100%; } }
   .footer .display { margin: 1.5rem 0 2.5rem; }
   .footer__row { display: flex; flex-wrap: wrap; gap: .75rem; }
   .footer__base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-top: clamp(5rem, 10vw, 9rem); font-size: .85rem; }
