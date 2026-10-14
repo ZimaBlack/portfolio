@@ -24,8 +24,8 @@ const c = copy[lang];
 
 <style>
   .footer { position: relative; overflow: hidden; isolation: isolate; background: var(--bg); /* base sobre la que se funde la foto */ }
-  /* Retrato a la derecha, detrás del contenido, al 80% de opacidad; el borde izquierdo se desvanece */
-  .footer__photo { position: absolute; z-index: -1; right: 0; bottom: 0; height: 100%; width: auto; max-width: 75%; object-fit: contain; object-position: right bottom; opacity: .8; mix-blend-mode: screen; /* fusión: el negro de la foto desaparece contra el fondo y las luces se suman */ pointer-events: none; user-select: none;
+  /* Retrato a la derecha, detrás del contenido, al 40% de opacidad; el borde izquierdo se desvanece */
+  .footer__photo { position: absolute; z-index: -1; right: 0; bottom: 0; height: 100%; width: auto; max-width: 75%; object-fit: contain; object-position: right bottom; opacity: .4; mix-blend-mode: screen; /* fusión: el negro de la foto desaparece contra el fondo y las luces se suman */ pointer-events: none; user-select: none;
     /* bordes que se desvanecen: izquierdo y superior, para que el recorte del encuadre no se note */
     -webkit-mask-image: linear-gradient(to right, transparent 0, #000 30%), linear-gradient(to bottom, transparent 0, #000 16%); -webkit-mask-composite: source-in;
     mask-image: linear-gradient(to right, transparent 0, #000 30%), linear-gradient(to bottom, transparent 0, #000 16%); mask-composite: intersect; }
