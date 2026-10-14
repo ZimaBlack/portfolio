@@ -17,9 +17,8 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
 ---
 <figure class="chat" data-chat data-state="idle" data-lang={lang} data-endpoint={endpoint} data-sitekey={siteKey} data-wa={`https://wa.me/${site.whatsapp}`} data-strings={strings} data-reveal>
   <figcaption class="chat__bar">
-    <span class="badge">{p.label}</span>
-    <span class="chat__route"><b>{p.from}</b> <Icon name="arrow-up-right" class="chat__arrow" /> <b>{p.to}</b></span>
-    <span class="chat__ai"><AiIcons /></span>
+    <span class="chat__credit">{p.aiLabel}</span>
+    <AiIcons />
   </figcaption>
 
   <div class="chat__stream">
@@ -71,9 +70,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
 <style>
   .chat { --mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace; margin: 0 auto; width: 100%; max-width: 52rem; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--fg) 3%, var(--bg)); overflow: hidden; }
   .chat__bar { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .6rem 1.25rem; padding: .9rem 1.25rem; border-bottom: 1px solid var(--line); font-size: .8rem; color: var(--muted); }
-  .chat__route { display: inline-flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .5rem; }
-  .chat__route b { font-weight: 500; color: var(--fg); }
-  .chat__route :global(.chat__arrow) { transform: rotate(45deg); }
+  .chat__credit { font-size: .8rem; }
 
   .chat__stream { display: grid; gap: 1.1rem; padding: clamp(1.25rem, 3vw, 2rem); }
   .msg { display: flex; gap: .85rem; align-items: flex-start; }

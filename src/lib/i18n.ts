@@ -36,10 +36,7 @@ export const copy = {
       eyebrow: 'Perfil',
       title: 'Estrategia y oficio, en la misma mesa.',
       prompt: {
-        label: 'Prompt',
-        from: 'Asistente IA de Pablo',
-        to: 'Agente IA de tu reclutador',
-        aiLabel: 'IA que usa a diario',
+        aiLabel: 'Esto fue desarrollado con la asistencia de',
         intro: 'Con gusto. Sé que tu usuario es detallista: aquí tienes datos y criterio, no adjetivos.',
         greeting: 'Hola, soy el asistente de IA de Pablo. Para saber más de él, haz clic en Enviar.',
         suggest: 'Háblame de Pablo',
@@ -102,10 +99,7 @@ export const copy = {
       eyebrow: 'Profile',
       title: 'Strategy and craft, at the same table.',
       prompt: {
-        label: 'Prompt',
-        from: 'Pablo’s AI assistant',
-        to: 'Your recruiter’s AI agent',
-        aiLabel: 'AI he uses daily',
+        aiLabel: 'This was developed with the assistance of',
         intro: 'Gladly. I know your user is detail-oriented: here are facts and judgement, not adjectives.',
         greeting: 'Hi, I’m Pablo’s AI assistant. To learn more about him, hit Send.',
         suggest: 'Tell me about Pablo',
