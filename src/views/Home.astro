@@ -91,4 +91,10 @@ const alt = lang === 'es' ? 'en' : 'es';
   .profile { display: grid; gap: clamp(2.5rem, 5vw, 4.5rem); }
   .profile__head { display: grid; gap: 1rem; }
 
+
+  .profile .disc { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem var(--gutter); }
+  .disc li { display: grid; gap: .75rem; align-content: start; }
+  .disc p { margin: 0; max-width: 36ch; }
+  .disc hr { border: 0; height: 1px; background: var(--line); margin: 0 0 1.25rem; width: 100%; }
+  @media (max-width: 860px) { .profile .disc { grid-template-columns: 1fr; } }
 </style>

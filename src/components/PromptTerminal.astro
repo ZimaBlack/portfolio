@@ -44,7 +44,6 @@ const strings = JSON.stringify(a);
     <!-- Honeypot: invisible para personas; los bots suelen completarlo -->
     <input class="term__hp" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
     <div class="term__turnstile"></div>
-    <p class="term__note">{a.note}</p>
   </form>
 </figure>
 
@@ -85,7 +84,6 @@ const strings = JSON.stringify(a);
   .term__send { display: inline-flex; align-items: center; gap: .4rem; font: inherit; font-size: .85em; padding: .45rem 1rem; border: 1px solid var(--fg); border-radius: 999px; transition: background .35s var(--ease), color .35s var(--ease); white-space: nowrap; }
   .term__send:hover, .term__send:focus-visible { background: var(--fg); color: var(--bg); }
   .term__send:disabled { opacity: .5; pointer-events: none; }
-  .term__note { margin: .35rem 0 0; font-size: .78em; color: var(--muted); }
   .term__turnstile:empty { display: none; }
 </style>
 

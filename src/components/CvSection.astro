@@ -4,6 +4,7 @@ import { copy, loc, type Lang } from '../lib/i18n';
 import { site, waLink } from '../data/site';
 import Icon from './Icon.astro';
 import SocialIcons from './SocialIcons.astro';
+import CvList from './CvList.astro';
 
 const { lang } = Astro.props as { lang: Lang };
 const c = copy[lang].cvSection;
@@ -106,7 +107,7 @@ const rows = (items: Item[]) => items;
     </section>
     <section class="drow" data-reveal>
       <h4>{c.professional}</h4>
-      <ul class="tl">{cv.professional.map((i) => <li class:list={{ strong: i.strong }}><span class="tl__p">{loc(i.p, lang)}</span><span class="tl__t">{loc(i.t, lang)}{i.o && <em>{loc(i.o, lang)}</em>}</span></li>)}</ul>
+      <CvList items={cv.professional} lang={lang} limit={5} more={c.more} less={c.less} />
     </section>
     <section class="drow" data-reveal>
       <h4>{c.higherEd}</h4>
@@ -119,7 +120,7 @@ const rows = (items: Item[]) => items;
     </section>
     <section class="drow" data-reveal>
       <h4>{c.courses}</h4>
-      <ul class="tl">{cv.courses.map((i) => <li class:list={{ strong: i.strong }}><span class="tl__p">{loc(i.p, lang)}</span><span class="tl__t">{loc(i.t, lang)}{i.o && <em>{loc(i.o, lang)}</em>}</span></li>)}</ul>
+      <CvList items={cv.courses} lang={lang} limit={5} more={c.more} less={c.less} />
     </section>
   </div>
 </section>
