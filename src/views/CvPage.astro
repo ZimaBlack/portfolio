@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import CvSection from '../components/CvSection.astro';
+import { copy, paths, type Lang } from '../lib/i18n';
+import { cv } from '../data/cv';
+
+const { lang } = Astro.props as { lang: Lang };
+const c = copy[lang];
+const alt = lang === 'es' ? 'en' : 'es';
+---
+<Base lang={lang} section="cv" title={c.cvSection.title} description={`${cv.name} — ${c.role}`}
+  altHref={paths.cv(alt)} esHref={paths.cv('es')} enHref={paths.cv('en')}>
+  <CvSection lang={lang} />
+</Base>

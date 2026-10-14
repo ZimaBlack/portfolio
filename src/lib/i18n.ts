@@ -14,7 +14,7 @@ export const paths = {
   works: (l: Lang) => withBase(`${l === 'es' ? '' : '/en'}/${seg[l]}/`),
   work: (l: Lang, id: string) => withBase(`${l === 'es' ? '' : '/en'}/${seg[l]}/${id}/`),
   contact: (l: Lang) => paths.home(l) + '#contacto',
-  cv: (l: Lang) => paths.home(l) + '#cv',
+  cv: (l: Lang) => withBase(`${l === 'es' ? '' : '/en'}/cv/`),
 };
 
 export const copy = {
