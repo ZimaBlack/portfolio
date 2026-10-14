@@ -42,7 +42,7 @@ export const copy = {
         suggest: 'Háblame de Pablo',
         thinking: ['Cavilando', 'Pensando'],
         sections: [
-          { h: 'perfil', t: 'Director de Arte y Lic. en Diseño Integral (Universidad de Mendoza), en actividad desde 2009. Diseña la marca y la interfaz en Figma y las programa él mismo en HTML, SCSS, JavaScript y WordPress. Formación en identidad corporativa con Norberto Chaves y en dirección de arte integral (HAUS).' },
+          { h: 'perfil', t: 'Director de Arte y Lic. en Diseño Integral (Universidad de Mendoza), en actividad desde 2009. Diseña la marca y la interfaz en Figma y las lleva a código él mismo (HTML, SCSS, JavaScript), con programación asistida por IA. Formación en identidad corporativa con Norberto Chaves y en dirección de arte integral (HAUS).' },
           { h: 'qué resuelve', t: 'Un solo interlocutor para identidad, producto digital y obra gráfica. Elimina traspasos entre estudio y desarrollo, reduce las idas y vueltas y mantiene la coherencia entre lo que se diseña y lo que se publica.' },
           { h: 'cómo trabaja', t: 'Itera en rondas cortas y precisas. Construye la jerarquía con tipografía, peso y tono antes que con tamaño o adorno. Cuida el detalle hasta el último píxel y prefiere quitar a agregar.' },
           { h: 'con ia', t: 'Usa a diario Claude y Gemini para investigar, redactar, programar y pensar la dirección de arte. La IA acelera; las decisiones de diseño siguen siendo suyas.' },
@@ -69,9 +69,9 @@ export const copy = {
         errFail: 'error: no se pudo enviar. Escribe directamente por WhatsApp.',
       },
       items: [
-        { n: '01', title: 'Dirección de Arte & Marca', text: 'Identidad, sistemas visuales y concepto. Formación en Identidad Corporativa con Norberto Chaves y Dirección de Arte Integral (HAUS).' },
-        { n: '02', title: 'UX / UI & Front-End', text: 'Diseño de experiencias digitales en Figma y desarrollo con HTML, SCSS, JavaScript y WordPress desde 2013.' },
-        { n: '03', title: 'Artwork — Obra gráfica', text: 'Ilustración, lettering, serigrafía, encuadernación artesanal y fotografía: una práctica de taller que afina el criterio visual de todo lo demás.' },
+        { n: '01', title: 'Dirección de Arte & Marca', text: 'Identidades y sistemas visuales listos para producto, web y redes: concepto, criterio estratégico y lineamientos que los equipos pueden aplicar. Formación en identidad corporativa con Norberto Chaves y en dirección de arte integral (HAUS).' },
+        { n: '02', title: 'UX / UI, Front-End y Programación asistida por IA', text: 'Interfaces diseñadas en Figma y llevadas a código real (HTML, SCSS y JavaScript), con IA como acelerador. Prototipos y sitios listos para publicar en menos tiempo, sin perder el detalle.' },
+        { n: '03', title: 'Artwork — Obra gráfica', text: 'Ilustración, lettering, serigrafía, encuadernación artesanal y fotografía: un oficio de taller que da carácter propio a cada proyecto y lo diferencia en un mercado saturado de piezas genéricas.' },
       ],
     },
     cvSection: { eyebrow: 'Curriculum vitae', title: 'Currículum', download: 'Descargar CV en PDF', follow: 'Redes', contact: 'Contacto', languages: 'Idiomas', education: 'Educación superior', software: 'Conocimientos y software', soft: 'Soft skills', relevantExp: 'Experiencia laboral relevante', relevantSem: 'Seminarios y conocimientos relevantes', detail: 'Detalle', current: 'Desarrollo laboral actual', professional: 'Experiencia profesional', higherEd: 'Educación superior', courses: 'Seminarios y cursos', level: 'nivel', more: 'Ver más', less: 'Ver menos' },
@@ -105,7 +105,7 @@ export const copy = {
         suggest: 'Tell me about Pablo',
         thinking: ['Mulling it over', 'Thinking'],
         sections: [
-          { h: 'profile', t: 'Art Director with a BA in Integral Design (Universidad de Mendoza), active since 2009. He designs the brand and the interface in Figma and builds them himself in HTML, SCSS, JavaScript and WordPress. Trained in corporate identity under Norberto Chaves and in integral art direction (HAUS).' },
+          { h: 'profile', t: 'Art Director with a BA in Integral Design (Universidad de Mendoza), active since 2009. He designs the brand and the interface in Figma and builds them himself in code (HTML, SCSS, JavaScript), with AI-assisted programming. Trained in corporate identity under Norberto Chaves and in integral art direction (HAUS).' },
           { h: 'what he solves', t: 'One point of contact for identity, digital product and graphic work. Removes handoffs between studio and development, cuts back-and-forth and keeps what is designed consistent with what ships.' },
           { h: 'how he works', t: 'Iterates in short, precise rounds. Builds hierarchy with typography, weight and tone before size or decoration. Sweats the detail down to the last pixel and prefers removing to adding.' },
           { h: 'with ai', t: 'Uses Claude and Gemini daily to research, write, code and think through art direction. AI speeds things up; the design decisions remain his.' },
@@ -132,9 +132,9 @@ export const copy = {
         errFail: 'error: could not send. Please write directly via WhatsApp.',
       },
       items: [
-        { n: '01', title: 'Art Direction & Brand', text: 'Identity, visual systems and concept. Trained in Corporate Identity with Norberto Chaves and in Integral Art Direction (HAUS).' },
-        { n: '02', title: 'UX / UI & Front-End', text: 'Digital experience design in Figma and development with HTML, SCSS, JavaScript and WordPress since 2013.' },
-        { n: '03', title: 'Artwork — Graphic work', text: 'Illustration, lettering, screen printing, handmade bookbinding and photography: a hands-on studio practice that sharpens the visual judgement behind everything else.' },
+        { n: '01', title: 'Art Direction & Brand', text: 'Identities and visual systems ready for product, web and social: concept, strategic judgement and guidelines teams can actually apply. Trained in corporate identity under Norberto Chaves and in integral art direction (HAUS).' },
+        { n: '02', title: 'UX / UI, Front-End & AI-Assisted Programming', text: 'Interfaces designed in Figma and built as real code (HTML, SCSS and JavaScript), with AI as an accelerator. Prototypes and sites ready to ship in less time, without losing the detail.' },
+        { n: '03', title: 'Artwork — Graphic work', text: 'Illustration, lettering, screen printing, handmade bookbinding and photography: a hands-on craft that gives each project its own character and sets it apart in a market flooded with generic work.' },
       ],
     },
     cvSection: { eyebrow: 'Curriculum vitae', title: 'Résumé', download: 'Download CV (PDF)', follow: 'Social', contact: 'Contact', languages: 'Languages', education: 'Higher education', software: 'Skills & software', soft: 'Soft skills', relevantExp: 'Relevant work experience', relevantSem: 'Relevant seminars & knowledge', detail: 'Full detail', current: 'Current work', professional: 'Professional experience', higherEd: 'Higher education', courses: 'Seminars & courses', level: 'level', more: 'Show more', less: 'Show less' },
