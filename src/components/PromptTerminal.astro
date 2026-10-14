@@ -84,7 +84,8 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
   .chat:not([data-state='idle']) .chat__stream { transition: none; }
   .msg { display: flex; gap: .85rem; align-items: flex-start; }
   .chat { font-size: clamp(.98rem, 1.25vw, 1.08rem); }
-  .msg__txt { margin: 0; line-height: 1.5; }
+  .msg__txt { margin: 0; line-height: 1.5; padding-top: .2rem; }
+  .term { padding-top: .2rem; }
   .msg__av { flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%; display: grid; place-items: center; background: var(--fg); color: var(--bg); }
   .msg__av svg { width: .95rem; height: .95rem; fill: currentColor; }
   .msg__av--spin svg { animation: spin 1.6s var(--ease) infinite; }
@@ -113,8 +114,9 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
   /* Respuesta: misma tipografía que el resto del chat, con el arranque de cada párrafo en peso medio */
   .term { font-family: var(--chat-font); font-size: inherit; line-height: 1.55; display: grid; align-content: start; gap: .85rem; min-width: 0; flex: 1; text-align: left; }
   .t-sym { color: var(--muted); user-select: none; }
-  .term p { margin: 0; color: color-mix(in srgb, var(--fg) 88%, var(--bg)); }
-  .term strong { font-weight: 500; color: var(--fg); }
+  .term :global(p) { margin: 0; color: color-mix(in srgb, var(--fg) 88%, var(--bg)); }
+  .term :global(strong) { font-weight: 500; color: var(--fg); }
+  .term :global(a) { color: var(--fg); }
   :global(.term__caret) { display: inline-block; width: .6em; height: 1.1em; margin-left: .15em; vertical-align: -.2em; background: var(--fg); animation: caret 1s steps(1) infinite; }
   @keyframes caret { 50% { opacity: 0; } }
 
@@ -235,12 +237,33 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
         chat.style.height = `${chat.getBoundingClientRect().height}px`;
         void chat.offsetHeight;
         chat.classList.add('is-growing');
-        const ro = new ResizeObserver(() => { chat.style.height = `${inner.offsetHeight + 2}px`; });
+        // Seguimiento del scroll: mantiene a la vista la línea que se está escribiendo (hasta que la persona scrollee).
+        let manual = false;
+        const stop = () => (manual = true);
+        ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach((ev) => addEventListener(ev, stop, { once: true, passive: true }));
+        let target = scrollY;
+        let raf = 0;
+        let lastH = 0;
+        let running = true;
+        // Un solo ciclo por fotograma: (1) la altura de la tarjeta sigue al contenido, (2) se calcula
+        // si la línea que se escribe queda fuera de pantalla y (3) el scroll se acerca suavemente.
+        const loop = () => {
+          if (!running) return;
+          const h = inner.offsetHeight + 2;
+          if (h !== lastH) { chat.style.height = `${h}px`; lastH = h; }
+          if (!manual) {
+            const bottom = caret.getBoundingClientRect().bottom;
+            const limit = innerHeight - 150;
+            if (bottom > limit) target = Math.max(target, scrollY + (bottom - limit));
+            const d = target - scrollY;
+            if (Math.abs(d) > 0.5) scrollTo(0, scrollY + d * 0.14);
+          }
+          raf = requestAnimationFrame(loop);
+        };
         go('answering');
         renderVariant();
         const run = prepareTyping(body, caret);
-        ro.observe(inner);
-        chat.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        raf = requestAnimationFrame(loop);
         const ctl: TypeControl = { skip: false };
         chat.classList.add('is-typing');
         answer.addEventListener('click', () => (ctl.skip = true), { once: true });
@@ -248,7 +271,9 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
         chat.classList.remove('is-typing');
         caret.remove();
         await wait(650);
-        ro.disconnect();
+        running = false;
+        cancelAnimationFrame(raf);
+        ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach((ev) => removeEventListener(ev, stop));
         chat.style.height = '';
         chat.classList.remove('is-growing');
         finish();
