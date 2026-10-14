@@ -147,6 +147,20 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
 
   .chat__composer { padding-bottom: 1.5rem; }
 
+  /* Móvil: más ancho útil para el texto; en la respuesta el ícono va arriba del mensaje */
+  @media (max-width: 560px) {
+    .chat { border-radius: 12px; }
+    .chat__bar { padding: .8rem 1rem; }
+    .chat__stream { padding: 1.1rem 1rem; gap: 1rem; }
+    .chat__composer { padding: 0 1rem 1rem; }
+    .msg { gap: .7rem; }
+    .msg__av { width: 1.7rem; height: 1.7rem; }
+    .chat__answer { flex-direction: column; gap: .6rem; }
+    .chat__answer .term { padding-top: 0; }
+    .msg--user .msg__txt { padding: .5rem 1rem; }
+    .chat input[type='text'] { font-size: 16px; } /* evita el zoom automático de iOS al enfocar */
+    .chat__row--sub { font-size: 16px; }
+  }
   @media (prefers-reduced-motion: reduce) { .chat *, .chat *::after { animation: none !important; } }
 </style>
 
@@ -177,6 +191,8 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
       const slot = $<HTMLElement>('.chat__turnstile');
       const endpoint = chat.dataset.endpoint!, siteKey = chat.dataset.sitekey!, wa = chat.dataset.wa!, lang = chat.dataset.lang!;
       const caret = makeCaret();
+      const small = () => matchMedia('(max-width: 560px)').matches;
+      if (small()) c.placeholder = S.contactShort; // los placeholders largos se cortan en pantallas angostas
       const variants = JSON.parse(chat.dataset.variants!) as { intro: string; blocks: { lead: string; text: string }[]; close: string }[];
 
       // Elige una variante al azar (distinta de la última vista) y arma el mensaje.
@@ -210,7 +226,10 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
         mutate();
         const h1 = chat.getBoundingClientRect().height;
         if (reduce() || Math.abs(h1 - h0) < 2) return Promise.resolve();
-        return chat.animate([{ height: `${h0}px` }, { height: `${h1}px` }], { duration: ms, easing: 'cubic-bezier(.22, 1, .36, 1)' }).finished.catch(() => {});
+        const anim = chat.animate([{ height: `${h0}px` }, { height: `${h1}px` }], { duration: ms, easing: 'cubic-bezier(.22, 1, .36, 1)' });
+        // Seguro: si el navegador pausa la animación (pestaña en segundo plano), igual se libera la altura natural.
+        const release = setTimeout(() => anim.cancel(), ms + 150);
+        return anim.finished.catch(() => {}).finally(() => clearTimeout(release));
       };
 
       // En pantallas táctiles no hay hover: el chat se "asoma" al entrar en pantalla.
@@ -234,6 +253,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
 
         // La tarjeta crece de a poco, a medida que se escribe: la altura sigue al contenido interno.
         const inner = $<HTMLElement>('.chat__in');
+        chat.getAnimations().forEach((a) => a.cancel()); // por si quedó alguna transición de altura pendiente
         chat.style.height = `${chat.getBoundingClientRect().height}px`;
         void chat.offsetHeight;
         chat.classList.add('is-growing');
@@ -276,13 +296,14 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
         ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach((ev) => removeEventListener(ev, stop));
         chat.style.height = '';
         chat.classList.remove('is-growing');
+        chat.getAnimations().forEach((a) => a.cancel());
         finish();
       };
       const finish = () => {
         grow(() => {
           go('ask');
           q.readOnly = false;
-          q.placeholder = S.followup;
+          q.placeholder = small() ? S.followupShort : S.followup;
           q.value = '';
         }, 700);
       };

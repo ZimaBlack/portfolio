@@ -88,6 +88,8 @@ export const copy = {
       ask: {
         placeholder: 'Saber más sobre Pablo…',
         followup: '¿Algo más que quieras saber? Pregúntale a Pablo…',
+        followupShort: 'Pregúntale a Pablo…',
+        contactShort: 'Tu email o WhatsApp',
         contact: 'Tu email o WhatsApp, para que pueda responderte',
         send: 'Enviar',
         sending: 'enviando…',
@@ -184,6 +186,8 @@ export const copy = {
       ask: {
         placeholder: 'Learn more about Pablo…',
         followup: 'Anything else you’d like to know? Ask Pablo…',
+        followupShort: 'Ask Pablo…',
+        contactShort: 'Your email or WhatsApp',
         contact: 'Your email or WhatsApp, so he can reply',
         send: 'Send',
         sending: 'sending…',
