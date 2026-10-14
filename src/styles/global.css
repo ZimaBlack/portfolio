@@ -39,8 +39,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .section { padding-block: clamp(6rem, 14vw, 14rem); }
 
 /* Jerarquía tipográfica */
-.display { font-family: var(--serif); font-weight: 300; line-height: 0.95; letter-spacing: -0.035em; font-size: clamp(3.4rem, 11vw, 12rem); margin: 0; }
-.h2 { font-family: var(--serif); font-weight: 300; line-height: 1.02; letter-spacing: -0.03em; font-size: clamp(2.2rem, 5.5vw, 5.5rem); margin: 0; }
+/* Formato único de títulos del sitio: versalitas en negrita con interletrado amplio */
+.display, .h2, .title { font-family: var(--sans); font-weight: 700; font-size: clamp(1.15rem, 2vw, 1.6rem); letter-spacing: .3em; text-transform: uppercase; line-height: 1.4; margin: 0; }
 .h3 { font-size: clamp(1.25rem, 2vw, 1.75rem); font-weight: 400; letter-spacing: -0.01em; line-height: 1.2; margin: 0; }
 .lead { font-size: clamp(1.1rem, 1.6vw, 1.5rem); line-height: 1.4; max-width: 38ch; margin: 0; }
 .eyebrow { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin: 0; }

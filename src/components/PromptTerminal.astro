@@ -68,11 +68,18 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
 </figure>
 
 <style>
-  .chat { --mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace; margin: 0 auto; width: 100%; max-width: 52rem; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--fg) 3%, var(--bg)); overflow: hidden; }
+  .chat { --mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace; margin: 0 auto; width: 100%; max-width: 52rem; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--fg) 3%, var(--bg)); overflow: hidden; transition: border-color .6s var(--ease), background .6s var(--ease); }
   .chat__bar { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .6rem 1.25rem; padding: .9rem 1.25rem; border-bottom: 1px solid var(--line); font-size: .8rem; color: var(--muted); }
   .chat__credit { font-size: .8rem; }
 
-  .chat__stream { display: grid; gap: 1.1rem; padding: clamp(1.25rem, 3vw, 2rem); }
+  .chat__stream { display: grid; gap: 1.1rem; align-content: start; padding: clamp(1.25rem, 3vw, 2rem); min-height: 0; transition: min-height .9s var(--ease); }
+  /* Invitación: al pasar el cursor el chat se estira, como una ventana lista para conversar */
+  @media (hover: hover) {
+    .chat[data-state='idle']:hover, .chat[data-state='idle']:focus-within { border-color: color-mix(in srgb, var(--fg) 40%, var(--line)); background: color-mix(in srgb, var(--fg) 5%, var(--bg)); }
+    .chat[data-state='idle']:hover .chat__stream, .chat[data-state='idle']:focus-within .chat__stream { min-height: 12rem; }
+  }
+  .chat[data-state='idle'].is-peek .chat__stream { min-height: 12rem; } /* pantallas táctiles */
+  .chat:not([data-state='idle']) .chat__stream { transition: none; }
   .msg { display: flex; gap: .85rem; align-items: flex-start; }
   .msg__txt { margin: 0; line-height: 1.5; }
   .msg__av { flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%; display: grid; place-items: center; background: var(--fg); color: var(--bg); }
@@ -88,6 +95,11 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
   .chat[data-state='thinking'] .chat__think { display: flex; }
   .chat[data-state='idle'] .chat__answer, .chat[data-state='thinking'] .chat__answer { display: none; }
   .chat[data-state='ask'] .chat__row--sub { display: flex; }
+
+  /* Cada mensaje nuevo entra deslizándose suavemente */
+  .msg--user, .chat__think, .chat__answer, .chat .chat__row--sub { animation: rise .8s var(--ease) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+  .chat.is-typing .chat__answer { cursor: pointer; }
 
   /* "Pensando…" */
   .shimmer { background: linear-gradient(90deg, var(--muted) 20%, var(--fg) 50%, var(--muted) 80%); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 1.4s linear infinite; }
@@ -136,7 +148,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
 </style>
 
 <script>
-  import { prepareTyping, makeCaret, typeText } from '../scripts/typewriter';
+  import { prepareTyping, makeCaret, typeText, type TypeControl } from '../scripts/typewriter';
 
   const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -157,6 +169,7 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
       const send = $<HTMLButtonElement>('.chat__send');
       const word = $<HTMLElement>('.chat__word');
       const body = $<HTMLElement>('[data-typed]');
+      const answer = $<HTMLElement>('.chat__answer');
       const log = $<HTMLElement>('.chat__log');
       const slot = $<HTMLElement>('.chat__turnstile');
       const endpoint = chat.dataset.endpoint!, siteKey = chat.dataset.sitekey!, wa = chat.dataset.wa!, lang = chat.dataset.lang!;
@@ -166,30 +179,53 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
       const go = (s: string) => { state = s; set(s); };
       go('idle');
 
+      // Anima el cambio de altura de la tarjeta (de la altura anterior a la nueva) para que nada salte.
+      const grow = (mutate: () => void, ms = 800) => {
+        const h0 = chat.getBoundingClientRect().height;
+        mutate();
+        const h1 = chat.getBoundingClientRect().height;
+        if (reduce() || Math.abs(h1 - h0) < 2) return Promise.resolve();
+        return chat.animate([{ height: `${h0}px` }, { height: `${h1}px` }], { duration: ms, easing: 'cubic-bezier(.22, 1, .36, 1)' }).finished.catch(() => {});
+      };
+
+      // En pantallas táctiles no hay hover: el chat se "asoma" al entrar en pantalla.
+      if (matchMedia('(hover: none)').matches && !reduce()) {
+        const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { chat.classList.add('is-peek'); io.disconnect(); } }, { threshold: 0.6 });
+        io.observe(chat);
+      }
+
       // ── Simulación: idle → thinking → answering → ask ──
       const start = async () => {
         if (state !== 'idle') return;
-        go('thinking');
         const words: string[] = S.thinking;
         const quick = reduce();
-        word.textContent = words[0];
-        await wait(quick ? 250 : 1100);
+        chat.classList.remove('is-peek');
+        grow(() => { go('thinking'); word.textContent = words[0]; }, 750);
+        await wait(quick ? 250 : 1400);
         word.textContent = words[1] ?? words[0];
-        await wait(quick ? 250 : 1700);
+        await wait(quick ? 250 : 2000);
 
-        go('answering');
-        if (quick) { finish(); return; }
-        const run = prepareTyping(body, caret);
+        if (quick) { go('answering'); finish(); return; }
+        // La tarjeta se estira hasta su altura final mientras el texto empieza a escribirse.
+        let run!: ReturnType<typeof prepareTyping>;
+        grow(() => { go('answering'); run = prepareTyping(body, caret); }, 1300);
         chat.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-        await run(1100);
+        const ctl: TypeControl = { skip: false };
+        const skip = () => (ctl.skip = true);
+        chat.classList.add('is-typing');
+        answer.addEventListener('click', skip, { once: true });
+        await run(220, ctl); // caracteres por segundo base: bajar para tipear más lento
+        chat.classList.remove('is-typing');
         caret.remove();
         finish();
       };
       const finish = () => {
-        go('ask');
-        q.readOnly = false;
-        q.placeholder = S.followup;
-        q.value = '';
+        grow(() => {
+          go('ask');
+          q.readOnly = false;
+          q.placeholder = S.followup;
+          q.value = '';
+        }, 700);
       };
 
       q.addEventListener('click', () => { if (state === 'idle') start(); });
@@ -208,8 +244,8 @@ const Spark = 'M12 0C12 6.63 17.37 12 24 12 17.37 12 12 17.37 12 24 12 17.37 6.6
 
       const say = (cls: string, text: string) => {
         const p = document.createElement('p');
-        p.className = cls; log.append(p);
-        return typeText(p, text, caret, 1400).then(() => caret.remove());
+        p.className = cls; grow(() => log.append(p), 600);
+        return typeText(p, text, caret, 85).then(() => caret.remove());
       };
       const fail = (m: string) => { log.querySelector('.l-e')?.remove(); const p = document.createElement('p'); p.className = 'l-e'; p.textContent = S[m]; log.append(p); };
 

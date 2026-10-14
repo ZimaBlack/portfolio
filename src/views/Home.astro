@@ -93,7 +93,7 @@ const alt = lang === 'es' ? 'en' : 'es';
   .chat-sec { padding-top: clamp(4rem, 8vw, 8rem); }
   .profile { display: grid; gap: clamp(2.5rem, 5vw, 4.5rem); padding-block: clamp(6rem, 11vw, 11rem) clamp(5rem, 10vw, 10rem); }
   .profile__head { display: grid; gap: 1rem; justify-items: center; text-align: center; }
-  .profile__head .h2 { font-family: var(--sans); font-size: clamp(1.15rem, 2vw, 1.6rem); font-weight: 700; letter-spacing: .3em; text-transform: uppercase; line-height: 1.4; padding-left: .3em; }
+  .profile__head .h2 { padding-left: .3em; } /* compensa el interletrado final al centrar */
 
 
   .profile .disc { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem var(--gutter); }

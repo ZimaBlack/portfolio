@@ -71,7 +71,6 @@ const alt = lang === 'es' ? 'en' : 'es';
 
 <style>
   .intro { padding-top: clamp(9rem, 16vw, 14rem); display: grid; gap: 2rem; }
-  .intro .display { font-size: clamp(3rem, 9vw, 9rem); max-width: 16ch; }
   .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1.5rem; margin: 1rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--line); font-size: .9rem; }
   .meta dt { color: var(--muted); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; margin-bottom: .35rem; }
   .meta dd { margin: 0; }
@@ -91,6 +90,5 @@ const alt = lang === 'es' ? 'en' : 'es';
   .next:hover { background: var(--fg); color: var(--bg); }
   .next:hover .eyebrow { color: inherit; }
   .next__in { display: grid; gap: 1rem; }
-  .next__t { font-size: clamp(2.5rem, 7vw, 7rem); }
   @media (max-width: 640px) { .meta__stack { grid-column: auto; } .blk--pair .pair { grid-template-columns: 1fr; } }
 </style>
