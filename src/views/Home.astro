@@ -53,7 +53,7 @@ const alt = lang === 'es' ? 'en' : 'es';
       </figcaption>
       <div class="prompt__body">
         <p>{c.profile.prompt.intro}</p>
-        <ul>{c.profile.prompt.points.map((t) => <li>{t}</li>)}</ul>
+        <dl class="prompt__secs">{c.profile.prompt.sections.map((x) => <div><dt>{x.h}</dt><dd>{x.t}</dd></div>)}</dl>
         <p>{c.profile.prompt.close} <a class="link" href={`mailto:${site.email}`}>{site.email}</a>.<span class="prompt__caret" aria-hidden="true"></span></p>
       </div>
     </figure>
@@ -99,16 +99,18 @@ const alt = lang === 'es' ? 'en' : 'es';
 
   .profile { display: grid; gap: clamp(2.5rem, 5vw, 4.5rem); }
   .profile__head { display: grid; gap: 1rem; }
-  .prompt { margin: 0; border: 1px solid var(--line); border-radius: 4px; max-width: 64rem; }
+  .prompt { margin: 0; border: 1px solid var(--line); border-radius: 4px; max-width: 76rem; }
   .prompt__bar { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.25rem; padding: 1rem clamp(1.25rem, 3vw, 2rem); border-bottom: 1px solid var(--line); font-size: .8rem; color: var(--muted); }
   .prompt__route { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
   .prompt__route b { font-weight: 500; color: var(--fg); }
   .prompt__route :global(.prompt__arrow) { transform: rotate(45deg); }
   .prompt__body { padding: clamp(1.25rem, 3vw, 2rem); display: grid; gap: 1.1rem; font-size: clamp(1rem, 1.35vw, 1.2rem); line-height: 1.5; }
-  .prompt__body p, .prompt__body ul { margin: 0; }
-  .prompt__body ul { list-style: none; padding: 0; display: grid; gap: .8rem; }
-  .prompt__body li { position: relative; padding-left: 1.5rem; }
-  .prompt__body li::before { content: '→'; position: absolute; left: 0; color: var(--muted); }
+  .prompt__body p { margin: 0; }
+  .prompt__secs { margin: 0; display: grid; gap: 1.25rem; }
+  .prompt__secs > div { display: grid; grid-template-columns: 12rem 1fr; gap: .4rem 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+  .prompt__secs dt { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding-top: .35em; }
+  .prompt__secs dd { margin: 0; }
+  @media (max-width: 760px) { .prompt__secs > div { grid-template-columns: 1fr; } }
   .disc { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem var(--gutter); }
   .disc li { display: grid; gap: .75rem; align-content: start; }
   .disc p { margin: 0; max-width: 36ch; }
