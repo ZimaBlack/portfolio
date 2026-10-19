@@ -1,6 +1,9 @@
 ---
 // Imagen o marco placeholder con degradé del proyecto.
-const { src, alt = '', tones = ['#1a1a1a', '#2b2b2b'], ratio = '16 / 9', label, parallax = 0, fill = false } = Astro.props;
+import { withBase } from '../lib/i18n';
+const { src: rawSrc, alt = '', tones = ['#1a1a1a', '#2b2b2b'], ratio = '16 / 9', label, parallax = 0, fill = false } = Astro.props;
+// Las rutas absolutas (/works/…) se prefijan con la base del sitio, para que funcionen también en GitHub Pages bajo /repo
+const src = rawSrc && rawSrc.startsWith('/') ? withBase(rawSrc) : rawSrc;
 ---
 <div class:list={['frame', { 'frame--fill': fill }]} style={`--a:${tones[0]};--b:${tones[1]};--r:${ratio}`}>
   {src
