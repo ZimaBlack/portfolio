@@ -33,7 +33,7 @@ const alt = lang === 'es' ? 'en' : 'es';
     <div class="grid">
       {featured.map((w, i) => (
         <div class:list={['grid__item', `grid__item--${i % 4}`]}>
-          <WorkCard work={w} lang={lang} index={i} ratio={i % 4 === 1 ? '3 / 4' : '4 / 5'} />
+          <WorkCard work={w} lang={lang} index={i} ratio="2 / 3" />
         </div>
       ))}
     </div>

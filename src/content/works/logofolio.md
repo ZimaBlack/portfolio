@@ -12,6 +12,7 @@ text:
   en: "[Context, challenge, design decisions and outcome.]"
 featured: true
 order: 1
+cover: /works/logofolio/portada.png
 tones: ["#17130f", "#3a2f25"]
 gallery:
   - { kind: full, ratio: "21 / 9", caption: { es: "[Imagen principal]", en: "[Main image]" } }

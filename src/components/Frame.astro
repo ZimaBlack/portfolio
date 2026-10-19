@@ -5,7 +5,7 @@ const { src: rawSrc, alt = '', tones = ['#1a1a1a', '#2b2b2b'], ratio = '16 / 9',
 // Las rutas absolutas (/works/…) se prefijan con la base del sitio, para que funcionen también en GitHub Pages bajo /repo
 const src = rawSrc && rawSrc.startsWith('/') ? withBase(rawSrc) : rawSrc;
 ---
-<div class:list={['frame', { 'frame--fill': fill }]} style={`--a:${tones[0]};--b:${tones[1]};--r:${ratio}`}>
+<div class:list={['frame', { 'frame--fill': fill, 'frame--par': parallax > 0 }]} style={`--a:${tones[0]};--b:${tones[1]};--r:${ratio}`}>
   {src
     ? <img src={src} alt={alt} loading="lazy" decoding="async" data-parallax={parallax || undefined} />
     : <div class="frame__ph" data-parallax={parallax || undefined}>{label && <span>{label}</span>}</div>}
@@ -14,9 +14,11 @@ const src = rawSrc && rawSrc.startsWith('/') ? withBase(rawSrc) : rawSrc;
 <style>
   .frame { position: relative; overflow: hidden; aspect-ratio: var(--r); background: var(--a); }
   .frame--fill { aspect-ratio: auto; position: absolute; inset: 0; }
-  /* La imagen es un 18% más alta que el marco (9% de sobra arriba y abajo) para dejar recorrido al parallax.
-     Se posiciona con `top` (porcentaje de la ALTURA); `margin-top` usaría el ancho y dejaba una franja en marcos apaisados. */
-  .frame img, .frame__ph { position: absolute; left: 0; top: -9%; width: 100%; height: 118%; object-fit: cover; }
+  /* Por defecto la imagen se ve completa (tarjetas, pares, insets). */
+  .frame img, .frame__ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  /* Sólo las imágenes con parallax son un 18% más altas que el marco (9% de sobra arriba y abajo) para tener recorrido.
+     Se posiciona con `top` (porcentaje de la ALTURA); `margin-top` usaría el ancho y dejaría una franja en marcos apaisados. */
+  .frame--par img, .frame--par .frame__ph { inset: auto; left: 0; top: -9%; height: 118%; }
   .frame__ph { background: radial-gradient(120% 90% at 20% 10%, var(--b), var(--a)); display: grid; place-items: center; }
   .frame__ph span { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: rgb(255 255 255 / .35); padding: 1rem; text-align: center; }
 </style>
