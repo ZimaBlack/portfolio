@@ -41,6 +41,8 @@ const works = defineCollection({
     slides: z.array(z.object({
       subtitle: t,
       alt: t.optional(),
+      file: z.number().optional(),   // número de los archivos NNa/NNb que usa esta lámina (por defecto, el orden de la lista)
+      intro: z.boolean().optional(), // lámina 00: logo ZMA BLK + título del proyecto, sin archivos
       swap: z.boolean().optional(), // intercambia las posiciones de los dos logos (a pasa a la columna angosta, b a la ancha)
       // Multiplicador del tamaño base del logo (1 = tamaño estándar). a = izquierdo (8 col), b = derecho (4 col)
       size: z.object({ a: z.number().optional(), b: z.number().optional() }).optional(),

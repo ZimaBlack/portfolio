@@ -29,21 +29,34 @@ for (const [path, url] of Object.entries(found)) {
 }
 // Respaldo para logos blancos/grises/negros: una luz neutra, apenas fría, en vez de un color
 const NEUTRAL: [Tone, Tone] = [{ h: 215, s: 0.1, l: 0.62 }, { h: 30, s: 0.08, l: 0.55 }];
-const total = Math.max(d.slides.length, ...Object.keys(files).map(Number), 0);
-const marqueeItems = Object.keys(files).map(Number).sort((a, b) => a - b).map((n) => files[n].b).filter(Boolean) as string[];
-const slides: Slide[] = Array.from({ length: total }, (_, i) => ({
-  n: i + 1,
-  a: files[i + 1]?.a,
-  b: files[i + 1]?.b,
-  subtitle: loc(d.slides[i]?.subtitle, lang),
-  alt: loc(d.slides[i]?.alt, lang) || loc(d.slides[i]?.subtitle, lang) || d.title,
-  swap: d.slides[i]?.swap,
-  sizeA: d.slides[i]?.size?.a,
-  sizeB: d.slides[i]?.size?.b,
-  dyA: d.slides[i]?.dy?.a,
-  dyB: d.slides[i]?.dy?.b,
-  ambient: ambientOf(svgText[i + 1] ?? [], NEUTRAL),
-}));
+// Láminas en el orden de la lista `slides` (cada una apunta a su archivo con `file`; por defecto, el orden).
+// Sin lista, se usan los archivos tal cual (01, 02, …). Una lámina con `intro: true` es la lámina 00 (sin archivos).
+const entries: any[] = d.slides.length
+  ? d.slides
+  : Object.keys(files).map(Number).sort((x, y) => x - y).map((n) => ({ file: n }));
+let counter = 0;
+const slides: Slide[] = entries.map((e) => {
+  const intro = !!e.intro;
+  const n = intro ? 0 : ++counter;
+  const f: number = e.file ?? n;
+  const sub = loc(e.subtitle, lang);
+  return {
+    n,
+    intro,
+    a: intro ? undefined : files[f]?.a,
+    b: intro ? undefined : files[f]?.b,
+    subtitle: sub,
+    alt: loc(e.alt, lang) || sub || d.title,
+    swap: e.swap,
+    sizeA: e.size?.a,
+    sizeB: e.size?.b,
+    dyA: e.dy?.a,
+    dyB: e.dy?.b,
+    ambient: ambientOf(intro ? [] : (svgText[f] ?? []), NEUTRAL),
+  };
+});
+// La marquesina de la cabecera usa los logos "b" en el orden de las láminas
+const marqueeItems = slides.filter((s) => !s.intro && s.b).map((s) => s.b as string);
 const alt = lang === 'es' ? 'en' : 'es';
 ---
 <Base lang={lang} section="works" title={d.title} description={loc(d.summary, lang)}
@@ -54,13 +67,13 @@ const alt = lang === 'es' ? 'en' : 'es';
       <h1 class="display" data-hero-title>{d.title}</h1>
       {d.headerMarquee && marqueeItems.length > 0 && <div class="mq-bleed" data-hero><Marquee items={marqueeItems} /></div>}
       {d.badge && <p data-hero><span class="badge">{d.badge}</span></p>}
-      <p class="lead" data-hero>{loc(d.summary, lang)}</p>
       <dl class="meta" data-hero>
         {d.year && <div><dt>{c.detail.year}</dt><dd>{d.year}</dd></div>}
         <div><dt>{c.detail.role}</dt><dd>{loc(d.role, lang)}</dd></div>
         {d.client && <div><dt>{c.detail.client}</dt><dd>{d.client}</dd></div>}
         {isCode && d.stack.length > 0 && <div class="meta__stack"><dt>{c.detail.stack}</dt><dd><ul>{d.stack.map((s) => <li>{s}</li>)}</ul></dd></div>}
       </dl>
+      <p class="lead" data-hero>{loc(d.summary, lang)}</p>
       {isCode && (d.repo || d.live) && (
         <div class="cta" data-hero>
           {d.repo && <a class="btn btn--solid" href={d.repo} target="_blank" rel="noopener noreferrer"><Icon name="github" /> {c.detail.repo}</a>}
@@ -77,7 +90,7 @@ const alt = lang === 'es' ? 'en' : 'es';
 
     {slides.length > 0 && (
       <section class="wrap car-sec">
-        <Carousel slides={slides} labels={{ prev: c.detail.prev, next: c.detail.next_, region: c.detail.slides, png: c.detail.pngHint }} />
+        <Carousel slides={slides} title={d.title} labels={{ prev: c.detail.prev, next: c.detail.next_, region: c.detail.slides, png: c.detail.pngHint, details: c.detail.details }} />
       </section>
     )}
 

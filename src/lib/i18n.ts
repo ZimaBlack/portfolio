@@ -114,7 +114,7 @@ export const copy = {
     fab: { wa: 'Contacto por WhatsApp', label: 'Contacto' },
     waText: 'Hola Pablo, vi tu portfolio y me gustaría conversar sobre un proyecto.',
     works: { title: 'Trabajos', index: 'Índice', projects: 'proyectos', back: '← Trabajos', metaDesc: 'Selección de proyectos de branding, UX/UI y desarrollo web.' },
-    detail: { year: 'Año', role: 'Rol', client: 'Cliente', stack: 'Stack', repo: 'Ver repositorio', live: 'Live preview', next: 'Siguiente proyecto', nextCursor: 'Siguiente', view: 'Ver', gallery: 'Galería', play: 'Reproducir', hero: '[Cabecera del proyecto]', prev: 'Anterior', next_: 'Siguiente', slides: 'Carrusel de láminas', pngHint: 'PNG con fondo transparente', coverLabel: 'Portada', safe: 'Dejar 10 % de aire arriba y abajo (se recorta con el parallax)' },
+    detail: { year: 'Año', role: 'Rol', client: 'Cliente', stack: 'Stack', repo: 'Ver repositorio', live: 'Live preview', next: 'Siguiente proyecto', nextCursor: 'Siguiente', view: 'Ver', gallery: 'Galería', play: 'Reproducir', hero: '[Cabecera del proyecto]', prev: 'Anterior', next_: 'Siguiente', slides: 'Carrusel de láminas', details: 'Details', pngHint: 'PNG con fondo transparente', coverLabel: 'Portada', safe: 'Dejar 10 % de aire arriba y abajo (se recorta con el parallax)' },
   },
   en: {
     htmlLang: 'en',
@@ -212,6 +212,6 @@ export const copy = {
     fab: { wa: 'Contact via WhatsApp', label: 'Contact' },
     waText: 'Hi Pablo, I saw your portfolio and I’d like to talk about a project.',
     works: { title: 'Work', index: 'Index', projects: 'projects', back: '← Work', metaDesc: 'Selected branding, UX/UI and web development projects.' },
-    detail: { year: 'Year', role: 'Role', client: 'Client', stack: 'Stack', repo: 'View repository', live: 'Live preview', next: 'Next project', nextCursor: 'Next', view: 'View', gallery: 'Gallery', play: 'Play', hero: '[Project header]', prev: 'Previous', next_: 'Next', slides: 'Slide carousel', pngHint: 'PNG with transparent background', coverLabel: 'Cover', safe: 'Leave 10% free at top and bottom (cropped by the parallax)' },
+    detail: { year: 'Year', role: 'Role', client: 'Client', stack: 'Stack', repo: 'View repository', live: 'Live preview', next: 'Next project', nextCursor: 'Next', view: 'View', gallery: 'Gallery', play: 'Play', hero: '[Project header]', prev: 'Previous', next_: 'Next', slides: 'Slide carousel', details: 'Details', pngHint: 'PNG with transparent background', coverLabel: 'Cover', safe: 'Leave 10% free at top and bottom (cropped by the parallax)' },
   },
 } as const;

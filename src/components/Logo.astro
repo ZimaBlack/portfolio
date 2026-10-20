@@ -1,9 +1,9 @@
 ---
 // Logo ZMA BLK (SVG original, limpiado). Los trazos usan currentColor para seguir el tema.
 // Cada letra es un <path> sin transform propio, así se puede animar por CSS/GSAP.
-const { class: cls, label = 'ZMA BLK' } = Astro.props;
+const { class: cls, label = 'ZMA BLK', plain = false } = Astro.props;
 ---
-<svg class:list={['logo', cls]} viewBox="180 222 465 338" role="img" aria-label={label} data-logo>
+<svg class:list={['logo', cls, { 'is-ready': plain }]} viewBox="180 222 465 338" role="img" aria-label={label} data-logo={plain ? undefined : ''}>
   <g transform="matrix(1.195951,0,0,1.195951,-80.778466,40.428012)">
     <g transform="matrix(3.279186,0,0,3.279186,-436.684048,-361.096768)"><path class="l" style="--i:0" d="M204.068,168.182L217.968,168.182L201.668,195.632L229.718,195.632L229.718,188.382L214.968,188.382L231.518,160.632L204.068,160.632L204.068,168.182Z"/></g>
     <g transform="matrix(3.279186,0,0,3.279186,-432.550983,-361.096768)"><path class="l" style="--i:1" d="M244.918,177.782L254.468,192.382L264.068,177.782L266.168,195.632L275.068,195.632L269.418,158.882L254.468,180.232L239.568,158.882L233.918,195.632L242.818,195.632L244.918,177.782Z"/></g>
