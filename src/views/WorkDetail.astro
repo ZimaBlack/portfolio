@@ -6,7 +6,8 @@ import VideoEmbed from '../components/VideoEmbed.astro';
 import Icon from '../components/Icon.astro';
 import Carousel, { type Slide } from '../components/Carousel.astro';
 import Marquee from '../components/Marquee.astro';
-import { ambientOf, type Tone } from '../lib/palette';
+import { ambientOf, toneOfHex, type Tone } from '../lib/palette';
+import { site } from '../data/site';
 import { copy, loc, paths, type Lang } from '../lib/i18n';
 
 const { lang, work } = Astro.props as { lang: Lang; work: CollectionEntry<'works'> };
@@ -52,7 +53,7 @@ const slides: Slide[] = entries.map((e) => {
     sizeB: e.size?.b,
     dyA: e.dy?.a,
     dyB: e.dy?.b,
-    ambient: ambientOf(intro ? [] : (svgText[f] ?? []), NEUTRAL),
+    ambient: e.ambient ? { c1: toneOfHex(e.ambient.colors[0]), c2: toneOfHex(e.ambient.colors[1]), source: 'custom', boost: e.ambient.boost } : ambientOf(intro ? [] : (svgText[f] ?? []), NEUTRAL),
   };
 });
 // La marquesina de la cabecera usa los logos "b" en el orden de las láminas
@@ -90,7 +91,7 @@ const alt = lang === 'es' ? 'en' : 'es';
 
     {slides.length > 0 && (
       <section class="wrap car-sec">
-        <Carousel slides={slides} title={d.title} labels={{ prev: c.detail.prev, next: c.detail.next_, region: c.detail.slides, png: c.detail.pngHint, details: c.detail.details }} />
+        <Carousel slides={slides} title={d.title} cta={{ title: c.detail.loopTitle, button: c.detail.loopCta, subtitle: c.detail.loopSubtitle, href: `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(c.detail.loopWa)}` }} labels={{ prev: c.detail.prev, next: c.detail.next_, region: c.detail.slides, png: c.detail.pngHint, details: c.detail.details }} />
       </section>
     )}
 

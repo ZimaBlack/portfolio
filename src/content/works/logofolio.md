@@ -12,7 +12,7 @@ order: 1
 cover: /works/logofolio/portada.png
 tones: ["#17130f", "#3a2f25"]
 slides:
-  - subtitle: { es: "Una selección de 13 proyectos", en: "A selection of 13 projects" }
+  - subtitle: { es: "Una selección de 14 proyectos", en: "A selection of 14 projects" }
     intro: true
   - subtitle: { es: "Caliseeds · Banco de semillas genéticas", en: "Caliseeds · Genetic seed bank" }
     file: 1
@@ -34,6 +34,9 @@ slides:
     file: 10
   - subtitle: { es: "Organismo · Proyecto de orquesta progresiva", en: "Organismo · Progressive orchestra project" }
     file: 8
+  - subtitle: { es: "Unidad Expandida · Branding de cortometraje", en: "Unidad Expandida · Short film branding" }
+    file: 14
+    ambient: { colors: ["#7a63e6", "#4a72e0"], boost: 1.9 }
   - subtitle: { es: "Cetusmira Ediciones · Editorial especializada", en: "Cetusmira Ediciones · Specialist publisher" }
     file: 12
     size: { a: 1.6, b: 0.7 }
