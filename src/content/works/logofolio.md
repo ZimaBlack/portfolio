@@ -36,6 +36,7 @@ slides:
     file: 8
   - subtitle: { es: "Unidad Expandida · Branding de cortometraje", en: "Unidad Expandida · Short film branding" }
     file: 14
+    size: { a: 1.6, b: 0.7 }
     ambient: { colors: ["#7a63e6", "#4a72e0"], boost: 1.9 }
   - subtitle: { es: "Cetusmira Ediciones · Editorial especializada", en: "Cetusmira Ediciones · Specialist publisher" }
     file: 12
