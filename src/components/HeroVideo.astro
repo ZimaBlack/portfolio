@@ -6,7 +6,7 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
 ---
 <div class="hero__media" aria-hidden="true">
   <div class="hero__frame">
-  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-after="0" data-gap="10000" data-rate="1"></video>
+  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-after="0" data-gap="10000" data-rate="1.2" data-rate-var="0.1"></video>
   </div>
   <div class="hero__shade"></div>
 </div>
@@ -50,7 +50,15 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
 
     const AFTER = Number(video.dataset.after); // ms después de que termina de desplegarse el hero
     const GAP = Number(video.dataset.gap);
-    const RATE = Number(video.dataset.rate) || 1; // velocidad de reproducción (1 = normal)
+    const BASE = Number(video.dataset.rate) || 1;      // velocidad base de reproducción (1 = normal)
+    const VAR = Number(video.dataset.rateVar) || 0;     // variación entre reapariciones (± sobre la base)
+    let rate = BASE;                                    // velocidad de la reproducción en curso
+    // En cada reaparición el video corre a una velocidad levemente distinta (sutil), nunca igual a la anterior
+    const pickRate = () => {
+      let r = BASE;
+      for (let k = 0; k < 8; k++) { r = BASE + (Math.random() * 2 - 1) * VAR; if (Math.abs(r - rate) > VAR * 0.5) break; }
+      return Number(r.toFixed(3));
+    };
     let fade = 2.6; // segundos (reales) de fundido de entrada y de salida; se acorta si el clip es muy breve
     const later = (fn: () => void, ms: number) => void timers.push(window.setTimeout(fn, ms));
     const whenVisible = () => new Promise<void>((res) => {
@@ -81,20 +89,21 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
 
     // Movimiento y opacidad durante la reproducción (se lanzan cuando el video realmente empieza a correr):
     //  · deriva y gira un poco (±1,5° a ±3,5°, en un sentido al azar);
-    //  · la opacidad sube desde la actual (30 %) hasta el 100 % justo en la mitad del video y vuelve a bajar.
+    //  · la opacidad sube desde la actual (30 %) hasta el 100 %, se sostiene en la mitad del video y vuelve a bajar.
     // Esta opacidad se multiplica con la del contenedor (que hace el fundido de entrada y de salida).
     let glow: Animation | undefined;
     const startMotion = () => {
       drift?.cancel(); glow?.cancel();
       const ang = Math.random() * Math.PI * 2;
       const dist = Math.min(innerWidth, innerHeight) * (0.05 + Math.random() * 0.07);
-      const ms = ((video.duration || 10) / RATE) * 1000;
+      const ms = ((video.duration || 10) / rate) * 1000;
       const turn = (1.5 + Math.random() * 2) * (Math.random() < 0.5 ? -1 : 1);
       drift = frame.animate(
         [{ translate: '0 0', rotate: '0deg' }, { translate: `${Math.cos(ang) * dist}px ${Math.sin(ang) * dist}px`, rotate: `${turn.toFixed(2)}deg` }],
         { duration: ms, easing: 'ease-in-out', fill: 'forwards' },
       );
-      glow = frame.animate([{ opacity: 0.3 }, { opacity: 1, offset: 0.5 }, { opacity: 0.3 }], { duration: ms, easing: 'ease-in-out', fill: 'forwards' });
+      // El pico se sostiene: sube hasta el 38% del clip, se mantiene al 100% hasta el 62% y recién ahí baja
+      glow = frame.animate([{ opacity: 0.3 }, { opacity: 1, offset: 0.38 }, { opacity: 1, offset: 0.62 }, { opacity: 0.3 }], { duration: ms, easing: 'ease-in-out', fill: 'forwards' });
     };
 
     const prepare = () => { if (!video.src) { video.src = video.dataset.src!; video.load(); } };
@@ -103,8 +112,9 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
       await whenVisible();
       if (video.readyState < 3) await new Promise<void>((res) => video.addEventListener('canplay', () => res(), { once: true }));
       video.currentTime = 0;
-      video.playbackRate = RATE;
-      fade = Math.min(2.6, (video.duration / RATE) * 0.35); // el fundido no puede ser más largo que el propio clip
+      rate = pickRate();
+      video.playbackRate = rate;
+      fade = Math.min(2.6, (video.duration / rate) * 0.35); // el fundido no puede ser más largo que el propio clip
       media.style.setProperty('--fade', `${fade}s`);
       place();
       try { await video.play(); } catch { return later(play, GAP); } // si el navegador no deja reproducir, reintenta más tarde
@@ -113,7 +123,7 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
     };
 
     video.addEventListener('timeupdate', () => {
-      if (video.duration && (video.duration - video.currentTime) / RATE < fade) media.classList.remove('is-on');
+      if (video.duration && (video.duration - video.currentTime) / rate < fade) media.classList.remove('is-on');
     });
     video.addEventListener('ended', () => { media.classList.remove('is-on'); later(play, GAP); });
 
