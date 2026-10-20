@@ -65,8 +65,8 @@ const alt = lang === 'es' ? 'en' : 'es';
   <article>
     <header class="wrap intro">
       <p class="eyebrow" data-hero><a class="link" href={paths.works(lang)}>{c.works.back}</a> · {loc(d.discipline, lang)}</p>
-      <h1 class="display" data-hero-title>{d.title}</h1>
       {d.headerMarquee && marqueeItems.length > 0 && <div class="mq-bleed" data-hero><Marquee items={marqueeItems} /></div>}
+      <h1 class="display" data-hero-title>{d.title}</h1>
       {d.badge && <p data-hero><span class="badge">{d.badge}</span></p>}
       <dl class="meta" data-hero>
         {d.year && <div><dt>{c.detail.year}</dt><dd>{d.year}</dd></div>}
