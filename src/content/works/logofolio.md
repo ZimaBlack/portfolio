@@ -12,7 +12,7 @@ order: 1
 cover: /works/logofolio/portada.png
 tones: ["#17130f", "#3a2f25"]
 slides:
-  - subtitle: { es: "Una selección de 14 proyectos", en: "A selection of 14 projects" }
+  - subtitle: { es: "Una selección de 15 proyectos", en: "A selection of 15 projects" }
     intro: true
   - subtitle: { es: "Caliseeds · Banco de semillas genéticas", en: "Caliseeds · Genetic seed bank" }
     file: 1
@@ -21,6 +21,8 @@ slides:
     file: 3
   - subtitle: { es: "YoCultivo · Growshop", en: "YoCultivo · Grow shop" }
     file: 5
+  - subtitle: { es: "Hemporio · Tienda de productos de cáñamo", en: "Hemporio · Hemp products shop" }
+    file: 15
   - subtitle: { es: "Conexión CDXX · Chocolatería sibarita", en: "Conexión CDXX · Epicurean chocolate shop" }
     file: 2
     size: { a: 1.5, b: 0.85 }
