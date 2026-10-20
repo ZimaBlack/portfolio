@@ -19,7 +19,7 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
   /* El video no se estira a toda la pantalla: ocupa sólo la ventana central que deja ver la viñeta, a su resolución
      nativa (máx. 1280 px, nunca ampliado) y sin pixelarse. Los bordes de la ventana quedan bajo el negro de la viñeta.
      Se recorta el degradado negro que trae el original en su borde inferior (relación 2,07:1 en lugar de 16:9). */
-  .hero__frame { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); width: min(1280px, max(82vw, 110svh)); aspect-ratio: 2.07; overflow: hidden;
+  .hero__frame { position: absolute; left: var(--vx, 50%); top: var(--vy, 44%); transform: translate(-50%, -50%) scale(var(--vs, 1)) rotate(var(--vr, 0deg)); width: min(1280px, max(82vw, 110svh)); aspect-ratio: 2.07; overflow: hidden;
     /* Máscara elíptica: el video se disuelve hacia el borde de su ventana, en la misma forma que la viñeta */
     -webkit-mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 38%, rgb(0 0 0 / .55) 68%, transparent 100%); mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 38%, rgb(0 0 0 / .55) 68%, transparent 100%); }
   .hero__video { display: block; width: 100%; height: auto; filter: grayscale(1) brightness(.9) blur(16px); transition: filter var(--fade, 2.6s) ease; } /* sin color */
@@ -29,7 +29,7 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
   .hero__shade { position: absolute; inset: 0; background: rgb(11 11 10 / .14); }
   /* Viñeta siempre presente (no se desvanece con el video): negro sólido en los bordes que se abre hacia el centro */
   .hero__vignette { position: absolute; inset: 0; z-index: 0; pointer-events: none;
-    background: radial-gradient(ellipse 70% 66% at 50% 44%, transparent 0%, rgb(11 11 10 / .22) 18%, rgb(11 11 10 / .62) 44%, rgb(11 11 10 / .93) 68%, var(--bg) 86%); }
+    background: radial-gradient(ellipse 70% 66% at var(--vx, 50%) var(--vy, 44%), transparent 0%, rgb(11 11 10 / .22) 18%, rgb(11 11 10 / .62) 44%, rgb(11 11 10 / .93) 68%, var(--bg) 86%); }
   /* El video está pensado para fondo oscuro */
   @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .hero__media, :global(:root:not([data-theme='dark'])) .hero__vignette { display: none; } }
   @media (prefers-reduced-motion: reduce) { .hero__media, .hero__vignette { display: none; } }
@@ -59,6 +59,31 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
       document.addEventListener('visibilitychange', on);
     });
 
+    // Cada reproducción aparece en un lugar distinto del hero (con otra escala y un leve giro) y deriva despacio mientras dura.
+    // Se coloca mientras el video está invisible, así que "aparece" en otro punto, de forma inquietante.
+    const hero = media.closest<HTMLElement>('.hero') ?? media;
+    const frame = media.querySelector<HTMLElement>('.hero__frame')!;
+    let last = { x: 50, y: 44 };
+    let drift: Animation | undefined;
+    const place = () => {
+      let x = 50, y = 44;
+      for (let k = 0; k < 10; k++) {
+        x = 26 + Math.random() * 48; y = 28 + Math.random() * 38;
+        if (Math.hypot(x - last.x, (y - last.y) * 1.4) > 24) break; // nunca cerca del lugar anterior
+      }
+      last = { x, y };
+      const st = hero.style;
+      st.setProperty('--vx', `${x.toFixed(1)}%`);
+      st.setProperty('--vy', `${y.toFixed(1)}%`);
+      st.setProperty('--vs', (0.72 + Math.random() * 0.28).toFixed(2)); // sólo reduce: no se amplía por encima de su resolución
+      st.setProperty('--vr', `${((Math.random() - 0.5) * 9).toFixed(1)}deg`);
+      drift?.cancel();
+      const ang = Math.random() * Math.PI * 2;
+      const dist = Math.min(innerWidth, innerHeight) * (0.05 + Math.random() * 0.07);
+      const ms = ((video.duration || 10) / RATE + fade * 2) * 1000;
+      drift = frame.animate([{ translate: '0 0' }, { translate: `${Math.cos(ang) * dist}px ${Math.sin(ang) * dist}px` }], { duration: ms, easing: 'linear', fill: 'forwards' });
+    };
+
     const prepare = () => { if (!video.src) { video.src = video.dataset.src!; video.load(); } };
     const play = async () => {
       prepare();
@@ -68,6 +93,7 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
       video.playbackRate = RATE;
       fade = Math.min(2.6, (video.duration / RATE) * 0.35); // el fundido no puede ser más largo que el propio clip
       media.style.setProperty('--fade', `${fade}s`);
+      place();
       try { await video.play(); } catch { return later(play, GAP); } // si el navegador no deja reproducir, reintenta más tarde
       media.classList.add('is-on');
     };
