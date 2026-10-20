@@ -1,0 +1,66 @@
+---
+// Video de fondo del hero. Ciclo: fondo negro 20 s → el video (se desvanece al aparecer y al terminar)
+// → 100 s de negro → vuelve el video, y así sucesivamente. Sin audio, sin controles y sin cargar hasta unos segundos antes.
+const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`;
+---
+<div class="hero__media" aria-hidden="true">
+  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-start="20000" data-gap="100000"></video>
+  <div class="hero__shade"></div>
+</div>
+
+<style>
+  .hero__media { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 2.6s ease; }
+  .hero__media.is-on { opacity: 1; }
+  .hero__video { width: 100%; height: 100%; object-fit: cover; filter: brightness(.62) saturate(.9); }
+  /* Oscurece para que el texto se lea y funde el borde inferior con el fondo del sitio */
+  .hero__shade { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 0%, rgb(11 11 10 / .55) 38%, rgb(11 11 10 / .2) 100%); }
+  /* El video está pensado para fondo oscuro */
+  @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .hero__media { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .hero__media { display: none; } }
+</style>
+
+<script>
+  let timers: number[] = [];
+  const clear = () => { timers.forEach(clearTimeout); timers = []; };
+
+  const init = () => {
+    const media = document.querySelector<HTMLElement>('.hero__media:not([data-ready])');
+    const video = media?.querySelector<HTMLVideoElement>('video');
+    if (!media || !video) return;
+    media.dataset.ready = '1';
+    clear();
+    const conn = (navigator as any).connection;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || conn?.saveData) return;
+
+    const START = Number(video.dataset.start);
+    const GAP = Number(video.dataset.gap);
+    const FADE = 2.6; // segundos de fundido antes del final
+    const later = (fn: () => void, ms: number) => void timers.push(window.setTimeout(fn, ms));
+    const whenVisible = () => new Promise<void>((res) => {
+      if (!document.hidden) return res();
+      const on = () => { if (!document.hidden) { document.removeEventListener('visibilitychange', on); res(); } };
+      document.addEventListener('visibilitychange', on);
+    });
+
+    const prepare = () => { if (!video.src) { video.src = video.dataset.src!; video.load(); } };
+    const play = async () => {
+      prepare();
+      await whenVisible();
+      if (video.readyState < 3) await new Promise<void>((res) => video.addEventListener('canplay', () => res(), { once: true }));
+      video.currentTime = 0;
+      try { await video.play(); } catch { return later(play, GAP); } // si el navegador no deja reproducir, reintenta más tarde
+      media.classList.add('is-on');
+    };
+
+    video.addEventListener('timeupdate', () => {
+      if (video.duration && video.duration - video.currentTime < FADE) media.classList.remove('is-on');
+    });
+    video.addEventListener('ended', () => { media.classList.remove('is-on'); later(play, GAP); });
+
+    later(prepare, Math.max(0, START - 6000)); // empieza a descargar unos segundos antes
+    later(play, START);
+  };
+
+  document.addEventListener('astro:page-load', init);
+  document.addEventListener('astro:before-swap', clear);
+</script>

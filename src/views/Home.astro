@@ -6,6 +6,7 @@ import Icon from '../components/Icon.astro';
 import { site } from '../data/site';
 import { cv } from '../data/cv';
 import PromptTerminal from '../components/PromptTerminal.astro';
+import HeroVideo from '../components/HeroVideo.astro';
 import { copy, paths, type Lang } from '../lib/i18n';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -15,6 +16,7 @@ const alt = lang === 'es' ? 'en' : 'es';
 ---
 <Base lang={lang} section="home" altHref={paths.home(alt)} esHref={paths.home('es')} enHref={paths.home('en')}>
   <section class="hero">
+    <HeroVideo />
     <div class="wrap hero__in">
       <h1 class="hero__line hero__name" data-hero>{cv.name}</h1>
       <p class="hero__line hero__role" data-hero>{c.role}</p>
@@ -64,8 +66,8 @@ const alt = lang === 'es' ? 'en' : 'es';
 </Base>
 
 <style>
-  .hero { min-height: 100svh; display: flex; align-items: flex-end; padding-block: 7rem 3rem; }
-  .hero__in { display: grid; align-content: end; }
+  .hero { position: relative; overflow: hidden; min-height: 100svh; display: flex; align-items: flex-end; padding-block: 7rem 3rem; }
+  .hero__in { position: relative; z-index: 1; display: grid; align-content: end; }
   /* Misma medida para los tres textos; la jerarquía sale del peso y del blanco/gris */
   .hero__in { gap: .35rem; }
   .hero__line { margin: 0; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; line-height: 1.6; }
