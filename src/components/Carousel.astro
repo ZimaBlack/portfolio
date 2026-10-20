@@ -76,8 +76,10 @@ const total = slides.length;
   .slide__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); }
   .cell--a { grid-column: span 8; }
   .cell--b { grid-column: span 4; }
-  .cell { margin: 0; height: 75vh; height: 75svh; min-height: 20rem; display: grid; place-items: center; overflow: hidden; background: color-mix(in srgb, var(--fg) 4%, transparent); }
-  .cell img { width: 80%; height: 80%; object-fit: contain; user-select: none; } /* los SVG escalan sin perder nitidez */
+  .cell { margin: 0; height: 75vh; height: 75svh; min-height: 20rem; display: grid; place-items: center; overflow: hidden; }
+  /* Cada logo ocupa como máximo el 60% del alto del cuadro (y el 80% del ancho); los SVG escalan sin perder nitidez */
+  .cell img { width: 80%; height: 60%; object-fit: contain; user-select: none; }
+  .cell:has(.ph) { outline: 1px dashed var(--line); outline-offset: -1px; } /* sólo los recuadros de referencia llevan borde */
 
   .ph { display: grid; gap: .45rem; justify-items: center; text-align: center; padding: 1rem; color: rgb(255 255 255 / .4); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
   .ph b { font-size: 1.4rem; font-weight: 300; letter-spacing: .06em; color: rgb(255 255 255 / .7); }
@@ -89,7 +91,7 @@ const total = slides.length;
 
   @media (max-width: 700px) {
     .cell { height: 58vh; height: 58svh; min-height: 16rem; }
-    .cell img { width: 86%; height: 86%; }
+    .cell img { width: 86%; height: 60%; }
     .ph { padding: .5rem; gap: .3rem; } .ph span, .ph em { display: none; } .ph strong { font-size: .78rem; text-align: center; } .ph b { font-size: 1.1rem; }
   }
   @media (prefers-reduced-motion: reduce) { .car__track { scroll-behavior: auto; } }
