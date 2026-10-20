@@ -36,7 +36,7 @@ const alt = lang === 'es' ? 'en' : 'es';
       )}
     </header>
 
-    <div class="hero-img" data-reveal><Frame src={d.cover} alt={d.title} tones={d.tones} ratio="21 / 9" label={c.detail.cover} parallax={7} /></div>
+    <div class="hero-img" data-reveal><Frame src={d.hero} alt={d.title} tones={d.tones} ratio="21 / 9" label={c.detail.hero} parallax={7} note={c.detail.safe} /></div>
 
     <div class="wrap prose" data-reveal><p>{loc(d.text, lang)}</p></div>
 
@@ -52,7 +52,7 @@ const alt = lang === 'es' ? 'en' : 'es';
                 <Frame src={b.src2} alt={b.alt} tones={[d.tones[1], d.tones[0]]} ratio="4 / 5" label={loc(b.caption, lang)} />
               </div>
             ) : (
-              <Frame src={b.src} alt={b.alt} tones={d.tones} ratio={b.ratio} label={loc(b.caption, lang)} parallax={b.kind === 'full' ? 6 : 0} />
+              <Frame src={b.src} alt={b.alt} tones={d.tones} ratio={b.ratio} label={loc(b.caption, lang)} parallax={b.kind === 'full' ? 6 : 0} note={c.detail.safe} />
             )}
             {b.caption && <figcaption class="muted">{loc(b.caption, lang)}</figcaption>}
           </figure>

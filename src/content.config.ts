@@ -28,7 +28,8 @@ const works = defineCollection({
     badge: z.string().optional(), // etiqueta destacada, ej. "pre-ia"
     featured: z.boolean().default(false),
     order: z.number().default(99),
-    cover: z.string().optional(),
+    cover: z.string().optional(), // tarjeta vertical 2:3 (índice y Home)
+    hero: z.string().optional(),  // cabecera panorámica 21:9 de la página del proyecto
     tones: z.tuple([z.string(), z.string()]).default(['#1a1a1a', '#2b2b2b']),
     stack: z.array(z.string()).default([]),
     repo: z.string().url().optional(),

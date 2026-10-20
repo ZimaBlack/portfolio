@@ -8,7 +8,7 @@ const disc = loc(d.discipline, lang);
 <a class="card" href={paths.work(lang, work.id)} data-cursor={copy[lang].detail.view} data-reveal>
   <div class="card__media">
     {d.badge && <span class="badge card__badge">{d.badge}</span>}
-    <div class="card__zoom"><Frame src={d.cover} alt={d.title} tones={d.tones} ratio={ratio} label={disc} /></div>
+    <div class="card__zoom"><Frame src={d.cover} alt={d.title} tones={d.tones} ratio={ratio} label={`${copy[lang].detail.coverLabel} · ${disc}`} /></div>
   </div>
   <div class="card__meta">
     <span class="muted">{String(index + 1).padStart(2, '0')}</span>
