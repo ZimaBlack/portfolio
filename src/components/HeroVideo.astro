@@ -1,12 +1,12 @@
 ---
-// Video de fondo del hero (los últimos 10 s del original, en blanco y negro y acelerado).
+// Video de fondo del hero (los últimos 10 s del original, en blanco y negro).
 // Ciclo: arranca 1,3 s después de que termina de desplegarse el hero → el video (se desvanece al aparecer y al terminar)
 // → 10 s de negro → vuelve el video, y así sucesivamente. Sin audio ni controles.
 const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`;
 ---
 <div class="hero__media" aria-hidden="true">
   <div class="hero__frame">
-  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-after="1300" data-gap="10000" data-rate="3"></video>
+  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-after="1300" data-gap="10000" data-rate="1"></video>
   </div>
   <div class="hero__shade"></div>
 </div>
@@ -81,7 +81,12 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
       const ang = Math.random() * Math.PI * 2;
       const dist = Math.min(innerWidth, innerHeight) * (0.05 + Math.random() * 0.07);
       const ms = ((video.duration || 10) / RATE + fade * 2) * 1000;
-      drift = frame.animate([{ translate: '0 0' }, { translate: `${Math.cos(ang) * dist}px ${Math.sin(ang) * dist}px` }], { duration: ms, easing: 'linear', fill: 'forwards' });
+      // Además de desplazarse, gira un poco durante la reproducción (±1,5° a ±3,5°, en un sentido al azar)
+      const turn = (1.5 + Math.random() * 2) * (Math.random() < 0.5 ? -1 : 1);
+      drift = frame.animate(
+        [{ translate: '0 0', rotate: '0deg' }, { translate: `${Math.cos(ang) * dist}px ${Math.sin(ang) * dist}px`, rotate: `${turn.toFixed(2)}deg` }],
+        { duration: ms, easing: 'ease-in-out', fill: 'forwards' },
+      );
     };
 
     const prepare = () => { if (!video.src) { video.src = video.dataset.src!; video.load(); } };
