@@ -101,7 +101,9 @@ export function initMotion() {
 
   ctx = gsap.context(() => {
     // Entrada del hero
-    const hero = gsap.timeline({ defaults: { ease: 'expo.out' }, delay: 0.1 });
+    // Al terminar de desplegarse el hero se avisa (lo usa el video de fondo para saber cuándo arrancar)
+    const announce = () => document.dispatchEvent(new Event('hero:ready'));
+    const hero = gsap.timeline({ defaults: { ease: 'expo.out' }, delay: 0.1, onComplete: announce });
     document.querySelectorAll<HTMLElement>('[data-hero-title]').forEach((t) => {
       const words = splitWords(t);
       gsap.set(t, { opacity: 1 });
@@ -109,7 +111,7 @@ export function initMotion() {
     });
     const heroItems = gsap.utils.toArray<HTMLElement>('[data-hero]');
     if (!still) hero.fromTo(heroItems, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1.1, stagger: 0.12 }, 0.5);
-    else gsap.set(heroItems, { opacity: 1 });
+    else { gsap.set(heroItems, { opacity: 1 }); setTimeout(announce, 0); }
 
     initLogo(still);
     if (still) { initHeader(); return; }
