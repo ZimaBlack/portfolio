@@ -12,7 +12,7 @@ const total = slides.length;
   <div class="car__amb" aria-hidden="true">
     {slides.map((s, i) => (
       <div class:list={['amb', { 'is-on': i === 0 }]} data-c1={hsl(s.ambient.c1)} data-c2={hsl(s.ambient.c2)} data-source={s.ambient.source}
-        style={`--c1:${hsl(s.ambient.c1, 0.2)};--c2:${hsl(s.ambient.c2, 0.13)};--c1s:${hsl(s.ambient.c1, 0.07)};--c3:${hsl(s.ambient.c2, 0.09)}`}></div>
+        style={`--c1:${hsl(s.ambient.c1, 0.17)};--c2:${hsl(s.ambient.c2, 0.17)};--c3:${hsl(s.ambient.c2, 0.09)}`}></div>
     ))}
   </div>
 
@@ -49,11 +49,11 @@ const total = slides.length;
   /* Ambiente: luz circular y suave a la derecha (principal), una más leve a la izquierda, y un grano finísimo.
      Cada lámina tiene su propia capa; al cambiar de lámina se funden entre sí. */
   .car__amb { position: absolute; z-index: -1; inset: -7rem -8vw -5rem -8vw; pointer-events: none; }
-  .amb { --shape: radial-gradient(circle 34rem at 90% 38%, #000, transparent 72%), radial-gradient(circle 26rem at 70% 80%, #000, transparent 70%), radial-gradient(circle 30rem at 8% 58%, #000, transparent 70%);
+  .amb { --shape: radial-gradient(circle 38rem at 88% 28%, #000, transparent 78%), radial-gradient(circle 38rem at 88% 74%, #000, transparent 78%), radial-gradient(circle 30rem at 8% 58%, #000, transparent 70%);
     position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s var(--ease);
     background:
-      radial-gradient(circle 34rem at 90% 38%, var(--c1) 0%, var(--c1s) 48%, transparent 72%),
-      radial-gradient(circle 26rem at 70% 80%, var(--c2) 0%, transparent 70%),
+      radial-gradient(circle 38rem at 88% 28%, var(--c1) 0%, color-mix(in srgb, var(--c1) 55%, transparent) 30%, color-mix(in srgb, var(--c1) 18%, transparent) 55%, transparent 78%),
+      radial-gradient(circle 38rem at 88% 74%, var(--c2) 0%, color-mix(in srgb, var(--c2) 55%, transparent) 30%, color-mix(in srgb, var(--c2) 18%, transparent) 55%, transparent 78%),
       radial-gradient(circle 30rem at 8% 58%, var(--c3) 0%, transparent 70%); }
   .amb.is-on { opacity: 1; }
   /* Grano: puntos blancos translúcidos, visibles sólo donde hay luz (la máscara repite las formas del degradado) */
@@ -62,8 +62,11 @@ const total = slides.length;
     -webkit-mask-image: var(--shape); mask-image: var(--shape); }
   @media (max-width: 700px) {
     .car__amb { inset: -4rem -6vw -9rem -6vw; }
-    .amb { --shape: radial-gradient(circle 20rem at 90% 30%, #000, transparent 72%), radial-gradient(circle 16rem at 50% 72%, #000, transparent 70%), radial-gradient(circle 16rem at 6% 60%, #000, transparent 70%);
-      background: radial-gradient(circle 20rem at 90% 30%, var(--c1) 0%, var(--c1s) 48%, transparent 72%), radial-gradient(circle 16rem at 50% 72%, var(--c2) 0%, transparent 70%), radial-gradient(circle 16rem at 6% 60%, var(--c3) 0%, transparent 70%); }
+    .amb { --shape: radial-gradient(circle 22rem at 90% 26%, #000, transparent 78%), radial-gradient(circle 22rem at 86% 70%, #000, transparent 78%), radial-gradient(circle 16rem at 6% 60%, #000, transparent 70%);
+      background:
+        radial-gradient(circle 22rem at 90% 26%, var(--c1) 0%, color-mix(in srgb, var(--c1) 55%, transparent) 30%, color-mix(in srgb, var(--c1) 18%, transparent) 55%, transparent 78%),
+        radial-gradient(circle 22rem at 86% 70%, var(--c2) 0%, color-mix(in srgb, var(--c2) 55%, transparent) 30%, color-mix(in srgb, var(--c2) 18%, transparent) 55%, transparent 78%),
+        radial-gradient(circle 16rem at 6% 60%, var(--c3) 0%, transparent 70%); }
   }
   @media (prefers-reduced-motion: reduce) { .amb { transition: none; } }
 
