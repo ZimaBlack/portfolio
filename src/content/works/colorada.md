@@ -1,5 +1,5 @@
 ---
-title: "Delta Group"
+title: "Colorada"
 kind: design
 discipline: { es: "Branding", en: "Branding" }
 role: { es: "Identidad visual", en: "Visual identity" }
@@ -10,8 +10,8 @@ text:
   es: "[Contexto, desafío, decisiones de diseño y resultado.]"
   en: "[Context, challenge, design decisions and outcome.]"
 featured: false
-order: 3
-tones: ["#14161f", "#2c3350"]
+order: 16
+tones: ["#240d12", "#6a1b26"]
 gallery:
   - { kind: full, ratio: "21 / 9", caption: { es: "[Imagen principal]", en: "[Main image]" } }
   - { kind: pair, caption: { es: "[Sistema tipográfico y paleta]", en: "[Typography and palette]" } }

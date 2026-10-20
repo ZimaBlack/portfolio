@@ -45,6 +45,7 @@ const works = defineCollection({
       intro: z.boolean().optional(), // lámina 00: logo ZMA BLK + título del proyecto, sin archivos
       // Ambiente de color propio: dos colores hex (derecha arriba / abajo) y un factor de intensidad (1 = normal)
       ambient: z.object({ colors: z.tuple([z.string(), z.string()]), boost: z.number().optional() }).optional(),
+      project: z.string().optional(), // id del proyecto al que lleva el botón "Ver desarrollo completo"
       swap: z.boolean().optional(), // intercambia las posiciones de los dos logos (a pasa a la columna angosta, b a la ancha)
       // Multiplicador del tamaño base del logo (1 = tamaño estándar). a = izquierdo (8 col), b = derecho (4 col)
       size: z.object({ a: z.number().optional(), b: z.number().optional() }).optional(),

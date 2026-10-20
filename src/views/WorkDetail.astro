@@ -48,6 +48,7 @@ const slides: Slide[] = entries.map((e) => {
     b: intro ? undefined : files[f]?.b,
     subtitle: sub,
     alt: loc(e.alt, lang) || sub || d.title,
+    href: e.project && all.some((w) => w.id === e.project) ? paths.work(lang, e.project) : undefined,
     swap: e.swap,
     sizeA: e.size?.a,
     sizeB: e.size?.b,
@@ -91,7 +92,7 @@ const alt = lang === 'es' ? 'en' : 'es';
 
     {slides.length > 0 && (
       <section class="wrap car-sec">
-        <Carousel slides={slides} title={d.title} cta={{ title: c.detail.loopTitle, button: c.detail.loopCta, subtitle: c.detail.loopSubtitle, href: `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(c.detail.loopWa)}` }} labels={{ prev: c.detail.prev, next: c.detail.next_, region: c.detail.slides, png: c.detail.pngHint, details: c.detail.details }} />
+        <Carousel slides={slides} title={d.title} cta={{ title: c.detail.loopTitle, button: c.detail.loopCta, subtitle: c.detail.loopSubtitle, href: `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(c.detail.loopWa)}` }} labels={{ prev: c.detail.prev, next: c.detail.next_, region: c.detail.slides, png: c.detail.pngHint, details: c.detail.details, more: c.detail.fullDev }} />
       </section>
     )}
 
