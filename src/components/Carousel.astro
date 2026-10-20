@@ -65,7 +65,11 @@ const total = slides.length;
   .slide__sub { margin: 0; display: flex; gap: 1rem; align-items: baseline; font-size: .95rem; }
   .slide__sub span { font-size: .75rem; letter-spacing: .14em; color: var(--muted); }
 
-  @media (max-width: 700px) { .cell { height: 58vh; height: 58svh; min-height: 16rem; } .cell img { max-width: 86%; max-height: 86%; } }
+  @media (max-width: 700px) {
+    .cell { height: 58vh; height: 58svh; min-height: 16rem; }
+    .cell img { max-width: 86%; max-height: 86%; }
+    .ph { padding: .5rem; gap: .3rem; } .ph span, .ph em { display: none; } .ph strong { font-size: .78rem; text-align: center; } .ph b { font-size: 1.1rem; }
+  }
   @media (prefers-reduced-motion: reduce) { .car__track { scroll-behavior: auto; } }
 </style>
 
