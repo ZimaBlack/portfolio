@@ -36,6 +36,8 @@ const works = defineCollection({
     live: z.string().url().optional(),
     video: z.object({ provider: z.enum(['vimeo', 'youtube']), id: z.string() }).optional(),
     gallery: z.array(block).default([]),
+    // Carrusel de láminas (dos PNG por lámina): las imágenes salen de src/assets/works/<slug>/carrusel/NNa.png y NNb.png
+    slides: z.array(z.object({ subtitle: t, alt: t.optional() })).default([]),
   }),
 });
 

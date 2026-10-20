@@ -14,9 +14,11 @@ featured: true
 order: 1
 cover: /works/logofolio/portada.png
 tones: ["#17130f", "#3a2f25"]
-gallery:
-  - { kind: full, ratio: "21 / 9", caption: { es: "[Imagen principal]", en: "[Main image]" } }
-  - { kind: pair, caption: { es: "[Sistema tipográfico y paleta]", en: "[Typography and palette]" } }
-  - { kind: inset, ratio: "4 / 5", caption: { es: "[Aplicaciones]", en: "[Applications]" } }
-  - { kind: full, ratio: "16 / 9", caption: { es: "[Imagen full-frame de cierre]", en: "[Closing full-frame image]" } }
+slides:
+  - subtitle: { es: "[Subtítulo de la lámina 01]", en: "[Slide 01 subtitle]" }
+  - subtitle: { es: "[Subtítulo de la lámina 02]", en: "[Slide 02 subtitle]" }
+  - subtitle: { es: "[Subtítulo de la lámina 03]", en: "[Slide 03 subtitle]" }
+  - subtitle: { es: "[Subtítulo de la lámina 04]", en: "[Slide 04 subtitle]" }
+  - subtitle: { es: "[Subtítulo de la lámina 05]", en: "[Slide 05 subtitle]" }
+  - subtitle: { es: "[Subtítulo de la lámina 06]", en: "[Slide 06 subtitle]" }
 ---

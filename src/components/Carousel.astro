@@ -1,0 +1,101 @@
+---
+// Carrusel de láminas: cada lámina tiene dos PNG (a = 8 columnas, b = 4 columnas de una grilla de 12),
+// centrados en cuadros de 75vh, y un subtítulo. Desliza con scroll-snap (táctil, trackpad) y tiene botones y teclado.
+export interface Slide { n: number; a?: string; b?: string; subtitle: string; alt: string }
+const { slides, labels } = Astro.props as { slides: Slide[]; labels: { prev: string; next: string; region: string; png: string } };
+const pad = (n: number) => String(n).padStart(2, '0');
+const total = slides.length;
+---
+<section class="car" data-car data-reveal aria-roledescription="carousel" aria-label={labels.region}>
+  <div class="car__bar">
+    <span class="car__count" aria-live="polite"><b data-cur>01</b> <i>/</i> {pad(total)}</span>
+    <div class="car__nav">
+      <button type="button" class="car__btn" data-prev aria-label={labels.prev}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></button>
+      <button type="button" class="car__btn" data-next aria-label={labels.next}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+    </div>
+  </div>
+
+  <div class="car__track" data-track tabindex="0">
+    {slides.map((s) => (
+      <article class="slide" role="group" aria-roledescription="slide" aria-label={`${pad(s.n)} / ${pad(total)}`}>
+        <div class="slide__grid">
+          <figure class="cell cell--a">
+            {s.a ? <img src={s.a} alt={s.alt} loading="lazy" decoding="async" draggable="false" />
+              : <div class="ph"><b>{pad(s.n)}a</b><span>{labels.png}</span><strong>1800 × 1200 px</strong><em>3:2 · 8/12</em></div>}
+          </figure>
+          <figure class="cell cell--b">
+            {s.b ? <img src={s.b} alt={s.alt} loading="lazy" decoding="async" draggable="false" />
+              : <div class="ph"><b>{pad(s.n)}b</b><span>{labels.png}</span><strong>900 × 1200 px</strong><em>3:4 · 4/12</em></div>}
+          </figure>
+        </div>
+        <p class="slide__sub"><span>{pad(s.n)}</span>{s.subtitle}</p>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .car { display: grid; gap: 1.25rem; }
+  .car__bar { display: flex; align-items: center; justify-content: space-between; }
+  .car__count { font-size: .8rem; letter-spacing: .14em; color: var(--muted); }
+  .car__count b { font-weight: 500; color: var(--fg); }
+  .car__count i { font-style: normal; margin-inline: .25em; }
+  .car__nav { display: flex; gap: .5rem; }
+  .car__btn { display: grid; place-items: center; width: 2.9rem; height: 2.9rem; border: 1px solid var(--line); border-radius: 50%; transition: background .35s var(--ease), color .35s var(--ease), opacity .3s, border-color .35s; }
+  .car__btn svg { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .car__btn:hover:not(:disabled), .car__btn:focus-visible { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .car__btn:disabled { opacity: .3; cursor: default; }
+
+  .car__track { display: flex; gap: var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; outline-offset: 6px; }
+  .car__track::-webkit-scrollbar { display: none; }
+  .slide { flex: 0 0 100%; scroll-snap-align: start; display: grid; gap: 1rem; min-width: 0; }
+
+  /* Grilla de 12 columnas: la lámina "a" ocupa 8 y la "b" ocupa 4 */
+  .slide__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); }
+  .cell--a { grid-column: span 8; }
+  .cell--b { grid-column: span 4; }
+  .cell { margin: 0; height: 75vh; height: 75svh; min-height: 20rem; display: grid; place-items: center; overflow: hidden; background: color-mix(in srgb, var(--fg) 5%, var(--bg)); }
+  .cell img { max-width: 80%; max-height: 80%; width: auto; height: auto; object-fit: contain; user-select: none; }
+
+  .ph { display: grid; gap: .45rem; justify-items: center; text-align: center; padding: 1rem; color: rgb(255 255 255 / .4); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+  .ph b { font-size: 1.4rem; font-weight: 300; letter-spacing: .06em; color: rgb(255 255 255 / .7); }
+  .ph strong { font-size: clamp(.95rem, 1.8vw, 1.35rem); font-weight: 500; letter-spacing: .02em; color: rgb(255 255 255 / .82); text-transform: none; }
+  .ph em { font-style: normal; }
+
+  .slide__sub { margin: 0; display: flex; gap: 1rem; align-items: baseline; font-size: .95rem; }
+  .slide__sub span { font-size: .75rem; letter-spacing: .14em; color: var(--muted); }
+
+  @media (max-width: 700px) { .cell { height: 58vh; height: 58svh; min-height: 16rem; } .cell img { max-width: 86%; max-height: 86%; } }
+  @media (prefers-reduced-motion: reduce) { .car__track { scroll-behavior: auto; } }
+</style>
+
+<script>
+  const init = () => {
+    document.querySelectorAll<HTMLElement>('[data-car]:not([data-ready])').forEach((car) => {
+      car.dataset.ready = '1';
+      const track = car.querySelector<HTMLElement>('[data-track]')!;
+      const prev = car.querySelector<HTMLButtonElement>('[data-prev]')!;
+      const next = car.querySelector<HTMLButtonElement>('[data-next]')!;
+      const cur = car.querySelector<HTMLElement>('[data-cur]')!;
+      const slides = Array.from(track.children) as HTMLElement[];
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const index = () => Math.round(track.scrollLeft / (slides[0].offsetWidth + parseFloat(getComputedStyle(track).columnGap || '0')));
+      const go = (i: number) => slides[Math.max(0, Math.min(slides.length - 1, i))].scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', inline: 'start', block: 'nearest' });
+      const sync = () => {
+        const i = index();
+        cur.textContent = String(i + 1).padStart(2, '0');
+        prev.disabled = i <= 0;
+        next.disabled = i >= slides.length - 1;
+      };
+      prev.addEventListener('click', () => go(index() - 1));
+      next.addEventListener('click', () => go(index() + 1));
+      track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+      track.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') { e.preventDefault(); go(index() + 1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go(index() - 1); }
+      });
+      sync();
+    });
+  };
+  document.addEventListener('astro:page-load', init);
+</script>
