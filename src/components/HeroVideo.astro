@@ -42,8 +42,9 @@ const maskStops = Array.from({ length: N + 1 }, (_, i) => {
   /* Velo mínimo y uniforme (sin degradado): sólo para asentar el texto sobre las vetas claras */
   /* Viñeta siempre presente (no se desvanece con el video): CÍRCULO negro por fuera que se abre hacia el centro.
      Su radio sigue al ancho de la ventana del video, así que no recorta lo visible. */
-  .hero__vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  .hero__vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity var(--fade, 2.6s) ease; /* invisible sin video: sobre el negro puro, el redondeo de la mezcla dibujaba anillos que delataban su aparición */
     background: radial-gradient(circle calc(min(1280px, max(82vw, 110svh)) * .66 * var(--vb, 1)) at calc(var(--vx, 50%) + var(--vdx, 0px)) calc(var(--vy, 44%) + var(--vdy, 0px)), var(--vignette-stops), var(--bg) 90%); }
+  :global(.hero.has-video) .hero__vignette { opacity: 1; }
   /* Tramado fino y fijo: rompe los escalones de los degradados oscuros (8 bits) para que no se vean anillos */
   .hero__vignette::after { content: ''; position: absolute; inset: 0; opacity: .5;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='d' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='1' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 .05'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='discrete' tableValues='0 0 0 1'/%3E%3CfeFuncG type='discrete' tableValues='0 0 0 1'/%3E%3CfeFuncB type='discrete' tableValues='0 0 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23d)'/%3E%3C/svg%3E"); }
@@ -179,16 +180,18 @@ const maskStops = Array.from({ length: N + 1 }, (_, i) => {
       video.playbackRate = rate;
       fade = Math.min(2.6, (video.duration / rate) * 0.35); // el fundido no puede ser más largo que el propio clip
       media.style.setProperty('--fade', `${fade}s`);
+      hero.style.setProperty('--fade', `${fade}s`);
       place();
       try { await video.play(); } catch { return later(play, GAP); } // si el navegador no deja reproducir, reintenta más tarde
       startMotion();
       media.classList.add('is-on');
+      hero.classList.add('has-video');
     };
 
     video.addEventListener('timeupdate', () => {
-      if (video.duration && (video.duration - video.currentTime) / rate < fade) media.classList.remove('is-on');
+      if (video.duration && (video.duration - video.currentTime) / rate < fade) { media.classList.remove('is-on'); hero.classList.remove('has-video'); }
     });
-    video.addEventListener('ended', () => { media.classList.remove('is-on'); later(play, GAP); });
+    video.addEventListener('ended', () => { media.classList.remove('is-on'); hero.classList.remove('has-video'); later(play, GAP); });
 
     prepare(); // empieza a descargar enseguida (1,7 MB) para estar listo
     // Arranca AFTER ms (0 = enseguida) después de que el hero termina de desplegarse (evento `hero:ready`, con respaldo por si no llega)
