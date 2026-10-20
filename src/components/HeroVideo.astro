@@ -1,11 +1,11 @@
 ---
-// Video de fondo del hero (los últimos 10 s del original, en blanco y negro).
-// Ciclo: arranca apenas termina de desplegarse el hero → el video (se desvanece al aparecer y al terminar)
-// → 10 s de negro → vuelve el video, y así sucesivamente. Sin audio ni controles.
+// Video de fondo del hero (los últimos 10 s del original, en blanco y negro, sin audio ni controles).
+// Capas, de abajo hacia arriba: video (ventana enmascarada) → viñeta negra → pantalla antigua (CRT) → texto del hero.
+// El ciclo de reproducción y el movimiento viven en src/scripts/hero-video.ts.
 const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`;
 
-// Los degradados con pocos pasos se ven "escalonados" en negros (anillos concéntricos). Se generan con 24 pasos
-// siguiendo una curva suave (smootherstep), de modo que la caída es gradual y sin cortes visibles.
+// Los degradados con pocos pasos se ven "escalonados" en negros (anillos concéntricos): se generan con 24 pasos
+// siguiendo una curva suave (smootherstep).
 const smooth = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
 const N = 24;
 const vignetteStops = Array.from({ length: N + 1 }, (_, i) => {
@@ -19,33 +19,34 @@ const maskStops = Array.from({ length: N + 1 }, (_, i) => {
 ---
 <div class="hero__media" aria-hidden="true" style={`--mask-stops:${maskStops}`}>
   <div class="hero__frame">
-  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-after="0" data-gap="10000" data-rate="1.45" data-rate-var="0.1"></video>
+    <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-after="0" data-gap="10000" data-rate="1.45" data-rate-var="0.1"></video>
   </div>
 </div>
-<!-- Viñeta: degradado radial negro por fuera; el video queda por debajo y se pierde hacia los bordes -->
+<!-- Viñeta: círculo negro por fuera que se abre hacia el centro; sólo existe mientras el video es visible -->
 <div class="hero__vignette" aria-hidden="true" style={`--vignette-stops:${vignetteStops}`}></div>
-<!-- Capa tipo pantalla antigua (CRT) en modo overlay sobre la viñeta: líneas de barrido, máscara RGB, banda que rueda, ruido y parpadeo -->
+<!-- Pantalla antigua (CRT), en overlay sobre la viñeta: barrido, máscara RGB, banda que rueda, ruido y parpadeo -->
 <div class="hero__crt" aria-hidden="true"></div>
 
 <style>
+  /* Ancho de la ventana del video (la viñeta lo usa para su radio). Resolución nativa: 1280 px; más grande, se amplía levemente. */
+  :global(.hero) { --vid-w: min(1400px, max(90vw, 120svh)); }
+
   .hero__media { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity var(--fade, 2.6s) ease; }
   .hero__media.is-on { opacity: 1; } /* fundido de entrada y salida; el nivel (30 % → 100 % → 30 %) lo anima el marco */
-  /* El video no se estira a toda la pantalla: ocupa sólo la ventana central que deja ver la viñeta, a su resolución
-     nativa (máx. 1280 px, nunca ampliado) y sin pixelarse. Los bordes de la ventana quedan bajo el negro de la viñeta.
-     Se recorta el degradado negro que trae el original en su borde inferior (relación 2,07:1 en lugar de 16:9). */
-  .hero__frame { opacity: .3; position: absolute; left: var(--vx, 50%); top: var(--vy, 44%); transform: translate(-50%, -50%) scale(var(--vs, 1)) rotate(var(--vr, 0deg)); width: min(1280px, max(82vw, 110svh)); aspect-ratio: 2.07; overflow: hidden;
-    /* Máscara elíptica: el video se disuelve hacia el borde de su ventana, en la misma forma que la viñeta */
+
+  /* Ventana del video: relación 2,07:1 (recorta el degradado negro que trae el original en su borde inferior).
+     Posición, escala y giro vienen de --vx --vy --vs --vr. La máscara elíptica la disuelve hacia el borde. */
+  .hero__frame { position: absolute; left: var(--vx, 50%); top: var(--vy, 44%); width: var(--vid-w); aspect-ratio: 2.07; opacity: .3; overflow: hidden;
+    transform: translate(-50%, -50%) scale(var(--vs, 1)) rotate(var(--vr, 0deg));
     -webkit-mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 0%, var(--mask-stops)); mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 0%, var(--mask-stops)); }
-  .hero__video { display: block; width: 100%; height: auto; filter: grayscale(1) blur(16px); transition: filter var(--fade, 2.6s) ease; } /* sin color */
-  /* Al aparecer se enfoca y al terminar se desenfoca de nuevo, junto con el fundido */
-  .is-on .hero__video { filter: grayscale(1) blur(0); }
-  /* Velo mínimo y uniforme (sin degradado): sólo para asentar el texto sobre las vetas claras */
-  /* Viñeta siempre presente (no se desvanece con el video): CÍRCULO negro por fuera que se abre hacia el centro.
-     Su radio sigue al ancho de la ventana del video, así que no recorta lo visible. */
-  .hero__vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity var(--fade, 2.6s) ease; /* invisible sin video: sobre el negro puro, el redondeo de la mezcla dibujaba anillos que delataban su aparición */
-    background: radial-gradient(circle calc(min(1280px, max(82vw, 110svh)) * .66 * var(--vb, 1)) at calc(var(--vx, 50%) + var(--vdx, 0px)) calc(var(--vy, 44%) + var(--vdy, 0px)), var(--vignette-stops), var(--bg) 90%); }
+  .hero__video { display: block; width: 100%; height: auto; filter: grayscale(1) blur(16px); transition: filter var(--fade, 2.6s) ease; }
+  .is-on .hero__video { filter: grayscale(1) blur(0); } /* se enfoca al aparecer y se desenfoca al terminar */
+
+  /* Viñeta: círculo negro por fuera. Invisible sin video (sobre negro puro, el redondeo de la mezcla dibujaba anillos que delataban su aparición). */
+  .hero__vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity var(--fade, 2.6s) ease;
+    background: radial-gradient(circle calc(var(--vid-w) * .66 * var(--vb, 1)) at calc(var(--vx, 50%) + var(--vdx, 0px)) calc(var(--vy, 44%) + var(--vdy, 0px)), var(--vignette-stops), var(--bg) 90%); }
   :global(.hero.has-video) .hero__vignette { opacity: 1; }
-  /* Tramado fino y fijo: rompe los escalones de los degradados oscuros (8 bits) para que no se vean anillos */
+  /* Tramado fino y fijo: rompe los escalones de los degradados oscuros (8 bits) */
   .hero__vignette::after { content: ''; position: absolute; inset: 0; opacity: .5;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='d' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='1' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 .05'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='discrete' tableValues='0 0 0 1'/%3E%3CfeFuncG type='discrete' tableValues='0 0 0 1'/%3E%3CfeFuncB type='discrete' tableValues='0 0 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23d)'/%3E%3C/svg%3E"); }
   /* Pantalla antigua: overlay sobre la viñeta y bajo el texto */
@@ -70,137 +71,8 @@ const maskStops = Array.from({ length: N + 1 }, (_, i) => {
 </style>
 
 <script>
-  let timers: number[] = [];
-  const clear = () => { timers.forEach(clearTimeout); timers = []; };
+  import { initHeroVideo, stopHeroVideo } from '../scripts/hero-video';
 
-  const init = () => {
-    const media = document.querySelector<HTMLElement>('.hero__media:not([data-ready])');
-    const video = media?.querySelector<HTMLVideoElement>('video');
-    if (!media || !video) return;
-    media.dataset.ready = '1';
-    clear();
-    const conn = (navigator as any).connection;
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches || conn?.saveData) return;
-
-    const AFTER = Number(video.dataset.after); // ms después de que termina de desplegarse el hero
-    const GAP = Number(video.dataset.gap);
-    const BASE = Number(video.dataset.rate) || 1;      // velocidad base de reproducción (1 = normal)
-    const VAR = Number(video.dataset.rateVar) || 0;     // variación entre reapariciones (± sobre la base)
-    let rate = BASE;                                    // velocidad de la reproducción en curso
-    // En cada reaparición el video corre a una velocidad levemente distinta (sutil), nunca igual a la anterior
-    const pickRate = () => {
-      let r = BASE;
-      for (let k = 0; k < 8; k++) { r = BASE + (Math.random() * 2 - 1) * VAR; if (Math.abs(r - rate) > VAR * 0.5) break; }
-      return Number(r.toFixed(3));
-    };
-    let fade = 2.6; // segundos (reales) de fundido de entrada y de salida; se acorta si el clip es muy breve
-    const later = (fn: () => void, ms: number) => void timers.push(window.setTimeout(fn, ms));
-    const whenVisible = () => new Promise<void>((res) => {
-      if (!document.hidden) return res();
-      const on = () => { if (!document.hidden) { document.removeEventListener('visibilitychange', on); res(); } };
-      document.addEventListener('visibilitychange', on);
-    });
-
-    // Cada reproducción aparece en un lugar distinto del hero (con otra escala y un leve giro) y deriva despacio mientras dura.
-    // Se coloca mientras el video está invisible, así que "aparece" en otro punto, de forma inquietante.
-    const hero = media.closest<HTMLElement>('.hero') ?? media;
-    const frame = media.querySelector<HTMLElement>('.hero__frame')!;
-    let last = { x: 50, y: 44 };
-    const place = () => {
-      let x = 50, y = 44;
-      for (let k = 0; k < 10; k++) {
-        x = 26 + Math.random() * 48; y = 28 + Math.random() * 38;
-        if (Math.hypot(x - last.x, (y - last.y) * 1.4) > 24) break; // nunca cerca del lugar anterior
-      }
-      last = { x, y };
-      const st = hero.style;
-      st.setProperty('--vx', `${x.toFixed(1)}%`);
-      st.setProperty('--vy', `${y.toFixed(1)}%`);
-      st.setProperty('--vs', (0.72 + Math.random() * 0.28).toFixed(2)); // sólo reduce: no se amplía por encima de su resolución
-      st.setProperty('--vr', `${((Math.random() - 0.5) * 9).toFixed(1)}deg`);
-      st.setProperty('--vdx', '0px'); st.setProperty('--vdy', '0px'); st.setProperty('--vb', '1');
-      frame.style.translate = '0 0'; frame.style.rotate = '0deg';
-    };
-
-    // Movimiento y opacidad durante la reproducción (se lanzan cuando el video realmente empieza a correr):
-    //  · deriva y gira un poco (±1,5° a ±3,5°, en un sentido al azar);
-    //  · la opacidad sube desde la actual (30 %) hasta el 100 %, se sostiene en la mitad del video y vuelve a bajar.
-    // Esta opacidad se multiplica con la del contenedor (que hace el fundido de entrada y de salida).
-    let glow: Animation | undefined;
-    let raf = 0;
-    const startMotion = () => {
-      glow?.cancel();
-      cancelAnimationFrame(raf);
-      const ms = ((video.duration || 10) / rate) * 1000;
-      // Opacidad y luminosidad: suben desde las actuales (30 % y oscuro) hasta el 100 % y el brillo normal, se sostienen en la mitad y bajan.
-      // Se multiplica con la del contenedor (que hace el fundido de entrada y de salida).
-      // La luminosidad acompaña a la opacidad: entra oscura, llega a su brillo normal en el pico y vuelve a oscurecerse,
-      // para que el fundido con el negro sea más natural (el video no "se apaga" de golpe sino que se hunde en la oscuridad).
-      const dark = 'brightness(.28)', normal = 'brightness(1)';
-      glow = frame.animate([
-        { opacity: 0.3, filter: dark },
-        { opacity: 1, filter: normal, offset: 0.38 },
-        { opacity: 1, filter: normal, offset: 0.62 },
-        { opacity: 0.3, filter: dark },
-      ], { duration: ms, easing: 'ease-in-out', fill: 'forwards' });
-
-      // Movimiento orgánico: una deriva lenta y suave más oscilaciones de distinta frecuencia (como un flotar irregular).
-      // La viñeta acompaña al video con un leve retraso propio y "respira" (se abre y se cierra un poco).
-      const m = Math.min(innerWidth, innerHeight);
-      const ang = Math.random() * Math.PI * 2;
-      const dist = m * (0.13 + Math.random() * 0.14); // recorrido visible: el video se desliza por el hero
-      const turn = (1.5 + Math.random() * 2) * (Math.random() < 0.5 ? -1 : 1);
-      const ph = Array.from({ length: 9 }, () => Math.random() * Math.PI * 2);
-      const ease = (p: number) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
-      const wob = (t: number, i: number, f: number) => Math.sin(t * f + ph[i]) + 0.6 * Math.sin(t * f * 1.67 + ph[i + 1]) + 0.35 * Math.sin(t * f * 2.53 + ph[i + 2]);
-      const t0 = performance.now();
-      const tick = (now: number) => {
-        const t = (now - t0) / 1000;
-        const e = ease(Math.min(1, (now - t0) / ms));
-        const dx = Math.cos(ang) * dist * e + m * 0.018 * wob(t, 0, 0.62);
-        const dy = Math.sin(ang) * dist * e + m * 0.018 * wob(t, 3, 0.55);
-        frame.style.translate = `${dx.toFixed(1)}px ${dy.toFixed(1)}px`;
-        frame.style.rotate = `${(turn * e + 0.45 * Math.sin(t * 0.5 + ph[6])).toFixed(2)}deg`;
-        const st = hero.style;
-        st.setProperty('--vdx', `${(dx * 0.88 + m * 0.014 * Math.sin(t * 0.8 + ph[7])).toFixed(1)}px`);
-        st.setProperty('--vdy', `${(dy * 0.88 + m * 0.014 * Math.sin(t * 0.67 + ph[8])).toFixed(1)}px`);
-        st.setProperty('--vb', (1 + 0.06 * Math.sin(t * 0.9 + ph[0])).toFixed(3));
-        if (now - t0 < ms + 3000) raf = requestAnimationFrame(tick); // sigue mientras dura el fundido de salida
-      };
-      raf = requestAnimationFrame(tick);
-    };
-
-    const prepare = () => { if (!video.src) { video.src = video.dataset.src!; video.load(); } };
-    const play = async () => {
-      prepare();
-      await whenVisible();
-      if (video.readyState < 3) await new Promise<void>((res) => video.addEventListener('canplay', () => res(), { once: true }));
-      video.currentTime = 0;
-      rate = pickRate();
-      video.playbackRate = rate;
-      fade = Math.min(2.6, (video.duration / rate) * 0.35); // el fundido no puede ser más largo que el propio clip
-      media.style.setProperty('--fade', `${fade}s`);
-      hero.style.setProperty('--fade', `${fade}s`);
-      place();
-      try { await video.play(); } catch { return later(play, GAP); } // si el navegador no deja reproducir, reintenta más tarde
-      startMotion();
-      media.classList.add('is-on');
-      hero.classList.add('has-video');
-    };
-
-    video.addEventListener('timeupdate', () => {
-      if (video.duration && (video.duration - video.currentTime) / rate < fade) { media.classList.remove('is-on'); hero.classList.remove('has-video'); }
-    });
-    video.addEventListener('ended', () => { media.classList.remove('is-on'); hero.classList.remove('has-video'); later(play, GAP); });
-
-    prepare(); // empieza a descargar enseguida (1,7 MB) para estar listo
-    // Arranca AFTER ms (0 = enseguida) después de que el hero termina de desplegarse (evento `hero:ready`, con respaldo por si no llega)
-    let started = false;
-    const go = () => { if (started) return; started = true; later(play, AFTER); };
-    document.addEventListener('hero:ready', go, { once: true });
-    later(go, 6000);
-  };
-
-  document.addEventListener('astro:page-load', init);
-  document.addEventListener('astro:before-swap', clear);
+  document.addEventListener('astro:page-load', initHeroVideo);
+  document.addEventListener('astro:before-swap', stopHeroVideo);
 </script>
