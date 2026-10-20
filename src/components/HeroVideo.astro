@@ -3,36 +3,50 @@
 // Ciclo: arranca apenas termina de desplegarse el hero → el video (se desvanece al aparecer y al terminar)
 // → 10 s de negro → vuelve el video, y así sucesivamente. Sin audio ni controles.
 const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`;
+
+// Los degradados con pocos pasos se ven "escalonados" en negros (anillos concéntricos). Se generan con 24 pasos
+// siguiendo una curva suave (smootherstep), de modo que la caída es gradual y sin cortes visibles.
+const smooth = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
+const N = 24;
+const vignetteStops = Array.from({ length: N + 1 }, (_, i) => {
+  const t = i / N;
+  return `rgb(11 11 10 / ${smooth(Math.pow(t, 0.85)).toFixed(4)}) ${(t * 90).toFixed(2)}%`; // transparente en el centro → negro del sitio al 90 %
+}).join(', ');
+const maskStops = Array.from({ length: N + 1 }, (_, i) => {
+  const t = i / N;
+  return `rgb(0 0 0 / ${(1 - smooth(t)).toFixed(4)}) ${(22 + t * 78).toFixed(2)}%`; // pleno hasta el 22 % → transparente en el borde
+}).join(', ');
 ---
-<div class="hero__media" aria-hidden="true">
+<div class="hero__media" aria-hidden="true" style={`--mask-stops:${maskStops}`}>
   <div class="hero__frame">
   <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-after="0" data-gap="10000" data-rate="1.45" data-rate-var="0.1"></video>
   </div>
-  <div class="hero__shade"></div>
 </div>
 <!-- Viñeta: degradado radial negro por fuera; el video queda por debajo y se pierde hacia los bordes -->
-<div class="hero__vignette" aria-hidden="true"></div>
+<div class="hero__vignette" aria-hidden="true" style={`--vignette-stops:${vignetteStops}`}></div>
 <!-- Capa tipo pantalla antigua (CRT) en modo overlay sobre la viñeta: líneas de barrido, máscara RGB, banda que rueda, ruido y parpadeo -->
 <div class="hero__crt" aria-hidden="true"></div>
 
 <style>
-  .hero__media { position: absolute; inset: 0; z-index: 1; mix-blend-mode: screen; /* Screen: lo oscuro del video desaparece y sólo suman las vetas claras */ overflow: hidden; pointer-events: none; opacity: 0; transition: opacity var(--fade, 2.6s) ease; }
+  .hero__media { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity var(--fade, 2.6s) ease; }
   .hero__media.is-on { opacity: 1; } /* fundido de entrada y salida; el nivel (30 % → 100 % → 30 %) lo anima el marco */
   /* El video no se estira a toda la pantalla: ocupa sólo la ventana central que deja ver la viñeta, a su resolución
      nativa (máx. 1280 px, nunca ampliado) y sin pixelarse. Los bordes de la ventana quedan bajo el negro de la viñeta.
      Se recorta el degradado negro que trae el original en su borde inferior (relación 2,07:1 en lugar de 16:9). */
   .hero__frame { opacity: .3; position: absolute; left: var(--vx, 50%); top: var(--vy, 44%); transform: translate(-50%, -50%) scale(var(--vs, 1)) rotate(var(--vr, 0deg)); width: min(1280px, max(82vw, 110svh)); aspect-ratio: 2.07; overflow: hidden;
     /* Máscara elíptica: el video se disuelve hacia el borde de su ventana, en la misma forma que la viñeta */
-    -webkit-mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 38%, rgb(0 0 0 / .55) 68%, transparent 100%); mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 38%, rgb(0 0 0 / .55) 68%, transparent 100%); }
+    -webkit-mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 0%, var(--mask-stops)); mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 0%, var(--mask-stops)); }
   .hero__video { display: block; width: 100%; height: auto; filter: grayscale(1) blur(16px); transition: filter var(--fade, 2.6s) ease; } /* sin color */
   /* Al aparecer se enfoca y al terminar se desenfoca de nuevo, junto con el fundido */
   .is-on .hero__video { filter: grayscale(1) blur(0); }
   /* Velo mínimo y uniforme (sin degradado): sólo para asentar el texto sobre las vetas claras */
-  .hero__shade { position: absolute; inset: 0; background: rgb(11 11 10 / .14); }
   /* Viñeta siempre presente (no se desvanece con el video): CÍRCULO negro por fuera que se abre hacia el centro.
      Su radio sigue al ancho de la ventana del video, así que no recorta lo visible. */
   .hero__vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none;
-    background: radial-gradient(circle calc(min(1280px, max(82vw, 110svh)) * .66 * var(--vb, 1)) at calc(var(--vx, 50%) + var(--vdx, 0px)) calc(var(--vy, 44%) + var(--vdy, 0px)), transparent 0%, rgb(11 11 10 / .22) 18%, rgb(11 11 10 / .62) 44%, rgb(11 11 10 / .93) 68%, var(--bg) 86%); }
+    background: radial-gradient(circle calc(min(1280px, max(82vw, 110svh)) * .66 * var(--vb, 1)) at calc(var(--vx, 50%) + var(--vdx, 0px)) calc(var(--vy, 44%) + var(--vdy, 0px)), var(--vignette-stops), var(--bg) 90%); }
+  /* Tramado fino y fijo: rompe los escalones de los degradados oscuros (8 bits) para que no se vean anillos */
+  .hero__vignette::after { content: ''; position: absolute; inset: 0; opacity: .5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='d' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='1' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 .05'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='discrete' tableValues='0 0 0 1'/%3E%3CfeFuncG type='discrete' tableValues='0 0 0 1'/%3E%3CfeFuncB type='discrete' tableValues='0 0 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23d)'/%3E%3C/svg%3E"); }
   /* Pantalla antigua: overlay sobre la viñeta y bajo el texto */
   .hero__crt { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; mix-blend-mode: overlay; opacity: .9;
     background:
