@@ -23,7 +23,7 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
   .hero__shade { position: absolute; inset: 0; background: rgb(11 11 10 / .14); }
   /* Viñeta siempre presente (no se desvanece con el video): negro sólido en los bordes que se abre hacia el centro */
   .hero__vignette { position: absolute; inset: 0; z-index: 0; pointer-events: none;
-    background: radial-gradient(ellipse 78% 74% at 50% 44%, transparent 0%, transparent 34%, rgb(11 11 10 / .5) 62%, rgb(11 11 10 / .9) 84%, var(--bg) 100%); }
+    background: radial-gradient(ellipse 70% 66% at 50% 44%, transparent 0%, rgb(11 11 10 / .22) 18%, rgb(11 11 10 / .62) 44%, rgb(11 11 10 / .93) 68%, var(--bg) 86%); }
   /* El video está pensado para fondo oscuro */
   @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .hero__media, :global(:root:not([data-theme='dark'])) .hero__vignette { display: none; } }
   @media (prefers-reduced-motion: reduce) { .hero__media, .hero__vignette { display: none; } }
