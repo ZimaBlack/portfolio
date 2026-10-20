@@ -1,0 +1,25 @@
+---
+// Marquesina de logos sin color (escala de grises) con un desplazamiento lento y continuo.
+// Dos copias idénticas de la lista, para que el bucle sea continuo (se desplaza -50% y reinicia sin saltos).
+const { items } = Astro.props as { items: string[] };
+---
+<div class="mq" aria-hidden="true">
+  <div class="mq__track">
+    {[0, 1].map(() => (
+      <ul class="mq__set">
+        {items.map((src) => <li><img src={src} alt="" loading="lazy" decoding="async" draggable="false" /></li>)}
+      </ul>
+    ))}
+  </div>
+</div>
+
+<style>
+  .mq { --gap: clamp(3rem, 7vw, 7rem); height: 40vh; height: 40svh; min-height: 14rem; overflow: hidden; display: flex; align-items: center;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%); }
+  .mq__track { display: flex; width: max-content; animation: mq-drift 140s linear infinite; will-change: transform; }
+  .mq__set { display: flex; align-items: center; gap: var(--gap); padding: 0 var(--gap) 0 0; margin: 0; list-style: none; }
+  .mq__set li { display: grid; place-items: center; }
+  .mq img { height: 17vh; height: 17svh; min-height: 5.5rem; width: auto; max-width: 22rem; object-fit: contain; filter: grayscale(1) brightness(1.15); opacity: .72; user-select: none; }
+  @keyframes mq-drift { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .mq__track { animation: none; } }
+</style>

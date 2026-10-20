@@ -29,6 +29,7 @@ const works = defineCollection({
     featured: z.boolean().default(false),
     order: z.number().default(99),
     cover: z.string().optional(), // tarjeta vertical 2:3 (índice y Home)
+    headerMarquee: z.boolean().default(false), // cabecera con marquesina de logos (b) sin color, en lugar de la imagen
     hero: z.string().optional(),  // cabecera panorámica 21:9 de la página del proyecto
     tones: z.tuple([z.string(), z.string()]).default(['#1a1a1a', '#2b2b2b']),
     stack: z.array(z.string()).default([]),
@@ -40,6 +41,7 @@ const works = defineCollection({
     slides: z.array(z.object({
       subtitle: t,
       alt: t.optional(),
+      swap: z.boolean().optional(), // intercambia las posiciones de los dos logos (a pasa a la columna angosta, b a la ancha)
       // Multiplicador del tamaño base del logo (1 = tamaño estándar). a = izquierdo (8 col), b = derecho (4 col)
       size: z.object({ a: z.number().optional(), b: z.number().optional() }).optional(),
       // Desplazamiento vertical del logo en píxeles (negativo = hacia arriba)

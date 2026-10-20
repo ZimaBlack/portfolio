@@ -3,7 +3,7 @@
 // centrados en cuadros de 75vh, y un subtítulo. El cambio de lámina no desliza: los logos pierden el color, se desenfocan
 // y se desvanecen, y los siguientes se reenfocan y recuperan el color. Botones, teclado y deslizar con el dedo.
 import { hsl, type Tone } from '../lib/palette';
-export interface Slide { n: number; a?: string; b?: string; subtitle: string; alt: string; sizeA?: number; sizeB?: number; dyA?: number; dyB?: number; ambient: { c1: Tone; c2: Tone; source: string } }
+export interface Slide { n: number; a?: string; b?: string; subtitle: string; alt: string; sizeA?: number; sizeB?: number; dyA?: number; dyB?: number; swap?: boolean; ambient: { c1: Tone; c2: Tone; source: string } }
 const { slides, labels } = Astro.props as { slides: Slide[]; labels: { prev: string; next: string; region: string; png: string } };
 // Variables CSS por logo: --k (multiplicador de tamaño) y --dy (desplazamiento vertical en px)
 const vars = (k?: number, dy?: number) => [k ? `--k:${k}` : '', dy ? `--dy:${dy}px` : ''].filter(Boolean).join(';') || undefined;
@@ -31,14 +31,21 @@ const total = slides.length;
     {slides.map((s, i) => (
       <article class:list={['slide', { 'is-active': i === 0 }]} role="group" aria-roledescription="slide" aria-label={`${pad(s.n)} / ${pad(total)}`}>
         <div class="slide__grid">
-          <figure class="cell cell--a" style={vars(s.sizeA, s.dyA)}>
-            {s.a ? <img src={s.a} alt={s.alt} loading="lazy" decoding="async" draggable="false" />
-              : <div class="ph"><b>{pad(s.n)}a</b><span>{labels.png}</span><strong>1800 × 1200 px</strong><em>3:2 · 8/12</em></div>}
-          </figure>
-          <figure class="cell cell--b" style={vars(s.sizeB, s.dyB)}>
-            {s.b ? <img src={s.b} alt={s.alt} loading="lazy" decoding="async" draggable="false" />
-              : <div class="ph"><b>{pad(s.n)}b</b><span>{labels.png}</span><strong>900 × 1200 px</strong><em>3:4 · 4/12</em></div>}
-          </figure>
+          {(() => {
+            // Con `swap`, el archivo "b" va en la columna ancha y el "a" en la angosta (el tamaño y el desplazamiento siguen al archivo)
+            const L = s.swap ? { src: s.b, k: s.sizeB, dy: s.dyB, f: 'b' } : { src: s.a, k: s.sizeA, dy: s.dyA, f: 'a' };
+            const R = s.swap ? { src: s.a, k: s.sizeA, dy: s.dyA, f: 'a' } : { src: s.b, k: s.sizeB, dy: s.dyB, f: 'b' };
+            return [
+              <figure class="cell cell--a" style={vars(L.k, L.dy)}>
+                {L.src ? <img src={L.src} alt={s.alt} loading="lazy" decoding="async" draggable="false" />
+                  : <div class="ph"><b>{pad(s.n)}{L.f}</b><span>{labels.png}</span><strong>1800 × 1200 px</strong><em>3:2 · 8/12</em></div>}
+              </figure>,
+              <figure class="cell cell--b" style={vars(R.k, R.dy)}>
+                {R.src ? <img src={R.src} alt={s.alt} loading="lazy" decoding="async" draggable="false" />
+                  : <div class="ph"><b>{pad(s.n)}{R.f}</b><span>{labels.png}</span><strong>900 × 1200 px</strong><em>3:4 · 4/12</em></div>}
+              </figure>,
+            ];
+          })()}
         </div>
         <p class="slide__sub"><span>{pad(s.n)}</span>{s.subtitle}</p>
       </article>

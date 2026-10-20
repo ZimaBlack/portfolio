@@ -11,6 +11,7 @@ text:
   es: "[Contexto, desafío, decisiones de diseño y resultado.]"
   en: "[Context, challenge, design decisions and outcome.]"
 featured: true
+headerMarquee: true
 order: 1
 cover: /works/logofolio/portada.png
 tones: ["#17130f", "#3a2f25"]
@@ -30,7 +31,8 @@ slides:
   - subtitle: { es: "[Subtítulo de la lámina 09]", en: "[Slide 09 subtitle]" }
   - subtitle: { es: "[Subtítulo de la lámina 10]", en: "[Slide 10 subtitle]" }
   - subtitle: { es: "[Subtítulo de la lámina 11]", en: "[Slide 11 subtitle]" }
-    size: { a: 0.9, b: 2.1 }
+    swap: true
+    size: { a: 1.9, b: 1.1 }
   - subtitle: { es: "[Subtítulo de la lámina 12]", en: "[Slide 12 subtitle]" }
     size: { a: 1.6, b: 0.7 }
   - subtitle: { es: "[Subtítulo de la lámina 13]", en: "[Slide 13 subtitle]" }

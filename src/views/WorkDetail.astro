@@ -5,6 +5,7 @@ import Frame from '../components/Frame.astro';
 import VideoEmbed from '../components/VideoEmbed.astro';
 import Icon from '../components/Icon.astro';
 import Carousel, { type Slide } from '../components/Carousel.astro';
+import Marquee from '../components/Marquee.astro';
 import { ambientOf, type Tone } from '../lib/palette';
 import { copy, loc, paths, type Lang } from '../lib/i18n';
 
@@ -29,12 +30,14 @@ for (const [path, url] of Object.entries(found)) {
 // Respaldo para logos blancos/grises/negros: una luz neutra, apenas fría, en vez de un color
 const NEUTRAL: [Tone, Tone] = [{ h: 215, s: 0.1, l: 0.62 }, { h: 30, s: 0.08, l: 0.55 }];
 const total = Math.max(d.slides.length, ...Object.keys(files).map(Number), 0);
+const marqueeItems = Object.keys(files).map(Number).sort((a, b) => a - b).map((n) => files[n].b).filter(Boolean) as string[];
 const slides: Slide[] = Array.from({ length: total }, (_, i) => ({
   n: i + 1,
   a: files[i + 1]?.a,
   b: files[i + 1]?.b,
   subtitle: loc(d.slides[i]?.subtitle, lang),
   alt: loc(d.slides[i]?.alt, lang) || loc(d.slides[i]?.subtitle, lang) || d.title,
+  swap: d.slides[i]?.swap,
   sizeA: d.slides[i]?.size?.a,
   sizeB: d.slides[i]?.size?.b,
   dyA: d.slides[i]?.dy?.a,
@@ -65,7 +68,11 @@ const alt = lang === 'es' ? 'en' : 'es';
       )}
     </header>
 
-    <div class="hero-img" data-reveal><Frame src={d.hero} alt={d.title} tones={d.tones} ratio="21 / 9" label={c.detail.hero} parallax={7} note={c.detail.safe} /></div>
+    <div class="hero-img" data-reveal>
+      {d.headerMarquee && marqueeItems.length > 0
+        ? <Marquee items={marqueeItems} />
+        : <Frame src={d.hero} alt={d.title} tones={d.tones} ratio="21 / 9" label={c.detail.hero} parallax={7} note={c.detail.safe} />}
+    </div>
 
     <div class="wrap prose" data-reveal><p>{loc(d.text, lang)}</p></div>
 
