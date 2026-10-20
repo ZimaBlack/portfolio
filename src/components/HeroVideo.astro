@@ -1,11 +1,11 @@
 ---
 // Video de fondo del hero (los últimos 10 s del original, en blanco y negro y acelerado).
 // Ciclo: 6 s de negro tras cargar la página → el video (se desvanece al aparecer y al terminar)
-// → 100 s de negro → vuelve el video, y así sucesivamente. Sin audio ni controles.
+// → 10 s de negro → vuelve el video, y así sucesivamente. Sin audio ni controles.
 const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`;
 ---
 <div class="hero__media" aria-hidden="true">
-  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-start="6000" data-gap="100000" data-rate="1.6"></video>
+  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-start="6000" data-gap="10000" data-rate="2.2"></video>
   <div class="hero__shade"></div>
 </div>
 
