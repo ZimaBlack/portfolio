@@ -37,6 +37,8 @@ const slides: Slide[] = Array.from({ length: total }, (_, i) => ({
   alt: loc(d.slides[i]?.alt, lang) || loc(d.slides[i]?.subtitle, lang) || d.title,
   sizeA: d.slides[i]?.size?.a,
   sizeB: d.slides[i]?.size?.b,
+  dyA: d.slides[i]?.dy?.a,
+  dyB: d.slides[i]?.dy?.b,
   ambient: ambientOf(svgText[i + 1] ?? [], NEUTRAL),
 }));
 const alt = lang === 'es' ? 'en' : 'es';

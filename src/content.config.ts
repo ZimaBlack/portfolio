@@ -42,6 +42,8 @@ const works = defineCollection({
       alt: t.optional(),
       // Multiplicador del tamaño base del logo (1 = tamaño estándar). a = izquierdo (8 col), b = derecho (4 col)
       size: z.object({ a: z.number().optional(), b: z.number().optional() }).optional(),
+      // Desplazamiento vertical del logo en píxeles (negativo = hacia arriba)
+      dy: z.object({ a: z.number().optional(), b: z.number().optional() }).optional(),
     })).default([]),
   }),
 });

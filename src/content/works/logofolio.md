@@ -21,7 +21,8 @@ slides:
     size: { a: 1.5, b: 0.85 }
   - subtitle: { es: "[Subtítulo de la lámina 03]", en: "[Slide 03 subtitle]" }
   - subtitle: { es: "[Subtítulo de la lámina 04]", en: "[Slide 04 subtitle]" }
-    size: { a: 1.9, b: 1.5 }
+    size: { a: 1.9, b: 1.1 }
+    dy: { a: -50 }
   - subtitle: { es: "[Subtítulo de la lámina 05]", en: "[Slide 05 subtitle]" }
   - subtitle: { es: "[Subtítulo de la lámina 06]", en: "[Slide 06 subtitle]" }
   - subtitle: { es: "[Subtítulo de la lámina 07]", en: "[Slide 07 subtitle]" }
