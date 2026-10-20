@@ -8,6 +8,8 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
   <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-start="6000" data-gap="10000" data-rate="3"></video>
   <div class="hero__shade"></div>
 </div>
+<!-- Viñeta: degradado radial negro por fuera; el video queda por debajo y se pierde hacia los bordes -->
+<div class="hero__vignette" aria-hidden="true"></div>
 
 <style>
   .hero__media { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity var(--fade, 2.6s) ease; }
@@ -19,9 +21,12 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
   .is-on .hero__video { filter: grayscale(1) brightness(.9) blur(0); }
   /* Velo mínimo y uniforme (sin degradado): sólo para asentar el texto sobre las vetas claras */
   .hero__shade { position: absolute; inset: 0; background: rgb(11 11 10 / .14); }
+  /* Viñeta siempre presente (no se desvanece con el video): negro sólido en los bordes que se abre hacia el centro */
+  .hero__vignette { position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse 78% 74% at 50% 44%, transparent 0%, transparent 34%, rgb(11 11 10 / .5) 62%, rgb(11 11 10 / .9) 84%, var(--bg) 100%); }
   /* El video está pensado para fondo oscuro */
-  @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .hero__media { display: none; } }
-  @media (prefers-reduced-motion: reduce) { .hero__media { display: none; } }
+  @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .hero__media, :global(:root:not([data-theme='dark'])) .hero__vignette { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .hero__media, .hero__vignette { display: none; } }
 </style>
 
 <script>
