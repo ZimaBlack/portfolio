@@ -73,7 +73,7 @@ const alt = lang === 'es' ? 'en' : 'es';
       <div class="hero-img" data-reveal><Frame src={d.hero} alt={d.title} tones={d.tones} ratio="21 / 9" label={c.detail.hero} parallax={7} note={c.detail.safe} /></div>
     )}
 
-    <div class="wrap prose" data-reveal><p>{loc(d.text, lang)}</p></div>
+    {loc(d.text, lang).trim() && <div class="wrap prose" data-reveal><p>{loc(d.text, lang)}</p></div>}
 
     {slides.length > 0 && (
       <section class="wrap car-sec">

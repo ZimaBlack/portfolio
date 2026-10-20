@@ -123,7 +123,10 @@ const total = slides.length;
 
   @media (max-width: 700px) {
     .cell { height: 58vh; height: 58svh; min-height: 16rem; }
-    .cell img { --bw: 78%; }
+    /* Móvil: sólo se ve el logo de la izquierda, a todo el ancho */
+    .cell--b { display: none; }
+    .cell--a { grid-column: 1 / -1; }
+    .cell img { --bw: 56%; }
     .ph { padding: .5rem; gap: .3rem; } .ph span, .ph em { display: none; } .ph strong { font-size: .78rem; text-align: center; } .ph b { font-size: 1.1rem; }
   }
   @media (prefers-reduced-motion: reduce) {

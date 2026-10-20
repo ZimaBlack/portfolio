@@ -24,7 +24,7 @@ const works = defineCollection({
     client: z.string().optional(),
     discipline: t,
     summary: t,
-    text: t,
+    text: t.optional(), // texto largo del proyecto (opcional)
     badge: z.string().optional(), // etiqueta destacada, ej. "pre-ia"
     featured: z.boolean().default(false),
     order: z.number().default(99),

@@ -4,11 +4,8 @@ kind: design
 discipline: { es: "Branding", en: "Branding" }
 role: { es: "Identidad visual", en: "Visual identity" }
 summary:
-  es: "[Breve descripción del impacto del proyecto]"
-  en: "[Short description of the project's impact]"
-text:
-  es: "[Contexto, desafío, decisiones de diseño y resultado.]"
-  en: "[Context, challenge, design decisions and outcome.]"
+  es: "Una selección de logotipos que refleja un estilo y un trabajo de la época pre-IA. A continuación, se pueden apreciar los detalles."
+  en: "A selection of logos reflecting a style and a body of work from the pre-AI era. The details follow below."
 featured: true
 headerMarquee: true
 order: 1
