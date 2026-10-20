@@ -12,7 +12,7 @@ const total = slides.length;
   <div class="car__amb" aria-hidden="true">
     {slides.map((s, i) => (
       <div class:list={['amb', { 'is-on': i === 0 }]} data-c1={hsl(s.ambient.c1)} data-c2={hsl(s.ambient.c2)} data-source={s.ambient.source}
-        style={`--c1:${hsl(s.ambient.c1, 0.2)};--c2:${hsl(s.ambient.c2, 0.13)};--c1s:${hsl(s.ambient.c1, 0.07)}`}></div>
+        style={`--c1:${hsl(s.ambient.c1, 0.2)};--c2:${hsl(s.ambient.c2, 0.13)};--c1s:${hsl(s.ambient.c1, 0.07)};--c3:${hsl(s.ambient.c2, 0.09)}`}></div>
     ))}
   </div>
 
@@ -46,18 +46,27 @@ const total = slides.length;
 <style>
   .car { display: grid; gap: 1.25rem; position: relative; isolation: isolate; }
 
-  /* Ambiente: luz circular y suave sobre el lado derecho, que cambia con cada lámina */
-  .car__amb { position: absolute; z-index: -1; inset: -7rem -8vw -5rem 22%; pointer-events: none; }
-  .amb { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s var(--ease);
+  /* Ambiente: luz circular y suave a la derecha (principal), una más leve a la izquierda, y un grano finísimo.
+     Cada lámina tiene su propia capa; al cambiar de lámina se funden entre sí. */
+  .car__amb { position: absolute; z-index: -1; inset: -7rem -8vw -5rem -8vw; pointer-events: none; }
+  .amb { --shape: radial-gradient(circle 34rem at 90% 38%, #000, transparent 72%), radial-gradient(circle 26rem at 70% 80%, #000, transparent 70%), radial-gradient(circle 30rem at 8% 58%, #000, transparent 70%);
+    position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s var(--ease);
     background:
-      radial-gradient(circle 34rem at 86% 38%, var(--c1) 0%, var(--c1s) 48%, transparent 72%),
-      radial-gradient(circle 26rem at 66% 78%, var(--c2) 0%, transparent 70%); }
+      radial-gradient(circle 34rem at 90% 38%, var(--c1) 0%, var(--c1s) 48%, transparent 72%),
+      radial-gradient(circle 26rem at 70% 80%, var(--c2) 0%, transparent 70%),
+      radial-gradient(circle 30rem at 8% 58%, var(--c3) 0%, transparent 70%); }
   .amb.is-on { opacity: 1; }
+  /* Grano: puntos blancos translúcidos, visibles sólo donde hay luz (la máscara repite las formas del degradado) */
+  .amb::after { content: ''; position: absolute; inset: 0; opacity: .1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.7 0 0 0 -0.85'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+    -webkit-mask-image: var(--shape); mask-image: var(--shape); }
   @media (max-width: 700px) {
-    .car__amb { inset: -4rem -6vw -3rem 0; }
-    .amb { background: radial-gradient(circle 20rem at 88% 30%, var(--c1) 0%, var(--c1s) 48%, transparent 72%), radial-gradient(circle 16rem at 50% 85%, var(--c2) 0%, transparent 70%); }
+    .car__amb { inset: -4rem -6vw -9rem -6vw; }
+    .amb { --shape: radial-gradient(circle 20rem at 90% 30%, #000, transparent 72%), radial-gradient(circle 16rem at 50% 72%, #000, transparent 70%), radial-gradient(circle 16rem at 6% 60%, #000, transparent 70%);
+      background: radial-gradient(circle 20rem at 90% 30%, var(--c1) 0%, var(--c1s) 48%, transparent 72%), radial-gradient(circle 16rem at 50% 72%, var(--c2) 0%, transparent 70%), radial-gradient(circle 16rem at 6% 60%, var(--c3) 0%, transparent 70%); }
   }
   @media (prefers-reduced-motion: reduce) { .amb { transition: none; } }
+
   .car__bar { display: flex; align-items: center; justify-content: space-between; }
   .car__count { font-size: .8rem; letter-spacing: .14em; color: var(--muted); }
   .car__count b { font-weight: 500; color: var(--fg); }
@@ -77,8 +86,8 @@ const total = slides.length;
   .cell--a { grid-column: span 8; }
   .cell--b { grid-column: span 4; }
   .cell { margin: 0; height: 75vh; height: 75svh; min-height: 20rem; display: grid; place-items: center; overflow: hidden; }
-  /* Cada logo ocupa como máximo el 60% del alto del cuadro (y el 80% del ancho); los SVG escalan sin perder nitidez */
-  .cell img { width: 80%; height: 60%; object-fit: contain; user-select: none; }
+  /* Cada logo ocupa como máximo el 30% del alto y el 40% del ancho del cuadro, centrado; los SVG escalan sin perder nitidez */
+  .cell img { width: 40%; height: 30%; object-fit: contain; user-select: none; }
   .cell:has(.ph) { outline: 1px dashed var(--line); outline-offset: -1px; } /* sólo los recuadros de referencia llevan borde */
 
   .ph { display: grid; gap: .45rem; justify-items: center; text-align: center; padding: 1rem; color: rgb(255 255 255 / .4); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
@@ -91,7 +100,7 @@ const total = slides.length;
 
   @media (max-width: 700px) {
     .cell { height: 58vh; height: 58svh; min-height: 16rem; }
-    .cell img { width: 86%; height: 60%; }
+    .cell img { width: 78%; height: 30%; }
     .ph { padding: .5rem; gap: .3rem; } .ph span, .ph em { display: none; } .ph strong { font-size: .78rem; text-align: center; } .ph b { font-size: 1.1rem; }
   }
   @media (prefers-reduced-motion: reduce) { .car__track { scroll-behavior: auto; } }
