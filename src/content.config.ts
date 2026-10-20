@@ -37,7 +37,12 @@ const works = defineCollection({
     video: z.object({ provider: z.enum(['vimeo', 'youtube']), id: z.string() }).optional(),
     gallery: z.array(block).default([]),
     // Carrusel de láminas (dos PNG por lámina): las imágenes salen de src/assets/works/<slug>/carrusel/NNa.png y NNb.png
-    slides: z.array(z.object({ subtitle: t, alt: t.optional() })).default([]),
+    slides: z.array(z.object({
+      subtitle: t,
+      alt: t.optional(),
+      // Multiplicador del tamaño base del logo (1 = tamaño estándar). a = izquierdo (8 col), b = derecho (4 col)
+      size: z.object({ a: z.number().optional(), b: z.number().optional() }).optional(),
+    })).default([]),
   }),
 });
 

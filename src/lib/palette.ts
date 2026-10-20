@@ -82,7 +82,7 @@ export function ambientOf(svgs: string[], fallback: [Tone, Tone]): { c1: Tone; c
     .find(({ bk, t }) => bk.w >= ranked[0][1].w * 0.2 && hueDist(t.h, first.h) >= 45)?.t;
 
   // Armonización: saturación y luminosidad acotadas para que el brillo sea parejo entre láminas.
-  const soft = (t: Tone): Tone => ({ h: t.h, s: clamp(t.s, 0.4, 0.78), l: clamp(t.l, 0.46, 0.6) });
+  const soft = (t: Tone): Tone => ({ h: t.h, s: clamp(t.s, 0.4, 0.78), l: clamp(t.l + 0.04, 0.5, 0.66) });
   const c1 = soft(first);
   const c2 = soft(second ?? { h: (first.h + 32) % 360, s: first.s, l: first.l + 0.04 }); // sin 2.º color: análogo
   return { c1, c2, source: 'logos' };

@@ -3,7 +3,7 @@
 // centrados en cuadros de 75vh, y un subtítulo. El cambio de lámina no desliza: los logos pierden el color, se desenfocan
 // y se desvanecen, y los siguientes se reenfocan y recuperan el color. Botones, teclado y deslizar con el dedo.
 import { hsl, type Tone } from '../lib/palette';
-export interface Slide { n: number; a?: string; b?: string; subtitle: string; alt: string; ambient: { c1: Tone; c2: Tone; source: string } }
+export interface Slide { n: number; a?: string; b?: string; subtitle: string; alt: string; sizeA?: number; sizeB?: number; ambient: { c1: Tone; c2: Tone; source: string } }
 const { slides, labels } = Astro.props as { slides: Slide[]; labels: { prev: string; next: string; region: string; png: string } };
 const pad = (n: number) => String(n).padStart(2, '0');
 const total = slides.length;
@@ -13,7 +13,7 @@ const total = slides.length;
   <div class="car__amb" aria-hidden="true">
     {slides.map((s, i) => (
       <div class:list={['amb', { 'is-on': i === 0 }]} data-c1={hsl(s.ambient.c1)} data-c2={hsl(s.ambient.c2)} data-source={s.ambient.source}
-        style={`--c1:${hsl(s.ambient.c1, 0.17)};--c2:${hsl(s.ambient.c2, 0.17)};--c3:${hsl(s.ambient.c2, 0.09)}`}></div>
+        style={`--c1:${hsl(s.ambient.c1, 0.23)};--c2:${hsl(s.ambient.c2, 0.23)};--c3:${hsl(s.ambient.c2, 0.09)}`}></div>
     ))}
   </div>
 
@@ -29,11 +29,11 @@ const total = slides.length;
     {slides.map((s, i) => (
       <article class:list={['slide', { 'is-active': i === 0 }]} role="group" aria-roledescription="slide" aria-label={`${pad(s.n)} / ${pad(total)}`}>
         <div class="slide__grid">
-          <figure class="cell cell--a">
+          <figure class="cell cell--a" style={s.sizeA ? `--k:${s.sizeA}` : undefined}>
             {s.a ? <img src={s.a} alt={s.alt} loading="lazy" decoding="async" draggable="false" />
               : <div class="ph"><b>{pad(s.n)}a</b><span>{labels.png}</span><strong>1800 × 1200 px</strong><em>3:2 · 8/12</em></div>}
           </figure>
-          <figure class="cell cell--b">
+          <figure class="cell cell--b" style={s.sizeB ? `--k:${s.sizeB}` : undefined}>
             {s.b ? <img src={s.b} alt={s.alt} loading="lazy" decoding="async" draggable="false" />
               : <div class="ph"><b>{pad(s.n)}b</b><span>{labels.png}</span><strong>900 × 1200 px</strong><em>3:4 · 4/12</em></div>}
           </figure>
@@ -100,7 +100,8 @@ const total = slides.length;
   .cell--b { grid-column: span 4; }
   .cell { margin: 0; height: 75vh; height: 75svh; min-height: 20rem; display: grid; place-items: center; overflow: hidden; }
   /* Cada logo ocupa como máximo el 30% del alto y el 40% del ancho del cuadro, centrado; los SVG escalan sin perder nitidez */
-  .cell img { width: 40%; height: 30%; object-fit: contain; user-select: none; }
+  /* Tamaño base 40% × 30%; `--k` (por lámina y por logo, definido en el archivo del proyecto) lo multiplica, sin pasar del 94% */
+  .cell img { --bw: 40%; --bh: 30%; width: min(94%, calc(var(--bw) * var(--k, 1))); height: min(94%, calc(var(--bh) * var(--k, 1))); object-fit: contain; user-select: none; }
   .cell:has(.ph) { outline: 1px dashed var(--line); outline-offset: -1px; } /* sólo los recuadros de referencia llevan borde */
 
   .ph { display: grid; gap: .45rem; justify-items: center; text-align: center; padding: 1rem; color: rgb(255 255 255 / .4); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
@@ -113,7 +114,7 @@ const total = slides.length;
 
   @media (max-width: 700px) {
     .cell { height: 58vh; height: 58svh; min-height: 16rem; }
-    .cell img { width: 78%; height: 30%; }
+    .cell img { --bw: 78%; }
     .ph { padding: .5rem; gap: .3rem; } .ph span, .ph em { display: none; } .ph strong { font-size: .78rem; text-align: center; } .ph b { font-size: 1.1rem; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -136,18 +137,15 @@ const total = slides.length;
       let i = 0;
 
       const show = (n: number) => {
-        n = Math.max(0, Math.min(slides.length - 1, n));
+        n = (n + slides.length) % slides.length; // infinito: después de la última vuelve la primera, y al revés
         if (n === i) return;
         i = n;
         slides.forEach((s, k) => { s.classList.toggle('is-active', k === i); s.toggleAttribute('inert', k !== i); });
         amb.forEach((a, k) => a.classList.toggle('is-on', k === i));
         cur.textContent = String(i + 1).padStart(2, '0');
-        prev.disabled = i <= 0;
-        next.disabled = i >= slides.length - 1;
       };
       slides.forEach((s, k) => s.toggleAttribute('inert', k !== 0));
-      prev.disabled = true;
-      next.disabled = slides.length < 2;
+      prev.disabled = next.disabled = slides.length < 2;
 
       prev.addEventListener('click', () => show(i - 1));
       next.addEventListener('click', () => show(i + 1));
