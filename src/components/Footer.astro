@@ -34,7 +34,7 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
 <style>
   .footer { --crt-z: 0; /* pantalla antigua: sobre la foto, bajo el contenido */ position: relative; overflow: hidden; isolation: isolate; background: var(--bg); /* base sobre la que se funde la foto */ }
   /* Retrato a la derecha, detrás del contenido, al 40% de opacidad; el borde izquierdo se desvanece */
-  .footer__photo { position: absolute; z-index: -1; right: 0; bottom: 0; height: 100%; width: auto; max-width: 75%; object-fit: contain; object-position: right bottom; opacity: .55; mix-blend-mode: screen; /* fusión: el negro de la foto desaparece contra el fondo y las luces se suman */ pointer-events: none; user-select: none;
+  .footer__photo { position: absolute; z-index: -1; right: 0; bottom: 0; height: 100%; width: auto; max-width: 75%; object-fit: contain; object-position: right bottom; opacity: .55; filter: blur(.8px); /* leve desenfoque: aspecto de pantalla */ mix-blend-mode: screen; /* fusión: el negro de la foto desaparece contra el fondo y las luces se suman */ pointer-events: none; user-select: none;
     /* bordes que se desvanecen: izquierdo y superior, para que el recorte del encuadre no se note */
     -webkit-mask-image: linear-gradient(to right, var(--fade-l)), linear-gradient(to bottom, var(--fade-t)); -webkit-mask-composite: source-in;
     mask-image: linear-gradient(to right, var(--fade-l)), linear-gradient(to bottom, var(--fade-t)); mask-composite: intersect; }
@@ -54,14 +54,14 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
       -webkit-mask-image: linear-gradient(to bottom, var(--fade-t-m), #000 34%, #000 72%, var(--fade-b-m)); -webkit-mask-composite: source-in;
       mask-image: linear-gradient(to bottom, var(--fade-t-m), #000 34%, #000 72%, var(--fade-b-m)); }
   }
-  /* Glitch (lo dispara el script cada ~3 s, con variaciones): la foto se desfasa en canales RGB y salta; una franja de luz cruza la pantalla */
+  /* Glitch (lo dispara el script cada ~12 s, con variaciones): la foto se desfasa en canales RGB y salta; una franja de luz cruza la pantalla */
   .footer__photo.is-glitch { animation: foot-glitch var(--gd, .32s) ease-out 1; }
   @keyframes foot-glitch {
-    0%   { transform: translateX(calc(var(--gx, 4px) * -1)); filter: drop-shadow(calc(var(--gx, 4px) * .5) 0 0 rgb(255 0 70 / .28)) drop-shadow(calc(var(--gx, 4px) * -.5) 0 0 rgb(0 230 255 / .28)); }
-    30%  { transform: translateX(var(--gx, 4px)) skewX(var(--gs, 1deg)); filter: drop-shadow(calc(var(--gx, 4px) * -.4) 0 0 rgb(255 0 70 / .22)) drop-shadow(calc(var(--gx, 4px) * .4) 0 0 rgb(0 230 255 / .22)); }
-    55%  { transform: translateX(calc(var(--gx, 4px) * -.4)) translateY(var(--gy, 1px)); filter: brightness(1.15); }
-    80%  { transform: translateX(calc(var(--gx, 4px) * .2)); filter: none; }
-    100% { transform: none; filter: none; }
+    0%   { transform: translateX(calc(var(--gx, 4px) * -1)); filter: blur(.8px) drop-shadow(calc(var(--gx, 4px) * .5) 0 0 rgb(255 0 70 / .28)) drop-shadow(calc(var(--gx, 4px) * -.5) 0 0 rgb(0 230 255 / .28)); }
+    30%  { transform: translateX(var(--gx, 4px)) skewX(var(--gs, 1deg)); filter: blur(.8px) drop-shadow(calc(var(--gx, 4px) * -.4) 0 0 rgb(255 0 70 / .22)) drop-shadow(calc(var(--gx, 4px) * .4) 0 0 rgb(0 230 255 / .22)); }
+    55%  { transform: translateX(calc(var(--gx, 4px) * -.4)) translateY(var(--gy, 1px)); filter: blur(1.1px) brightness(1.15); }
+    80%  { transform: translateX(calc(var(--gx, 4px) * .2)); filter: blur(.8px); }
+    100% { transform: none; filter: blur(.8px); }
   }
   .footer__glitch { position: absolute; z-index: 0; left: 0; right: 0; top: var(--gt, 40%); height: var(--gh, 6%); pointer-events: none; opacity: 0; mix-blend-mode: screen;
     background: linear-gradient(to bottom, transparent, rgb(255 255 255 / .07) 30%, rgb(255 255 255 / .035) 70%, transparent); }
@@ -90,7 +90,7 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
     glitch(f);
   };
 
-  // Glitch cada ~3 s (entre 1,8 y 4,8 s, siempre distinto) sólo mientras el footer se ve y la pestaña está activa
+  // Glitch cada ~12 s (entre 11 y 13 s) sólo mientras el footer se ve y la pestaña está activa
   let glitchTimer = 0;
   const glitch = (f: HTMLElement) => {
     clearTimeout(glitchTimer);
@@ -112,9 +112,9 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
         st.setProperty('--gh', `${r(2, 7).toFixed(0)}%`);
         for (const el of [photo, bar]) { el.classList.remove('is-glitch'); void el.offsetWidth; el.classList.add('is-glitch'); }
       }
-      glitchTimer = window.setTimeout(fire, r(1800, 4800));
+      glitchTimer = window.setTimeout(fire, r(11000, 13000));
     };
-    glitchTimer = window.setTimeout(fire, r(1500, 3000));
+    glitchTimer = window.setTimeout(fire, r(3000, 6000));
   };
   document.addEventListener('astro:page-load', init);
   document.addEventListener('astro:before-swap', () => clearTimeout(glitchTimer));
