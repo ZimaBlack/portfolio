@@ -5,9 +5,15 @@ import Icon from './Icon.astro';
 import Crt from './Crt.astro';
 const { lang } = Astro.props as { lang: Lang };
 const c = copy[lang];
+
+// Fundidos al negro con curva suave (smootherstep) y muchos pasos: sin escalones ni bordes marcados.
+const smooth = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
+const ramp = (from: number, to: number, n = 20) =>
+  Array.from({ length: n + 1 }, (_, i) => `rgb(0 0 0 / ${smooth(i / n).toFixed(4)}) ${(from + ((to - from) * i) / n).toFixed(2)}%`).join(', ');
+const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ramp(0, 34)}; --fade-b-m:${ramp(100, 72).split(', ').reverse().join(', ')}`;
 ---
 <footer class="footer section" id="contacto">
-  <img class="footer__photo" src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/portrait.jpg`} alt="" aria-hidden="true" width="1386" height="1135" loading="lazy" decoding="async" />
+  <img class="footer__photo" style={fades} src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/portrait.jpg`} alt="" aria-hidden="true" width="1386" height="1135" loading="lazy" decoding="async" />
   <Crt />
   <span class="footer__glitch" aria-hidden="true"></span>
   <div class="wrap footer__content">
@@ -30,8 +36,8 @@ const c = copy[lang];
   /* Retrato a la derecha, detrás del contenido, al 40% de opacidad; el borde izquierdo se desvanece */
   .footer__photo { position: absolute; z-index: -1; right: 0; bottom: 0; height: 100%; width: auto; max-width: 75%; object-fit: contain; object-position: right bottom; opacity: .55; mix-blend-mode: screen; /* fusión: el negro de la foto desaparece contra el fondo y las luces se suman */ pointer-events: none; user-select: none;
     /* bordes que se desvanecen: izquierdo y superior, para que el recorte del encuadre no se note */
-    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 30%), linear-gradient(to bottom, transparent 0, #000 16%); -webkit-mask-composite: source-in;
-    mask-image: linear-gradient(to right, transparent 0, #000 30%), linear-gradient(to bottom, transparent 0, #000 16%); mask-composite: intersect; }
+    -webkit-mask-image: linear-gradient(to right, var(--fade-l)), linear-gradient(to bottom, var(--fade-t)); -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to right, var(--fade-l)), linear-gradient(to bottom, var(--fade-t)); mask-composite: intersect; }
   @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .footer__photo { display: none; } } /* la foto está pensada para fondo oscuro */
   /* Entrada: la foto aparece con un fundido lento al llegar a la sección */
   :global(.js) .footer__photo { opacity: 0; transform: translateY(26px) scale(1.03); transition: opacity 2.4s var(--ease), transform 2.8s var(--ease); }
@@ -45,23 +51,22 @@ const c = copy[lang];
     .footer__content { flex: 1; display: flex; flex-direction: column; }
     .footer .footer__base { margin-top: auto; padding-top: 4rem; } /* más específico: gana a la regla base que va después */
     .footer__photo { top: auto; bottom: 6.5rem; left: -13%; right: auto; width: 126%; max-width: none; height: auto; object-fit: fill;
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24%, #000 80%, transparent 100%); -webkit-mask-composite: source-in;
-      mask-image: linear-gradient(to bottom, transparent 0, #000 24%, #000 80%, transparent 100%); }
+      -webkit-mask-image: linear-gradient(to bottom, var(--fade-t-m), #000 34%, #000 72%, var(--fade-b-m)); -webkit-mask-composite: source-in;
+      mask-image: linear-gradient(to bottom, var(--fade-t-m), #000 34%, #000 72%, var(--fade-b-m)); }
   }
   /* Glitch (lo dispara el script cada ~3 s, con variaciones): la foto se desfasa en canales RGB y salta; una franja de luz cruza la pantalla */
-  .footer__photo.is-glitch { animation: foot-glitch var(--gd, .32s) steps(1) 1; }
+  .footer__photo.is-glitch { animation: foot-glitch var(--gd, .32s) ease-out 1; }
   @keyframes foot-glitch {
-    0%   { transform: translateX(calc(var(--gx, 12px) * -1)) skewX(calc(var(--gs, 3deg) * -1)); filter: drop-shadow(calc(var(--gx, 12px) * .5) 0 0 rgb(255 0 70 / .75)) drop-shadow(calc(var(--gx, 12px) * -.5) 0 0 rgb(0 230 255 / .75)) brightness(1.5); }
-    22%  { transform: translateX(var(--gx, 12px)) skewX(var(--gs, 3deg)); filter: drop-shadow(calc(var(--gx, 12px) * -.4) 0 0 rgb(255 0 70 / .6)) drop-shadow(calc(var(--gx, 12px) * .4) 0 0 rgb(0 230 255 / .6)) contrast(1.4); }
-    41%  { transform: translateX(calc(var(--gx, 12px) * .3)) translateY(calc(var(--gy, 4px) * -1)); filter: hue-rotate(40deg) brightness(1.8); }
-    63%  { transform: translateX(calc(var(--gx, 12px) * -.6)) translateY(var(--gy, 4px)) skewX(calc(var(--gs, 3deg) * .5)); filter: drop-shadow(calc(var(--gx, 12px) * .6) 0 0 rgb(255 0 70 / .6)) brightness(.7); }
-    82%  { transform: translateX(calc(var(--gx, 12px) * .15)); filter: contrast(1.6) brightness(1.3); }
+    0%   { transform: translateX(calc(var(--gx, 4px) * -1)); filter: drop-shadow(calc(var(--gx, 4px) * .5) 0 0 rgb(255 0 70 / .28)) drop-shadow(calc(var(--gx, 4px) * -.5) 0 0 rgb(0 230 255 / .28)); }
+    30%  { transform: translateX(var(--gx, 4px)) skewX(var(--gs, 1deg)); filter: drop-shadow(calc(var(--gx, 4px) * -.4) 0 0 rgb(255 0 70 / .22)) drop-shadow(calc(var(--gx, 4px) * .4) 0 0 rgb(0 230 255 / .22)); }
+    55%  { transform: translateX(calc(var(--gx, 4px) * -.4)) translateY(var(--gy, 1px)); filter: brightness(1.15); }
+    80%  { transform: translateX(calc(var(--gx, 4px) * .2)); filter: none; }
     100% { transform: none; filter: none; }
   }
   .footer__glitch { position: absolute; z-index: 0; left: 0; right: 0; top: var(--gt, 40%); height: var(--gh, 6%); pointer-events: none; opacity: 0; mix-blend-mode: screen;
-    background: linear-gradient(to bottom, transparent, rgb(255 255 255 / .22) 30%, rgb(255 255 255 / .1) 70%, transparent); }
-  .footer__glitch.is-glitch { animation: foot-bar var(--gd, .32s) steps(3) 1; }
-  @keyframes foot-bar { 0% { opacity: 1; transform: translateX(-4%); } 40% { opacity: .5; transform: translateX(3%); } 70% { opacity: .9; transform: translateX(-2%); } 100% { opacity: 0; transform: none; } }
+    background: linear-gradient(to bottom, transparent, rgb(255 255 255 / .07) 30%, rgb(255 255 255 / .035) 70%, transparent); }
+  .footer__glitch.is-glitch { animation: foot-bar var(--gd, .32s) ease-out 1; }
+  @keyframes foot-bar { 0% { opacity: .9; transform: translateX(-2%); } 40% { opacity: .4; transform: translateX(3%); } 70% { opacity: .7; transform: translateX(-1%); } 100% { opacity: 0; transform: none; } }
   @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .footer__glitch { display: none; } }
   @media (prefers-reduced-motion: reduce) { .footer__glitch { display: none; } .footer__photo.is-glitch { animation: none; } }
 
@@ -99,12 +104,12 @@ const c = copy[lang];
       if (seen && !document.hidden && f.classList.contains('is-in')) {
         const sign = Math.random() < 0.5 ? -1 : 1;
         const st = f.style;
-        st.setProperty('--gx', `${(r(5, 22) * sign).toFixed(1)}px`);
-        st.setProperty('--gy', `${r(1, 7).toFixed(1)}px`);
-        st.setProperty('--gs', `${(r(1, 5) * sign).toFixed(1)}deg`);
-        st.setProperty('--gd', `${r(0.2, 0.55).toFixed(2)}s`);
+        st.setProperty('--gx', `${(r(1.5, 5) * sign).toFixed(1)}px`);
+        st.setProperty('--gy', `${r(.5, 2).toFixed(1)}px`);
+        st.setProperty('--gs', `${(r(.3, 1.2) * sign).toFixed(1)}deg`);
+        st.setProperty('--gd', `${r(0.18, 0.4).toFixed(2)}s`);
         st.setProperty('--gt', `${r(5, 90).toFixed(0)}%`);
-        st.setProperty('--gh', `${r(2, 11).toFixed(0)}%`);
+        st.setProperty('--gh', `${r(2, 7).toFixed(0)}%`);
         for (const el of [photo, bar]) { el.classList.remove('is-glitch'); void el.offsetWidth; el.classList.add('is-glitch'); }
       }
       glitchTimer = window.setTimeout(fire, r(1800, 4800));
