@@ -5,7 +5,7 @@
 const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`;
 ---
 <div class="hero__media" aria-hidden="true">
-  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-start="6000" data-gap="10000" data-rate="2.2"></video>
+  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-start="6000" data-gap="10000" data-rate="4.2"></video>
   <div class="hero__shade"></div>
 </div>
 
@@ -38,7 +38,7 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
     const START = Number(video.dataset.start);
     const GAP = Number(video.dataset.gap);
     const RATE = Number(video.dataset.rate) || 1; // velocidad de reproducción (1 = normal)
-    const FADE = 2.6; // segundos (reales) de fundido antes del final
+    let fade = 2.6; // segundos (reales) de fundido de entrada y de salida; se acorta si el clip es muy breve
     const later = (fn: () => void, ms: number) => void timers.push(window.setTimeout(fn, ms));
     const whenVisible = () => new Promise<void>((res) => {
       if (!document.hidden) return res();
@@ -53,12 +53,14 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
       if (video.readyState < 3) await new Promise<void>((res) => video.addEventListener('canplay', () => res(), { once: true }));
       video.currentTime = 0;
       video.playbackRate = RATE;
+      fade = Math.min(2.6, (video.duration / RATE) * 0.3); // a 4,2x el clip dura ~2,4 s: el fundido no puede ser más largo que eso
+      media.style.transitionDuration = `${fade}s`;
       try { await video.play(); } catch { return later(play, GAP); } // si el navegador no deja reproducir, reintenta más tarde
       media.classList.add('is-on');
     };
 
     video.addEventListener('timeupdate', () => {
-      if (video.duration && (video.duration - video.currentTime) / RATE < FADE) media.classList.remove('is-on');
+      if (video.duration && (video.duration - video.currentTime) / RATE < fade) media.classList.remove('is-on');
     });
     video.addEventListener('ended', () => { media.classList.remove('is-on'); later(play, GAP); });
 
