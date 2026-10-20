@@ -9,7 +9,8 @@ summary:
 text:
   es: "[Contexto, desafío, decisiones de diseño y resultado.]"
   en: "[Context, challenge, design decisions and outcome.]"
-featured: false
+featured: true
+homeOrder: 1
 order: 15
 tones: ["#0e1f1a", "#1f5a46"]
 gallery:

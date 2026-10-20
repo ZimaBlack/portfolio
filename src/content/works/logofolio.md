@@ -7,6 +7,7 @@ summary:
   es: "Una selección de logotipos que condensa un estilo y un oficio propios, forjados antes de la IA. A continuación, el detalle de cada proyecto."
   en: "A selection of logos shaped by a distinct style and a craft built before AI. Each project’s details follow below."
 featured: true
+homeOrder: 4
 headerMarquee: true
 order: 1
 cover: /works/logofolio/portada.png

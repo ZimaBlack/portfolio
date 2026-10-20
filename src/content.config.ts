@@ -27,6 +27,7 @@ const works = defineCollection({
     text: t.optional(), // texto largo del proyecto (opcional)
     badge: z.string().optional(), // etiqueta destacada, ej. "pre-ia"
     featured: z.boolean().default(false),
+    homeOrder: z.number().optional(), // posición en la Home (si es destacado); por defecto, `order`
     order: z.number().default(99),
     cover: z.string().optional(), // tarjeta vertical 2:3 (índice y Home)
     headerMarquee: z.boolean().default(false), // cabecera con marquesina de logos (b) sin color, en lugar de la imagen
