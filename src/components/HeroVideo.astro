@@ -14,7 +14,7 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
 <div class="hero__vignette" aria-hidden="true"></div>
 
 <style>
-  .hero__media { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity var(--fade, 2.6s) ease; }
+  .hero__media { position: absolute; inset: 0; z-index: 1; mix-blend-mode: screen; /* Screen: lo oscuro del video desaparece y sólo suman las vetas claras */ overflow: hidden; pointer-events: none; opacity: 0; transition: opacity var(--fade, 2.6s) ease; }
   .hero__media.is-on { opacity: 1; } /* fundido de entrada y salida; el nivel (30 % → 100 % → 30 %) lo anima el marco */
   /* El video no se estira a toda la pantalla: ocupa sólo la ventana central que deja ver la viñeta, a su resolución
      nativa (máx. 1280 px, nunca ampliado) y sin pixelarse. Los bordes de la ventana quedan bajo el negro de la viñeta.
@@ -29,7 +29,7 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
   .hero__shade { position: absolute; inset: 0; background: rgb(11 11 10 / .14); }
   /* Viñeta siempre presente (no se desvanece con el video): CÍRCULO negro por fuera que se abre hacia el centro.
      Su radio sigue al ancho de la ventana del video, así que no recorta lo visible. */
-  .hero__vignette { position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  .hero__vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none;
     background: radial-gradient(circle calc(min(1280px, max(82vw, 110svh)) * .66 * var(--vb, 1)) at calc(var(--vx, 50%) + var(--vdx, 0px)) calc(var(--vy, 44%) + var(--vdy, 0px)), transparent 0%, rgb(11 11 10 / .22) 18%, rgb(11 11 10 / .62) 44%, rgb(11 11 10 / .93) 68%, var(--bg) 86%); }
   /* El video está pensado para fondo oscuro */
   @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .hero__media, :global(:root:not([data-theme='dark'])) .hero__vignette { display: none; } }
