@@ -3,7 +3,6 @@ title: "LogoFolio"
 kind: design
 discipline: { es: "Branding", en: "Branding" }
 role: { es: "Identidad visual", en: "Visual identity" }
-badge: "pre-ia"
 summary:
   es: "[Breve descripción del impacto del proyecto]"
   en: "[Short description of the project's impact]"
@@ -32,7 +31,7 @@ slides:
   - subtitle: { es: "[Subtítulo de la lámina 10]", en: "[Slide 10 subtitle]" }
   - subtitle: { es: "[Subtítulo de la lámina 11]", en: "[Slide 11 subtitle]" }
     swap: true
-    size: { a: 1.9, b: 1.1 }
+    size: { a: 1.4, b: 1.32 }
   - subtitle: { es: "[Subtítulo de la lámina 12]", en: "[Slide 12 subtitle]" }
     size: { a: 1.6, b: 0.7 }
   - subtitle: { es: "[Subtítulo de la lámina 13]", en: "[Slide 13 subtitle]" }
