@@ -6,7 +6,8 @@
 
 <style>
   /* Pantalla antigua: overlay sobre la viñeta y bajo el texto */
-  .crt { position: absolute; inset: 0; z-index: var(--crt-z, 2); pointer-events: none; overflow: hidden; mix-blend-mode: overlay; opacity: .9;
+  .crt { position: absolute; inset: 0; z-index: var(--crt-z, 2); pointer-events: none; overflow: hidden; mix-blend-mode: overlay;
+    -webkit-mask-image: var(--crt-mask, none); -webkit-mask-composite: source-in; mask-image: var(--crt-mask, none); mask-composite: intersect; opacity: .9;
     background:
       repeating-linear-gradient(to bottom, rgb(255 255 255 / .16) 0, rgb(255 255 255 / .16) 1px, rgb(0 0 0 / .42) 1px, rgb(0 0 0 / .42) 3px), /* líneas de barrido */
       repeating-linear-gradient(to right, rgb(255 40 40 / .10) 0, rgb(255 40 40 / .10) 1px, rgb(40 255 80 / .08) 1px, rgb(40 255 80 / .08) 2px, rgb(60 100 255 / .10) 2px, rgb(60 100 255 / .10) 3px); /* máscara RGB */
