@@ -5,6 +5,7 @@ import Frame from '../components/Frame.astro';
 import VideoEmbed from '../components/VideoEmbed.astro';
 import Icon from '../components/Icon.astro';
 import Carousel, { type Slide } from '../components/Carousel.astro';
+import { ambientOf, type Tone } from '../lib/palette';
 import { copy, loc, paths, type Lang } from '../lib/i18n';
 
 const { lang, work } = Astro.props as { lang: Lang; work: CollectionEntry<'works'> };
@@ -14,14 +15,19 @@ const all = (await getCollection('works')).sort((a, b) => a.data.order - b.data.
 const next = all[(all.findIndex((w) => w.id === work.id) + 1) % all.length];
 const isCode = d.kind === 'code';
 
-// Carrusel: los PNG se detectan en src/assets/works/<slug>/carrusel/ con nombres 01a.png, 01b.png, 02a.png…
-const found = import.meta.glob('/src/assets/works/*/carrusel/*.{png,webp,jpg,jpeg,avif}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+// Carrusel: las imágenes (SVG o PNG) se detectan en src/assets/works/<slug>/carrusel/ con nombres 01a.png, 01b.png, 02a.png…
+const found = import.meta.glob('/src/assets/works/*/carrusel/*.{svg,png,webp,jpg,jpeg,avif}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const raws = import.meta.glob('/src/assets/works/*/carrusel/*.svg', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
 const files: Record<number, { a?: string; b?: string }> = {};
+const svgText: Record<number, string[]> = {};
 for (const [path, url] of Object.entries(found)) {
   const m = path.match(/\/works\/([^/]+)\/carrusel\/(\d+)([ab])\.[a-z]+$/i);
   if (!m || m[1] !== work.id) continue;
   (files[Number(m[2])] ??= {})[m[3].toLowerCase() as 'a' | 'b'] = url;
+  if (raws[path]) (svgText[Number(m[2])] ??= []).push(raws[path]);
 }
+// Respaldo para logos blancos/grises/negros: una luz neutra, apenas fría, en vez de un color
+const NEUTRAL: [Tone, Tone] = [{ h: 215, s: 0.1, l: 0.62 }, { h: 30, s: 0.08, l: 0.55 }];
 const total = Math.max(d.slides.length, ...Object.keys(files).map(Number), 0);
 const slides: Slide[] = Array.from({ length: total }, (_, i) => ({
   n: i + 1,
@@ -29,6 +35,7 @@ const slides: Slide[] = Array.from({ length: total }, (_, i) => ({
   b: files[i + 1]?.b,
   subtitle: loc(d.slides[i]?.subtitle, lang),
   alt: loc(d.slides[i]?.alt, lang) || loc(d.slides[i]?.subtitle, lang) || d.title,
+  ambient: ambientOf(svgText[i + 1] ?? [], NEUTRAL),
 }));
 const alt = lang === 'es' ? 'en' : 'es';
 ---

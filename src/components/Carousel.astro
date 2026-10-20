@@ -1,12 +1,21 @@
 ---
 // Carrusel de láminas: cada lámina tiene dos PNG (a = 8 columnas, b = 4 columnas de una grilla de 12),
 // centrados en cuadros de 75vh, y un subtítulo. Desliza con scroll-snap (táctil, trackpad) y tiene botones y teclado.
-export interface Slide { n: number; a?: string; b?: string; subtitle: string; alt: string }
+import { hsl, type Tone } from '../lib/palette';
+export interface Slide { n: number; a?: string; b?: string; subtitle: string; alt: string; ambient: { c1: Tone; c2: Tone; source: string } }
 const { slides, labels } = Astro.props as { slides: Slide[]; labels: { prev: string; next: string; region: string; png: string } };
 const pad = (n: number) => String(n).padStart(2, '0');
 const total = slides.length;
 ---
 <section class="car" data-car data-reveal aria-roledescription="carousel" aria-label={labels.region}>
+  <!-- Ambiente de color: un degradado circular por lámina, con los tonos de sus logos; se funden entre sí -->
+  <div class="car__amb" aria-hidden="true">
+    {slides.map((s, i) => (
+      <div class:list={['amb', { 'is-on': i === 0 }]} data-c1={hsl(s.ambient.c1)} data-c2={hsl(s.ambient.c2)} data-source={s.ambient.source}
+        style={`--c1:${hsl(s.ambient.c1, 0.2)};--c2:${hsl(s.ambient.c2, 0.13)};--c1s:${hsl(s.ambient.c1, 0.07)}`}></div>
+    ))}
+  </div>
+
   <div class="car__bar">
     <span class="car__count" aria-live="polite"><b data-cur>01</b> <i>/</i> {pad(total)}</span>
     <div class="car__nav">
@@ -35,7 +44,20 @@ const total = slides.length;
 </section>
 
 <style>
-  .car { display: grid; gap: 1.25rem; }
+  .car { display: grid; gap: 1.25rem; position: relative; isolation: isolate; }
+
+  /* Ambiente: luz circular y suave sobre el lado derecho, que cambia con cada lámina */
+  .car__amb { position: absolute; z-index: -1; inset: -7rem -8vw -5rem 22%; pointer-events: none; }
+  .amb { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s var(--ease);
+    background:
+      radial-gradient(circle 34rem at 86% 38%, var(--c1) 0%, var(--c1s) 48%, transparent 72%),
+      radial-gradient(circle 26rem at 66% 78%, var(--c2) 0%, transparent 70%); }
+  .amb.is-on { opacity: 1; }
+  @media (max-width: 700px) {
+    .car__amb { inset: -4rem -6vw -3rem 0; }
+    .amb { background: radial-gradient(circle 20rem at 88% 30%, var(--c1) 0%, var(--c1s) 48%, transparent 72%), radial-gradient(circle 16rem at 50% 85%, var(--c2) 0%, transparent 70%); }
+  }
+  @media (prefers-reduced-motion: reduce) { .amb { transition: none; } }
   .car__bar { display: flex; align-items: center; justify-content: space-between; }
   .car__count { font-size: .8rem; letter-spacing: .14em; color: var(--muted); }
   .car__count b { font-weight: 500; color: var(--fg); }
@@ -54,8 +76,8 @@ const total = slides.length;
   .slide__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); }
   .cell--a { grid-column: span 8; }
   .cell--b { grid-column: span 4; }
-  .cell { margin: 0; height: 75vh; height: 75svh; min-height: 20rem; display: grid; place-items: center; overflow: hidden; background: color-mix(in srgb, var(--fg) 5%, var(--bg)); }
-  .cell img { max-width: 80%; max-height: 80%; width: auto; height: auto; object-fit: contain; user-select: none; }
+  .cell { margin: 0; height: 75vh; height: 75svh; min-height: 20rem; display: grid; place-items: center; overflow: hidden; background: color-mix(in srgb, var(--fg) 4%, transparent); }
+  .cell img { width: 80%; height: 80%; object-fit: contain; user-select: none; } /* los SVG escalan sin perder nitidez */
 
   .ph { display: grid; gap: .45rem; justify-items: center; text-align: center; padding: 1rem; color: rgb(255 255 255 / .4); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
   .ph b { font-size: 1.4rem; font-weight: 300; letter-spacing: .06em; color: rgb(255 255 255 / .7); }
@@ -67,7 +89,7 @@ const total = slides.length;
 
   @media (max-width: 700px) {
     .cell { height: 58vh; height: 58svh; min-height: 16rem; }
-    .cell img { max-width: 86%; max-height: 86%; }
+    .cell img { width: 86%; height: 86%; }
     .ph { padding: .5rem; gap: .3rem; } .ph span, .ph em { display: none; } .ph strong { font-size: .78rem; text-align: center; } .ph b { font-size: 1.1rem; }
   }
   @media (prefers-reduced-motion: reduce) { .car__track { scroll-behavior: auto; } }
@@ -81,6 +103,7 @@ const total = slides.length;
       const prev = car.querySelector<HTMLButtonElement>('[data-prev]')!;
       const next = car.querySelector<HTMLButtonElement>('[data-next]')!;
       const cur = car.querySelector<HTMLElement>('[data-cur]')!;
+      const amb = Array.from(car.querySelectorAll<HTMLElement>('.amb'));
       const slides = Array.from(track.children) as HTMLElement[];
       const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
       const index = () => Math.round(track.scrollLeft / (slides[0].offsetWidth + parseFloat(getComputedStyle(track).columnGap || '0')));
@@ -88,6 +111,7 @@ const total = slides.length;
       const sync = () => {
         const i = index();
         cur.textContent = String(i + 1).padStart(2, '0');
+        amb.forEach((a, k) => a.classList.toggle('is-on', k === i));
         prev.disabled = i <= 0;
         next.disabled = i >= slides.length - 1;
       };

@@ -21,4 +21,11 @@ slides:
   - subtitle: { es: "[Subtítulo de la lámina 04]", en: "[Slide 04 subtitle]" }
   - subtitle: { es: "[Subtítulo de la lámina 05]", en: "[Slide 05 subtitle]" }
   - subtitle: { es: "[Subtítulo de la lámina 06]", en: "[Slide 06 subtitle]" }
+  - subtitle: { es: "[Subtítulo de la lámina 07]", en: "[Slide 07 subtitle]" }
+  - subtitle: { es: "[Subtítulo de la lámina 08]", en: "[Slide 08 subtitle]" }
+  - subtitle: { es: "[Subtítulo de la lámina 09]", en: "[Slide 09 subtitle]" }
+  - subtitle: { es: "[Subtítulo de la lámina 10]", en: "[Slide 10 subtitle]" }
+  - subtitle: { es: "[Subtítulo de la lámina 11]", en: "[Slide 11 subtitle]" }
+  - subtitle: { es: "[Subtítulo de la lámina 12]", en: "[Slide 12 subtitle]" }
+  - subtitle: { es: "[Subtítulo de la lámina 13]", en: "[Slide 13 subtitle]" }
 ---
