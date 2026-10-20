@@ -6,7 +6,7 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
 ---
 <div class="hero__media" aria-hidden="true">
   <div class="hero__frame">
-  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-after="0" data-gap="10000" data-rate="1.2" data-rate-var="0.1"></video>
+  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-after="0" data-gap="10000" data-rate="1.45" data-rate-var="0.1"></video>
   </div>
   <div class="hero__shade"></div>
 </div>
@@ -29,7 +29,7 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
   .hero__shade { position: absolute; inset: 0; background: rgb(11 11 10 / .14); }
   /* Viñeta siempre presente (no se desvanece con el video): negro sólido en los bordes que se abre hacia el centro */
   .hero__vignette { position: absolute; inset: 0; z-index: 0; pointer-events: none;
-    background: radial-gradient(ellipse 70% 66% at var(--vx, 50%) var(--vy, 44%), transparent 0%, rgb(11 11 10 / .22) 18%, rgb(11 11 10 / .62) 44%, rgb(11 11 10 / .93) 68%, var(--bg) 86%); }
+    background: radial-gradient(ellipse calc(70% * var(--vb, 1)) calc(66% * var(--vb, 1)) at calc(var(--vx, 50%) + var(--vdx, 0px)) calc(var(--vy, 44%) + var(--vdy, 0px)), transparent 0%, rgb(11 11 10 / .22) 18%, rgb(11 11 10 / .62) 44%, rgb(11 11 10 / .93) 68%, var(--bg) 86%); }
   /* El video está pensado para fondo oscuro */
   @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .hero__media, :global(:root:not([data-theme='dark'])) .hero__vignette { display: none; } }
   @media (prefers-reduced-motion: reduce) { .hero__media, .hero__vignette { display: none; } }
@@ -72,7 +72,6 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
     const hero = media.closest<HTMLElement>('.hero') ?? media;
     const frame = media.querySelector<HTMLElement>('.hero__frame')!;
     let last = { x: 50, y: 44 };
-    let drift: Animation | undefined;
     const place = () => {
       let x = 50, y = 44;
       for (let k = 0; k < 10; k++) {
@@ -85,6 +84,8 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
       st.setProperty('--vy', `${y.toFixed(1)}%`);
       st.setProperty('--vs', (0.72 + Math.random() * 0.28).toFixed(2)); // sólo reduce: no se amplía por encima de su resolución
       st.setProperty('--vr', `${((Math.random() - 0.5) * 9).toFixed(1)}deg`);
+      st.setProperty('--vdx', '0px'); st.setProperty('--vdy', '0px'); st.setProperty('--vb', '1');
+      frame.style.translate = '0 0'; frame.style.rotate = '0deg';
     };
 
     // Movimiento y opacidad durante la reproducción (se lanzan cuando el video realmente empieza a correr):
@@ -92,18 +93,39 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
     //  · la opacidad sube desde la actual (30 %) hasta el 100 %, se sostiene en la mitad del video y vuelve a bajar.
     // Esta opacidad se multiplica con la del contenedor (que hace el fundido de entrada y de salida).
     let glow: Animation | undefined;
+    let raf = 0;
     const startMotion = () => {
-      drift?.cancel(); glow?.cancel();
-      const ang = Math.random() * Math.PI * 2;
-      const dist = Math.min(innerWidth, innerHeight) * (0.05 + Math.random() * 0.07);
+      glow?.cancel();
+      cancelAnimationFrame(raf);
       const ms = ((video.duration || 10) / rate) * 1000;
-      const turn = (1.5 + Math.random() * 2) * (Math.random() < 0.5 ? -1 : 1);
-      drift = frame.animate(
-        [{ translate: '0 0', rotate: '0deg' }, { translate: `${Math.cos(ang) * dist}px ${Math.sin(ang) * dist}px`, rotate: `${turn.toFixed(2)}deg` }],
-        { duration: ms, easing: 'ease-in-out', fill: 'forwards' },
-      );
-      // El pico se sostiene: sube hasta el 38% del clip, se mantiene al 100% hasta el 62% y recién ahí baja
+      // Opacidad: sube desde la actual (30 %) hasta el 100 %, se sostiene en la mitad del video y vuelve a bajar.
+      // Se multiplica con la del contenedor (que hace el fundido de entrada y de salida).
       glow = frame.animate([{ opacity: 0.3 }, { opacity: 1, offset: 0.38 }, { opacity: 1, offset: 0.62 }, { opacity: 0.3 }], { duration: ms, easing: 'ease-in-out', fill: 'forwards' });
+
+      // Movimiento orgánico: una deriva lenta y suave más oscilaciones de distinta frecuencia (como un flotar irregular).
+      // La viñeta acompaña al video con un leve retraso propio y "respira" (se abre y se cierra un poco).
+      const m = Math.min(innerWidth, innerHeight);
+      const ang = Math.random() * Math.PI * 2;
+      const dist = m * (0.05 + Math.random() * 0.07);
+      const turn = (1.5 + Math.random() * 2) * (Math.random() < 0.5 ? -1 : 1);
+      const ph = Array.from({ length: 9 }, () => Math.random() * Math.PI * 2);
+      const ease = (p: number) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+      const wob = (t: number, i: number, f: number) => Math.sin(t * f + ph[i]) + 0.6 * Math.sin(t * f * 1.67 + ph[i + 1]) + 0.35 * Math.sin(t * f * 2.53 + ph[i + 2]);
+      const t0 = performance.now();
+      const tick = (now: number) => {
+        const t = (now - t0) / 1000;
+        const e = ease(Math.min(1, (now - t0) / ms));
+        const dx = Math.cos(ang) * dist * e + m * 0.018 * wob(t, 0, 0.62);
+        const dy = Math.sin(ang) * dist * e + m * 0.018 * wob(t, 3, 0.55);
+        frame.style.translate = `${dx.toFixed(1)}px ${dy.toFixed(1)}px`;
+        frame.style.rotate = `${(turn * e + 0.45 * Math.sin(t * 0.5 + ph[6])).toFixed(2)}deg`;
+        const st = hero.style;
+        st.setProperty('--vdx', `${(dx * 0.88 + m * 0.014 * Math.sin(t * 0.8 + ph[7])).toFixed(1)}px`);
+        st.setProperty('--vdy', `${(dy * 0.88 + m * 0.014 * Math.sin(t * 0.67 + ph[8])).toFixed(1)}px`);
+        st.setProperty('--vb', (1 + 0.06 * Math.sin(t * 0.9 + ph[0])).toFixed(3));
+        if (now - t0 < ms + 3000) raf = requestAnimationFrame(tick); // sigue mientras dura el fundido de salida
+      };
+      raf = requestAnimationFrame(tick);
     };
 
     const prepare = () => { if (!video.src) { video.src = video.dataset.src!; video.load(); } };
