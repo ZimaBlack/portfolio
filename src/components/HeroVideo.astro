@@ -1,17 +1,18 @@
 ---
-// Video de fondo del hero. Ciclo: fondo negro 20 s → el video (se desvanece al aparecer y al terminar)
-// → 100 s de negro → vuelve el video, y así sucesivamente. Sin audio, sin controles y sin cargar hasta unos segundos antes.
+// Video de fondo del hero (los últimos 10 s del original, en blanco y negro y acelerado).
+// Ciclo: 6 s de negro tras cargar la página → el video (se desvanece al aparecer y al terminar)
+// → 100 s de negro → vuelve el video, y así sucesivamente. Sin audio ni controles.
 const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`;
 ---
 <div class="hero__media" aria-hidden="true">
-  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-start="20000" data-gap="100000"></video>
+  <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-start="6000" data-gap="100000" data-rate="1.6"></video>
   <div class="hero__shade"></div>
 </div>
 
 <style>
   .hero__media { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 2.6s ease; }
   .hero__media.is-on { opacity: 1; }
-  .hero__video { width: 100%; height: 100%; object-fit: cover; filter: brightness(.62) saturate(.9); }
+  .hero__video { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(.62); } /* sin color */
   /* Oscurece para que el texto se lea y funde el borde inferior con el fondo del sitio */
   .hero__shade { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 0%, rgb(11 11 10 / .55) 38%, rgb(11 11 10 / .2) 100%); }
   /* El video está pensado para fondo oscuro */
@@ -34,7 +35,8 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
 
     const START = Number(video.dataset.start);
     const GAP = Number(video.dataset.gap);
-    const FADE = 2.6; // segundos de fundido antes del final
+    const RATE = Number(video.dataset.rate) || 1; // velocidad de reproducción (1 = normal)
+    const FADE = 2.6; // segundos (reales) de fundido antes del final
     const later = (fn: () => void, ms: number) => void timers.push(window.setTimeout(fn, ms));
     const whenVisible = () => new Promise<void>((res) => {
       if (!document.hidden) return res();
@@ -48,12 +50,13 @@ const src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/video/hero-loop.mp4`
       await whenVisible();
       if (video.readyState < 3) await new Promise<void>((res) => video.addEventListener('canplay', () => res(), { once: true }));
       video.currentTime = 0;
+      video.playbackRate = RATE;
       try { await video.play(); } catch { return later(play, GAP); } // si el navegador no deja reproducir, reintenta más tarde
       media.classList.add('is-on');
     };
 
     video.addEventListener('timeupdate', () => {
-      if (video.duration && video.duration - video.currentTime < FADE) media.classList.remove('is-on');
+      if (video.duration && (video.duration - video.currentTime) / RATE < FADE) media.classList.remove('is-on');
     });
     video.addEventListener('ended', () => { media.classList.remove('is-on'); later(play, GAP); });
 
