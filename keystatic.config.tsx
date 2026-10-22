@@ -43,6 +43,7 @@ export default config({
         mark: image('Isotipo / símbolo (opcional)', 'Se usa junto al logotipo en la animación de la portada.'),
         widget: fields.select({ label: 'Widget de la página', description: 'Un extra fijo abajo a la derecha.', options: [{ label: 'Ninguno', value: '' }, { label: 'Paleta de color', value: 'palette' }], defaultValue: '' }),
         paletteColors: fields.array(fields.text({ label: 'Color (hex)' }), { label: 'Colores de la marca (widget de paleta)', description: 'El primero es el color con el que arranca el selector. Ej. #F5282C.', itemLabel: (p) => p.value }),
+        reactiveColors: fields.array(fields.text({ label: 'Color del logotipo (hex)' }), { label: 'Colores del logotipo que cambian con la paleta', description: 'El primero sigue al color elegido y el segundo al automático. Deben ser colores que existan en el SVG del logotipo.', itemLabel: (p) => p.value }),
         headerMarquee: fields.checkbox({ label: 'Cabecera con marquesina de logos', description: 'Usa los logos del carrusel en lugar de la imagen panorámica.' }),
         tones: fields.array(fields.text({ label: 'Color (hex)' }), { label: 'Colores de fondo (2)', description: 'Se ven mientras no hay imagen. Dos colores hex, ej. #1a1a1a.', itemLabel: (p) => p.value }),
 

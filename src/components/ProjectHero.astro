@@ -2,15 +2,30 @@
 // Portada animada de un proyecto: pantalla completa, con el logotipo centrado.
 // Hoy el logotipo sólo aparece con un fundido suave; el isotipo (`mark`) está en su lugar, oculto y centrado,
 // y los elementos tienen ganchos (`data-pj-*`) para animarlos más adelante (escala, despliegue, etc.).
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { withBase } from '../lib/i18n';
-const { logo, mark, title, tones = ['#1a1a1a', '#2b2b2b'] } = Astro.props as { logo: string; mark?: string; title: string; tones?: string[] };
+const { logo, mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [] } = Astro.props as { logo: string; mark?: string; title: string; tones?: string[]; reactive?: string[] };
 const src = (p: string) => (p.startsWith('/') ? withBase(p) : p);
+
+// Logotipo "reactivo": se inserta el SVG en la página (no como imagen) y los colores indicados en `reactive`
+// pasan a leer las variables --pw-0, --pw-1… que escribe el widget de paleta (con el color original de respaldo).
+let inline = '';
+if (reactive.length && logo.toLowerCase().endsWith('.svg')) {
+  let svg = readFileSync(join(process.cwd(), 'public', logo), 'utf8');
+  reactive.forEach((hex, i) => {
+    svg = svg.replace(new RegExp(`fill="${hex}"`, 'gi'), `style="fill:var(--pw-${i},${hex})"`);
+  });
+  inline = svg.replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__logo" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
+}
 ---
 <section class="pjh" data-pj-hero style={`--a:${tones[0]};--b:${tones[1]}`} aria-label={title}>
   <div class="pjh__bg" data-pj-bg aria-hidden="true"></div>
   <div class="pjh__stage" data-pj-stage>
     {mark && <img class="pjh__mark" data-pj-mark src={src(mark)} alt="" aria-hidden="true" decoding="async" draggable="false" />}
-    <img class="pjh__logo" data-pj-logo src={src(logo)} alt={title} decoding="async" draggable="false" />
+    {inline
+      ? <Fragment set:html={inline} />
+      : <img class="pjh__logo" data-pj-logo src={src(logo)} alt={title} decoding="async" draggable="false" />}
   </div>
 </section>
 
@@ -23,6 +38,7 @@ const src = (p: string) => (p.startsWith('/') ? withBase(p) : p);
   .pjh__stage { position: relative; display: grid; place-items: center; width: min(88vw, 56rem); height: min(60vh, 34rem); }
   .pjh__stage > img { grid-area: 1 / 1; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; user-select: none; }
   .pjh__stage > .pjh__logo { width: min(100%, 40rem); animation: pjh-in 1.6s .2s var(--ease, ease) both; }
+  .pjh__stage > :global(svg.pjh__logo) { width: auto; height: min(58vh, 32rem); max-width: 100%; animation: pjh-in 1.6s .2s var(--ease, ease) both; }
   .pjh__mark { opacity: 0; } /* en su lugar, listo para animar */
   @keyframes pjh-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .pjh__logo { animation: none; } }

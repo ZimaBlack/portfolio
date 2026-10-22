@@ -14,6 +14,7 @@ mark: /works/colorada/mark.svg
 featured: false
 order: 16
 widget: palette
+reactiveColors: ["#AE0407", "#840002"]
 paletteColors: ["#F5282C", "#AE0407", "#840002", "#0B0B0A", "#FFFFFF"]
 tones: ["#240d12", "#6a1b26"]
 gallery:

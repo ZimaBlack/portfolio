@@ -128,6 +128,9 @@ const t = {
         if (touched && hero) {
           hero.style.setProperty('--b', toHex([hue, sat * 0.7, 0.26]));
           hero.style.setProperty('--a', toHex([b[0], b[1] * 0.6, 0.12]));
+          // Los colores del logotipo que son "reactivos": el 1.º sigue al elegido; el 2.º, al automático (más oscuro, como una sombra)
+          hero.style.setProperty('--pw-0', hexA);
+          hero.style.setProperty('--pw-1', toHex([b[0], b[1], b[2] * 0.68]));
         }
       };
 
