@@ -82,6 +82,6 @@ export function forge(art: Art, o: ForgeOpts): string {
   }
   // Los vectores ("screen") llevan las piezas y el brillo dentro de un mismo grupo: el brillo hereda así su máscara, su desenfoque y su opacidad
   const inner = `<g${T}>${pieces}</g>${o.screen ? shine : ''}`;
-  const group = o.screen || o.fade ? `<g${o.screen ? ' class="pj-screen"' : ''}${o.fade ? ` mask="url(#${id}-f)"` : ''}>${inner}</g>` : inner;
+  const group = o.screen || o.fade ? `<g${o.screen ? ' class="pj-screen"' : ''}${o.fade ? ` mask="url(#${id}-f)"` : ''}>${inner}</g>` : `<g class="pj-tone">${inner}</g>`; // el logotipo y el nombre llevan su propio grupo: ahí se aclara el tono durante el brillo
   return `<svg viewBox="${vx} ${vy} ${vw} ${vh}" fill="none" xmlns="http://www.w3.org/2000/svg" class="${o.cls}" style="--a:${o.alpha ?? 1};${o.style ?? ''}" ${a11y}><defs>${defs}</defs>${group}${o.screen ? '' : shine}</svg>`;
 }

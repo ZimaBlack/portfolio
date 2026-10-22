@@ -60,6 +60,7 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   <!-- La escena entera (fondo, ornamento y logotipo) es un solo grupo: al hacer scroll se desvanece junta -->
   <div class="pjh__scene" data-pj-scene>
     <div class="pjh__bg" data-pj-bg aria-hidden="true"></div>
+    {assemble && <div class="pjh__glow" aria-hidden="true"></div>}
     {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
     {orn.map((s) => <Fragment set:html={s} />)}
     <div class="pjh__stage" data-pj-stage>
@@ -134,6 +135,12 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   /* Y cuando pasa el brillo por cada vector, su opacidad sube sólo durante ese pasaje (mismo ciclo y retraso que el brillo) */
   .pj-screen { mix-blend-mode: screen; animation: pj-settle 1s var(--t-settle) ease-in-out both, pj-lift 10s calc(var(--t-shine) + var(--sd, 0s)) infinite; }
   @keyframes pj-lift { 0% { opacity: .55; animation-timing-function: ease-out; } 3.4% { opacity: 1; animation-timing-function: ease-in; } 8%, 100% { opacity: .55; } }
+  /* El logotipo y el nombre hacen lo mismo que los vectores, pero cambiando su tono a uno más claro mientras pasa el brillo; y un resplandor de fondo
+     levanta apenas el azul del fondo (mismo ciclo y retraso que el brillo sobre el logotipo) */
+  .pj-tone { animation: pj-tone 10s calc(var(--t-shine) + var(--sd, 0s)) infinite; }
+  @keyframes pj-tone { 0% { filter: none; animation-timing-function: ease-out; } 3.4% { filter: brightness(1.32) saturate(.8); animation-timing-function: ease-in; } 8%, 100% { filter: none; } }
+  .pjh__glow { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; background: radial-gradient(ellipse 36% 42% at 50% 50%, rgb(104 156 228 / .2), transparent 72%); animation: pj-glow 10s calc(var(--t-shine) + .65s) infinite; }
+  @keyframes pj-glow { 0% { opacity: 0; animation-timing-function: ease-out; } 4% { opacity: 1; animation-timing-function: ease-in-out; } 16%, 100% { opacity: 0; } }
   /* Brillo de barras planas: una pasada, en una sola ola de izquierda a derecha sobre todo (vectores, logotipo y nombre), que se repite cada 10 s */
   .pj-shine { opacity: 0; animation: pj-shine 10s calc(var(--t-shine) + var(--sd, 0s)) infinite; }
   @keyframes pj-shine { 0% { translate: 0 0; opacity: 0; animation-timing-function: cubic-bezier(.45, .05, .55, .95); } 0.8% { opacity: 1; } 6.8% { translate: var(--gw) 0; opacity: 1; } 8%, 100% { translate: var(--gw) 0; opacity: 0; } }
@@ -147,7 +154,7 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   @keyframes pj-breathe { from { opacity: var(--a, 1); } to { opacity: calc(var(--a, 1) * .78); } }
 
   /* ── Movimiento reducido: todo se ve ya armado */
-  @media (prefers-reduced-motion: reduce) { .pj-piece, .pj-late, .pj-screen, .pj-shine { animation: none !important; } .pj-screen { opacity: .55; } .pj-shine { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .pj-piece, .pj-late, .pj-screen, .pj-shine, .pj-tone { animation: none !important; } .pj-screen { opacity: .55; } .pj-shine, .pjh__glow { display: none; } }
 </style>
 
 <script>
