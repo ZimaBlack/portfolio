@@ -12,7 +12,7 @@ let name = ''; // con "ensamblar": el nombre (lettering) que aparece al terminar
 /** Metal forjado. Con `base` (un color), las piezas nacen en ese tono y un destello de barras blancas planas cruza el logotipo
  *  (recortado con su propia forma); en la pasada indicada por `wipeAt` el oro se revela por debajo, detrás de la primera barra.
  *  Sin `base`, las piezas ya son doradas y sólo pasa el destello. `delay` = segundos hasta que empieza el destello; `passes` = cuántas veces cruza. */
-function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; wipeAt?: number } = {}) {
+function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; wipeAt?: number; shineAt?: number } = {}) {
   const [vx, vy, vw, vh] = (svg.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 100 100').split(/\s+/).map(Number);
   const all = [...svg.matchAll(/<path\b[^>]*?\sd="([^"]+)"/g)].map((m) => m[1]);
   const gold = '#CFC65C'; // oro de la marca: un solo tono, sin degradados
@@ -29,7 +29,7 @@ function forge(svg: string, id: string, delay: number, opts: { base?: string; pa
     ${opts.base ? sweep('w', opts.wipeAt ?? delay) : ''}
   </defs>
   ${opts.base ? `<g mask="url(#${id}-w)">${all.map((d) => `<path d="${d}" fill="${gold}"/>`).join('')}</g>` : ''}
-  <g mask="url(#${id}-m)"><g class="pj-flash" style="--gw:${travel.toFixed(1)}px;--gd:${delay}s;--gn:${opts.passes ?? 1}"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g></g>`;
+  <g mask="url(#${id}-m)">${opts.shineAt === undefined ? '' : `<g class="pj-shine" style="--gw:${travel.toFixed(1)}px;--gd:${opts.shineAt}s"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g>`}<g class="pj-flash" style="--gw:${travel.toFixed(1)}px;--gd:${delay}s;--gn:${opts.passes ?? 1}"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g></g>`;
   return svg.replace('</svg>', `${extra}</svg>`);
 }
 
@@ -42,9 +42,9 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
     svg = svg.replace(new RegExp(`fill="${hex}"`, 'gi'), `style="fill:var(--pw-${i},${hex})"`);
   });
   // Para ensamblar: cada trazo recibe su número (0 = ala izquierda, 1 = ala derecha, 2 = centro), en el orden del archivo
-  if (assemble) { let n = 0; svg = svg.replace(/<path\b/g, () => `<path data-part="${n++}"`); svg = forge(svg, 'pjm', 2.0, { base: '#0B141E', passes: 3, wipeAt: 3.6 }); } // 3 pasadas (2.0 s, 2.8 s, 3.6 s): la última lo pinta de oro }
+  if (assemble) { let n = 0; svg = svg.replace(/<path\b/g, () => `<path data-part="${n++}"`); svg = forge(svg, 'pjm', 2.0, { base: '#0B141E', passes: 3, wipeAt: 3.6, shineAt: 4.9 }); } // 3 pasadas (2.0 s, 2.8 s, 3.6 s): la última lo pinta de oro }
   if (assemble && mark && mark.toLowerCase().endsWith('.svg')) {
-    name = forge(readFileSync(join(process.cwd(), 'public', mark), 'utf8'), 'pjn', 3.6, { base: '#0B141E', passes: 1 })
+    name = forge(readFileSync(join(process.cwd(), 'public', mark), 'utf8'), 'pjn', 3.6, { base: '#0B141E', passes: 1, shineAt: 5.4 })
       .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__name" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
   }
   inline = svg.replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__logo" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
@@ -54,7 +54,6 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   <div class="pjh__bg" data-pj-bg aria-hidden="true"></div>
   {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
   <div class="pjh__stage" data-pj-stage>
-    {assemble && <div class="pjh__lit" aria-hidden="true"></div>}
     {mark && !name && <img class="pjh__mark" data-pj-mark src={src(mark)} alt="" aria-hidden="true" decoding="async" draggable="false" />}
     {inline
       ? <Fragment set:html={inline} />
@@ -90,12 +89,13 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   .pjh :global(.pj-flash) { opacity: 0; animation: pj-flash .8s var(--gd, 3.15s) linear var(--gn, 1) both; }
   .pjh :global(.pj-wipe) { animation: pj-wipe .576s var(--gd, 3.15s) linear both; } /* el oro se revela detrás de la primera barra */
   @keyframes pj-flash { 0% { translate: 0 0; opacity: 1; } 72% { translate: var(--gw) 0; opacity: 1; } 72.1%, 100% { translate: var(--gw) 0; opacity: 0; } }
+  /* Brillo sutil, estilo flat: de tanto en tanto las mismas barras cruzan todo el logotipo (iso y nombre), con poca opacidad */
+  .pjh :global(.pj-shine) { opacity: 0; animation: pj-shine 6.5s var(--gd, 4.9s) linear infinite; }
+  @keyframes pj-shine { 0% { translate: 0 0; opacity: 0; } 2% { opacity: .3; } 17% { translate: var(--gw) 0; opacity: .3; } 18%, 100% { translate: var(--gw) 0; opacity: 0; } }
+  /* Al final se proyecta una sombra leve del logotipo */
+  .pjh[data-assemble] .pjh__stage { animation: pj-cast 1.6s 4.2s ease-out both; }
+  @keyframes pj-cast { from { filter: drop-shadow(0 0 0 rgb(0 0 0 / 0)); } to { filter: drop-shadow(0 14px 18px rgb(0 0 0 / .5)); } }
   @keyframes pj-wipe { from { translate: 0 0; } to { translate: var(--gw) 0; } }
-  /* Final: un foco puntual de luz dorada detrás del logotipo, que ilumina sólo lo que lo rodea (el azul del ambiente se conserva) y pulsa levemente */
-  .pjh__lit { position: absolute; z-index: -1; left: 50%; top: min(30vh, 14rem); width: min(92vw, 40rem); height: min(66vh, 30rem); translate: -50% -50%; pointer-events: none; opacity: 0; animation: pj-lit-in 1.6s 4.0s ease-out both, pj-lit-pulse 3.2s 5.6s ease-in-out infinite alternate forwards;
-    background: radial-gradient(ellipse closest-side, rgb(255 246 208 / .26), rgb(232 218 140 / .11) 48%, transparent 100%); } /* centro justo al final del iso; luz dorada blanquecina, como si todo el logotipo (iso y nombre) desprendiera brillo de joya */
-  @keyframes pj-lit-in { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes pj-lit-pulse { from { opacity: 1; } to { opacity: .55; } }
   @keyframes pj-strike { 0% { transform: scale(1) translateY(0); } 30% { transform: scale(1.045) translateY(3px); } 62% { transform: scale(.992) translateY(-1px); } 100% { transform: scale(1) translateY(0); } }
   @keyframes pj-name { from { opacity: 0; filter: blur(10px); transform: translateY(10px); } to { opacity: 1; filter: none; transform: none; } }
   .pjh[data-assemble] :global(svg.pjh__logo path) { transform-box: fill-box; transform-origin: center; }
@@ -107,7 +107,7 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   @keyframes pj-from-left { 0% { transform: translateX(-70vw); opacity: 0; filter: blur(26px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 24% { opacity: .55; } 68% { transform: translateX(16px); opacity: .6; filter: blur(0); animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 70% { opacity: 1; } 84% { transform: translateX(-6px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: 1; filter: blur(0); } }
   @keyframes pj-from-right { 0% { transform: translateX(70vw); opacity: 0; filter: blur(26px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 24% { opacity: .55; } 68% { transform: translateX(-16px); opacity: .6; filter: blur(0); animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 70% { opacity: 1; } 84% { transform: translateX(6px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: 1; filter: blur(0); } }
   @keyframes pjh-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
-  @media (prefers-reduced-motion: reduce) { .pjh__logo, .pjh[data-assemble] :global([data-part]), .pjh :global(.pj-flash), .pjh :global(.pj-wipe), .pjh :global(.pjh__name) { animation: none !important; } .pjh__lit { animation: none; opacity: .8; } .pjh :global(.pj-flash) { display: none; } .pjh :global(.pj-wipe) { translate: var(--gw) 0; } }
+  @media (prefers-reduced-motion: reduce) { .pjh__logo, .pjh[data-assemble] :global([data-part]), .pjh :global(.pj-flash), .pjh :global(.pj-wipe), .pjh :global(.pj-shine), .pjh :global(.pjh__name) { animation: none !important; } .pjh[data-assemble] .pjh__stage { animation: none; filter: drop-shadow(0 14px 18px rgb(0 0 0 / .5)); } .pjh :global(.pj-shine) { display: none; } .pjh :global(.pj-flash) { display: none; } .pjh :global(.pj-wipe) { translate: var(--gw) 0; } }
 </style>
 
 <style is:global>
