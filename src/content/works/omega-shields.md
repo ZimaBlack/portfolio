@@ -10,6 +10,7 @@ text:
   es: "[Contexto, desafío, decisiones de diseño y resultado.]"
   en: "[Context, challenge, design decisions and outcome.]"
 heroAnimation: assemble
+ornament: /works/omega-shields/ornament.svg
 logo: /works/omega-shields/logo.svg
 mark: /works/omega-shields/name.svg
 featured: false

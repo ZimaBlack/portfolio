@@ -5,19 +5,22 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { withBase } from '../lib/i18n';
-const { logo, mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, assemble = false } = Astro.props as { logo: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; assemble?: boolean };
+const { logo, mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, assemble = false, ornament = '' } = Astro.props as { logo: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; assemble?: boolean; ornament?: string };
 const src = (p: string) => (p.startsWith('/') ? withBase(p) : p);
-let name = ''; // con "ensamblar": el nombre (lettering) que aparece al terminar de armarse la marca
+let name = '';
+let orn = ['', '']; // ornamento: [izquierdo, derecho] // con "ensamblar": el nombre (lettering) que aparece al terminar de armarse la marca
 
 /** Metal forjado. Con `base` (un color), las piezas nacen en ese tono y un destello de barras blancas planas cruza el logotipo
  *  (recortado con su propia forma); en la pasada indicada por `wipeAt` el oro se revela por debajo, detrás de la primera barra.
  *  Sin `base`, las piezas ya son doradas y sólo pasa el destello. `delay` = segundos hasta que empieza el destello; `passes` = cuántas veces cruza. */
-function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; wipeAt?: number; shineAt?: number } = {}) {
+function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; wipeAt?: number; shineAt?: number; gold?: string; flip?: boolean; fade?: boolean } = {}) {
   const [vx, vy, vw, vh] = (svg.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 100 100').split(/\s+/).map(Number);
   const all = [...svg.matchAll(/<path\b[^>]*?\sd="([^"]+)"/g)].map((m) => m[1]);
-  const gold = '#CFC65C'; // oro de la marca: un solo tono, sin degradados
+  const gold = opts.gold ?? '#CFC65C'; // oro de la marca: un solo tono, sin degradados
+  const T = opts.flip ? ` transform="matrix(-1 0 0 1 ${vx * 2 + vw} 0)"` : ''; // espejado horizontal (para el ornamento izquierdo)
   let n = 0;
   svg = svg.replace(/<path\b[^>]*>/g, (tag) => tag.replace('<path', `<path id="${id}-p${n++}"`).replace(/fill="#[0-9a-f]{3,8}"/i, `fill="${opts.base ?? gold}"`));
+  if (opts.flip) svg = svg.replace(/(<svg\b[^>]*>)([\s\S]*)<\/svg>/i, `$1<g${T}>$2</g></svg>`);
   const skew = Math.tan((22 * Math.PI) / 180) * vh;
   // Barras planas (de distinto ancho) que viajan juntas en diagonal
   const bars = [[0, 0.07], [0.12, 0.025], [0.19, 0.12]].map(([off, w]) => `<rect x="${(off * vw).toFixed(1)}" y="${(-vh * 0.1).toFixed(1)}" width="${(w * vw).toFixed(1)}" height="${(vh * 1.2).toFixed(1)}" fill="#fff"/>`).join('');
@@ -25,10 +28,11 @@ function forge(svg: string, id: string, delay: number, opts: { base?: string; pa
   const tx = (vx - span - skew * 1.1).toFixed(1);
   const sweep = (key: string, d: number) => `<mask id="${id}-${key}" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}"><g class="pj-wipe" style="--gw:${travel.toFixed(1)}px;--gd:${d}s"><g transform="translate(${tx} ${vy}) skewX(-22)"><rect x="-4000" y="${(-vh * 0.1).toFixed(1)}" width="${(4000 + 0.14 * vw).toFixed(1)}" height="${(vh * 1.2).toFixed(1)}" fill="#fff"/></g></g></mask>`;
   const extra = `<defs>
-    <mask id="${id}-m" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}">${all.map((d) => `<path d="${d}" fill="#fff"/>`).join('')}</mask>
+    <mask id="${id}-m" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}"><g${T}>${all.map((d) => `<path d="${d}" fill="#fff"/>`).join('')}</g></mask>
     ${opts.base ? sweep('w', opts.wipeAt ?? delay) : ''}
+    ${opts.fade ? `<linearGradient id="${id}-fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".12" stop-color="#fff"/><stop offset=".88" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${id}-f" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}"><rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="url(#${id}-fg)"/></mask>` : ''}
   </defs>
-  ${opts.base ? `<g mask="url(#${id}-w)">${all.map((d) => `<path d="${d}" fill="${gold}"/>`).join('')}</g>` : ''}
+  ${opts.base ? `<g${opts.fade ? ` mask="url(#${id}-f)"` : ''}><g mask="url(#${id}-w)"><g${T}>${all.map((d) => `<path d="${d}" fill="${gold}"/>`).join('')}</g></g></g>` : ''}
   <g mask="url(#${id}-m)">${opts.shineAt === undefined ? '' : `<g class="pj-shine" style="--gw:${travel.toFixed(1)}px;--gd:${opts.shineAt}s"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g>`}<g class="pj-flash" style="--gw:${travel.toFixed(1)}px;--gd:${delay}s;--gn:${opts.passes ?? 1}"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g></g>`;
   return svg.replace('</svg>', `${extra}</svg>`);
 }
@@ -47,12 +51,22 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
     name = forge(readFileSync(join(process.cwd(), 'public', mark), 'utf8'), 'pjn', 3.6, { base: '#0B141E', passes: 1, shineAt: 5.4 })
       .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__name" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
   }
+  if (assemble && ornament.toLowerCase().endsWith('.svg')) {
+    const raw = readFileSync(join(process.cwd(), 'public', ornament), 'utf8');
+    const color = raw.match(/fill="(#[0-9a-f]{3,8})"/i)?.[1] ?? '#8E7748';
+    const side = (cls: string, id: string, shift: number, flip: boolean) =>
+      forge(raw, id, 2.0 + shift, { base: '#0B141E', passes: 3, wipeAt: 3.6 + shift, gold: color, flip, fade: true })
+        .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__orn ${cls}" aria-hidden="true">`);
+    orn = [side('pjh__orn--l', 'pjol', -0.25, true), side('pjh__orn--r', 'pjor', 0.25, false)]; // una ola de brillo de izquierda a derecha
+  }
   inline = svg.replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__logo" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
 }
 ---
-<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]}`} aria-label={title}>
+<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} data-orn={orn[0] ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]}`} aria-label={title}>
   <div class="pjh__bg" data-pj-bg aria-hidden="true"></div>
   {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
+  {orn[0] && <Fragment set:html={orn[0]} />}
+  {orn[1] && <Fragment set:html={orn[1]} />}
   <div class="pjh__stage" data-pj-stage>
     {mark && !name && <img class="pjh__mark" data-pj-mark src={src(mark)} alt="" aria-hidden="true" decoding="async" draggable="false" />}
     {inline
@@ -73,6 +87,22 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   .pjh__ht { position: absolute; left: 0; top: 0; z-index: -1; pointer-events: none; animation: pjh-ht-in 1.8s ease both;
     -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%); mask-image: linear-gradient(to bottom, transparent 0, #000 16%); } /* se desvanece bajo el menú, para que se lea */
   @keyframes pjh-ht-in { from { opacity: 0; } to { opacity: 1; } }
+  /* Ornamento: dos mitades que flanquean el logotipo, en la misma animación pero con un leve retraso */
+  .pjh { --oh: min(84vh, 46rem); }
+  .pjh[data-assemble] .pjh__bg { background:
+    radial-gradient(ellipse 36% 44% at 50% 50%, rgb(76 112 160 / .28), transparent 72%),
+    radial-gradient(ellipse 62% 70% at var(--ax) var(--ay), color-mix(in srgb, var(--ga) 95%, transparent), transparent 72%),
+    radial-gradient(ellipse 70% 62% at var(--bx) var(--by), color-mix(in srgb, var(--gb) 90%, transparent), transparent 74%); } /* una luz leve al centro: sobre ella la "sombra" (multiplicar) se lee */
+  .pjh[data-assemble] :global(svg.pjh__orn) { position: absolute; top: 50%; translate: 0 -50%; z-index: -1; height: var(--oh); width: auto; aspect-ratio: 116 / 421; overflow: visible; }
+  .pjh[data-assemble] :global(svg.pjh__orn--l) { right: calc(50% + var(--oh) * .033); animation: pj-orn-l 1.9s .6s cubic-bezier(.22, 1, .36, 1) both; }
+  .pjh[data-assemble] :global(svg.pjh__orn--r) { left: calc(50% + var(--oh) * .033); animation: pj-orn-r 1.9s .6s cubic-bezier(.22, 1, .36, 1) both; }
+  @keyframes pj-orn-l { from { transform: translateX(-14vw); opacity: 0; filter: blur(22px); } 40% { opacity: .7; } to { transform: none; opacity: 1; filter: none; } }
+  @keyframes pj-orn-r { from { transform: translateX(14vw); opacity: 0; filter: blur(22px); } 40% { opacity: .7; } to { transform: none; opacity: 1; filter: none; } }
+  /* Efecto multiplicar: mientras son "sombra", las piezas oscuras oscurecen lo que tienen detrás; el oro llega encima, sin mezcla */
+  .pjh[data-assemble] :global(svg.pjh__logo > path), .pjh[data-assemble] :global(svg.pjh__name > path), .pjh[data-assemble] :global(svg.pjh__orn > path), .pjh[data-assemble] :global(svg.pjh__orn > g > path) { mix-blend-mode: multiply; }
+  /* Con ornamento, el logotipo se achica para quedar enmarcado dentro del arco */
+  .pjh[data-orn] .pjh__stage > :global(svg.pjh__logo) { height: min(23vh, 10.5rem); }
+  .pjh[data-orn] .pjh__stage > :global(svg.pjh__name) { width: min(52vw, 12.5rem); }
   .pjh__stage { position: relative; display: grid; place-items: center; width: min(88vw, 56rem); height: min(60vh, 34rem); }
   .pjh__stage > img { grid-area: 1 / 1; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; user-select: none; }
   .pjh__stage > .pjh__logo { width: min(100%, 40rem); animation: pjh-in 1.6s .2s var(--ease, ease) both; }
@@ -93,7 +123,7 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   .pjh :global(.pj-shine) { opacity: 0; animation: pj-shine 6.5s var(--gd, 4.9s) linear infinite; }
   @keyframes pj-shine { 0% { translate: 0 0; opacity: 0; } 2% { opacity: .3; } 17% { translate: var(--gw) 0; opacity: .3; } 18%, 100% { translate: var(--gw) 0; opacity: 0; } }
   /* Al final se proyecta una sombra leve del logotipo */
-  .pjh[data-assemble] .pjh__stage { animation: pj-cast 1.6s 4.2s ease-out both; }
+  .pjh[data-assemble] .pjh__stage { animation: pj-cast 1.6s 4.2s ease-out forwards; }
   @keyframes pj-cast { from { filter: drop-shadow(0 0 0 rgb(0 0 0 / 0)); } to { filter: drop-shadow(0 14px 18px rgb(0 0 0 / .5)); } }
   @keyframes pj-wipe { from { translate: 0 0; } to { translate: var(--gw) 0; } }
   @keyframes pj-strike { 0% { transform: scale(1) translateY(0); } 30% { transform: scale(1.045) translateY(3px); } 62% { transform: scale(.992) translateY(-1px); } 100% { transform: scale(1) translateY(0); } }
