@@ -92,10 +92,10 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   @keyframes pj-flash { 0% { translate: 0 0; opacity: 1; } 72% { translate: var(--gw) 0; opacity: 1; } 72.1%, 100% { translate: var(--gw) 0; opacity: 0; } }
   @keyframes pj-wipe { from { translate: 0 0; } to { translate: var(--gw) 0; } }
   /* Final: un foco puntual de luz dorada detrás del logotipo, que ilumina sólo lo que lo rodea (el azul del ambiente se conserva) y pulsa levemente */
-  .pjh__lit { position: absolute; z-index: -1; left: 50%; top: min(15vh, 7rem); width: min(72vh, 46rem); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; opacity: 0; animation: pj-lit-in 1.6s 4.0s ease-out both, pj-lit-pulse 3.2s 5.6s ease-in-out infinite alternate forwards;
-    background: radial-gradient(circle closest-side, rgb(96 160 226 / .3), rgb(70 126 190 / .11) 55%, transparent 100%); } /* centrado en el iso; azul del ambiente, más luminoso */
+  .pjh__lit { position: absolute; z-index: -1; left: 50%; top: min(30vh, 14rem); width: min(92vw, 40rem); height: min(66vh, 30rem); translate: -50% -50%; pointer-events: none; opacity: 0; animation: pj-lit-in 1.6s 4.0s ease-out both, pj-lit-pulse 3.2s 5.6s ease-in-out infinite alternate forwards;
+    background: radial-gradient(ellipse closest-side, rgb(255 246 208 / .26), rgb(232 218 140 / .11) 48%, transparent 100%); } /* centro justo al final del iso; luz dorada blanquecina, como si todo el logotipo (iso y nombre) desprendiera brillo de joya */
   @keyframes pj-lit-in { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes pj-lit-pulse { from { opacity: 1; } to { opacity: .5; } }
+  @keyframes pj-lit-pulse { from { opacity: 1; } to { opacity: .55; } }
   @keyframes pj-strike { 0% { transform: scale(1) translateY(0); } 30% { transform: scale(1.045) translateY(3px); } 62% { transform: scale(.992) translateY(-1px); } 100% { transform: scale(1) translateY(0); } }
   @keyframes pj-name { from { opacity: 0; filter: blur(10px); transform: translateY(10px); } to { opacity: 1; filter: none; transform: none; } }
   .pjh[data-assemble] :global(svg.pjh__logo path) { transform-box: fill-box; transform-origin: center; }
