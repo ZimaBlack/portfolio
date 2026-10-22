@@ -43,10 +43,10 @@ if (assemble && isSvg(logo)) {
     const ornArt = loadArt(ornament, 'pjo');
     defs += shapeDefs(ornArt);
     // Patrón: el par central (k = 0) enmarca el logotipo; a los lados se repite, cada vez más tenue
-    const alpha = [0.42, 0.24, 0.12], shine = [0.9, 0.6, 0.35];
+    const alpha = [0.42, 0.24, 0.12];
     const half = (k: number, left: boolean) => forge(ornArt, {
       id: `pjo${k + 2}${left ? 'l' : 'r'}`, cls: `pjh__orn pjh__orn--${left ? 'l' : 'r'}`, style: `--k:${k};--od:${(0.3 + 0.2 * Math.abs(k)).toFixed(2)}s;--sd:${wave(k * 0.6672 + (left ? -0.1708 : 0.1708))}s`,
-      color: GOLD_ORN, alpha: alpha[Math.abs(k)], flip: left, fade: true, screen: true, shine: shine[Math.abs(k)],
+      color: GOLD_ORN, alpha: alpha[Math.abs(k)], flip: left, fade: true, screen: true, shine: Math.min(1, alpha[Math.abs(k)] * 1.8), // el brillo se ajusta a la opacidad de cada vector
     });
     orn = [-2, -1, 0, 1, 2].flatMap((k) => [half(k, true), half(k, false)]);
   }
@@ -130,9 +130,9 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   .pjh__orn--r .pj-piece { animation-delay: calc(var(--od, .6s) + .12s), calc(var(--od, .6s) + .12s), calc(var(--od, .6s) + 3.12s); }
   /* Los vectores se funden con el fondo (pantalla) y llevan un desenfoque muy leve; cuando todo está armado se desenfocan un poco más y bajan su opacidad */
   .pj-screen { mix-blend-mode: screen; filter: blur(.5px); animation: pj-settle 1.8s var(--t-settle) ease-in-out both; }
-  /* Un único brillo de barras planas (una pasada), en una sola ola de izquierda a derecha sobre todo: vectores, logotipo y nombre */
-  .pj-shine { opacity: 0; animation: pj-shine .8s calc(var(--t-shine) + var(--sd, 0s)) both; }
-  @keyframes pj-shine { 0% { translate: 0 0; opacity: 0; animation-timing-function: cubic-bezier(.45, .05, .55, .95); } 8% { opacity: 1; } 85% { translate: var(--gw) 0; opacity: 1; } 100% { translate: var(--gw) 0; opacity: 0; } }
+  /* Brillo de barras planas: una pasada, en una sola ola de izquierda a derecha sobre todo (vectores, logotipo y nombre), que se repite cada 10 s */
+  .pj-shine { opacity: 0; animation: pj-shine 10s calc(var(--t-shine) + var(--sd, 0s)) infinite; }
+  @keyframes pj-shine { 0% { translate: 0 0; opacity: 0; animation-timing-function: cubic-bezier(.45, .05, .55, .95); } 0.8% { opacity: 1; } 6.8% { translate: var(--gw) 0; opacity: 1; } 8%, 100% { translate: var(--gw) 0; opacity: 0; } }
   @keyframes pj-settle { from { filter: blur(.5px); opacity: 1; } to { filter: blur(1.5px); opacity: .55; } }
   @keyframes pj-from-left { from { transform: translateX(-60vw) rotate(-7deg); opacity: 0; } 35% { opacity: var(--a, 1); } to { transform: none; opacity: var(--a, 1); } }
   @keyframes pj-from-right { from { transform: translateX(60vw) rotate(7deg); opacity: 0; } 35% { opacity: var(--a, 1); } to { transform: none; opacity: var(--a, 1); } }

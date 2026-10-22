@@ -73,6 +73,8 @@ export function forge(art: Art, o: ForgeOpts): string {
     const uses = art.paths.map((_, i) => `<use href="#${art.id}-${i}" fill="#fff"/>`).join('');
     shine = `<mask id="${id}-m" maskUnits="userSpaceOnUse" ${area}><g${T}>${uses}</g></mask><g mask="url(#${id}-m)" opacity="${o.shine}"><g class="pj-shine" style="--gw:${travel.toFixed(1)}px"><g transform="${origin}">${bars}</g></g></g>`;
   }
-  const group = `<g${T}${o.screen ? ' class="pj-screen"' : ''}${o.fade ? ` mask="url(#${id}-f)"` : ''}>${pieces}</g>`;
-  return `<svg viewBox="${vx} ${vy} ${vw} ${vh}" fill="none" xmlns="http://www.w3.org/2000/svg" class="${o.cls}" style="--a:${o.alpha ?? 1};${o.style ?? ''}" ${a11y}><defs>${defs}</defs>${group}${shine}</svg>`;
+  // Los vectores ("screen") llevan las piezas y el brillo dentro de un mismo grupo: el brillo hereda así su máscara, su desenfoque y su opacidad
+  const inner = `<g${T}>${pieces}</g>${o.screen ? shine : ''}`;
+  const group = o.screen || o.fade ? `<g${o.screen ? ' class="pj-screen"' : ''}${o.fade ? ` mask="url(#${id}-f)"` : ''}>${inner}</g>` : inner;
+  return `<svg viewBox="${vx} ${vy} ${vw} ${vh}" fill="none" xmlns="http://www.w3.org/2000/svg" class="${o.cls}" style="--a:${o.alpha ?? 1};${o.style ?? ''}" ${a11y}><defs>${defs}</defs>${group}${o.screen ? '' : shine}</svg>`;
 }
