@@ -8,6 +8,7 @@ import { withBase } from '../lib/i18n';
 const { logo, mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, assemble = false, ornament = '' } = Astro.props as { logo: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; assemble?: boolean; ornament?: string };
 const src = (p: string) => (p.startsWith('/') ? withBase(p) : p);
 // Ritmo común de toda la animación (segundos). Todos los brillos usan estos mismos tiempos, así van sincronizados.
+const ALPHA = 0.36; // opacidad común de todas las piezas oscuras (logotipo, nombre y ornamento central)
 const DARK = '#05090F'; // color inicial de las piezas: casi negro azulado (con multiplicar se lee como sombra)
 const FLASH = 2.3; // empieza la 1.ª pasada de barras
 const PASS = 1;    // separación entre pasadas
@@ -18,7 +19,7 @@ let orn: string[] = []; // ornamento: mitades izquierda y derecha de cada par (e
 /** Metal forjado. Con `base` (un color), las piezas nacen en ese tono y un destello de barras blancas planas cruza el logotipo
  *  (recortado con su propia forma); en la pasada indicada por `wipeAt` el oro se revela por debajo, detrás de la primera barra.
  *  Sin `base`, las piezas ya son doradas y sólo pasa el destello. `delay` = segundos hasta que empieza el destello; `passes` = cuántas veces cruza. */
-function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; wipeAt?: number; shineAt?: number; gold?: string; flip?: boolean; fade?: boolean; alpha?: number; blend?: boolean; vig?: { cx: number; cy: number; r: number }; goldGradient?: [string, string]; shineScale?: number } = {}) {
+function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; wipeAt?: number; shineAt?: number; gold?: string; flip?: boolean; fade?: boolean; alpha?: number; blend?: boolean; vig?: { cx: number; cy: number; r: number }; goldGradient?: [string, string]; shineScale?: number; goldAlpha?: number } = {}) {
   const [vx, vy, vw, vh] = (svg.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 100 100').split(/\s+/).map(Number);
   const all = [...svg.matchAll(/<path\b[^>]*?\sd="([^"]+)"/g)].map((m) => m[1]);
   const flat = opts.gold ?? '#CFC65C'; // oro de la marca: un solo tono, sin degradados
@@ -40,7 +41,7 @@ function forge(svg: string, id: string, delay: number, opts: { base?: string; pa
     ${opts.vig ? `<radialGradient id="${id}-vg" gradientUnits="userSpaceOnUse" cx="${opts.vig.cx.toFixed(1)}" cy="${opts.vig.cy.toFixed(1)}" r="${opts.vig.r.toFixed(1)}"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><mask id="${id}-v" maskUnits="userSpaceOnUse" x="${vx - 2000}" y="${vy - 2000}" width="${vw + 4000}" height="${vh + 4000}"><rect x="${vx - 2000}" y="${vy - 2000}" width="${vw + 4000}" height="${vh + 4000}" fill="url(#${id}-vg)"/></mask>` : ''}
     ${opts.fade ? `<linearGradient id="${id}-fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".12" stop-color="#fff"/><stop offset=".88" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${id}-f" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}"><rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="url(#${id}-fg)"/></mask>` : ''}
   </defs>
-  ${opts.base ? `<g${opts.blend ? ' class="pj-screen"' : ''}${opts.fade ? ` mask="url(#${id}-f)"` : ''}${opts.alpha ? ` opacity="${opts.alpha}"` : ''}><g mask="url(#${id}-w)"><g${T}>${all.map((d) => `<path d="${d}" fill="${gold}"/>`).join('')}</g></g></g>` : ''}
+  ${opts.base ? `<g${opts.blend ? ' class="pj-screen"' : ''}${opts.fade ? ` mask="url(#${id}-f)"` : ''}${opts.goldAlpha ? ` opacity="${opts.goldAlpha}"` : ''}><g mask="url(#${id}-w)"><g${T}>${all.map((d) => `<path d="${d}" fill="${gold}"/>`).join('')}</g></g></g>` : ''}
   <g mask="url(#${id}-m)"><g${opts.vig ? ` mask="url(#${id}-v)"` : ''}>${opts.shineAt === undefined ? '' : `<g${opts.shineScale ? ` opacity="${opts.shineScale}"` : ''}><g class="pj-shine" style="--gw:${travel.toFixed(1)}px;--gd:${opts.shineAt}s"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g></g>`}<g class="pj-flash" style="--gw:${travel.toFixed(1)}px;--gd:${delay}s;--gn:${opts.passes ?? 1}"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g></g></g>`;
   return svg.replace('</svg>', `${extra}</svg>`);
 }
@@ -54,28 +55,28 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
     svg = svg.replace(new RegExp(`fill="${hex}"`, 'gi'), `style="fill:var(--pw-${i},${hex})"`);
   });
   // Para ensamblar: cada trazo recibe su número (0 = ala izquierda, 1 = ala derecha, 2 = centro), en el orden del archivo
-  if (assemble) { let n = 0; svg = svg.replace(/<path\b/g, () => `<path data-part="${n++}"`); svg = forge(svg, 'pjm', FLASH, { base: DARK, passes: 2, wipeAt: LAST, shineAt: LAST + 2.6, vig: { cx: 148, cy: 190, r: 230 } }); } // 3 pasadas (2.0 s, 2.8 s, 3.6 s): la última lo pinta de oro }
+  if (assemble) { let n = 0; svg = svg.replace(/<path\b/g, () => `<path data-part="${n++}"`); svg = forge(svg, 'pjm', FLASH, { base: DARK, passes: 2, wipeAt: LAST, shineAt: LAST + 2.6, vig: { cx: 148, cy: 190, r: 230 }, alpha: ALPHA }); } // 3 pasadas (2.0 s, 2.8 s, 3.6 s): la última lo pinta de oro }
   if (assemble && mark && mark.toLowerCase().endsWith('.svg')) {
-    name = forge(readFileSync(join(process.cwd(), 'public', mark), 'utf8'), 'pjn', LAST, { base: DARK, passes: 1, shineAt: LAST + 2.6, vig: { cx: 238, cy: 321, r: 290 } })
-      .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__name" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
+    name = forge(readFileSync(join(process.cwd(), 'public', mark), 'utf8'), 'pjn', LAST, { base: DARK, passes: 1, shineAt: LAST + 2.6, vig: { cx: 238, cy: 321, r: 290 }, alpha: ALPHA })
+      .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__name" style="--a:${ALPHA}" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
   }
   if (assemble && ornament.toLowerCase().endsWith('.svg')) {
     const raw = readFileSync(join(process.cwd(), 'public', ornament), 'utf8');
     const color = raw.match(/fill="(#[0-9a-f]{3,8})"/i)?.[1] ?? '#8E7748';
     // Patrón: el par central (k = 0) enmarca el logotipo; a los lados se repite, cada vez más tenue
-    const alpha: Record<number, number> = { 0: 0.36, 1: 0.2, 2: 0.09 };
+    const alpha: Record<number, number> = { 0: ALPHA, 1: 0.2, 2: 0.09 };
     const side = (k: number, left: boolean) =>
       forge(raw, `pjo${k + 2}${left ? 'l' : 'r'}`, FLASH, {
-        base: DARK, passes: 2, wipeAt: LAST, gold: color, flip: left, fade: true, alpha: alpha[Math.abs(k)], blend: true,
+        base: DARK, passes: 2, wipeAt: LAST, gold: color, flip: left, fade: true, alpha: alpha[Math.abs(k)], goldAlpha: alpha[Math.abs(k)], blend: true,
         goldGradient: ['#A8A152', '#58542F'], // el mismo matiz que el oro del logotipo, más claro arriba y más oscuro abajo: se integra con el fondo y con la marca
         shineAt: LAST + 2.6, shineScale: { 0: 0.8, 1: 0.5, 2: 0.25 }[Math.abs(k) as 0 | 1 | 2], // el mismo brillo sutil, según la zona
         // El brillo sólo se ve cerca del logotipo (viñeta centrada en el centro de la portada, en las unidades del SVG)
         vig: { cx: left ? 116 + (0.033 - k * 0.6672) * 421 : -(k * 0.6672 + 0.033) * 421, cy: 210, r: 175 },
       })
-        .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__orn ${left ? 'pjh__orn--l' : 'pjh__orn--r'}" style="--k:${k};--od:${(0.5 + 0.14 * Math.abs(k)).toFixed(2)}s" aria-hidden="true">`);
+        .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__orn ${left ? 'pjh__orn--l' : 'pjh__orn--r'}" style="--a:${alpha[Math.abs(k)]};--k:${k};--od:${(0.5 + 0.14 * Math.abs(k)).toFixed(2)}s" aria-hidden="true">`);
     orn = [-2, -1, 0, 1, 2].flatMap((k) => [side(k, true), side(k, false)]); // mismos tiempos para todos: los brillos van sincronizados
   }
-  inline = svg.replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__logo" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
+  inline = svg.replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__logo" style="--a:${assemble ? ALPHA : 1}" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
 }
 ---
 <section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} data-orn={orn.length ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]}`} aria-label={title}>
@@ -105,14 +106,15 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   /* Ornamento: dos mitades que flanquean el logotipo, en la misma animación pero con un leve retraso */
   .pjh { --oh: min(66vh, 38rem); --hw: calc(var(--oh) * .2756); --og: calc(var(--oh) * .066); --pw: calc(2 * var(--hw) + var(--og) + var(--oh) * .05); }
   .pjh[data-assemble] .pjh__bg { background:
-    radial-gradient(ellipse 36% 44% at 50% 50%, rgb(210 210 210 / .10), transparent 72%),
+    radial-gradient(ellipse 36% 44% at 50% 50%, rgb(150 180 225 / .11), transparent 72%),
     radial-gradient(ellipse 62% 70% at var(--ax) var(--ay), color-mix(in srgb, var(--ga) 95%, transparent), transparent 72%),
-    radial-gradient(ellipse 70% 62% at var(--bx) var(--by), color-mix(in srgb, var(--gb) 90%, transparent), transparent 74%); } /* una luz neutra y leve al centro: sobre ella la "sombra" (multiplicar) se lee */
+    radial-gradient(ellipse 70% 62% at var(--bx) var(--by), color-mix(in srgb, var(--gb) 90%, transparent), transparent 74%); } /* una luz levemente azulada al centro: sobre ella la "sombra" (multiplicar) se lee */
   .pjh[data-assemble] :global(svg.pjh__orn) { position: absolute; top: 50%; translate: 0 -50%; z-index: -1; height: var(--oh); width: auto; aspect-ratio: 116 / 421; overflow: visible; }
-  .pjh[data-assemble] :global(svg.pjh__orn--l) { right: calc(50% - var(--k) * var(--pw) + var(--og) / 2); animation: pj-orn-l 1.8s var(--od, .5s) cubic-bezier(.22, 1, .36, 1) both; }
-  .pjh[data-assemble] :global(svg.pjh__orn--r) { left: calc(50% + var(--k) * var(--pw) + var(--og) / 2); animation: pj-orn-r 1.8s var(--od, .5s) cubic-bezier(.22, 1, .36, 1) both; }
-  @keyframes pj-orn-l { from { transform: translateX(-14vw); opacity: 0; filter: blur(22px); } 40% { opacity: .7; } to { transform: none; opacity: 1; filter: none; } }
-  @keyframes pj-orn-r { from { transform: translateX(14vw); opacity: 0; filter: blur(22px); } 40% { opacity: .7; } to { transform: none; opacity: 1; filter: none; } }
+  .pjh[data-assemble] :global(svg.pjh__orn--l) { right: calc(50% - var(--k) * var(--pw) + var(--og) / 2); }
+  .pjh[data-assemble] :global(svg.pjh__orn--r) { left: calc(50% + var(--k) * var(--pw) + var(--og) / 2); }
+  /* El ornamento entra pieza por pieza (hacia afuera de cada mitad), desde el desenfoque; sin animar la raíz del SVG para que el multiplicar no parpadee */
+  .pjh[data-assemble] :global(svg.pjh__orn > path), .pjh[data-assemble] :global(svg.pjh__orn > g > path) { animation: pj-orn-in 1.8s var(--od, .5s) cubic-bezier(.22, 1, .36, 1) both; }
+  @keyframes pj-orn-in { from { transform: translateX(170px); opacity: 0; filter: blur(16px); } to { transform: none; opacity: var(--a, 1); filter: none; } }
   .pjh :global(.pj-screen) { mix-blend-mode: screen; } /* el oro del ornamento se funde con el fondo (pantalla) */
   /* Efecto multiplicar: mientras son "sombra", las piezas oscuras oscurecen lo que tienen detrás; el oro llega encima, sin mezcla */
   .pjh[data-assemble] :global(svg.pjh__logo > path), .pjh[data-assemble] :global(svg.pjh__name > path), .pjh[data-assemble] :global(svg.pjh__orn > path), .pjh[data-assemble] :global(svg.pjh__orn > g > path) { mix-blend-mode: multiply; }
@@ -128,8 +130,9 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   .pjh__stage > :global(svg.pjh__logo) :global(path) { transition: fill .7s linear; }
   /* Ensamblar: las alas llegan desde cada lado y se juntan; al terminar, aparece el rombo central */
   .pjh[data-assemble] .pjh__stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(.5rem, 1.5vh, .9rem); height: auto; }
-  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__logo) { overflow: visible; height: min(30vh, 14rem); width: auto; transform-origin: 50% 62%; animation: pj-strike .6s 1.52s ease-out both; }
-  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__name) { width: min(64vw, 16.5rem); height: auto; flex: none; animation: pj-name 1s 3.1s var(--ease, ease) both; }
+  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__logo) { overflow: visible; height: min(30vh, 14rem); width: auto; animation: none; }
+  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__name) { width: min(64vw, 16.5rem); height: auto; flex: none; }
+  .pjh[data-assemble] :global(svg.pjh__name > path) { animation: pj-appear .9s 3.1s var(--ease, ease) both; } /* el nombre llega pieza por pieza (no la raíz del SVG: así el multiplicar no parpadea) */
   /* "Forja precisa": las piezas nacen en acero azulado, encajan con un leve golpe y un destello de barras planas pasa un par de veces;
      mientras cruza, el oro aparece por debajo (en sincronía con el reflejo). El nombre llega ya dorado y recibe un solo destello. */
   .pjh :global(.pj-flash) { opacity: 0; animation: pj-flash 1s var(--gd, 3.15s) linear var(--gn, 1) both; }
@@ -140,18 +143,16 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   @keyframes pj-shine { 0% { translate: 0 0; opacity: 0; } 1.5% { opacity: .3; } 11% { translate: var(--gw) 0; opacity: .3; } 12%, 100% { translate: var(--gw) 0; opacity: 0; } }
   .pjh[data-assemble] .pjh__stage { }
   @keyframes pj-wipe { from { translate: 0 0; } to { translate: var(--gw) 0; } }
-  @keyframes pj-strike { 0% { transform: scale(1) translateY(0); } 30% { transform: scale(1.025) translateY(2px); } 62% { transform: scale(.996) translateY(-1px); } 100% { transform: scale(1) translateY(0); } }
-  @keyframes pj-name { from { opacity: 0; filter: blur(10px); transform: translateY(10px); } to { opacity: 1; filter: none; transform: none; } }
   .pjh[data-assemble] :global(svg.pjh__logo path) { transform-box: fill-box; transform-origin: center; }
   .pjh[data-assemble] :global([data-part='0']) { animation: pj-from-left 1.8s .3s both; }
   .pjh[data-assemble] :global([data-part='1']) { animation: pj-from-right 1.8s .3s both; }
   /* Las alas llegan con menos opacidad y desenfocadas, aceleran hacia el centro, chocan (se pasan un poco), rebotan y se asientan */
   .pjh[data-assemble] :global([data-part='2']) { animation: pj-appear .9s 3.1s var(--ease, ease) both; } /* el rombo llega después del 2.º brillo, aún en azul */
-  @keyframes pj-appear { from { opacity: 0; filter: blur(14px); transform: scale(.6); } to { opacity: 1; filter: blur(0); transform: none; } }
-  @keyframes pj-from-left { 0% { transform: translateX(-70vw); opacity: 0; filter: blur(20px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 24% { opacity: .55; } 68% { transform: translateX(9px); opacity: .6; filter: blur(0); animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 70% { opacity: 1; } 84% { transform: translateX(-3px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: 1; filter: blur(0); } }
-  @keyframes pj-from-right { 0% { transform: translateX(70vw); opacity: 0; filter: blur(20px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 24% { opacity: .55; } 68% { transform: translateX(-9px); opacity: .6; filter: blur(0); animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 70% { opacity: 1; } 84% { transform: translateX(3px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: 1; filter: blur(0); } }
+  @keyframes pj-appear { from { opacity: 0; filter: blur(14px); transform: scale(.6); } to { opacity: var(--a, 1); filter: none; transform: none; } }
+  @keyframes pj-from-left { 0% { transform: translateX(-70vw); opacity: 0; filter: blur(20px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 30% { opacity: var(--a, 1); } 68% { transform: translateX(9px); filter: none; animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 84% { transform: translateX(-3px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: var(--a, 1); filter: none; } }
+  @keyframes pj-from-right { 0% { transform: translateX(70vw); opacity: 0; filter: blur(20px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 30% { opacity: var(--a, 1); } 68% { transform: translateX(-9px); filter: none; animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 84% { transform: translateX(3px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: var(--a, 1); filter: none; } }
   @keyframes pjh-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
-  @media (prefers-reduced-motion: reduce) { .pjh__logo, .pjh[data-assemble] :global([data-part]), .pjh :global(.pj-flash), .pjh :global(.pj-wipe), .pjh :global(.pj-shine), .pjh :global(.pjh__name) { animation: none !important; } .pjh :global(.pj-shine) { display: none; } .pjh :global(.pj-flash) { display: none; } .pjh :global(.pj-wipe) { translate: var(--gw) 0; } }
+  @media (prefers-reduced-motion: reduce) { .pjh__logo, .pjh[data-assemble] :global([data-part]), .pjh :global(.pj-flash), .pjh :global(.pj-wipe), .pjh :global(.pj-shine), .pjh :global(svg.pjh__name > path), .pjh :global(svg.pjh__orn > path), .pjh :global(svg.pjh__orn > g > path) { animation: none !important; } .pjh :global(.pj-shine) { display: none; } .pjh :global(.pj-flash) { display: none; } .pjh :global(.pj-wipe) { translate: var(--gw) 0; } }
 </style>
 
 <style is:global>
