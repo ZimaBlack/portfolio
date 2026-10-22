@@ -10,7 +10,8 @@ summary:
 text:
   es: "[Contexto, desafío, decisiones de diseño y resultado.]"
   en: "[Context, challenge, design decisions and outcome.]"
-draft: true
+logo: /works/cdxx/logo.svg
+mark: /works/cdxx/mark.svg
 featured: false
 order: 5
 tones: ["#101a14", "#26422f"]

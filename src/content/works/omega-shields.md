@@ -9,7 +9,8 @@ summary:
 text:
   es: "[Contexto, desafío, decisiones de diseño y resultado.]"
   en: "[Context, challenge, design decisions and outcome.]"
-draft: true
+logo: /works/omega-shields/logo.svg
+mark: /works/omega-shields/mark.svg
 featured: false
 order: 2
 tones: ["#0d1620", "#223446"]

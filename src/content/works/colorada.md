@@ -9,7 +9,8 @@ summary:
 text:
   es: "[Contexto, desafío, decisiones de diseño y resultado.]"
   en: "[Context, challenge, design decisions and outcome.]"
-draft: true
+logo: /works/colorada/logo.svg
+mark: /works/colorada/mark.svg
 featured: false
 order: 16
 tones: ["#240d12", "#6a1b26"]
