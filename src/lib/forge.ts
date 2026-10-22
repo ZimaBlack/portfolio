@@ -3,7 +3,7 @@
 //  · cada trazo se define una sola vez (<path id>) en un SVG oculto y se reutiliza con <use>;
 //  · cada pieza lleva su número (data-part) para animarla por separado, y las "tardías" llegan después de las demás;
 //  · el color final es un tono, o un degradado vertical;
-//  · un brillo de barras planas puede cruzar cada SVG (recortado con su forma); el retraso de cada uno (--sd) lo hace parte de una sola ola.
+//  · un brillo suave (una banda diagonal de luz, como el de LogoFolio) puede cruzar cada SVG, recortado con su forma; el retraso de cada uno (--sd) permite encadenarlos en una ola.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -45,11 +45,10 @@ export interface ForgeOpts {
   screen?: boolean;                // se funde con el fondo (mezcla "pantalla")
   parts?: boolean;                 // numera los trazos (data-part) para animar las alas por separado
   late?: number[];                 // trazos que llegan después de los demás (rombo, nombre)
-  shine?: number;                  // intensidad (0–1) del brillo de barras que lo cruza; sin él, no hay brillo
+  shine?: number;                  // intensidad (0–1) del brillo que lo cruza; sin él, no hay brillo
 }
 
 const SKEW = Math.tan((22 * Math.PI) / 180);
-const BARS = [[0, 0.07], [0.12, 0.025], [0.19, 0.12]]; // posición y ancho de las barras (fracción del ancho)
 
 export function forge(art: Art, o: ForgeOpts): string {
   const id = o.id;
@@ -70,14 +69,15 @@ export function forge(art: Art, o: ForgeOpts): string {
     .map((_, i) => `<use href="#${art.id}-${i}" class="pj-piece${late.has(i) ? ' pj-late' : ''}" fill="${fill}"${o.alpha ? ` opacity="${o.alpha}"` : ''}${o.parts ? ` data-part="${i}"` : ''}/>`)
     .join('');
   const a11y = o.label ? `role="img" aria-label="${o.label.replace(/"/g, '&quot;')}"` : 'aria-hidden="true"';
-  // Brillo: barras planas en diagonal, recortadas con la forma de las piezas
+  // Brillo: una banda diagonal de luz, suave, recortada con la forma de las piezas (como el destello de la marquesina de LogoFolio)
   let shine = '';
   if (o.shine) {
-    const span = 0.31 * vw, travel = vw + span + vh * SKEW * 2;
-    const origin = `translate(${(vx - span - vh * SKEW * 1.1).toFixed(1)} ${vy}) skewX(-22)`;
-    const bars = BARS.map(([x, w]) => `<rect x="${(x * vw).toFixed(1)}" y="${(-vh * 0.1).toFixed(1)}" width="${(w * vw).toFixed(1)}" height="${(vh * 1.2).toFixed(1)}" fill="#fff" fill-opacity=".88"/>`).join('');
+    const band = 0.6 * vw, travel = vw + band + vh * SKEW * 2;
+    const origin = `translate(${(vx - band - vh * SKEW * 1.1).toFixed(1)} ${vy}) skewX(-22)`;
     const uses = art.paths.map((_, i) => `<use href="#${art.id}-${i}" fill="#fff"/>`).join('');
-    shine = `<mask id="${id}-m" maskUnits="userSpaceOnUse" ${area}><g${T}>${uses}</g></mask><g mask="url(#${id}-m)" opacity="${o.shine}"><g class="pj-shine" style="--gw:${travel.toFixed(1)}px"><g transform="${origin}">${bars}</g></g></g>`;
+    shine = `<linearGradient id="${id}-s" x1="0" y1="0" x2="1" y2="0"><stop offset=".38" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset=".62" stop-color="#fff" stop-opacity="0"/></linearGradient>`
+      + `<mask id="${id}-m" maskUnits="userSpaceOnUse" ${area}><g${T}>${uses}</g></mask>`
+      + `<g mask="url(#${id}-m)" opacity="${o.shine}"><g class="pj-shine" style="--gw:${travel.toFixed(1)}px"><g transform="${origin}"><rect width="${band.toFixed(1)}" y="${(-vh * 0.1).toFixed(1)}" height="${(vh * 1.2).toFixed(1)}" fill="url(#${id}-s)"/></g></g></g>`;
   }
   // Los vectores ("screen") llevan las piezas y el brillo dentro de un mismo grupo: el brillo hereda así su máscara, su desenfoque y su opacidad
   const inner = `<g${T}>${pieces}</g>${o.screen ? shine : ''}`;
