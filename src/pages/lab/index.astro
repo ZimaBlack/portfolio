@@ -106,7 +106,7 @@ import Base from '../../layouts/Base.astro';
     mk('Limpiar', () => ctl.clear());
     mk('Guardar como fondo del sitio', async () => {
       // Se guarda en src/data/background.json (sólo con el servidor de desarrollo); si no hay servidor, copia el JSON
-      const { pinned, idle, hold, fade, ...preset } = P;
+      const { pinned, ...preset } = P;
       const json = JSON.stringify(preset, null, 2);
       try {
         const r = await fetch('/__turing-preset', { method: 'POST', body: JSON.stringify(preset) });

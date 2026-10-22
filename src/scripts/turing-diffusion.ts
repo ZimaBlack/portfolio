@@ -1,89 +1,144 @@
-// Laboratorio de morfogénesis (/lab/): cuando el cursor se queda quieto sobre el fondo negro, desde ese punto crece un patrón de Turing
-// (ver turing-core.ts), en grises, con ruido y desenfoque. Con "mantener" el patrón persiste y cada clic siembra otro foco de crecimiento.
-// `initTuringDiffusion` devuelve un controlador: sus `params` se pueden cambiar en vivo (panel de la página).
+// Morfogénesis que responde al cursor (laboratorio /lab/ y Home): cuando el cursor se queda quieto, desde ese punto crece un patrón de
+// Turing (ver turing-core.ts), en grises, con ruido y desenfoque. Mientras el cursor se mueve, el patrón se disuelve y deja "rastros":
+// pequeños focos a lo largo del camino que crecen un poco y se apagan. Un clic siembra otro foco; con "mantener" el patrón persiste.
+// `initTuringDiffusion` devuelve un controlador: sus `params` se pueden cambiar en vivo (panel del laboratorio).
 import { DEFAULTS, TuringSim, smooth, type TuringParams } from './turing-core';
 
 export { DEFAULTS, PRESETS, type TuringParams } from './turing-core';
-export interface TuringControls { params: TuringParams; restart: (x?: number, y?: number) => void; clear: () => void; resize: () => void; apply: () => void }
 
-interface Seed { x: number; y: number; t: number } // x, y en celdas; t = instante de la siembra
+export interface TuringControls {
+  params: TuringParams;
+  restart: (x?: number, y?: number) => void;
+  clear: () => void;
+  resize: () => void;
+  apply: () => void;
+  enable: (on: boolean) => void; // apaga/enciende la reacción al cursor (apagado: no dibuja ni escucha)
+}
+export interface TuringOptions {
+  target?: Window | HTMLElement;       // dónde se escucha el cursor (por defecto, el propio canvas)
+  ignore?: (e: Event) => boolean;      // eventos que no cuentan (por ejemplo, los que ocurren sobre el footer)
+  params?: Partial<TuringParams>;      // valores iniciales (por defecto, DEFAULTS)
+}
 
-export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLElement | null): TuringControls | null {
+interface Seed { x: number; y: number; t: number; trail: boolean } // x, y en celdas; t = instante de la siembra
+
+const TRAIL_EVERY = 34;  // px de cursor entre un rastro y el siguiente
+const TRAIL_KEEP = 450;  // ms que un rastro se ve completo
+const TRAIL_FADE = 1700; // y ms que tarda en apagarse
+const TRAIL_CELLS = 12;  // alcance de un rastro (en celdas)
+const NUCLEI_MS = 3200;  // los núcleos al azar sólo caen los primeros segundos de cada foco
+
+export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLElement | null, opts: TuringOptions = {}): TuringControls | null {
   if (!canvas.getContext('2d') || matchMedia('(prefers-reduced-motion: reduce)').matches) return null;
-  const P: TuringParams = { ...DEFAULTS };
+  const P: TuringParams = { ...DEFAULTS, ...opts.params };
   const sim = new TuringSim(canvas, P);
+  const target: Window | HTMLElement = opts.target ?? canvas;
+  const ignored = (e: Event) => !!opts.ignore?.(e);
   let seeds: Seed[] = [];
-  let raf = 0, startedAt = 0, disturbedAt = 0, idleTimer = 0, inside = false, pointer = { x: 0, y: 0 };
+  let on = true, raf = 0, startedAt = 0, disturbedAt = 0, idleTimer = 0, inside = false, trailAcc = 0;
+  let pointer = { x: 0, y: 0 };
 
   const apply = () => { canvas.style.filter = `blur(${P.blur}px) contrast(1.1)`; canvas.parentElement?.style.setProperty('--grain', String(P.grain)); };
+  const clear = () => { cancelAnimationFrame(raf); raf = 0; seeds = []; sim.clear(); };
   const resize = () => { cancelAnimationFrame(raf); raf = 0; seeds = []; sim.resize(); };
-  new ResizeObserver(resize).observe(canvas);
+  new ResizeObserver(() => { if (on) resize(); }).observe(canvas);
   apply();
 
-  const clear = () => { cancelAnimationFrame(raf); raf = 0; seeds = []; sim.clear(); };
-  /** Alcance de una semilla en el instante `now` (en celdas): arranca justo por fuera de ella y se expande. */
-  const reach = (s: Seed, now: number) => 9 + (P.radius / P.cell - 9) * (1 - Math.exp(-(now - s.t) / P.grow));
+  /** Alcance de un foco en el instante `now` (en celdas): arranca justo por fuera de la semilla y se expande. */
+  const reach = (s: Seed, now: number) => s.trail
+    ? 5 + (TRAIL_CELLS - 5) * (1 - Math.exp(-(now - s.t) / 280))
+    : 9 + (P.radius / P.cell - 9) * (1 - Math.exp(-(now - s.t) / P.grow));
+  const trailAlpha = (s: Seed, now: number) => 1 - smooth((now - s.t - TRAIL_KEEP) / TRAIL_FADE);
 
-  const addSeed = (x: number, y: number) => {
-    sim.seed(x, y);
-    seeds.push({ x: x / P.cell, y: y / P.cell, t: performance.now() });
-    if (seeds.length > 14) seeds.shift();
+  const addSeed = (x: number, y: number, trail = false) => {
+    sim.seed(x, y, trail ? 2 : 5);
+    seeds.push({ x: x / P.cell, y: y / P.cell, t: performance.now(), trail });
+    if (seeds.length > 60) seeds.shift();
   };
+  const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
+  /** Empieza un foco principal en (x, y): sin restos de patrones anteriores a su alrededor. */
   const start = (x = pointer.x, y = pointer.y) => {
-    sim.reset(); seeds = []; pointer = { x, y };
+    pointer = { x, y };
+    sim.clearDisc(x, y, P.radius + 40);
+    seeds = seeds.filter((s) => s.trail);
     addSeed(x, y);
     startedAt = performance.now(); disturbedAt = 0;
-    cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
+    kick();
   };
 
   const loop = (now: number) => {
-    const age = Math.max(0, now - startedAt);
-    // Los núcleos al azar sólo caen cerca de las semillas, y sólo en los primeros segundos de cada una
-    const allow = (x: number, y: number) => seeds.some((s) => now - s.t < 3200 && Math.hypot(x - s.x, y - s.y) < reach(s, now));
-    const live = seeds.some((s) => now - s.t < 3200);
-    for (let k = 0; k < P.steps; k++) sim.step(k === 0 && live ? P.nuclei : 0, allow);
+    if (!on) { raf = 0; return; }
+    const main = seeds.filter((s) => !s.trail);
+    // Opacidad del foco principal: dura `hold`, se disuelve en `fade`, y se apaga rápido si el cursor se mueve
     let alpha = 1;
-    if (!P.pinned) {
+    if (main.length && !P.pinned) {
+      const age = Math.max(0, now - startedAt);
       alpha = age > P.hold ? Math.max(0, 1 - (age - P.hold) / P.fade) : 1;
       if (disturbedAt) alpha = Math.min(alpha, Math.max(0, 1 - (now - disturbedAt) / 900));
     }
-    // El patrón se ve alrededor de cada semilla, con un borde que se desvanece (sin anillo duro)
-    sim.render(alpha, (x, y) => {
+    if (alpha <= 0) seeds = seeds.filter((s) => s.trail); // el principal se disolvió del todo
+    seeds = seeds.filter((s) => !s.trail || now - s.t < TRAIL_KEEP + TRAIL_FADE);
+    if (!seeds.length) { sim.clear(); raf = 0; if (inside) armIdle(); return; }
+
+    // Los núcleos al azar sólo caen cerca de focos recientes
+    const fresh = seeds.filter((s) => !s.trail && now - s.t < NUCLEI_MS);
+    const allow = (x: number, y: number) => fresh.some((s) => Math.hypot(x - s.x, y - s.y) < reach(s, now));
+    for (let k = 0; k < P.steps; k++) sim.step(k === 0 && fresh.length ? P.nuclei : 0, allow);
+    // Se ve alrededor de cada foco, con un borde que se desvanece (sin anillo duro)
+    sim.render(1, (x, y) => {
       let m = 0;
       for (const s of seeds) {
         const rg = reach(s, now);
-        const e = 1 - smooth((Math.hypot(x - s.x, y - s.y) - rg * 0.62) / (rg * 0.38));
+        const e = (1 - smooth((Math.hypot(x - s.x, y - s.y) - rg * 0.62) / (rg * 0.38))) * (s.trail ? trailAlpha(s, now) : alpha);
         if (e > m) m = e;
       }
       return m;
     });
-    if (alpha <= 0) { clear(); if (inside) armIdle(); return; }
     raf = requestAnimationFrame(loop);
   };
 
-  const armIdle = () => { clearTimeout(idleTimer); idleTimer = window.setTimeout(() => { if (inside && !raf) start(); }, P.idle); };
-  const disturb = () => { if (raf && !disturbedAt && !P.pinned) disturbedAt = performance.now(); };
+  const armIdle = () => { clearTimeout(idleTimer); idleTimer = window.setTimeout(() => { if (on && inside && !seeds.some((s) => !s.trail)) start(); }, P.idle); };
+  const disturb = () => { if (!disturbedAt && !P.pinned && seeds.some((s) => !s.trail)) disturbedAt = performance.now(); };
+  const rel = (e: PointerEvent) => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
 
-  canvas.addEventListener('pointermove', (e) => {
-    const r = canvas.getBoundingClientRect();
-    const nx = e.clientX - r.left, ny = e.clientY - r.top;
-    const moved = Math.hypot(nx - pointer.x, ny - pointer.y) > 6;
-    pointer = { x: nx, y: ny }; inside = true;
-    if (moved) { disturb(); armIdle(); }
-  });
-  canvas.addEventListener('pointerleave', (e) => {
+  const onMove = (ev: Event) => {
+    const e = ev as PointerEvent;
+    if (!on || ignored(e)) { inside = false; clearTimeout(idleTimer); disturb(); return; }
+    const p = rel(e);
+    const d = Math.hypot(p.x - pointer.x, p.y - pointer.y);
+    inside = true;
+    if (d > 6) {
+      disturb();
+      trailAcc += d;
+      // Rastros: pequeños focos a lo largo del camino del cursor
+      if (trailAcc >= TRAIL_EVERY) { trailAcc = 0; addSeed(p.x, p.y, true); kick(); }
+      armIdle();
+    }
+    pointer = p;
+  };
+  const onLeave = (ev: Event) => {
+    const e = ev as PointerEvent;
+    if (target === window && e.type === 'pointerout' && e.relatedTarget) return; // sólo cuando el cursor sale de la ventana
     inside = false; clearTimeout(idleTimer);
     if ((e.relatedTarget as HTMLElement | null)?.closest?.('[data-lab-panel]')) return; // pasar al panel de controles no disuelve el patrón
     disturb();
-  });
-  canvas.addEventListener('pointerdown', (e) => {
-    const r = canvas.getBoundingClientRect();
-    pointer = { x: e.clientX - r.left, y: e.clientY - r.top }; inside = true;
+  };
+  const onDown = (ev: Event) => {
+    const e = ev as PointerEvent;
+    if (!on || ignored(e)) return;
+    pointer = rel(e); inside = true;
     // Con un patrón en curso, el clic siembra otro foco (el patrón persiste); si no, empieza uno nuevo
-    if (raf) { disturbedAt = 0; addSeed(pointer.x, pointer.y); startedAt = Math.max(startedAt, performance.now() - P.hold + 4000); }
+    if (seeds.some((s) => !s.trail)) { disturbedAt = 0; addSeed(pointer.x, pointer.y); startedAt = Math.max(startedAt, performance.now() - P.hold + 4000); kick(); }
     else armIdle();
-  });
+  };
+  target.addEventListener('pointermove', onMove);
+  target.addEventListener(target === window ? 'pointerout' : 'pointerleave', onLeave);
+  target.addEventListener('pointerdown', onDown);
   panel?.addEventListener('pointerenter', () => { disturbedAt = 0; });
 
-  return { params: P, apply, resize, clear, restart: (x = sim.w / 2, y = sim.h / 2) => start(x, y) };
+  return {
+    params: P, apply, resize, clear,
+    restart: (x = sim.w / 2, y = sim.h / 2) => { if (on) start(x, y); },
+    enable: (v) => { if (v === on) return; on = v; if (on) { sim.resize(); inside = false; } else { clearTimeout(idleTimer); clear(); } },
+  };
 }

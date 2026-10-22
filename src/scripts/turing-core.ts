@@ -81,6 +81,17 @@ export class TuringSim {
     }
   }
 
+  /** Deja en blanco un disco (px de pantalla): ahí no queda nada de patrones anteriores. */
+  clearDisc(px: number, py: number, radius: number) {
+    const cx = px / this.P.cell, cy = py / this.P.cell, r = radius / this.P.cell;
+    for (let y = Math.max(1, Math.floor(cy - r)); y <= Math.min(this.gh - 2, Math.ceil(cy + r)); y++) {
+      for (let x = Math.max(1, Math.floor(cx - r)); x <= Math.min(this.gw - 2, Math.ceil(cx + r)); x++) {
+        if (Math.hypot(x - cx, y - cy) > r) continue;
+        const i = y * this.gw + x; this.U[i] = 1; this.V[i] = 0;
+      }
+    }
+  }
+
   /** Un paso de Gray-Scott (laplaciano de 3×3 ponderado). `nucleate` = probabilidad de núcleo por celda; `allow(x, y)` limita dónde. */
   step(nucleate = 0, allow?: (x: number, y: number) => boolean) {
     const { feed, kill, dv, jitter } = this.P;

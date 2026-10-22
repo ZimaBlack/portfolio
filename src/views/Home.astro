@@ -6,7 +6,7 @@ import Icon from '../components/Icon.astro';
 import { site } from '../data/site';
 import { cv } from '../data/cv';
 import PromptTerminal from '../components/PromptTerminal.astro';
-import HeroVideo from '../components/HeroVideo.astro';
+import Crt from '../components/Crt.astro';
 import { copy, paths, type Lang } from '../lib/i18n';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -16,7 +16,7 @@ const alt = lang === 'es' ? 'en' : 'es';
 ---
 <Base lang={lang} section="home" altHref={paths.home(alt)} esHref={paths.home('es')} enHref={paths.home('en')}>
   <section class="hero">
-    <HeroVideo />
+    <Crt /> <!-- capa de pantalla antigua (overlay) sobre la morfogénesis del fondo -->
     <div class="wrap hero__in">
       <h1 class="hero__line hero__name" data-hero>{cv.name}</h1>
       <p class="hero__line hero__role" data-hero>{c.role}</p>

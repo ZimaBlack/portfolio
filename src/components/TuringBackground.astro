@@ -1,6 +1,7 @@
 ---
-// Fondo del sitio: patrón de Turing a pantalla completa, detrás de todo. Se ve con toda su opacidad sólo en el hero principal de la Home
-// (donde, además, cada clic siembra un foco nuevo); en el resto del sitio queda al 15 %. El preset se guarda desde /lab/ en src/data/background.json.
+// Fondo del sitio: patrón de Turing a pantalla completa, detrás de todo. En la Home responde al cursor (como el laboratorio; no actúa sobre
+// el footer) y se ve a pleno en el hero principal; en el resto del sitio es un patrón asentado al 15 %. El preset se guarda desde /lab/
+// en src/data/background.json.
 import preset from '../data/background.json';
 ---
 <canvas class="tbg" data-tbg data-preset={JSON.stringify(preset)} aria-hidden="true" transition:persist="turing-bg"></canvas>
@@ -18,7 +19,7 @@ import preset from '../data/background.json';
   let bg: TuringBackground | null = null;
   let io: IntersectionObserver | null = null;
 
-  // En cada página: ¿hay hero principal? Entonces el fondo está a pleno mientras se ve y los clics en él siembran focos.
+  // En cada página: con hero principal (Home), el fondo responde al cursor y está a pleno mientras el hero se ve; sin él, queda asentado al 15 %.
   const wire = () => {
     const canvas = document.querySelector<HTMLCanvasElement>('[data-tbg]');
     if (!canvas) return;
@@ -26,15 +27,10 @@ import preset from '../data/background.json';
     io?.disconnect();
     canvas.classList.remove('is-hero');
     const hero = document.querySelector<HTMLElement>('.hero');
+    bg.setMode(hero ? 'cursor' : 'ambient');
     if (!hero) return;
     io = new IntersectionObserver(([e]) => canvas.classList.toggle('is-hero', e.isIntersecting), { threshold: 0.35 });
     io.observe(hero);
-    if (hero.dataset.tbg) return;
-    hero.dataset.tbg = '1';
-    hero.addEventListener('pointerdown', (e) => {
-      if ((e.target as HTMLElement).closest('a, button, input, textarea, select, [data-no-seed]')) return; // los clics en enlaces y botones no siembran
-      bg?.seed(e.clientX, e.clientY);
-    });
   };
   document.addEventListener('astro:page-load', wire);
 </script>
