@@ -41,7 +41,7 @@ if (assemble && isSvg(logo)) {
     const ornArt = loadArt(ornament, 'pjo');
     defs += shapeDefs(ornArt);
     // Patrón: el par central (k = 0) enmarca el logotipo; a los lados se repite, cada vez más tenue
-    const alpha = [0.58, 0.34, 0.17];
+    const alpha = [0.42, 0.24, 0.12];
     const half = (k: number, left: boolean) => forge(ornArt, {
       id: `pjo${k + 2}${left ? 'l' : 'r'}`, cls: `pjh__orn pjh__orn--${left ? 'l' : 'r'}`, style: `--k:${k};--od:${(0.6 + 0.24 * Math.abs(k)).toFixed(2)}s`,
       color: GOLD_ORN, alpha: alpha[Math.abs(k)], flip: left, fade: true, screen: true,
@@ -118,20 +118,21 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
 
   /* ── Piezas. Los tiempos salen de las variables --t-* (src/lib/forge.ts). Todo entra con curvas suaves y de a poco, sin golpes. */
   .pj-piece { transform-box: fill-box; transform-origin: center; }
-  /* Las alas llegan desde los costados, enfocándose, con un leve giro que se endereza; la derecha un instante después, y se asientan sin chocar */
-  .pj-piece[data-part='0'] { animation: pj-from-left 2.1s var(--t-enter) cubic-bezier(.22, .9, .28, 1) both; }
-  .pj-piece[data-part='1'] { animation: pj-from-right 2.3s calc(var(--t-enter) + .14s) cubic-bezier(.22, .9, .28, 1) both; }
-  .pjh__logo .pj-late { animation: pj-appear 1.5s var(--t-appear) cubic-bezier(.16, 1, .3, 1) both; }  /* el rombo se abre desde el centro, girando un poco */
-  .pjh__name .pj-late { animation: pj-rise 1.6s calc(var(--t-appear) + .25s) cubic-bezier(.16, 1, .3, 1) both; } /* el nombre sube y se enfoca */
+  /* Todo nace del negro: cada figura llega oscura y va tomando su color mientras se enfoca. Las alas vienen desde los costados con un leve giro que se endereza; la derecha un instante después, y se asientan sin chocar */
+  .pj-piece[data-part='0'] { animation: pj-from-left 2.1s var(--t-enter) cubic-bezier(.22, .9, .28, 1) both, pj-dark 2.7s var(--t-enter) cubic-bezier(.45, 0, .4, 1) both; }
+  .pj-piece[data-part='1'] { animation: pj-from-right 2.3s calc(var(--t-enter) + .14s) cubic-bezier(.22, .9, .28, 1) both, pj-dark 2.8s calc(var(--t-enter) + .14s) cubic-bezier(.45, 0, .4, 1) both; }
+  .pjh__logo .pj-late { animation: pj-appear 1.5s var(--t-appear) cubic-bezier(.16, 1, .3, 1) both, pj-dark 2s var(--t-appear) cubic-bezier(.45, 0, .4, 1) both; }  /* el rombo se abre desde el centro, girando un poco */
+  .pjh__name .pj-late { animation: pj-rise 1.6s calc(var(--t-appear) + .25s) cubic-bezier(.16, 1, .3, 1) both, pj-dark 2.1s calc(var(--t-appear) + .25s) cubic-bezier(.45, 0, .4, 1) both; } /* el nombre sube y se enfoca */
   /* Los vectores entran hacia afuera desde el centro, de a pares, y después "respiran" muy despacio, cada uno a su ritmo */
-  .pjh__orn .pj-piece { animation: pj-orn-in 2.6s var(--od, .6s) cubic-bezier(.16, 1, .3, 1) both, pj-breathe calc(7s + var(--k) * 0.6s) calc(var(--od, .6s) + 2.6s) ease-in-out infinite alternate; }
-  .pjh__orn--r .pj-piece { animation-delay: calc(var(--od, .6s) + .12s), calc(var(--od, .6s) + 2.9s); }
+  .pjh__orn .pj-piece { animation: pj-orn-in 2.6s var(--od, .6s) cubic-bezier(.16, 1, .3, 1) both, pj-dark 3.4s var(--od, .6s) cubic-bezier(.45, 0, .4, 1) both, pj-breathe calc(7s + var(--k) * 0.6s) calc(var(--od, .6s) + 3s) ease-in-out infinite alternate; }
+  .pjh__orn--r .pj-piece { animation-delay: calc(var(--od, .6s) + .12s), calc(var(--od, .6s) + .12s), calc(var(--od, .6s) + 3.12s); }
   .pj-screen { mix-blend-mode: screen; filter: blur(.5px); } /* los vectores se funden con el fondo y llevan un desenfoque muy leve */
-  @keyframes pj-from-left { from { transform: translateX(-60vw) rotate(-7deg); opacity: 0; filter: blur(16px); } 35% { opacity: var(--a, 1); } 60% { filter: blur(0); } to { transform: none; opacity: var(--a, 1); filter: none; } }
-  @keyframes pj-from-right { from { transform: translateX(60vw) rotate(7deg); opacity: 0; filter: blur(16px); } 35% { opacity: var(--a, 1); } 60% { filter: blur(0); } to { transform: none; opacity: var(--a, 1); filter: none; } }
-  @keyframes pj-appear { from { opacity: 0; filter: blur(12px); transform: scale(.55) rotate(-14deg); } to { opacity: var(--a, 1); filter: none; transform: none; } }
-  @keyframes pj-rise { from { opacity: 0; filter: blur(10px); transform: translateY(10px); } to { opacity: var(--a, 1); filter: none; transform: none; } }
-  @keyframes pj-orn-in { from { transform: translateX(150px); opacity: 0; filter: blur(14px); } to { transform: none; opacity: var(--a, 1); filter: none; } }
+  @keyframes pj-from-left { from { transform: translateX(-60vw) rotate(-7deg); opacity: 0; } 35% { opacity: var(--a, 1); } to { transform: none; opacity: var(--a, 1); } }
+  @keyframes pj-from-right { from { transform: translateX(60vw) rotate(7deg); opacity: 0; } 35% { opacity: var(--a, 1); } to { transform: none; opacity: var(--a, 1); } }
+  @keyframes pj-appear { from { opacity: 0; transform: scale(.55) rotate(-14deg); } to { opacity: var(--a, 1); transform: none; } }
+  @keyframes pj-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: var(--a, 1); transform: none; } }
+  @keyframes pj-orn-in { from { transform: translateX(150px); opacity: 0; } to { transform: none; opacity: var(--a, 1); } }
+  @keyframes pj-dark { from { filter: brightness(0) blur(14px); } to { filter: none; } } /* nacen del negro: oscuras y desenfocadas, y van tomando color */
   @keyframes pj-breathe { from { opacity: var(--a, 1); } to { opacity: calc(var(--a, 1) * .78); } }
 
   /* ── Movimiento reducido: todo se ve ya armado */
