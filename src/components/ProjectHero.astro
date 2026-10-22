@@ -18,7 +18,7 @@ let orn: string[] = []; // ornamento: mitades izquierda y derecha de cada par (e
 /** Metal forjado. Con `base` (un color), las piezas nacen en ese tono y un destello de barras blancas planas cruza el logotipo
  *  (recortado con su propia forma); en la pasada indicada por `wipeAt` el oro se revela por debajo, detrás de la primera barra.
  *  Sin `base`, las piezas ya son doradas y sólo pasa el destello. `delay` = segundos hasta que empieza el destello; `passes` = cuántas veces cruza. */
-function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; wipeAt?: number; shineAt?: number; gold?: string; flip?: boolean; fade?: boolean; alpha?: number; blend?: boolean; vig?: { cx: number; cy: number; r: number }; goldGradient?: [string, string] } = {}) {
+function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; wipeAt?: number; shineAt?: number; gold?: string; flip?: boolean; fade?: boolean; alpha?: number; blend?: boolean; vig?: { cx: number; cy: number; r: number }; goldGradient?: [string, string]; shineScale?: number } = {}) {
   const [vx, vy, vw, vh] = (svg.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 100 100').split(/\s+/).map(Number);
   const all = [...svg.matchAll(/<path\b[^>]*?\sd="([^"]+)"/g)].map((m) => m[1]);
   const flat = opts.gold ?? '#CFC65C'; // oro de la marca: un solo tono, sin degradados
@@ -41,7 +41,7 @@ function forge(svg: string, id: string, delay: number, opts: { base?: string; pa
     ${opts.fade ? `<linearGradient id="${id}-fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".12" stop-color="#fff"/><stop offset=".88" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${id}-f" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}"><rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="url(#${id}-fg)"/></mask>` : ''}
   </defs>
   ${opts.base ? `<g${opts.blend ? ' class="pj-screen"' : ''}${opts.fade ? ` mask="url(#${id}-f)"` : ''}${opts.alpha ? ` opacity="${opts.alpha}"` : ''}><g mask="url(#${id}-w)"><g${T}>${all.map((d) => `<path d="${d}" fill="${gold}"/>`).join('')}</g></g></g>` : ''}
-  <g mask="url(#${id}-m)"><g${opts.vig ? ` mask="url(#${id}-v)"` : ''}>${opts.shineAt === undefined ? '' : `<g class="pj-shine" style="--gw:${travel.toFixed(1)}px;--gd:${opts.shineAt}s"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g>`}<g class="pj-flash" style="--gw:${travel.toFixed(1)}px;--gd:${delay}s;--gn:${opts.passes ?? 1}"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g></g></g>`;
+  <g mask="url(#${id}-m)"><g${opts.vig ? ` mask="url(#${id}-v)"` : ''}>${opts.shineAt === undefined ? '' : `<g${opts.shineScale ? ` opacity="${opts.shineScale}"` : ''}><g class="pj-shine" style="--gw:${travel.toFixed(1)}px;--gd:${opts.shineAt}s"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g></g>`}<g class="pj-flash" style="--gw:${travel.toFixed(1)}px;--gd:${delay}s;--gn:${opts.passes ?? 1}"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g></g></g>`;
   return svg.replace('</svg>', `${extra}</svg>`);
 }
 
@@ -67,7 +67,8 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
     const side = (k: number, left: boolean) =>
       forge(raw, `pjo${k + 2}${left ? 'l' : 'r'}`, FLASH, {
         base: DARK, passes: 2, wipeAt: LAST, gold: color, flip: left, fade: true, alpha: alpha[Math.abs(k)], blend: true,
-        goldGradient: ['#A98F5A', '#5A4A2B'], // más claro arriba y más oscuro abajo: se integra con el fondo
+        goldGradient: ['#A8A152', '#58542F'], // el mismo matiz que el oro del logotipo, más claro arriba y más oscuro abajo: se integra con el fondo y con la marca
+        shineAt: LAST + 2.6, shineScale: { 0: 0.8, 1: 0.5, 2: 0.25 }[Math.abs(k) as 0 | 1 | 2], // el mismo brillo sutil, según la zona
         // El brillo sólo se ve cerca del logotipo (viñeta centrada en el centro de la portada, en las unidades del SVG)
         vig: { cx: left ? 116 + (0.033 - k * 0.6672) * 421 : -(k * 0.6672 + 0.033) * 421, cy: 210, r: 175 },
       })
@@ -126,7 +127,7 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   /* El logotipo reactivo cambia de color con suavidad (también al pasar a blanco y negro) */
   .pjh__stage > :global(svg.pjh__logo) :global(path) { transition: fill .7s linear; }
   /* Ensamblar: las alas llegan desde cada lado y se juntan; al terminar, aparece el rombo central */
-  .pjh[data-assemble] .pjh__stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(1rem, 3.4vh, 1.9rem); height: auto; }
+  .pjh[data-assemble] .pjh__stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(.5rem, 1.5vh, .9rem); height: auto; }
   .pjh[data-assemble] .pjh__stage > :global(svg.pjh__logo) { overflow: visible; height: min(30vh, 14rem); width: auto; transform-origin: 50% 62%; animation: pj-strike .6s 1.52s ease-out both; }
   .pjh[data-assemble] .pjh__stage > :global(svg.pjh__name) { width: min(64vw, 16.5rem); height: auto; flex: none; animation: pj-name 1s 3.1s var(--ease, ease) both; }
   /* "Forja precisa": las piezas nacen en acero azulado, encajan con un leve golpe y un destello de barras planas pasa un par de veces;
