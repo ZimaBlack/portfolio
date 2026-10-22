@@ -1,0 +1,120 @@
+{
+  "ajustes": {
+    "name": "Pablo Ponce García",
+    "studio": "ZMA BLK Design",
+    "location": "Mendoza, Argentina",
+    "email": "zma.blk.design@gmail.com",
+    "whatsapp": "5492614712481",
+    "cvEs": "/Pablo-Ponce-Garcia-CV.pdf",
+    "cvEn": "/Pablo-Ponce-Garcia-CV.pdf",
+    "social": [
+      {
+        "icon": "linkedin",
+        "label": "LinkedIn",
+        "href": "https://www.linkedin.com/in/pabloponcegarcia/"
+      },
+      {
+        "icon": "behance",
+        "label": "Behance",
+        "href": "https://www.behance.net/BkRoom"
+      },
+      {
+        "icon": "substack",
+        "label": "Substack",
+        "href": "https://substack.com/"
+      }
+    ]
+  },
+  "es": {
+    "role": "Director de Arte · Visual Designer · UX/UI",
+    "tagline": "Marcas, interfaces y movimiento con criterio.",
+    "heroCta": "Trabajos",
+    "marquee": [
+      "Dirección de arte",
+      "Brand",
+      "UX / UI",
+      "Front-end",
+      "Motion",
+      "Concept art"
+    ],
+    "featured": {
+      "eyebrow": "Selección",
+      "title": "Trabajos destacados",
+      "all": "Ver todos los trabajos"
+    },
+    "profile": {
+      "eyebrow": "Perfil",
+      "title": "Estrategia y oficio",
+      "items": [
+        {
+          "n": "01",
+          "title": "Dirección de Arte & Marca",
+          "text": "Identidades y sistemas visuales listos para producto, web y redes: concepto, criterio estratégico y lineamientos que los equipos pueden aplicar. Formación en identidad corporativa con Norberto Chaves y en dirección de arte integral (HAUS)."
+        },
+        {
+          "n": "02",
+          "title": "UX / UI, Front-End y Programación asistida por IA",
+          "text": "Interfaces diseñadas en Figma y llevadas a código real (HTML, SCSS y JavaScript), con IA como acelerador. Prototipos y sitios listos para publicar en menos tiempo, sin perder el detalle."
+        },
+        {
+          "n": "03",
+          "title": "Artwork — Obra gráfica",
+          "text": "Ilustración, lettering, serigrafía, encuadernación artesanal y fotografía: un oficio de taller que da carácter propio a cada proyecto y lo diferencia en un mercado saturado de piezas genéricas."
+        }
+      ]
+    },
+    "footer": {
+      "eyebrow": "Contacto",
+      "title": "Hablemos de tu próximo proyecto.",
+      "wa": "Escribir por WhatsApp",
+      "cv": "Ver CV"
+    },
+    "waText": "Hola Pablo, vi tu portfolio y me gustaría conversar sobre un proyecto."
+  },
+  "en": {
+    "role": "Art Director · Visual Designer · UX/UI",
+    "tagline": "Brands, interfaces and motion with purpose.",
+    "heroCta": "Work",
+    "marquee": [
+      "Art direction",
+      "Brand",
+      "UX / UI",
+      "Front-end",
+      "Motion",
+      "Concept art"
+    ],
+    "featured": {
+      "eyebrow": "Selected",
+      "title": "Featured work",
+      "all": "View all work"
+    },
+    "profile": {
+      "eyebrow": "Profile",
+      "title": "Strategy and craft",
+      "items": [
+        {
+          "n": "01",
+          "title": "Art Direction & Brand",
+          "text": "Identities and visual systems ready for product, web and social: concept, strategic judgement and guidelines teams can actually apply. Trained in corporate identity under Norberto Chaves and in integral art direction (HAUS)."
+        },
+        {
+          "n": "02",
+          "title": "UX / UI, Front-End & AI-Assisted Programming",
+          "text": "Interfaces designed in Figma and built as real code (HTML, SCSS and JavaScript), with AI as an accelerator. Prototypes and sites ready to ship in less time, without losing the detail."
+        },
+        {
+          "n": "03",
+          "title": "Artwork — Graphic work",
+          "text": "Illustration, lettering, screen printing, handmade bookbinding and photography: a hands-on craft that gives each project its own character and sets it apart in a market flooded with generic work."
+        }
+      ]
+    },
+    "footer": {
+      "eyebrow": "Contact",
+      "title": "Let’s talk about your next project.",
+      "wa": "Message on WhatsApp",
+      "cv": "View CV"
+    },
+    "waText": "Hi Pablo, I saw your portfolio and I’d like to talk about a project."
+  }
+}

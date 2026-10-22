@@ -5,14 +5,20 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
+    "panel": "astro dev --open /keystatic",
     "build": "astro build",
     "preview": "astro preview"
   },
   "dependencies": {
+    "@astrojs/react": "^7.1.1",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/jost": "^5.3.0",
+    "@keystatic/astro": "^6.0.0",
+    "@keystatic/core": "^0.6.9",
     "astro": "^7.3.8",
     "gsap": "^3.15.0",
-    "lucide-static": "^1.56.0"
+    "lucide-static": "^1.56.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   }
 }

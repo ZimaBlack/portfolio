@@ -17,7 +17,11 @@ export const paths = {
   cv: (l: Lang) => withBase(`${l === 'es' ? '' : '/en'}/cv/`),
 };
 
-export const copy = {
+// Los textos editables desde el panel (npm run panel) viven en src/data/editable.json y pisan a los de abajo.
+// Lo que no esté en el JSON (o esté vacío) conserva el texto original de este archivo.
+import editable from '../data/editable.json';
+
+const defaults = {
   es: {
     htmlLang: 'es',
     role: 'Director de Arte · Visual Designer · UX/UI',
@@ -215,3 +219,19 @@ export const copy = {
     detail: { year: 'Year', role: 'Role', client: 'Client', stack: 'Stack', repo: 'View repository', live: 'Live preview', next: 'Next project', nextCursor: 'Next', view: 'View', gallery: 'Gallery', play: 'Play', hero: '[Project header]', prev: 'Previous', next_: 'Next', slides: 'Slide carousel', details: 'Details', fullDev: 'View full development', loopTitle: 'Let’s work on your visual identity', loopCta: 'Message on WhatsApp', loopSubtitle: 'Is your brand next?', loopWa: 'Hi Pablo, I saw LogoFolio and I’d like to work on my project’s visual identity.', pngHint: 'PNG with transparent background', coverLabel: 'Cover', safe: 'Leave 10% free at top and bottom (cropped by the parallax)' },
   },
 } as const;
+
+const filled = <T,>(v: T, fallback: T): T => (v === undefined || v === null || (typeof v === 'string' && v.trim() === '') || (Array.isArray(v) && v.length === 0) ? fallback : v);
+
+const overlay = (b: typeof defaults.es, e: (typeof editable)['es']) => ({
+  ...b,
+  role: filled(e.role, b.role),
+  tagline: filled(e.tagline, b.tagline),
+  hero: { ...b.hero, cta: filled(e.heroCta, b.hero.cta) },
+  marquee: filled(e.marquee, b.marquee as unknown as string[]),
+  featured: { ...b.featured, ...Object.fromEntries(Object.entries(e.featured).filter(([, v]) => v)) },
+  profile: { ...b.profile, eyebrow: filled(e.profile.eyebrow, b.profile.eyebrow), title: filled(e.profile.title, b.profile.title), items: filled(e.profile.items, b.profile.items as any) },
+  footer: { ...b.footer, ...Object.fromEntries(Object.entries(e.footer).filter(([, v]) => v)) },
+  waText: filled(e.waText, b.waText),
+});
+
+export const copy = { es: overlay(defaults.es, editable.es), en: overlay(defaults.en as any, editable.en) } as unknown as typeof defaults;
