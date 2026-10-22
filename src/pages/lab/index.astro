@@ -4,20 +4,26 @@ import Base from '../../layouts/Base.astro';
 ---
 <Base title="Laboratorio" description="Pruebas de efectos." section="lab" noindex>
   <section class="lab">
-    <canvas class="lab__canvas" data-trace aria-hidden="true"></canvas>
-    <p class="lab__hint eyebrow">Difusión de pistas · deja el cursor quieto</p>
+    <canvas class="lab__canvas" data-turing aria-hidden="true"></canvas>
+    <div class="lab__noise" aria-hidden="true"></div>
+    <p class="lab__hint eyebrow">Morfogénesis · deja el cursor quieto</p>
   </section>
 </Base>
 
 <style>
   .lab { position: relative; min-height: 100svh; background: #000; overflow: hidden; }
-  .lab__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  /* Desenfoque leve del patrón + grano fino que tiembla (ruido de película) por encima de todo */
+  .lab__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; filter: blur(1.6px) contrast(1.1); }
+  .lab__noise { position: absolute; inset: -10%; pointer-events: none; opacity: .16; mix-blend-mode: screen; animation: lab-grain .5s steps(5) infinite;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.4 0 0 0 -.55'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  @keyframes lab-grain { 0% { transform: translate(0, 0); } 20% { transform: translate(-3%, 2%); } 40% { transform: translate(2%, -3%); } 60% { transform: translate(-2%, -1%); } 80% { transform: translate(3%, 3%); } 100% { transform: translate(0, 0); } }
+  @media (prefers-reduced-motion: reduce) { .lab__noise { animation: none; } }
   .lab__hint { position: absolute; left: var(--gutter); bottom: var(--gutter); pointer-events: none; opacity: .7; }
 </style>
 
 <script>
-  import { initTraceDiffusion } from '../../scripts/trace-diffusion';
+  import { initTuringDiffusion } from '../../scripts/turing-diffusion';
   document.addEventListener('astro:page-load', () => {
-    document.querySelectorAll<HTMLCanvasElement>('[data-trace]:not([data-ready])').forEach((c) => { c.dataset.ready = '1'; initTraceDiffusion(c); });
+    document.querySelectorAll<HTMLCanvasElement>('[data-turing]:not([data-ready])').forEach((c) => { c.dataset.ready = '1'; initTuringDiffusion(c); });
   });
 </script>
