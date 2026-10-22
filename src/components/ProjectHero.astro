@@ -1,160 +1,106 @@
 ---
-// Portada animada de un proyecto: pantalla completa, con el logotipo centrado.
-// Hoy el logotipo sólo aparece con un fundido suave; el isotipo (`mark`) está en su lugar, oculto y centrado,
-// y los elementos tienen ganchos (`data-pj-*`) para animarlos más adelante (escala, despliegue, etc.).
+// Portada animada de un proyecto: pantalla completa, con el logotipo centrado. Tres modos, según el proyecto:
+//  · simple: el logotipo (imagen) entra con un fundido; el isotipo (`mark`) queda oculto y centrado, listo para animar;
+//  · reactivo (`reactive`): el SVG se inserta en la página y los colores indicados siguen al widget de paleta;
+//  · ensamblar (`assemble`): las piezas del logotipo llegan de los lados, se unen y se vuelven doradas (ver src/lib/forge.ts).
+// Las luces del fondo pueden ser un degradado suave o una trama de semitono (`halftone`).
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { withBase } from '../lib/i18n';
-const { logo, mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, assemble = false, ornament = '' } = Astro.props as { logo: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; assemble?: boolean; ornament?: string };
+import { forge, loadArt, shapeDefs, timingVars } from '../lib/forge';
+
+const { logo, mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, assemble = false, ornament = '' } = Astro.props as {
+  logo: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; assemble?: boolean; ornament?: string;
+};
 const src = (p: string) => (p.startsWith('/') ? withBase(p) : p);
-// Ritmo común de toda la animación (segundos). Todos los brillos usan estos mismos tiempos, así van sincronizados.
-const ALPHA = 0.36; // opacidad común de todas las piezas oscuras (logotipo, nombre y ornamento central)
-const DARK = '#05090F'; // color inicial de las piezas: casi negro azulado (con multiplicar se lee como sombra)
-const FLASH = 2.3; // empieza la 1.ª pasada de barras
-const PASS = 1;    // separación entre pasadas
-const LAST = FLASH + PASS; // 2.ª y última pasada: pinta todo de oro
-let name = '';
-let orn: string[] = []; // ornamento: mitades izquierda y derecha de cada par (el central lleva el logotipo; los demás repiten el patrón) // con "ensamblar": el nombre (lettering) que aparece al terminar de armarse la marca
+const isSvg = (p?: string) => !!p && p.toLowerCase().endsWith('.svg');
 
-/** Metal forjado. Con `base` (un color), las piezas nacen en ese tono y un destello de barras blancas planas cruza el logotipo
- *  (recortado con su propia forma); en la pasada indicada por `wipeAt` el oro se revela por debajo, detrás de la primera barra.
- *  Sin `base`, las piezas ya son doradas y sólo pasa el destello. `delay` = segundos hasta que empieza el destello; `passes` = cuántas veces cruza. */
-function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; wipeAt?: number; shineAt?: number; gold?: string; flip?: boolean; fade?: boolean; alpha?: number; blend?: boolean; vig?: { cx: number; cy: number; r: number }; goldGradient?: [string, string]; shineScale?: number; goldAlpha?: number } = {}) {
-  const [vx, vy, vw, vh] = (svg.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 100 100').split(/\s+/).map(Number);
-  const all = [...svg.matchAll(/<path\b[^>]*?\sd="([^"]+)"/g)].map((m) => m[1]);
-  const flat = opts.gold ?? '#CFC65C'; // oro de la marca: un solo tono, sin degradados
-  const gold = opts.goldGradient ? `url(#${id}-gg)` : flat; // (el ornamento sí lleva degradado, para integrarse con el fondo)
-  const T = opts.flip ? ` transform="matrix(-1 0 0 1 ${vx * 2 + vw} 0)"` : ''; // espejado horizontal (para el ornamento izquierdo)
-  let n = 0;
-  svg = svg.replace(/<path\b[^>]*>/g, (tag) => tag.replace('<path', `<path id="${id}-p${n++}"${opts.alpha ? ` opacity="${opts.alpha}"` : ''}`).replace(/fill="#[0-9a-f]{3,8}"/i, `fill="${opts.base ?? flat}"`));
-  if (opts.flip) svg = svg.replace(/(<svg\b[^>]*>)([\s\S]*)<\/svg>/i, `$1<g${T}>$2</g></svg>`);
-  const skew = Math.tan((22 * Math.PI) / 180) * vh;
-  // Barras planas (de distinto ancho) que viajan juntas en diagonal
-  const bars = [[0, 0.07], [0.12, 0.025], [0.19, 0.12]].map(([off, w]) => `<rect x="${(off * vw).toFixed(1)}" y="${(-vh * 0.1).toFixed(1)}" width="${(w * vw).toFixed(1)}" height="${(vh * 1.2).toFixed(1)}" fill="#fff" fill-opacity=".88"/>`).join('');
-  const span = 0.31 * vw, travel = vw + span + skew * 2;
-  const tx = (vx - span - skew * 1.1).toFixed(1);
-  const sweep = (key: string, d: number) => `<mask id="${id}-${key}" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}"><g class="pj-wipe" style="--gw:${travel.toFixed(1)}px;--gd:${d}s"><g transform="translate(${tx} ${vy}) skewX(-22)"><rect x="-4000" y="${(-vh * 0.1).toFixed(1)}" width="${(4000 + 0.14 * vw).toFixed(1)}" height="${(vh * 1.2).toFixed(1)}" fill="#fff"/></g></g></mask>`;
-  const extra = `<defs>
-    <mask id="${id}-m" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}"><g${T}>${all.map((d) => `<path d="${d}" fill="#fff"/>`).join('')}</g></mask>
-    ${opts.base ? sweep('w', opts.wipeAt ?? delay) : ''}
-    ${opts.goldGradient ? `<linearGradient id="${id}-gg" gradientUnits="userSpaceOnUse" x1="0" y1="${vy}" x2="0" y2="${vy + vh}"><stop offset="0" stop-color="${opts.goldGradient[0]}"/><stop offset="1" stop-color="${opts.goldGradient[1]}"/></linearGradient>` : ''}
-    ${opts.vig ? `<radialGradient id="${id}-vg" gradientUnits="userSpaceOnUse" cx="${opts.vig.cx.toFixed(1)}" cy="${opts.vig.cy.toFixed(1)}" r="${opts.vig.r.toFixed(1)}"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><mask id="${id}-v" maskUnits="userSpaceOnUse" x="${vx - 2000}" y="${vy - 2000}" width="${vw + 4000}" height="${vh + 4000}"><rect x="${vx - 2000}" y="${vy - 2000}" width="${vw + 4000}" height="${vh + 4000}" fill="url(#${id}-vg)"/></mask>` : ''}
-    ${opts.fade ? `<linearGradient id="${id}-fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".12" stop-color="#fff"/><stop offset=".88" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${id}-f" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}"><rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="url(#${id}-fg)"/></mask>` : ''}
-  </defs>
-  ${opts.base ? `<g${opts.blend ? ' class="pj-screen"' : ''}${opts.fade ? ` mask="url(#${id}-f)"` : ''}${opts.goldAlpha ? ` opacity="${opts.goldAlpha}"` : ''}><g mask="url(#${id}-w)"><g${T}>${all.map((d) => `<path d="${d}" fill="${gold}"/>`).join('')}</g></g></g>` : ''}
-  <g mask="url(#${id}-m)"><g${opts.vig ? ` mask="url(#${id}-v)"` : ''}>${opts.shineAt === undefined ? '' : `<g${opts.shineScale ? ` opacity="${opts.shineScale}"` : ''}><g class="pj-shine" style="--gw:${travel.toFixed(1)}px;--gd:${opts.shineAt}s"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g></g>`}<g class="pj-flash" style="--gw:${travel.toFixed(1)}px;--gd:${delay}s;--gn:${opts.passes ?? 1}"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g></g></g>`;
-  return svg.replace('</svg>', `${extra}</svg>`);
-}
-
-// Logotipo "reactivo": se inserta el SVG en la página (no como imagen) y los colores indicados en `reactive`
-// pasan a leer las variables --pw-0, --pw-1… que escribe el widget de paleta (con el color original de respaldo).
-let inline = '';
-if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
+// ── Modo reactivo: el SVG va dentro de la página y los colores `reactive` leen --pw-0, --pw-1… (con su color original de respaldo)
+let reactiveSvg = '';
+if (!assemble && reactive.length && isSvg(logo)) {
   let svg = readFileSync(join(process.cwd(), 'public', logo), 'utf8');
-  reactive.forEach((hex, i) => {
-    svg = svg.replace(new RegExp(`fill="${hex}"`, 'gi'), `style="fill:var(--pw-${i},${hex})"`);
-  });
-  // Para ensamblar: cada trazo recibe su número (0 = ala izquierda, 1 = ala derecha, 2 = centro), en el orden del archivo
-  if (assemble) { let n = 0; svg = svg.replace(/<path\b/g, () => `<path data-part="${n++}"`); svg = forge(svg, 'pjm', FLASH, { base: DARK, passes: 2, wipeAt: LAST, shineAt: LAST + 2.6, vig: { cx: 148, cy: 190, r: 230 }, alpha: ALPHA }); } // 3 pasadas (2.0 s, 2.8 s, 3.6 s): la última lo pinta de oro }
-  if (assemble && mark && mark.toLowerCase().endsWith('.svg')) {
-    name = forge(readFileSync(join(process.cwd(), 'public', mark), 'utf8'), 'pjn', LAST, { base: DARK, passes: 1, shineAt: LAST + 2.6, vig: { cx: 238, cy: 321, r: 290 }, alpha: ALPHA })
-      .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__name" style="--a:${ALPHA}" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
-  }
-  if (assemble && ornament.toLowerCase().endsWith('.svg')) {
-    const raw = readFileSync(join(process.cwd(), 'public', ornament), 'utf8');
-    const color = raw.match(/fill="(#[0-9a-f]{3,8})"/i)?.[1] ?? '#8E7748';
-    // Patrón: el par central (k = 0) enmarca el logotipo; a los lados se repite, cada vez más tenue
-    const alpha: Record<number, number> = { 0: ALPHA, 1: 0.2, 2: 0.09 };
-    const side = (k: number, left: boolean) =>
-      forge(raw, `pjo${k + 2}${left ? 'l' : 'r'}`, FLASH, {
-        base: DARK, passes: 2, wipeAt: LAST, gold: color, flip: left, fade: true, alpha: alpha[Math.abs(k)], goldAlpha: alpha[Math.abs(k)], blend: true,
-        goldGradient: ['#A8A152', '#58542F'], // el mismo matiz que el oro del logotipo, más claro arriba y más oscuro abajo: se integra con el fondo y con la marca
-        shineAt: LAST + 2.6, shineScale: { 0: 0.8, 1: 0.5, 2: 0.25 }[Math.abs(k) as 0 | 1 | 2], // el mismo brillo sutil, según la zona
-        // El brillo sólo se ve cerca del logotipo (viñeta centrada en el centro de la portada, en las unidades del SVG)
-        vig: { cx: left ? 116 + (0.033 - k * 0.6672) * 421 : -(k * 0.6672 + 0.033) * 421, cy: 210, r: 175 },
-      })
-        .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__orn ${left ? 'pjh__orn--l' : 'pjh__orn--r'}" style="--a:${alpha[Math.abs(k)]};--k:${k};--od:${(0.5 + 0.14 * Math.abs(k)).toFixed(2)}s" aria-hidden="true">`);
-    orn = [-2, -1, 0, 1, 2].flatMap((k) => [side(k, true), side(k, false)]); // mismos tiempos para todos: los brillos van sincronizados
-  }
-  inline = svg.replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__logo" style="--a:${assemble ? ALPHA : 1}" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
+  reactive.forEach((hex, i) => { svg = svg.replace(new RegExp(`fill="${hex}"`, 'gi'), `style="fill:var(--pw-${i},${hex})"`); });
+  reactiveSvg = svg.replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__logo" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
 }
+
+// ── Modo ensamblar: iso (alas + rombo), nombre y un ornamento que se repite a los lados
+const DARK = '#05090F';  // color inicial de las piezas: casi negro azulado (con "multiplicar" se lee como sombra)
+const ALPHA = 0.36;      // opacidad común de todas las piezas oscuras
+const GOLD_ORN: [string, string] = ['#A8A152', '#58542F']; // el matiz del oro del logotipo, más claro arriba y más oscuro abajo
+let defs = '', logoSvg = '', nameSvg = '', orn: string[] = [];
+if (assemble && isSvg(logo)) {
+  const logoArt = loadArt(logo, 'pjl');
+  defs += shapeDefs(logoArt);
+  logoSvg = forge(logoArt, { id: 'pjm', cls: 'pjh__logo', label: title, base: DARK, alpha: ALPHA, gold: logoArt.color, reveal: 'fade', parts: true, late: [2], vig: { cx: 148, cy: 190, r: 230 }, shine: 1 });
+
+  if (isSvg(mark)) {
+    const nameArt = loadArt(mark!, 'pjn');
+    defs += shapeDefs(nameArt);
+    nameSvg = forge(nameArt, { id: 'pjt', cls: 'pjh__name', base: DARK, alpha: ALPHA, gold: nameArt.color, reveal: 'bars', bars: 'last', late: nameArt.paths.map((_, i) => i), vig: { cx: 238, cy: 321, r: 290 }, shine: 1 });
+  }
+
+  if (isSvg(ornament)) {
+    const ornArt = loadArt(ornament, 'pjo');
+    defs += shapeDefs(ornArt);
+    // Patrón: el par central (k = 0) enmarca el logotipo y es el único con destello de revelado; a los lados se repite, cada vez más tenue
+    const alpha = [ALPHA, 0.2, 0.09], shine = [0.8, 0.5, 0.25];
+    const [, , VW, VH] = ornArt.vb;
+    const half = (k: number, left: boolean) => {
+      const n = Math.abs(k);
+      // La viñeta del brillo se centra en el centro de la portada (en unidades del SVG): el brillo se apaga hacia los extremos
+      const cx = left ? VW + (0.033 - k * 0.6672) * VH : -(k * 0.6672 + 0.033) * VH;
+      return forge(ornArt, {
+        id: `pjo${k + 2}${left ? 'l' : 'r'}`, cls: `pjh__orn pjh__orn--${left ? 'l' : 'r'}`, style: `--k:${k};--od:${(0.5 + 0.14 * n).toFixed(2)}s`,
+        base: DARK, alpha: alpha[n], goldAlpha: alpha[n], gold: GOLD_ORN, reveal: k === 0 ? 'bars' : 'fade', bars: 'two',
+        flip: left, fade: true, screen: true, vig: { cx, cy: VH / 2, r: 175 }, shine: shine[n],
+      });
+    };
+    orn = [-2, -1, 0, 1, 2].flatMap((k) => [half(k, true), half(k, false)]);
+  }
+}
+const stageSvg = assemble ? logoSvg : reactiveSvg;
 ---
-<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} data-orn={orn.length ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]}`} aria-label={title}>
+<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} data-orn={orn.length ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]};${timingVars()}`} aria-label={title}>
+  {defs && <Fragment set:html={defs} />}
   <div class="pjh__bg" data-pj-bg aria-hidden="true"></div>
   {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
   {orn.map((s) => <Fragment set:html={s} />)}
   <div class="pjh__stage" data-pj-stage>
-    {mark && !name && <img class="pjh__mark" data-pj-mark src={src(mark)} alt="" aria-hidden="true" decoding="async" draggable="false" />}
-    {inline
-      ? <Fragment set:html={inline} />
+    {mark && !nameSvg && <img class="pjh__mark" data-pj-mark src={src(mark)} alt="" aria-hidden="true" decoding="async" draggable="false" />}
+    {stageSvg
+      ? <Fragment set:html={stageSvg} />
       : <img class="pjh__logo" data-pj-logo src={src(logo)} alt={title} decoding="async" draggable="false" />}
-    {name && <Fragment set:html={name} />}
+    {nameSvg && <Fragment set:html={nameSvg} />}
   </div>
 </section>
 
 <style>
   .pjh { position: relative; width: 100%; min-height: 100vh; min-height: 100svh; display: grid; place-items: center; overflow: hidden; isolation: isolate; }
+
   /* Fondo: dos luces grandes y asimétricas sobre el negro del sitio. Posiciones (--ax…) y colores (--ga, --gb) los cambia el widget de paleta. */
   .pjh__bg { position: absolute; inset: 0; z-index: -1; transition: --ax 1.1s var(--ease), --ay 1.1s var(--ease), --bx 1.1s var(--ease), --by 1.1s var(--ease), --ga .8s linear, --gb .8s linear;
     background: radial-gradient(ellipse 62% 70% at var(--ax) var(--ay), color-mix(in srgb, var(--ga) 95%, transparent), transparent 72%),
                 radial-gradient(ellipse 70% 62% at var(--bx) var(--by), color-mix(in srgb, var(--gb) 90%, transparent), transparent 74%); }
-  /* Luces de semitono: el degradado se reemplaza por una trama de puntos dibujada en el canvas */
-  .pjh[data-halftone] .pjh__bg { display: none; }
-  .pjh__ht { position: absolute; left: 0; top: 0; z-index: -1; pointer-events: none; animation: pjh-ht-in 1.8s ease both;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%); mask-image: linear-gradient(to bottom, transparent 0, #000 16%); } /* se desvanece bajo el menú, para que se lea */
-  @keyframes pjh-ht-in { from { opacity: 0; } to { opacity: 1; } }
-  /* Ornamento: dos mitades que flanquean el logotipo, en la misma animación pero con un leve retraso */
-  .pjh { --oh: min(66vh, 38rem); --hw: calc(var(--oh) * .2756); --og: calc(var(--oh) * .066); --pw: calc(2 * var(--hw) + var(--og) + var(--oh) * .05); }
+  /* Ensamblar: una luz leve y azulada al centro; sobre ella la "sombra" (multiplicar) se lee */
   .pjh[data-assemble] .pjh__bg { background:
     radial-gradient(ellipse 36% 44% at 50% 50%, rgb(150 180 225 / .11), transparent 72%),
     radial-gradient(ellipse 62% 70% at var(--ax) var(--ay), color-mix(in srgb, var(--ga) 95%, transparent), transparent 72%),
-    radial-gradient(ellipse 70% 62% at var(--bx) var(--by), color-mix(in srgb, var(--gb) 90%, transparent), transparent 74%); } /* una luz levemente azulada al centro: sobre ella la "sombra" (multiplicar) se lee */
-  .pjh[data-assemble] :global(svg.pjh__orn) { position: absolute; top: 50%; translate: 0 -50%; z-index: -1; height: var(--oh); width: auto; aspect-ratio: 116 / 421; overflow: visible; }
-  .pjh[data-assemble] :global(svg.pjh__orn--l) { right: calc(50% - var(--k) * var(--pw) + var(--og) / 2); }
-  .pjh[data-assemble] :global(svg.pjh__orn--r) { left: calc(50% + var(--k) * var(--pw) + var(--og) / 2); }
-  /* El ornamento entra pieza por pieza (hacia afuera de cada mitad), desde el desenfoque; sin animar la raíz del SVG para que el multiplicar no parpadee */
-  .pjh[data-assemble] :global(svg.pjh__orn > path), .pjh[data-assemble] :global(svg.pjh__orn > g > path) { animation: pj-orn-in 1.8s var(--od, .5s) cubic-bezier(.22, 1, .36, 1) both; }
-  @keyframes pj-orn-in { from { transform: translateX(170px); opacity: 0; filter: blur(16px); } to { transform: none; opacity: var(--a, 1); filter: none; } }
-  .pjh :global(.pj-screen) { mix-blend-mode: screen; } /* el oro del ornamento se funde con el fondo (pantalla) */
-  /* Efecto multiplicar: mientras son "sombra", las piezas oscuras oscurecen lo que tienen detrás; el oro llega encima, sin mezcla */
-  .pjh[data-assemble] :global(svg.pjh__logo > path), .pjh[data-assemble] :global(svg.pjh__name > path), .pjh[data-assemble] :global(svg.pjh__orn > path), .pjh[data-assemble] :global(svg.pjh__orn > g > path) { mix-blend-mode: multiply; }
-  /* Con ornamento, el logotipo se achica para quedar enmarcado dentro del arco */
-  .pjh[data-orn][data-assemble] .pjh__stage > :global(svg.pjh__logo) { height: min(19vh, 9rem); }
-  .pjh[data-orn][data-assemble] .pjh__stage > :global(svg.pjh__name) { width: min(44vw, 10.5rem); }
+    radial-gradient(ellipse 70% 62% at var(--bx) var(--by), color-mix(in srgb, var(--gb) 90%, transparent), transparent 74%); }
+  /* Semitono: el degradado se reemplaza por una trama de puntos dibujada en el canvas (se desvanece bajo el menú, para que se lea) */
+  .pjh[data-halftone] .pjh__bg { display: none; }
+  .pjh__ht { position: absolute; left: 0; top: 0; z-index: -1; pointer-events: none; animation: ht-in 1.8s ease both;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%); mask-image: linear-gradient(to bottom, transparent 0, #000 16%); }
+  @keyframes ht-in { from { opacity: 0; } to { opacity: 1; } }
+
   .pjh__stage { position: relative; display: grid; place-items: center; width: min(88vw, 56rem); height: min(60vh, 34rem); }
   .pjh__stage > img { grid-area: 1 / 1; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; user-select: none; }
-  .pjh__stage > .pjh__logo { width: min(100%, 40rem); animation: pjh-in 1.6s .2s var(--ease, ease) both; }
-  .pjh__stage > :global(svg.pjh__logo) { grid-area: 1 / 1; width: auto; height: min(58vh, 32rem); max-width: 100%; animation: pjh-in 1.6s .2s var(--ease, ease) both; }
+  .pjh__stage > .pjh__logo { width: min(100%, 40rem); animation: logo-in 1.6s .2s var(--ease, ease) both; }
   .pjh__mark { opacity: 0; } /* en su lugar, listo para animar */
-  /* El logotipo reactivo cambia de color con suavidad (también al pasar a blanco y negro) */
-  .pjh__stage > :global(svg.pjh__logo) :global(path) { transition: fill .7s linear; }
-  /* Ensamblar: las alas llegan desde cada lado y se juntan; al terminar, aparece el rombo central */
-  .pjh[data-assemble] .pjh__stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(.5rem, 1.5vh, .9rem); height: auto; }
-  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__logo) { overflow: visible; height: min(30vh, 14rem); width: auto; animation: none; }
-  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__name) { width: min(64vw, 16.5rem); height: auto; flex: none; }
-  .pjh[data-assemble] :global(svg.pjh__name > path) { animation: pj-appear .9s 3.1s var(--ease, ease) both; } /* el nombre llega pieza por pieza (no la raíz del SVG: así el multiplicar no parpadea) */
-  /* "Forja precisa": las piezas nacen en acero azulado, encajan con un leve golpe y un destello de barras planas pasa un par de veces;
-     mientras cruza, el oro aparece por debajo (en sincronía con el reflejo). El nombre llega ya dorado y recibe un solo destello. */
-  .pjh :global(.pj-flash) { opacity: 0; animation: pj-flash 1s var(--gd, 3.15s) linear var(--gn, 1) both; }
-  .pjh :global(.pj-wipe) { animation: pj-wipe .75s var(--gd, 3.15s) cubic-bezier(.45, .05, .55, .95) both; } /* el oro se revela detrás de la primera barra */
-  @keyframes pj-flash { 0% { translate: 0 0; opacity: 1; animation-timing-function: cubic-bezier(.45, .05, .55, .95); } 75% { translate: var(--gw) 0; opacity: 1; } 75.1%, 100% { translate: var(--gw) 0; opacity: 0; } }
-  /* Brillo sutil, estilo flat: de tanto en tanto las mismas barras cruzan todo el logotipo (iso y nombre), con poca opacidad */
-  .pjh :global(.pj-shine) { opacity: 0; animation: pj-shine 11s var(--gd, 4.9s) linear infinite; }
-  @keyframes pj-shine { 0% { translate: 0 0; opacity: 0; } 1.5% { opacity: .3; } 11% { translate: var(--gw) 0; opacity: .3; } 12%, 100% { translate: var(--gw) 0; opacity: 0; } }
-  .pjh[data-assemble] .pjh__stage { }
-  @keyframes pj-wipe { from { translate: 0 0; } to { translate: var(--gw) 0; } }
-  .pjh[data-assemble] :global(svg.pjh__logo path) { transform-box: fill-box; transform-origin: center; }
-  .pjh[data-assemble] :global([data-part='0']) { animation: pj-from-left 1.8s .3s both; }
-  .pjh[data-assemble] :global([data-part='1']) { animation: pj-from-right 1.8s .3s both; }
-  /* Las alas llegan con menos opacidad y desenfocadas, aceleran hacia el centro, chocan (se pasan un poco), rebotan y se asientan */
-  .pjh[data-assemble] :global([data-part='2']) { animation: pj-appear .9s 3.1s var(--ease, ease) both; } /* el rombo llega después del 2.º brillo, aún en azul */
-  @keyframes pj-appear { from { opacity: 0; filter: blur(14px); transform: scale(.6); } to { opacity: var(--a, 1); filter: none; transform: none; } }
-  @keyframes pj-from-left { 0% { transform: translateX(-70vw); opacity: 0; filter: blur(20px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 30% { opacity: var(--a, 1); } 68% { transform: translateX(9px); filter: none; animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 84% { transform: translateX(-3px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: var(--a, 1); filter: none; } }
-  @keyframes pj-from-right { 0% { transform: translateX(70vw); opacity: 0; filter: blur(20px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 30% { opacity: var(--a, 1); } 68% { transform: translateX(-9px); filter: none; animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 84% { transform: translateX(3px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: var(--a, 1); filter: none; } }
-  @keyframes pjh-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
-  @media (prefers-reduced-motion: reduce) { .pjh__logo, .pjh[data-assemble] :global([data-part]), .pjh :global(.pj-flash), .pjh :global(.pj-wipe), .pjh :global(.pj-shine), .pjh :global(svg.pjh__name > path), .pjh :global(svg.pjh__orn > path), .pjh :global(svg.pjh__orn > g > path) { animation: none !important; } .pjh :global(.pj-shine) { display: none; } .pjh :global(.pj-flash) { display: none; } .pjh :global(.pj-wipe) { translate: var(--gw) 0; } }
+  @keyframes logo-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .pjh__stage > .pjh__logo, .pjh__ht { animation: none; } }
 </style>
 
+<!-- El SVG se inserta como HTML, así que sus estilos son globales (siempre bajo .pjh) -->
 <style is:global>
   @property --ax { syntax: '<percentage>'; inherits: true; initial-value: 24%; }
   @property --ay { syntax: '<percentage>'; inherits: true; initial-value: 34%; }
@@ -162,6 +108,57 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   @property --by { syntax: '<percentage>'; inherits: true; initial-value: 72%; }
   @property --ga { syntax: '<color>'; inherits: true; initial-value: #6a1b26; }
   @property --gb { syntax: '<color>'; inherits: true; initial-value: #240d12; }
+
+  /* ── Logotipo SVG (modo reactivo y ensamblar) */
+  .pjh__defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+  .pjh__stage > svg.pjh__logo { grid-area: 1 / 1; width: auto; height: min(58vh, 32rem); max-width: 100%; animation: logo-in 1.6s .2s var(--ease, ease) both; }
+  .pjh__stage > svg.pjh__logo path { transition: fill .7s linear; } /* el cambio de color del widget es suave */
+
+  /* ── Ensamblar: composición. El iso y el nombre se apilan, centrados; el ornamento flanquea (un par por cada k) */
+  .pjh { --oh: min(66vh, 38rem); --og: calc(var(--oh) * .066); --pw: calc(var(--oh) * .6672); --mark-h: min(30vh, 14rem); --name-w: min(64vw, 16.5rem); }
+  .pjh[data-orn] { --mark-h: min(19vh, 9rem); --name-w: min(44vw, 10.5rem); } /* con ornamento, el logotipo se achica para quedar enmarcado en el arco */
+  .pjh[data-assemble] .pjh__stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(.5rem, 1.5vh, .9rem); height: auto; }
+  .pjh[data-assemble] .pjh__stage > svg.pjh__logo { overflow: visible; height: var(--mark-h); width: auto; animation: none; }
+  .pjh__stage > svg.pjh__name { width: var(--name-w); height: auto; flex: none; overflow: visible; }
+  .pjh__orn { position: absolute; top: 50%; translate: 0 -50%; z-index: -1; height: var(--oh); width: auto; aspect-ratio: 116 / 421; overflow: visible; }
+  .pjh__orn--l { right: calc(50% - var(--k) * var(--pw) + var(--og) / 2); }
+  .pjh__orn--r { left: calc(50% + var(--k) * var(--pw) + var(--og) / 2); }
+
+  /* ── Piezas. Los tiempos salen de las variables --t-* (src/lib/forge.ts). Nada anima la raíz del SVG (filtro, transformación u
+     opacidad): eso aislaría el SVG y cortaría el efecto multiplicar, con un parpadeo al terminar cada animación. */
+  .pj-base { mix-blend-mode: multiply; transform-box: fill-box; transform-origin: center; } /* "sombra": oscurece lo que hay detrás */
+  .pj-base[data-part='0'] { animation: pj-from-left 1.8s var(--t-enter) both; }
+  .pj-base[data-part='1'] { animation: pj-from-right 1.8s var(--t-enter) both; }
+  .pj-late { animation: pj-appear .9s var(--t-appear) var(--ease, ease) both; } /* rombo y nombre: llegan tras la 1.ª pasada, aún oscuros */
+  .pjh__orn .pj-base { animation: pj-orn-in 1.8s var(--od, .5s) cubic-bezier(.22, 1, .36, 1) both; }
+  /* Las alas llegan desenfocadas, aceleran hacia el centro, chocan (se pasan un poco), rebotan y se asientan */
+  @keyframes pj-from-left { 0% { transform: translateX(-70vw); opacity: 0; filter: blur(20px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 30% { opacity: var(--a, 1); } 68% { transform: translateX(9px); filter: none; animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 84% { transform: translateX(-3px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: var(--a, 1); filter: none; } }
+  @keyframes pj-from-right { 0% { transform: translateX(70vw); opacity: 0; filter: blur(20px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 30% { opacity: var(--a, 1); } 68% { transform: translateX(-9px); filter: none; animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 84% { transform: translateX(3px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: var(--a, 1); filter: none; } }
+  @keyframes pj-appear { from { opacity: 0; filter: blur(14px); transform: scale(.6); } to { opacity: var(--a, 1); filter: none; transform: none; } }
+  @keyframes pj-orn-in { from { transform: translateX(170px); opacity: 0; filter: blur(16px); } to { transform: none; opacity: var(--a, 1); filter: none; } }
+
+  /* ── Oro: llega encima, sin mezcla (en el ornamento, "pantalla"), por fundido o detrás de la cortina del destello */
+  .pj-gold { opacity: var(--g, 1); }
+  .pj-screen { mix-blend-mode: screen; }
+  .pj-gold--fade { opacity: 0; animation: pj-gold-in .8s calc(var(--t-last) + .1s) ease-out both; }
+  @keyframes pj-gold-in { to { opacity: var(--g, 1); } }
+
+  /* ── Destellos de barras planas: el de revelado (1.ª y última pasada; sólo la última en el nombre) y un brillo sutil que se repite */
+  .pj-flash { opacity: 0; animation: pj-flash 1s var(--t-flash) linear 2 both; }
+  .pj-flash--last { animation-delay: var(--t-last); animation-iteration-count: 1; }
+  .pj-wipe { animation: pj-wipe .75s var(--t-last) cubic-bezier(.45, .05, .55, .95) both; } /* el oro se revela detrás de la primera barra */
+  .pj-shine { opacity: 0; animation: pj-shine 11s var(--t-shine) linear infinite; }
+  @keyframes pj-flash { 0% { translate: 0 0; opacity: 1; animation-timing-function: cubic-bezier(.45, .05, .55, .95); } 75% { translate: var(--gw) 0; opacity: 1; } 75.1%, 100% { translate: var(--gw) 0; opacity: 0; } }
+  @keyframes pj-wipe { from { translate: 0 0; } to { translate: var(--gw) 0; } }
+  @keyframes pj-shine { 0% { translate: 0 0; opacity: 0; } 1.5% { opacity: .3; } 11% { translate: var(--gw) 0; opacity: .3; } 12%, 100% { translate: var(--gw) 0; opacity: 0; } }
+
+  /* ── Movimiento reducido: todo se ve ya armado y dorado, sin destellos */
+  @media (prefers-reduced-motion: reduce) {
+    .pj-base, .pj-late, .pj-gold--fade, .pj-flash, .pj-wipe, .pj-shine { animation: none !important; }
+    .pj-gold--fade { opacity: var(--g, 1); }
+    .pj-wipe { translate: var(--gw) 0; }
+    .pj-flash, .pj-shine { display: none; }
+  }
 </style>
 
 <script>
