@@ -39,7 +39,7 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
   /* Retrato a la derecha, detrás del contenido, al 40% de opacidad; el borde izquierdo se desvanece */
   /* La pantalla antigua se funde con el fondo igual que el retrato: sin borde duro donde empieza la sección */
   .footer { --crt-mask: linear-gradient(to right, var(--fade-l)), linear-gradient(to bottom, var(--fade-t)); }
-  .footer__photo { position: absolute; z-index: -1; right: 0; bottom: 0; height: 100%; width: auto; max-width: 75%; object-fit: contain; object-position: right bottom; opacity: .55; filter: blur(.8px); /* leve desenfoque: aspecto de pantalla */ mix-blend-mode: screen; /* fusión: el negro de la foto desaparece contra el fondo y las luces se suman */ pointer-events: none; user-select: none;
+  .footer__photo { position: absolute; z-index: -1; right: 0; bottom: 0; height: 82%; width: auto; max-width: 58%; object-fit: contain; object-position: right bottom; opacity: .55; filter: blur(.8px); /* leve desenfoque: aspecto de pantalla */ mix-blend-mode: screen; /* fusión: el negro de la foto desaparece contra el fondo y las luces se suman */ pointer-events: none; user-select: none;
     /* bordes que se desvanecen: izquierdo y superior, para que el recorte del encuadre no se note */
     -webkit-mask-image: linear-gradient(to right, var(--fade-l)), linear-gradient(to bottom, var(--fade-t)); -webkit-mask-composite: source-in;
     mask-image: linear-gradient(to right, var(--fade-l)), linear-gradient(to bottom, var(--fade-t)); mask-composite: intersect; }
@@ -77,7 +77,7 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
   @media (prefers-reduced-motion: reduce) { .footer__glitch { display: none; } .footer__photo.is-glitch { animation: none; } }
 
   .footer__content { position: relative; z-index: 1; }
-  .quote { margin: 1.5rem 0 2.5rem; max-width: 34ch; }
+  .quote { margin: 1.5rem 0 2.5rem; max-width: 58ch; }
   .quote blockquote { margin: 0; font-size: clamp(1.1rem, 2.1vw, 1.8rem); line-height: 1.3; letter-spacing: .02em; text-wrap: balance; }
   .quote figcaption { margin-top: 1.75rem; }
   .footer__row { display: flex; flex-wrap: wrap; gap: .75rem; }

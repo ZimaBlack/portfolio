@@ -93,3 +93,14 @@ export const hsl = (t: Tone, alpha?: number) =>
 
 /** Convierte un color hex (#rrggbb) en Tone, para los colores de respaldo del proyecto. */
 export const toneOfHex = (hex: string): Tone => toHsl(parseColor(hex) ?? [60, 50, 40]);
+
+/** ¿El logo es (casi) todo blanco/gris claro? Sirve para usar un destello gris, que sobre blanco sí se ve. */
+export function isLight(svg: string): boolean {
+  let light = 0, total = 0;
+  for (const { rgb, w } of swatches(svg)) {
+    const t = toHsl(rgb);
+    total += w;
+    if (t.l > 0.8 && t.s < 0.25) light += w;
+  }
+  return total > 0 && light / total >= 0.6;
+}

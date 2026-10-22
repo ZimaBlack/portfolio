@@ -3,7 +3,7 @@
 // Dos copias idénticas de la lista, para que el bucle sea continuo (se desplaza -50% y reinicia sin saltos).
 // Es interactiva: al pasar el mouse se detiene y el logo recupera su color; al hacer clic, la página baja hasta
 // centrar el carrusel (`[data-car]`) y lo posiciona en la lámina de ese logo (`slide` = posición en el carrusel).
-const { items } = Astro.props as { items: { src: string; label: string; slide: number }[] };
+const { items } = Astro.props as { items: { src: string; label: string; slide: number; light?: boolean }[] };
 ---
 <div class="mq">
   <div class="mq__track">
@@ -11,7 +11,7 @@ const { items } = Astro.props as { items: { src: string; label: string; slide: n
       <ul class="mq__set" aria-hidden={copy === 1 ? 'true' : undefined}>
         {items.map((m) => (
           <li>
-            <button type="button" class="mq__logo" data-slide={m.slide} aria-label={m.label} tabindex={copy === 1 ? -1 : undefined} style={`--logo:url("${m.src}")`}>
+            <button type="button" class:list={['mq__logo', { 'is-light': m.light }]} data-slide={m.slide} aria-label={m.label} tabindex={copy === 1 ? -1 : undefined} style={`--logo:url("${m.src}")`}>
               <img class="mq__glow" src={m.src} alt="" aria-hidden="true" loading="lazy" decoding="async" draggable="false" />
               <img class="mq__img" src={m.src} alt="" loading="lazy" decoding="async" draggable="false" />
               <span class="mq__sheen" aria-hidden="true"></span>
@@ -40,6 +40,7 @@ const { items } = Astro.props as { items: { src: string; label: string; slide: n
   .mq__sheen { position: absolute; inset: 0; pointer-events: none; opacity: 0;
     -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat;
     background: linear-gradient(115deg, transparent 38%, rgb(255 255 255 / .85) 50%, transparent 62%) 130% 0 / 260% 100% no-repeat; }
+  .mq__logo.is-light .mq__sheen { background-image: linear-gradient(115deg, transparent 38%, rgb(120 122 132 / .95) 50%, transparent 62%); } /* logos blancos: destello gris */
   .mq__logo:hover, .mq__logo:focus-visible { transform: scale(1.1); }
   .mq__logo:hover .mq__img, .mq__logo:focus-visible .mq__img { filter: none; opacity: 1; }
   .mq__logo:hover .mq__glow, .mq__logo:focus-visible .mq__glow { opacity: .5; }

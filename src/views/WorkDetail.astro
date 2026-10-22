@@ -6,7 +6,7 @@ import VideoEmbed from '../components/VideoEmbed.astro';
 import Icon from '../components/Icon.astro';
 import Carousel, { type Slide } from '../components/Carousel.astro';
 import Marquee from '../components/Marquee.astro';
-import { ambientOf, toneOfHex, type Tone } from '../lib/palette';
+import { ambientOf, isLight, toneOfHex, type Tone } from '../lib/palette';
 import { site } from '../data/site';
 import { copy, loc, paths, type Lang } from '../lib/i18n';
 
@@ -21,11 +21,15 @@ const found = import.meta.glob('/src/assets/works/*/carrusel/*.{svg,png,webp,jpg
 const raws = import.meta.glob('/src/assets/works/*/carrusel/*.svg', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
 const files: Record<number, { a?: string; b?: string }> = {};
 const svgText: Record<number, string[]> = {};
+const light: Record<number, { a?: boolean; b?: boolean }> = {}; // logos blancos: llevan un destello gris
 for (const [path, url] of Object.entries(found)) {
   const m = path.match(/\/works\/([^/]+)\/carrusel\/(\d+)([ab])\.[a-z]+$/i);
   if (!m || m[1] !== work.id) continue;
   (files[Number(m[2])] ??= {})[m[3].toLowerCase() as 'a' | 'b'] = url;
-  if (raws[path]) (svgText[Number(m[2])] ??= []).push(raws[path]);
+  if (raws[path]) {
+    (svgText[Number(m[2])] ??= []).push(raws[path]);
+    (light[Number(m[2])] ??= {})[m[3].toLowerCase() as 'a' | 'b'] = isLight(raws[path]);
+  }
 }
 // Respaldo para logos blancos/grises/negros: una luz neutra, apenas fría, en vez de un color
 const NEUTRAL: [Tone, Tone] = [{ h: 215, s: 0.1, l: 0.62 }, { h: 30, s: 0.08, l: 0.55 }];
@@ -48,6 +52,8 @@ const slides: Slide[] = entries.map((e) => {
     subtitle: sub,
     alt: loc(e.alt, lang) || sub || d.title,
     href: e.project && all.some((w) => w.id === e.project) ? paths.work(lang, e.project) : undefined,
+    lightA: intro ? undefined : light[f]?.a,
+    lightB: intro ? undefined : light[f]?.b,
     swap: e.swap,
     sizeA: e.size?.a,
     sizeB: e.size?.b,
@@ -57,7 +63,7 @@ const slides: Slide[] = entries.map((e) => {
   };
 });
 // La marquesina de la cabecera usa los logos "b" en el orden de las láminas
-const marqueeItems = slides.map((s, i) => ({ src: s.b as string, label: s.subtitle, slide: i })).filter((m, i) => !slides[i].intro && m.src);
+const marqueeItems = slides.map((s, i) => ({ src: s.b as string, label: s.subtitle, slide: i, light: !!s.lightB })).filter((m, i) => !slides[i].intro && m.src);
 const alt = lang === 'es' ? 'en' : 'es';
 ---
 <Base lang={lang} section="works" title={d.title} description={loc(d.summary, lang)}

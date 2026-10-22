@@ -5,7 +5,7 @@
 import { hsl, type Tone } from '../lib/palette';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
-export interface Slide { n: number; intro?: boolean; href?: string; a?: string; b?: string; subtitle: string; alt: string; sizeA?: number; sizeB?: number; dyA?: number; dyB?: number; swap?: boolean; ambient: { c1: Tone; c2: Tone; source: string; boost?: number } }
+export interface Slide { n: number; intro?: boolean; href?: string; a?: string; b?: string; subtitle: string; alt: string; lightA?: boolean; lightB?: boolean; sizeA?: number; sizeB?: number; dyA?: number; dyB?: number; swap?: boolean; ambient: { c1: Tone; c2: Tone; source: string; boost?: number } }
 const { slides, labels, title = '', cta } = Astro.props as { slides: Slide[]; title?: string; cta?: { title: string; button: string; subtitle: string; href: string }; labels: { prev: string; next: string; region: string; png: string; details: string; more: string } };
 // Variables CSS por logo: --k (multiplicador de tamaño) y --dy (desplazamiento vertical en px)
 const vars = (k?: number, dy?: number) => [k ? `--k:${k}` : '', dy ? `--dy:${dy}px` : ''].filter(Boolean).join(';') || undefined;
@@ -47,15 +47,15 @@ const last = Math.max(...slides.map((s) => s.n)); // la lámina 00 no cuenta en 
           ]}
           {!s.intro && (() => {
             // Con `swap`, el archivo "b" va en la columna ancha y el "a" en la angosta (el tamaño y el desplazamiento siguen al archivo)
-            const L = s.swap ? { src: s.b, k: s.sizeB, dy: s.dyB, f: 'b' } : { src: s.a, k: s.sizeA, dy: s.dyA, f: 'a' };
-            const R = s.swap ? { src: s.a, k: s.sizeA, dy: s.dyA, f: 'a' } : { src: s.b, k: s.sizeB, dy: s.dyB, f: 'b' };
+            const L = s.swap ? { src: s.b, k: s.sizeB, dy: s.dyB, f: 'b', light: s.lightB } : { src: s.a, k: s.sizeA, dy: s.dyA, f: 'a', light: s.lightA };
+            const R = s.swap ? { src: s.a, k: s.sizeA, dy: s.dyA, f: 'a', light: s.lightA } : { src: s.b, k: s.sizeB, dy: s.dyB, f: 'b', light: s.lightB };
             return [
               <figure class="cell cell--a" style={vars(L.k, L.dy)}>
-                {L.src ? <><img src={L.src} alt={s.alt} loading="lazy" decoding="async" draggable="false" /><span class="sheen" aria-hidden="true" style={`--logo:url("${L.src}")`}></span></>
+                {L.src ? <><img src={L.src} alt={s.alt} loading="lazy" decoding="async" draggable="false" /><span class:list={['sheen', { 'sheen--gray': L.light }]} aria-hidden="true" style={`--logo:url("${L.src}")`}></span></>
                   : <div class="ph"><b>{pad(s.n)}{L.f}</b><span>{labels.png}</span><strong>1800 × 1200 px</strong><em>3:2 · 8/12</em></div>}
               </figure>,
               <figure class="cell cell--b" style={vars(R.k, R.dy)}>
-                {R.src ? <><img src={R.src} alt={s.alt} loading="lazy" decoding="async" draggable="false" /><span class="sheen" aria-hidden="true" style={`--logo:url("${R.src}")`}></span></>
+                {R.src ? <><img src={R.src} alt={s.alt} loading="lazy" decoding="async" draggable="false" /><span class:list={['sheen', { 'sheen--gray': R.light }]} aria-hidden="true" style={`--logo:url("${R.src}")`}></span></>
                   : <div class="ph"><b>{pad(s.n)}{R.f}</b><span>{labels.png}</span><strong>900 × 1200 px</strong><em>3:4 · 4/12</em></div>}
               </figure>,
             ];
@@ -127,6 +127,7 @@ const last = Math.max(...slides.map((s) => s.n)); // la lámina 00 no cuenta en 
   .sheen { width: min(94%, calc(var(--bw, 40%) * var(--k, 1))); height: min(94%, calc(var(--bh, 30%) * var(--k, 1))); translate: 0 var(--dy, 0); pointer-events: none; opacity: 0;
     -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat;
     background: linear-gradient(115deg, transparent 38%, rgb(255 255 255 / .85) 50%, transparent 62%) 130% 0 / 260% 100% no-repeat; }
+  .sheen--gray { background-image: linear-gradient(115deg, transparent 38%, rgb(120 122 132 / .95) 50%, transparent 62%); } /* logos blancos: destello gris */
   .slide.is-sheen .sheen { animation: car-sheen 1.3s .75s ease-out 1 both; }
   @keyframes car-sheen { 0% { opacity: 0; background-position: 130% 0; } 15% { opacity: .6; } 85% { opacity: .6; } 100% { opacity: 0; background-position: -30% 0; } }
   .cell--a { grid-column: span 8; }
