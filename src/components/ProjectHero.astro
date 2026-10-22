@@ -5,21 +5,23 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { withBase } from '../lib/i18n';
-const { logo, mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false } = Astro.props as { logo: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean };
+const { logo, mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, assemble = false } = Astro.props as { logo: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; assemble?: boolean };
 const src = (p: string) => (p.startsWith('/') ? withBase(p) : p);
 
 // Logotipo "reactivo": se inserta el SVG en la página (no como imagen) y los colores indicados en `reactive`
 // pasan a leer las variables --pw-0, --pw-1… que escribe el widget de paleta (con el color original de respaldo).
 let inline = '';
-if (reactive.length && logo.toLowerCase().endsWith('.svg')) {
+if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   let svg = readFileSync(join(process.cwd(), 'public', logo), 'utf8');
   reactive.forEach((hex, i) => {
     svg = svg.replace(new RegExp(`fill="${hex}"`, 'gi'), `style="fill:var(--pw-${i},${hex})"`);
   });
+  // Para ensamblar: cada trazo recibe su número (0 = ala izquierda, 1 = ala derecha, 2 = centro), en el orden del archivo
+  if (assemble) { let n = 0; svg = svg.replace(/<path\b/g, () => `<path data-part="${n++}"`); }
   inline = svg.replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__logo" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
 }
 ---
-<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]}`} aria-label={title}>
+<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]}`} aria-label={title}>
   <div class="pjh__bg" data-pj-bg aria-hidden="true"></div>
   {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
   <div class="pjh__stage" data-pj-stage>
@@ -48,8 +50,17 @@ if (reactive.length && logo.toLowerCase().endsWith('.svg')) {
   .pjh__mark { opacity: 0; } /* en su lugar, listo para animar */
   /* El logotipo reactivo cambia de color con suavidad (también al pasar a blanco y negro) */
   .pjh__stage > :global(svg.pjh__logo) :global(path) { transition: fill .7s linear; }
+  /* Ensamblar: las alas llegan desde cada lado y se juntan; al terminar, aparece el rombo central */
+  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__logo) { overflow: visible; animation: none; }
+  .pjh[data-assemble] :global(svg.pjh__logo path) { transform-box: fill-box; transform-origin: center; }
+  .pjh[data-assemble] :global([data-part='0']) { animation: pj-from-left 1.7s .35s cubic-bezier(.22, 1, .36, 1) both; }
+  .pjh[data-assemble] :global([data-part='1']) { animation: pj-from-right 1.7s .35s cubic-bezier(.22, 1, .36, 1) both; }
+  .pjh[data-assemble] :global([data-part='2']) { animation: pj-pop 1s 2.05s cubic-bezier(.34, 1.4, .64, 1) both; }
+  @keyframes pj-from-left { from { transform: translateX(-70vw); opacity: 0; } 20% { opacity: 1; } to { transform: none; opacity: 1; } }
+  @keyframes pj-from-right { from { transform: translateX(70vw); opacity: 0; } 20% { opacity: 1; } to { transform: none; opacity: 1; } }
+  @keyframes pj-pop { from { transform: scale(.15); opacity: 0; } to { transform: none; opacity: 1; } }
   @keyframes pjh-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
-  @media (prefers-reduced-motion: reduce) { .pjh__logo { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .pjh__logo, .pjh[data-assemble] :global([data-part]) { animation: none !important; } }
 </style>
 
 <style is:global>
