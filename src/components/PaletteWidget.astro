@@ -42,7 +42,7 @@ const t = {
 
   /* La barra: el arco iris, con una perilla que toma el color elegido */
   .pw__rail { position: relative; width: 1.15rem; border-radius: 999px; cursor: grab; touch-action: none;
-    background: linear-gradient(to bottom, #e8452a, #f1e63a 17%, #6df13a 33%, #3af1f1 50%, #1a1aff 67%, #c43af1 83%, #e8452a); }
+    background: linear-gradient(to bottom, #e8452a, #f1e63a 17%, #6df13a 33%, #3af1f1 50%, #1a1aff 67%, #c43af1 83%, #e8452a); } /* respaldo: el script la redibuja con los colores reales del selector */
   .pw__rail:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
   .pw__rail.is-drag { cursor: grabbing; }
   .pw__knob { position: absolute; left: 50%; top: 0; width: 1.7rem; height: 1.7rem; margin: -.85rem 0 0 -.85rem; border-radius: 50%; background: var(--k, #f5282c);
@@ -59,32 +59,38 @@ const t = {
 </style>
 
 <script>
-  type HSL = [number, number, number]; // h 0-360, s 0-1, l 0-1
+  type LCH = [number, number, number]; // L 0-1, C ~0-0.37, h 0-360 (OKLCH: el brillo percibido es parejo entre matices, así que los colores armonizan)
   const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
   const norm = (h: number) => ((h % 360) + 360) % 360;
 
-  const toHsl = (hex: string): HSL => {
+  const lin = (v: number) => (v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+  const gamma = (v: number) => (v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
+  const hexToLch = (hex: string): LCH => {
     const n = parseInt(hex.replace('#', ''), 16);
-    const r = ((n >> 16) & 255) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min;
-    if (!d) return [0, 0, l];
-    const s = d / (1 - Math.abs(2 * l - 1));
-    const h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
-    return [norm(h * 60), s, l];
+    const r = lin(((n >> 16) & 255) / 255), g = lin(((n >> 8) & 255) / 255), b = lin((n & 255) / 255);
+    const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+    const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+    const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+    const L = 0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s;
+    const A = 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s;
+    const B = 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s;
+    return [L, Math.hypot(A, B), norm((Math.atan2(B, A) * 180) / Math.PI)];
   };
-  const toHex = ([h, s, l]: HSL) => {
-    const a = s * Math.min(l, 1 - l);
-    const f = (n: number) => {
-      const k = (n + h / 30) % 12;
-      return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)))).toString(16).padStart(2, '0');
-    };
-    return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
+  const rgbOf = ([L, C, h]: LCH) => {
+    const a = C * Math.cos((h * Math.PI) / 180), b = C * Math.sin((h * Math.PI) / 180);
+    const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+    const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+    const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
+    return [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s];
   };
-  const ink = (hex: string) => {
-    const n = parseInt(hex.slice(1), 16);
-    return (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255 > 0.58 ? '#0b0b0a' : '#ecebe6';
+  /** OKLCH → #RRGGBB; si el color se sale del gamut, baja el croma hasta que entre. */
+  const toHex = ([L, C, h]: LCH) => {
+    let c = C, rgb = rgbOf([L, c, h]);
+    for (let k = 0; k < 40 && rgb.some((v) => v < -0.001 || v > 1.001); k++) { c *= 0.94; rgb = rgbOf([L, c, h]); }
+    return '#' + rgb.map((v) => Math.round(clamp(gamma(clamp(v, 0, 1)), 0, 1) * 255).toString(16).padStart(2, '0')).join('').toUpperCase();
   };
+  const ink = (hex: string) => (hexToLch(hex)[0] > 0.68 ? '#0b0b0a' : '#ecebe6');
 
   const init = () => {
     document.querySelectorAll<HTMLElement>('[data-pw]:not([data-ready])').forEach((pw) => {
@@ -99,20 +105,29 @@ const t = {
       const toggle = pw.querySelector<HTMLButtonElement>('[data-pw-toggle]')!;
       const hero = document.querySelector<HTMLElement>('[data-pj-hero]');
 
-      // Color inicial: el de la marca. S y L del elegido se mantienen mientras se arrastra el matiz.
-      const start = toHsl(pw.dataset.start || '#F5282C');
-      let hue = start[0];
-      const sat = clamp(start[1], 0.55, 0.95), lig = clamp(start[2], 0.42, 0.58);
+      // Color inicial: el de la marca. Su brillo y croma se mantienen mientras se arrastra el matiz, así todos los matices pesan parecido.
+      const start = hexToLch(pw.dataset.start || '#F5282C');
+      const L0 = clamp(start[0], 0.58, 0.7), C0 = clamp(start[1], 0.13, 0.22);
+      let hue = start[2];
       let touched = false;
+      // La barra se dibuja con los mismos colores (mismo brillo y croma) que el selector entrega
+      rail.style.background = `linear-gradient(to bottom, ${Array.from({ length: 25 }, (_, i) => toHex([L0, C0, (i / 24) * 360])).join(', ')})`;
 
-      // El segundo color: análogo (±18–42°) o complementario (180° ± 14°); la variación se vuelve a sortear al tocarlo
-      let complementary = Math.random() < 0.5, jitter = rand(0, 1), sign = Math.random() < 0.5 ? -1 : 1, dl = rand(-0.08, 0.1), ds = rand(0.8, 1.05);
-      const reroll = () => { complementary = Math.random() < 0.5; jitter = rand(0, 1); sign = Math.random() < 0.5 ? -1 : 1; dl = rand(-0.08, 0.1); ds = rand(0.8, 1.05); };
+      // Segundo color: análogo (±25–36°) o complementario (180° ± 8°). Brillo y croma se mantienen cerca del primero: así armonizan.
+      // Cada variación sortea también dónde caen las dos luces del fondo (siempre asimétricas).
+      let complementary = true, sign = 1, jitter = 0.5, dL = 0, ax = 20, ay = 30, bx = 78, by = 74;
+      const reroll = () => {
+        complementary = Math.random() < 0.5; sign = Math.random() < 0.5 ? -1 : 1; jitter = Math.random(); dL = rand(-0.05, 0.05);
+        const left = Math.random() < 0.5; // de qué lado cae la luz del color elegido
+        ax = left ? rand(6, 30) : rand(70, 94); ay = rand(14, 40);
+        bx = clamp((left ? rand(66, 92) : rand(8, 34)), 4, 96); by = rand(60, 90);
+      };
+      reroll();
 
       const render = () => {
-        const a: HSL = [hue, sat, lig];
-        const shift = complementary ? 180 + (jitter - 0.5) * 28 : sign * (18 + jitter * 24);
-        const b: HSL = [norm(hue + shift), clamp(sat * ds, 0.3, 0.95), clamp(lig + dl, 0.34, 0.66)];
+        const a: LCH = [L0, C0, hue];
+        const shift = complementary ? 180 + (jitter - 0.5) * 16 : sign * (25 + jitter * 11);
+        const b: LCH = [clamp(L0 + dL, 0.5, 0.74), C0 * (complementary ? 0.88 : 0.95), norm(hue + shift)];
         const hexA = toHex(a), hexB = toHex(b);
         knob.style.setProperty('--k', hexA);
         knob.style.top = `${(hue / 360) * 100}%`;
@@ -124,13 +139,16 @@ const t = {
           sw.dataset.hex = hex as string;
         });
         dotA.style.background = hexA; dotB.style.background = hexB;
-        // Una vez que se usa, los dos colores tiñen el fondo de la portada del proyecto
+        // Una vez que se usa, la portada del proyecto toma los dos colores: dos luces grandes en posiciones asimétricas
         if (touched && hero) {
-          hero.style.setProperty('--b', toHex([hue, sat * 0.7, 0.26]));
-          hero.style.setProperty('--a', toHex([b[0], b[1] * 0.6, 0.12]));
+          const set = (k: string, v: string) => hero.style.setProperty(k, v);
+          set('--ga', toHex([0.46, C0 * 0.95, hue]));
+          set('--gb', toHex([0.4, b[1] * 0.95, b[2]]));
+          set('--ax', `${ax.toFixed(1)}%`); set('--ay', `${ay.toFixed(1)}%`);
+          set('--bx', `${bx.toFixed(1)}%`); set('--by', `${by.toFixed(1)}%`);
           // Los colores del logotipo que son "reactivos": el 1.º sigue al elegido; el 2.º, al automático (más oscuro, como una sombra)
-          hero.style.setProperty('--pw-0', hexA);
-          hero.style.setProperty('--pw-1', toHex([b[0], b[1], b[2] * 0.68]));
+          set('--pw-0', hexA);
+          set('--pw-1', toHex([b[0] - 0.17, b[1] * 0.9, b[2]]));
         }
       };
 

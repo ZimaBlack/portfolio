@@ -19,7 +19,7 @@ if (reactive.length && logo.toLowerCase().endsWith('.svg')) {
   inline = svg.replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__logo" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
 }
 ---
-<section class="pjh" data-pj-hero style={`--a:${tones[0]};--b:${tones[1]}`} aria-label={title}>
+<section class="pjh" data-pj-hero style={`--ga:${tones[1]};--gb:${tones[0]}`} aria-label={title}>
   <div class="pjh__bg" data-pj-bg aria-hidden="true"></div>
   <div class="pjh__stage" data-pj-stage>
     {mark && <img class="pjh__mark" data-pj-mark src={src(mark)} alt="" aria-hidden="true" decoding="async" draggable="false" />}
@@ -31,15 +31,24 @@ if (reactive.length && logo.toLowerCase().endsWith('.svg')) {
 
 <style>
   .pjh { position: relative; width: 100%; min-height: 100vh; min-height: 100svh; display: grid; place-items: center; overflow: hidden; isolation: isolate; }
-  /* Fondo: un resplandor con los tonos del proyecto sobre el negro del sitio */
-  .pjh__bg { position: absolute; inset: 0; z-index: -1;
-    background: radial-gradient(ellipse 70% 60% at 50% 50%, color-mix(in srgb, var(--b) 70%, transparent), transparent 70%),
-                radial-gradient(ellipse 90% 80% at 50% 55%, color-mix(in srgb, var(--a) 90%, transparent), transparent 80%); }
+  /* Fondo: dos luces grandes y asimétricas sobre el negro del sitio. Posiciones (--ax…) y colores (--ga, --gb) los cambia el widget de paleta. */
+  .pjh__bg { position: absolute; inset: 0; z-index: -1; transition: --ax 1.1s var(--ease), --ay 1.1s var(--ease), --bx 1.1s var(--ease), --by 1.1s var(--ease), --ga .8s linear, --gb .8s linear;
+    background: radial-gradient(ellipse 62% 70% at var(--ax) var(--ay), color-mix(in srgb, var(--ga) 95%, transparent), transparent 72%),
+                radial-gradient(ellipse 70% 62% at var(--bx) var(--by), color-mix(in srgb, var(--gb) 90%, transparent), transparent 74%); }
   .pjh__stage { position: relative; display: grid; place-items: center; width: min(88vw, 56rem); height: min(60vh, 34rem); }
   .pjh__stage > img { grid-area: 1 / 1; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; user-select: none; }
   .pjh__stage > .pjh__logo { width: min(100%, 40rem); animation: pjh-in 1.6s .2s var(--ease, ease) both; }
-  .pjh__stage > :global(svg.pjh__logo) { width: auto; height: min(58vh, 32rem); max-width: 100%; animation: pjh-in 1.6s .2s var(--ease, ease) both; }
+  .pjh__stage > :global(svg.pjh__logo) { grid-area: 1 / 1; width: auto; height: min(58vh, 32rem); max-width: 100%; animation: pjh-in 1.6s .2s var(--ease, ease) both; }
   .pjh__mark { opacity: 0; } /* en su lugar, listo para animar */
   @keyframes pjh-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .pjh__logo { animation: none; } }
+</style>
+
+<style is:global>
+  @property --ax { syntax: '<percentage>'; inherits: true; initial-value: 24%; }
+  @property --ay { syntax: '<percentage>'; inherits: true; initial-value: 34%; }
+  @property --bx { syntax: '<percentage>'; inherits: true; initial-value: 76%; }
+  @property --by { syntax: '<percentage>'; inherits: true; initial-value: 72%; }
+  @property --ga { syntax: '<color>'; inherits: true; initial-value: #6a1b26; }
+  @property --gb { syntax: '<color>'; inherits: true; initial-value: #240d12; }
 </style>
