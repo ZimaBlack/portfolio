@@ -7,7 +7,7 @@ import keystatic from '@keystatic/astro';
 const panel = !process.argv.some((a) => ['build', 'preview', 'check', 'sync'].includes(a));
 
 // Laboratorio (/lab/): el botón "Guardar como fondo del sitio" guarda el preset en src/data/background.json. Sólo existe en modo desarrollo
-// (el hook astro:server:setup no corre en el build) y sólo acepta los números de los parámetros del patrón.
+// (el hook astro:server:setup no corre en el build) y sólo acepta números y booleanos de los parámetros del patrón.
 const presetSaver = {
   name: 'turing-preset',
   hooks: {
@@ -19,7 +19,7 @@ const presetSaver = {
         req.on('end', () => {
           try {
             const data = JSON.parse(body);
-            const clean = Object.fromEntries(Object.entries(data).filter(([k, v]) => /^[a-zA-Z]+$/.test(k) && typeof v === 'number' && Number.isFinite(v)));
+            const clean = Object.fromEntries(Object.entries(data).filter(([k, v]) => /^[a-zA-Z]+$/.test(k) && ((typeof v === 'number' && Number.isFinite(v)) || typeof v === 'boolean')));
             writeFileSync('src/data/background.json', JSON.stringify(clean, null, 2) + '\n');
             res.end('ok');
           } catch { res.statusCode = 400; res.end('bad'); }

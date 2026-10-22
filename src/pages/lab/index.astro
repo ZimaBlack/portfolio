@@ -51,9 +51,10 @@ import Base from '../../layouts/Base.astro';
     [['cell', 'Tamaño de celda (px)', 2, 10, 1], ['steps', 'Velocidad (pasos/cuadro)', 4, 40, 1], ['radius', 'Alcance (px)', 120, 700, 10], ['grow', 'Expansión (ms)', 600, 6000, 100]],
     [['nuclei', 'Núcleos iniciales', 0, 0.003, 0.0001], ['jitter', 'Irregularidad', 0, 0.04, 0.001]],
     [['threshold', 'Umbral', 0.01, 0.2, 0.005], ['gain', 'Nitidez', 1, 10, 0.1], ['pixelNoise', 'Ruido del gris', 0, 100, 1], ['peak', 'Brillo máximo', 40, 235, 5], ['blur', 'Desenfoque (px)', 0, 6, 0.1], ['grain', 'Grano de película', 0, 0.5, 0.01]],
+    [['trailEvery', 'Rastro cada (px)', 10, 120, 2], ['trailLife', 'Duración del rastro (ms)', 600, 6000, 100]],
     [['idle', 'Quieto antes de empezar (ms)', 100, 2000, 50], ['hold', 'Dura (ms)', 3000, 40000, 500], ['fade', 'Se disuelve en (ms)', 500, 8000, 100]],
   ];
-  const TITLES = ['Reacción', 'Resolución y crecimiento', 'Ruptura de simetría', 'Aspecto', 'Tiempos'];
+  const TITLES = ['Reacción', 'Resolución y crecimiento', 'Ruptura de simetría', 'Aspecto', 'Rastros del cursor', 'Tiempos'];
 
   const init = () => {
     const canvas = document.querySelector<HTMLCanvasElement>('[data-turing]:not([data-ready])');
@@ -97,6 +98,10 @@ import Base from '../../layouts/Base.astro';
       }
     });
 
+    // ¿Sólo crece cuando el cursor queda quieto, o también deja rastros al moverse?
+    const trails = document.createElement('label'); trails.className = 'check';
+    trails.innerHTML = '<input type="checkbox" checked> Dejar rastros al mover el cursor';
+    trails.querySelector('input')!.addEventListener('change', (e) => { P.trails = (e.target as HTMLInputElement).checked; });
     const pin = document.createElement('label'); pin.className = 'check';
     pin.innerHTML = '<input type="checkbox"> Mantener el patrón (no se disuelve)';
     pin.querySelector('input')!.addEventListener('change', (e) => { P.pinned = (e.target as HTMLInputElement).checked; });
@@ -114,10 +119,15 @@ import Base from '../../layouts/Base.astro';
         note('Guardado: el fondo del sitio usa este preset.');
       } catch { await navigator.clipboard?.writeText(json); note('Sin servidor de desarrollo: JSON copiado al portapapeles.'); }
     });
-    mk('Restablecer', () => { Object.assign(P, DEFAULTS); outs.forEach((_, k) => show(k)); ctl.apply(); ctl.resize(); ctl.restart(); });
+    mk('Restablecer', () => {
+      Object.assign(P, DEFAULTS);
+      outs.forEach((_, k) => show(k));
+      trails.querySelector('input')!.checked = P.trails; pin.querySelector('input')!.checked = P.pinned;
+      ctl.apply(); ctl.resize(); ctl.restart();
+    });
     const status = document.createElement('p'); status.className = 'group'; status.setAttribute('aria-live', 'polite');
     function note(t: string) { status.textContent = t; }
-    body.append(pin, actions, status);
+    body.append(trails, pin, actions, status);
 
     const toggle = panel.querySelector<HTMLButtonElement>('[data-lab-toggle]')!;
     toggle.addEventListener('click', () => { const closed = panel.classList.toggle('is-closed'); toggle.setAttribute('aria-expanded', String(!closed)); toggle.lastElementChild!.textContent = closed ? '+' : '–'; });

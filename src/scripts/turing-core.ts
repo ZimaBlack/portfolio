@@ -23,12 +23,15 @@ export interface TuringParams {
   peak: number;       // gris máximo (0–255): más bajo = patrón más oscuro, menos brillante detrás del texto
   blur: number;       // desenfoque del patrón (px de CSS)
   grain: number;      // intensidad del grano de película por encima (0–1)
+  trails: boolean;    // dejar rastros mientras el cursor se mueve (apagado: sólo crece cuando el cursor queda quieto)
+  trailEvery: number; // px de cursor entre un rastro y el siguiente
+  trailLife: number;  // ms que dura un rastro (se ve completo el 20 % y se apaga en el resto)
   pinned: boolean;    // mantener el patrón (no se disuelve)
 }
 
 export const DEFAULTS: TuringParams = {
   feed: 0.029, kill: 0.057, dv: 0.5, cell: 4, steps: 20, radius: 340, grow: 2400, idle: 450, hold: 13000, fade: 3200,
-  nuclei: 0.0009, jitter: 0.012, threshold: 0.05, gain: 3.6, pixelNoise: 46, peak: 235, blur: 1.2, grain: 0.16, pinned: false,
+  nuclei: 0.0009, jitter: 0.012, threshold: 0.05, gain: 3.6, pixelNoise: 46, peak: 235, blur: 1.2, grain: 0.16, trails: true, trailEvery: 34, trailLife: 2150, pinned: false,
 };
 
 /** Combinaciones de F y k que dan distintos "caracteres" (todas con Dv = 0,5). */

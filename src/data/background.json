@@ -16,5 +16,8 @@
   "pixelNoise": 46,
   "peak": 235,
   "blur": 1.2,
-  "grain": 0.16
+  "grain": 0.16,
+  "trails": true,
+  "trailEvery": 34,
+  "trailLife": 2150
 }

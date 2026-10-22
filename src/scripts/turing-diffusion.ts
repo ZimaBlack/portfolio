@@ -22,9 +22,6 @@ export interface TuringOptions {
 
 interface Seed { x: number; y: number; t: number; trail: boolean } // x, y en celdas; t = instante de la siembra
 
-const TRAIL_EVERY = 34;  // px de cursor entre un rastro y el siguiente
-const TRAIL_KEEP = 450;  // ms que un rastro se ve completo
-const TRAIL_FADE = 1700; // y ms que tarda en apagarse
 const TRAIL_CELLS = 12;  // alcance de un rastro (en celdas)
 const NUCLEI_MS = 3200;  // los núcleos al azar sólo caen los primeros segundos de cada foco
 
@@ -48,7 +45,7 @@ export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLEleme
   const reach = (s: Seed, now: number) => s.trail
     ? 5 + (TRAIL_CELLS - 5) * (1 - Math.exp(-(now - s.t) / 280))
     : 9 + (P.radius / P.cell - 9) * (1 - Math.exp(-(now - s.t) / P.grow));
-  const trailAlpha = (s: Seed, now: number) => 1 - smooth((now - s.t - TRAIL_KEEP) / TRAIL_FADE);
+  const trailAlpha = (s: Seed, now: number) => 1 - smooth((now - s.t - P.trailLife * 0.2) / (P.trailLife * 0.8));
 
   const addSeed = (x: number, y: number, trail = false) => {
     sim.seed(x, y, trail ? 2 : 5);
@@ -77,7 +74,7 @@ export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLEleme
       if (disturbedAt) alpha = Math.min(alpha, Math.max(0, 1 - (now - disturbedAt) / 900));
     }
     if (alpha <= 0) seeds = seeds.filter((s) => s.trail); // el principal se disolvió del todo
-    seeds = seeds.filter((s) => !s.trail || now - s.t < TRAIL_KEEP + TRAIL_FADE);
+    seeds = seeds.filter((s) => !s.trail || now - s.t < P.trailLife);
     if (!seeds.length) { sim.clear(); raf = 0; if (inside) armIdle(); return; }
 
     // Los núcleos al azar sólo caen cerca de focos recientes
@@ -110,8 +107,8 @@ export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLEleme
     if (d > 6) {
       disturb();
       trailAcc += d;
-      // Rastros: pequeños focos a lo largo del camino del cursor
-      if (trailAcc >= TRAIL_EVERY) { trailAcc = 0; addSeed(p.x, p.y, true); kick(); }
+      // Rastros: pequeños focos a lo largo del camino del cursor (si están activados)
+      if (P.trails && trailAcc >= P.trailEvery) { trailAcc = 0; addSeed(p.x, p.y, true); kick(); }
       armIdle();
     }
     pointer = p;
