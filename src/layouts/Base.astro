@@ -7,8 +7,8 @@ import FloatingActions from '../components/FloatingActions.astro';
 import { site } from '../data/site';
 import { copy, type Lang } from '../lib/i18n';
 
-const { title, description, lang = 'es', section = 'home', altHref = '/', esHref, enHref } = Astro.props as {
-  title?: string; description?: string; lang?: Lang; section?: string; altHref?: string; esHref?: string; enHref?: string;
+const { title, description, lang = 'es', section = 'home', altHref = '/', esHref, enHref, noindex = false } = Astro.props as {
+  title?: string; description?: string; lang?: Lang; section?: string; altHref?: string; esHref?: string; enHref?: string; noindex?: boolean;
 };
 const c = copy[lang];
 const desc = description ?? c.tagline;
@@ -22,6 +22,7 @@ const full = title ? `${title} — ${site.studio}` : `${site.studio} — ${c.rol
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{full}</title>
     <meta name="description" content={desc} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta property="og:title" content={full} />
     <meta property="og:description" content={desc} />
     <meta property="og:locale" content={lang === 'es' ? 'es_AR' : 'en_US'} />
