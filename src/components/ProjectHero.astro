@@ -99,10 +99,11 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   .pjh :global(.pj-wipe) { animation: pj-wipe .576s var(--gd, 3.15s) linear both; } /* el oro se revela detrás de la primera barra */
   @keyframes pj-flash { 0% { translate: 0 0; opacity: 1; } 72% { translate: var(--gw) 0; opacity: 1; } 72.1%, 100% { translate: var(--gw) 0; opacity: 0; } }
   @keyframes pj-wipe { from { translate: 0 0; } to { translate: var(--gw) 0; } }
-  /* Final: en lugar de un halo sobre el logotipo, el ambiente mismo se ilumina con una luz dorada que sube desde detrás */
-  .pjh__lit { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; animation: pj-lit 2.2s 4.3s ease-out both;
-    background: radial-gradient(ellipse 62% 56% at 50% 46%, rgb(207 198 92 / .34), rgb(207 198 92 / .12) 48%, transparent 74%); }
-  @keyframes pj-lit { from { opacity: 0; } to { opacity: 1; } }
+  /* Final: un foco puntual de luz dorada detrás del logotipo, que ilumina sólo lo que lo rodea (el azul del ambiente se conserva) y pulsa levemente */
+  .pjh__lit { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; animation: pj-lit-in 1.6s 4.3s ease-out both, pj-lit-pulse 3.2s 5.9s ease-in-out infinite alternate forwards;
+    background: radial-gradient(circle min(34vh, 22rem) at 50% 43%, rgb(207 198 92 / .2), rgb(207 198 92 / .07) 52%, transparent 100%); }
+  @keyframes pj-lit-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pj-lit-pulse { from { opacity: 1; } to { opacity: .5; } }
   @keyframes pj-strike { 0% { transform: scale(1) translateY(0); } 30% { transform: scale(1.045) translateY(3px); } 62% { transform: scale(.992) translateY(-1px); } 100% { transform: scale(1) translateY(0); } }
   @keyframes pj-name { from { opacity: 0; filter: blur(10px); transform: translateY(10px); } to { opacity: 1; filter: none; transform: none; } }
   .pjh[data-assemble] :global(svg.pjh__logo path) { transform-box: fill-box; transform-origin: center; }
@@ -112,7 +113,7 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   @keyframes pj-from-left { 0% { transform: translateX(-70vw); opacity: 0; filter: blur(26px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 24% { opacity: .55; } 68% { transform: translateX(16px); opacity: .6; filter: blur(0); animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 70% { opacity: 1; } 84% { transform: translateX(-6px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: 1; filter: blur(0); } }
   @keyframes pj-from-right { 0% { transform: translateX(70vw); opacity: 0; filter: blur(26px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 24% { opacity: .55; } 68% { transform: translateX(-16px); opacity: .6; filter: blur(0); animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 70% { opacity: 1; } 84% { transform: translateX(6px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: 1; filter: blur(0); } }
   @keyframes pjh-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
-  @media (prefers-reduced-motion: reduce) { .pjh__logo, .pjh[data-assemble] :global([data-part]), .pjh :global(.pj-flash), .pjh :global(.pj-wipe), .pjh :global(.pjh__name) { animation: none !important; } .pjh__lit { animation: none; opacity: 1; } .pjh :global(.pj-flash) { display: none; } .pjh :global(.pj-wipe) { translate: var(--gw) 0; } }
+  @media (prefers-reduced-motion: reduce) { .pjh__logo, .pjh[data-assemble] :global([data-part]), .pjh :global(.pj-flash), .pjh :global(.pj-wipe), .pjh :global(.pjh__name) { animation: none !important; } .pjh__lit { animation: none; opacity: .8; } .pjh :global(.pj-flash) { display: none; } .pjh :global(.pj-wipe) { translate: var(--gw) 0; } }
 </style>
 
 <style is:global>
