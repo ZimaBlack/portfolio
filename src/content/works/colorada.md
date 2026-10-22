@@ -14,6 +14,7 @@ mark: /works/colorada/mark.svg
 featured: false
 order: 16
 widget: palette
+heroLights: halftone
 reactiveColors: ["#AE0407", "#840002"]
 paletteColors: ["#AE0407", "#840002"]
 tones: ["#240d12", "#6a1b26"]

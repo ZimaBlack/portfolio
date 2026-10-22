@@ -71,7 +71,7 @@ const alt = lang === 'es' ? 'en' : 'es';
 <Base lang={lang} section="works" title={d.title} description={loc(d.summary, lang)}
   altHref={paths.work(alt, work.id)} esHref={paths.work('es', work.id)} enHref={paths.work('en', work.id)}>
   <article>
-    {d.logo && <ProjectHero logo={d.logo} mark={d.mark} title={d.title} tones={d.tones} reactive={d.widget === 'palette' ? d.reactiveColors : []} />}
+    {d.logo && <ProjectHero logo={d.logo} mark={d.mark} title={d.title} tones={d.tones} reactive={d.widget === 'palette' ? d.reactiveColors : []} halftone={d.heroLights === 'halftone'} />}
     <header class="wrap intro">
       <p class="eyebrow" data-hero><a class="link" href={paths.works(lang)}>{c.works.back}</a> · {loc(d.discipline, lang)}</p>
       {d.headerMarquee && marqueeItems.length > 0 && <div class="mq-bleed" data-hero><Marquee items={marqueeItems} /></div>}
