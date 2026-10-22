@@ -3,6 +3,7 @@
 // Dos copias idénticas de la lista, para que el bucle sea continuo (se desplaza -50% y reinicia sin saltos).
 // Es interactiva: al pasar el mouse se detiene y el logo recupera su color; al hacer clic, la página baja hasta
 // centrar el carrusel (`[data-car]`) y lo posiciona en la lámina de ese logo (`slide` = posición en el carrusel).
+// El desplazamiento lo mueve el script (infinito); se puede arrastrar, pero sólo hacia la derecha, y sigue solo al soltar.
 const { items } = Astro.props as { items: { src: string; label: string; slide: number; light?: boolean }[] };
 ---
 <div class="mq">
@@ -26,8 +27,10 @@ const { items } = Astro.props as { items: { src: string; label: string; slide: n
 <style>
   .mq { --gap: clamp(2.5rem, 5vw, 5rem); height: 20vh; height: 20svh; min-height: 8rem; overflow: hidden; display: flex; align-items: center;
     -webkit-mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%); }
-  .mq__track { display: flex; width: max-content; animation: mq-drift 140s linear infinite; will-change: transform; }
-  .mq:hover .mq__track, .mq:focus-within .mq__track { animation-play-state: paused; }
+  .mq { touch-action: pan-y; cursor: grab; }
+  .mq.is-drag { cursor: grabbing; }
+  .mq.is-drag .mq__logo { pointer-events: none; }
+  .mq__track { display: flex; width: max-content; will-change: transform; }
   .mq__set { display: flex; align-items: center; gap: var(--gap); padding: 0 var(--gap) 0 0; margin: 0; list-style: none; }
   .mq__set li { display: grid; place-items: center; }
   .mq__logo { position: relative; display: grid; place-items: center; padding: 0; margin: 0; border: 0; background: none; color: inherit; cursor: pointer;
@@ -47,21 +50,85 @@ const { items } = Astro.props as { items: { src: string; label: string; slide: n
   .mq__logo:hover .mq__sheen, .mq__logo:focus-visible .mq__sheen { animation: mq-sheen 1.1s .1s ease-out 1 forwards; }
   .mq__logo:focus-visible { outline: 1px solid var(--line); outline-offset: 6px; }
   @keyframes mq-sheen { 0% { opacity: 0; background-position: 130% 0; } 15% { opacity: .55; } 85% { opacity: .55; } 100% { opacity: 0; background-position: -30% 0; } }
-  @keyframes mq-drift { to { transform: translateX(-50%); } }
-  @media (prefers-reduced-motion: reduce) { .mq__track { animation: none; } .mq__sheen { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .mq__sheen { display: none; } }
 </style>
 
 <script>
-  // Clic en un logo → baja hasta centrar el carrusel y lo lleva a la lámina de ese logo
+  const DRIFT_SECONDS = 140; // lo que tarda en recorrer una copia de la lista, hacia la izquierda
+  const DRAG_THRESHOLD = 6;  // px: por debajo de esto es un clic, no un arrastre
+
   const init = () => {
     document.querySelectorAll<HTMLElement>('.mq:not([data-ready])').forEach((mq) => {
       mq.dataset.ready = '1';
+      const track = mq.querySelector<HTMLElement>('.mq__track')!;
+      const set = track.querySelector<HTMLElement>('.mq__set')!;
+      const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Posición: de -ancho (una copia) a 0; al salirse por un lado entra por el otro, así que es infinita
+      let width = set.offsetWidth;
+      let pos = 0;
+      let velocity = 0; // px/s de inercia al soltar (sólo hacia la derecha)
+      let hover = false, focus = false, visible = true, dragging = false;
+      const wrap = () => { if (width > 0) pos = ((pos % width) - width) % width; };
+      const paint = () => { track.style.transform = `translate3d(${pos.toFixed(2)}px,0,0)`; };
+      new ResizeObserver(() => { width = set.offsetWidth; }).observe(set);
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(mq);
+
+      // Se detiene sólo con el mouse encima o con el teclado dentro; tras un clic sigue su curso
+      mq.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hover = true; });
+      mq.addEventListener('pointerleave', () => { hover = false; });
+      mq.addEventListener('focusin', () => { focus = !!mq.querySelector(':focus-visible'); });
+      mq.addEventListener('focusout', () => { focus = false; });
+
+      let last = performance.now();
+      const tick = (now: number) => {
+        const dt = Math.min(0.1, (now - last) / 1000);
+        last = now;
+        if (visible && !dragging) {
+          if (velocity > 1) { pos += velocity * dt; velocity *= Math.pow(0.04, dt); } // inercia que se apaga
+          else if (!calm && !hover && !focus && width > 0) pos -= (width / DRIFT_SECONDS) * dt;
+          wrap();
+          paint();
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+
+      // Arrastre: sólo cuenta el movimiento hacia la derecha (hacia la izquierda no retrocede la cinta)
+      let x0 = 0, prevX = 0, prevT = 0, moved = 0, id = -1, swallowClick = false;
+      mq.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        id = e.pointerId; x0 = prevX = e.clientX; prevT = performance.now(); moved = 0; velocity = 0;
+      });
+      mq.addEventListener('pointermove', (e) => {
+        if (e.pointerId !== id) return;
+        if (!dragging && Math.abs(e.clientX - x0) > DRAG_THRESHOLD) { dragging = true; mq.classList.add('is-drag'); mq.setPointerCapture(id); }
+        if (!dragging) return;
+        const now = performance.now();
+        const dx = Math.max(0, e.clientX - prevX); // sólo derecha
+        pos += dx; moved += dx; wrap(); paint();
+        const dt = Math.max(1, now - prevT);
+        velocity = Math.max(0, (dx / dt) * 1000 * 0.6 + velocity * 0.4);
+        prevX = e.clientX; prevT = now;
+      });
+      const end = (e: PointerEvent) => {
+        if (e.pointerId !== id) return;
+        id = -1;
+        if (dragging) { dragging = false; mq.classList.remove('is-drag'); swallowClick = true; setTimeout(() => (swallowClick = false), 0); }
+        if (!dragging && performance.now() - prevT > 120) velocity = 0; // soltó quieto: sin inercia
+        velocity = Math.min(velocity, 1400);
+      };
+      mq.addEventListener('pointerup', end);
+      mq.addEventListener('pointercancel', end);
+
+      // Clic en un logo → baja hasta centrar el carrusel y lo lleva a la lámina de ese logo
       mq.addEventListener('click', (e) => {
+        if (swallowClick) return;
         const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-slide]');
         const car = document.querySelector<HTMLElement>('[data-car]');
         if (!btn || !car) return;
+        btn.blur(); // que el foco no deje la marquesina detenida
         car.dispatchEvent(new CustomEvent('car:goto', { detail: Number(btn.dataset.slide) }));
-        const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
         car.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'center' });
       });
     });
