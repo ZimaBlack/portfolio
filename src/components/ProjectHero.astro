@@ -10,33 +10,25 @@ const src = (p: string) => (p.startsWith('/') ? withBase(p) : p);
 let name = ''; // con "ensamblar": el nombre (lettering) que aparece al terminar de armarse la marca
 
 /** Metal forjado. Con `base` (un color), las piezas nacen en ese tono y un destello de barras blancas planas cruza el logotipo
- *  (recortado con su propia forma); mientras pasa, se revela el oro por debajo. Sin `base`, las piezas ya son doradas y sólo pasa el destello.
- *  `delay` = segundos hasta que empieza el destello; `passes` = cuántas veces cruza. */
-function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; late?: number[] } = {}) {
+ *  (recortado con su propia forma); en la pasada indicada por `wipeAt` el oro se revela por debajo, detrás de la primera barra.
+ *  Sin `base`, las piezas ya son doradas y sólo pasa el destello. `delay` = segundos hasta que empieza el destello; `passes` = cuántas veces cruza. */
+function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; wipeAt?: number } = {}) {
   const [vx, vy, vw, vh] = (svg.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 100 100').split(/\s+/).map(Number);
   const all = [...svg.matchAll(/<path\b[^>]*?\sd="([^"]+)"/g)].map((m) => m[1]);
-  const late = new Set(opts.late ?? []); // piezas que no existen hasta la última pasada: se revelan en diagonal, ya doradas
   const gold = '#CFC65C'; // oro de la marca: un solo tono, sin degradados
   let n = 0;
-  svg = svg.replace(/<path\b[^>]*>/g, (tag) => {
-    const i = n++;
-    const t = tag.replace('<path', `<path id="${id}-p${i}"`).replace(/fill="#[0-9a-f]{3,8}"/i, `fill="${opts.base ?? gold}"`);
-    return late.has(i) ? t.replace('<path', '<path opacity="0"') : t;
-  });
+  svg = svg.replace(/<path\b[^>]*>/g, (tag) => tag.replace('<path', `<path id="${id}-p${n++}"`).replace(/fill="#[0-9a-f]{3,8}"/i, `fill="${opts.base ?? gold}"`));
   const skew = Math.tan((22 * Math.PI) / 180) * vh;
   // Barras planas (de distinto ancho) que viajan juntas en diagonal
   const bars = [[0, 0.07], [0.12, 0.025], [0.19, 0.12]].map(([off, w]) => `<rect x="${(off * vw).toFixed(1)}" y="${(-vh * 0.1).toFixed(1)}" width="${(w * vw).toFixed(1)}" height="${(vh * 1.2).toFixed(1)}" fill="#fff"/>`).join('');
   const span = 0.31 * vw, travel = vw + span + skew * 2;
   const tx = (vx - span - skew * 1.1).toFixed(1);
   const sweep = (key: string, d: number) => `<mask id="${id}-${key}" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}"><g class="pj-wipe" style="--gw:${travel.toFixed(1)}px;--gd:${d}s"><g transform="translate(${tx} ${vy}) skewX(-22)"><rect x="-4000" y="${(-vh * 0.1).toFixed(1)}" width="${(4000 + 0.14 * vw).toFixed(1)}" height="${(vh * 1.2).toFixed(1)}" fill="#fff"/></g></g></mask>`;
-  const pass = 0.8; // segundos por pasada de las barras (en sincronía con .pj-flash y .pj-wipe)
-  const lastPass = delay + pass * ((opts.passes ?? 1) - 1);
   const extra = `<defs>
     <mask id="${id}-m" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}">${all.map((d) => `<path d="${d}" fill="#fff"/>`).join('')}</mask>
-    ${opts.base ? sweep('w', delay) : ''}${late.size ? sweep('w2', lastPass) : ''}
+    ${opts.base ? sweep('w', opts.wipeAt ?? delay) : ''}
   </defs>
-  ${opts.base ? `<g mask="url(#${id}-w)">${all.filter((_, i) => !late.has(i)).map((d) => `<path d="${d}" fill="${gold}"/>`).join('')}</g>` : ''}
-  ${late.size ? `<g mask="url(#${id}-w2)">${all.filter((_, i) => late.has(i)).map((d) => `<path d="${d}" fill="${gold}"/>`).join('')}</g>` : ''}
+  ${opts.base ? `<g mask="url(#${id}-w)">${all.map((d) => `<path d="${d}" fill="${gold}"/>`).join('')}</g>` : ''}
   <g mask="url(#${id}-m)"><g class="pj-flash" style="--gw:${travel.toFixed(1)}px;--gd:${delay}s;--gn:${opts.passes ?? 1}"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g></g>`;
   return svg.replace('</svg>', `${extra}</svg>`);
 }
@@ -50,9 +42,9 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
     svg = svg.replace(new RegExp(`fill="${hex}"`, 'gi'), `style="fill:var(--pw-${i},${hex})"`);
   });
   // Para ensamblar: cada trazo recibe su número (0 = ala izquierda, 1 = ala derecha, 2 = centro), en el orden del archivo
-  if (assemble) { let n = 0; svg = svg.replace(/<path\b/g, () => `<path data-part="${n++}"`); svg = forge(svg, 'pjm', 2.0, { base: '#0B141E', passes: 3, late: [2] }); }
+  if (assemble) { let n = 0; svg = svg.replace(/<path\b/g, () => `<path data-part="${n++}"`); svg = forge(svg, 'pjm', 2.0, { base: '#0B141E', passes: 3, wipeAt: 3.6 }); } // 3 pasadas (2.0 s, 2.8 s, 3.6 s): la última lo pinta de oro }
   if (assemble && mark && mark.toLowerCase().endsWith('.svg')) {
-    name = forge(readFileSync(join(process.cwd(), 'public', mark), 'utf8'), 'pjn', 4.3, { passes: 1 })
+    name = forge(readFileSync(join(process.cwd(), 'public', mark), 'utf8'), 'pjn', 3.6, { base: '#0B141E', passes: 1 })
       .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__name" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
   }
   inline = svg.replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__logo" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
@@ -60,9 +52,9 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
 ---
 <section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]}`} aria-label={title}>
   <div class="pjh__bg" data-pj-bg aria-hidden="true"></div>
-  {assemble && <div class="pjh__lit" aria-hidden="true"></div>}
   {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
   <div class="pjh__stage" data-pj-stage>
+    {assemble && <div class="pjh__lit" aria-hidden="true"></div>}
     {mark && !name && <img class="pjh__mark" data-pj-mark src={src(mark)} alt="" aria-hidden="true" decoding="async" draggable="false" />}
     {inline
       ? <Fragment set:html={inline} />
@@ -92,7 +84,7 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   /* Ensamblar: las alas llegan desde cada lado y se juntan; al terminar, aparece el rombo central */
   .pjh[data-assemble] .pjh__stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(1rem, 3.4vh, 1.9rem); height: auto; }
   .pjh[data-assemble] .pjh__stage > :global(svg.pjh__logo) { overflow: visible; height: min(30vh, 14rem); width: auto; transform-origin: 50% 62%; animation: pj-strike .55s 1.46s ease-out both; }
-  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__name) { width: min(64vw, 16.5rem); height: auto; flex: none; animation: pj-name 1s 3.75s var(--ease, ease) both; }
+  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__name) { width: min(64vw, 16.5rem); height: auto; flex: none; animation: pj-name 1s 3.4s var(--ease, ease) both; }
   /* "Forja precisa": las piezas nacen en acero azulado, encajan con un leve golpe y un destello de barras planas pasa un par de veces;
      mientras cruza, el oro aparece por debajo (en sincronía con el reflejo). El nombre llega ya dorado y recibe un solo destello. */
   .pjh :global(.pj-flash) { opacity: 0; animation: pj-flash .8s var(--gd, 3.15s) linear var(--gn, 1) both; }
@@ -100,8 +92,8 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   @keyframes pj-flash { 0% { translate: 0 0; opacity: 1; } 72% { translate: var(--gw) 0; opacity: 1; } 72.1%, 100% { translate: var(--gw) 0; opacity: 0; } }
   @keyframes pj-wipe { from { translate: 0 0; } to { translate: var(--gw) 0; } }
   /* Final: un foco puntual de luz dorada detrás del logotipo, que ilumina sólo lo que lo rodea (el azul del ambiente se conserva) y pulsa levemente */
-  .pjh__lit { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; animation: pj-lit-in 1.6s 4.3s ease-out both, pj-lit-pulse 3.2s 5.9s ease-in-out infinite alternate forwards;
-    background: radial-gradient(circle min(34vh, 22rem) at 50% 43%, rgb(207 198 92 / .2), rgb(207 198 92 / .07) 52%, transparent 100%); }
+  .pjh__lit { position: absolute; z-index: -1; left: 50%; top: min(15vh, 7rem); width: min(72vh, 46rem); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; opacity: 0; animation: pj-lit-in 1.6s 4.0s ease-out both, pj-lit-pulse 3.2s 5.6s ease-in-out infinite alternate forwards;
+    background: radial-gradient(circle closest-side, rgb(96 160 226 / .3), rgb(70 126 190 / .11) 55%, transparent 100%); } /* centrado en el iso; azul del ambiente, más luminoso */
   @keyframes pj-lit-in { from { opacity: 0; } to { opacity: 1; } }
   @keyframes pj-lit-pulse { from { opacity: 1; } to { opacity: .5; } }
   @keyframes pj-strike { 0% { transform: scale(1) translateY(0); } 30% { transform: scale(1.045) translateY(3px); } 62% { transform: scale(.992) translateY(-1px); } 100% { transform: scale(1) translateY(0); } }
@@ -110,6 +102,8 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   .pjh[data-assemble] :global([data-part='0']) { animation: pj-from-left 1.7s .3s both; }
   .pjh[data-assemble] :global([data-part='1']) { animation: pj-from-right 1.7s .3s both; }
   /* Las alas llegan con menos opacidad y desenfocadas, aceleran hacia el centro, chocan (se pasan un poco), rebotan y se asientan */
+  .pjh[data-assemble] :global([data-part='2']) { animation: pj-appear .8s 3.4s var(--ease, ease) both; } /* el rombo llega después del 2.º brillo, aún en azul */
+  @keyframes pj-appear { from { opacity: 0; filter: blur(14px); transform: scale(.6); } to { opacity: 1; filter: blur(0); transform: none; } }
   @keyframes pj-from-left { 0% { transform: translateX(-70vw); opacity: 0; filter: blur(26px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 24% { opacity: .55; } 68% { transform: translateX(16px); opacity: .6; filter: blur(0); animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 70% { opacity: 1; } 84% { transform: translateX(-6px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: 1; filter: blur(0); } }
   @keyframes pj-from-right { 0% { transform: translateX(70vw); opacity: 0; filter: blur(26px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 24% { opacity: .55; } 68% { transform: translateX(-16px); opacity: .6; filter: blur(0); animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 70% { opacity: 1; } 84% { transform: translateX(6px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: 1; filter: blur(0); } }
   @keyframes pjh-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
