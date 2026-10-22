@@ -3,7 +3,7 @@
 //  · cada trazo se define una sola vez (<path id>) en un SVG oculto y se reutiliza con <use>;
 //  · cada pieza lleva su número (data-part) para animarla por separado, y las "tardías" llegan después de las demás;
 //  · el color final es un tono, o un degradado vertical;
-//  · un único brillo de barras planas puede cruzar cada SVG (recortado con su forma); el retraso de cada uno (--sd) lo hace parte de una sola ola.
+//  · un brillo de barras planas puede cruzar cada SVG (recortado con su forma); el retraso de cada uno (--sd) lo hace parte de una sola ola.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -11,10 +11,9 @@ import { join } from 'node:path';
 export const TIMING = {
   enter: 2.0,   // entran las alas: cuando los vectores están por ponerse dorados
   appear: 3.7,  // rombo y nombre llegan mientras las alas terminan de juntarse
-  settle: 4.2,  // ya armado todo: los vectores bajan su opacidad
   shine: 5.2,   // un único brillo recorre toda la composición, de izquierda a derecha
 };
-export const timingVars = () => `--t-enter:${TIMING.enter}s;--t-appear:${TIMING.appear}s;--t-settle:${TIMING.settle}s;--t-shine:${TIMING.shine}s`;
+export const timingVars = () => `--t-enter:${TIMING.enter}s;--t-appear:${TIMING.appear}s;--t-shine:${TIMING.shine}s`;
 
 export type ViewBox = [number, number, number, number];
 export interface Art { id: string; vb: ViewBox; paths: string[]; color: string }

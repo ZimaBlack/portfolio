@@ -27,34 +27,26 @@ if (!assemble && reactive.length && isSvg(logo)) {
 // Relleno de los vectores: el matiz del oro del logotipo, con un degradado diagonal que sugiere metal bruñido (una franja apenas más clara en el medio),
 // muy sutil. En las mitades izquierdas se espeja solo.
 const GOLD_ORN: Gradient = { dir: [0, 0, 1, 1], stops: [[0, '#6F6B3A'], [0.32, '#A8A152'], [0.5, '#BDB677'], [0.68, '#A8A152'], [1, '#58542F']] };
-/** Retraso (s) del brillo según la posición horizontal (en alturas del ornamento, desde el centro): así los brillos de cada SVG forman una sola ola de izquierda a derecha. */
-const wave = (x: number) => ((x + 1.55) / 3.1 * 1.3).toFixed(2);
-/** Desplazamiento inicial (unidades del SVG, en sus coordenadas locales) de una mitad de vector: parte justo en el centro de la portada y se abre hacia su lado.
- *  La mitad izquierda va espejada, así que su eje horizontal local está invertido. */
-const from = (k: number, left: boolean) => {
-  const c = k * 0.6672 + (left ? -0.1708 : 0.1708); // centro de la mitad respecto del centro de la portada, en alturas del ornamento
-  return ((left ? c : -c) * 421).toFixed(1);          // en unidades del SVG, con el signo de su eje local
-};
 let defs = '', logoSvg = '', nameSvg = '', orn: string[] = [];
 if (assemble && isSvg(logo)) {
   const logoArt = loadArt(logo, 'pjl');
   defs += shapeDefs(logoArt);
-  logoSvg = forge(logoArt, { id: 'pjm', cls: 'pjh__logo', style: `--sd:${wave(0)}s`, label: title, color: logoArt.color, parts: true, late: [2], shine: 0.95 });
+  logoSvg = forge(logoArt, { id: 'pjm', cls: 'pjh__logo', style: '--sd:.65s', label: title, color: logoArt.color, parts: true, late: [2], shine: 0.95 });
 
   if (isSvg(mark)) {
     const nameArt = loadArt(mark!, 'pjn');
     defs += shapeDefs(nameArt);
-    nameSvg = forge(nameArt, { id: 'pjt', cls: 'pjh__name', style: `--sd:${wave(0)}s`, color: nameArt.color, late: nameArt.paths.map((_, i) => i), shine: 0.95 });
+    nameSvg = forge(nameArt, { id: 'pjt', cls: 'pjh__name', style: '--sd:.65s', color: nameArt.color, late: nameArt.paths.map((_, i) => i), shine: 0.95 });
   }
 
   if (isSvg(ornament)) {
     const ornArt = loadArt(ornament, 'pjo');
     defs += shapeDefs(ornArt);
     // Patrón: el par central (k = 0) enmarca el logotipo; a los lados se repite, cada vez más tenue
-    const alpha = [0.42, 0.24, 0.12];
+    const alpha = [0.28, 0.16, 0.08]; // opacidad final de cada par (los vectores sólo aparecen con un fundido, y ahí se quedan)
     const half = (k: number, left: boolean) => forge(ornArt, {
-      id: `pjo${k + 2}${left ? 'l' : 'r'}`, cls: `pjh__orn pjh__orn--${left ? 'l' : 'r'}`, style: `--k:${k};--od:${(0.3 + 0.06 * Math.abs(k)).toFixed(2)}s;--from:${from(k, left)};--sd:${wave(k * 0.6672 + (left ? -0.1708 : 0.1708))}s`,
-      color: GOLD_ORN, alpha: alpha[Math.abs(k)], flip: left, fade: true, screen: true, shine: Math.min(1, alpha[Math.abs(k)] * 1.8), // el brillo se ajusta a la opacidad de cada vector
+      id: `pjo${k + 2}${left ? 'l' : 'r'}`, cls: `pjh__orn pjh__orn--${left ? 'l' : 'r'}`, style: `--k:${k};--od:${(0.3 + 0.18 * Math.abs(k)).toFixed(2)}s`,
+      color: GOLD_ORN, alpha: alpha[Math.abs(k)], flip: left, fade: true, screen: true,
     });
     orn = [-2, -1, 0, 1, 2].flatMap((k) => [half(k, true), half(k, false)]);
   }
@@ -133,30 +125,25 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   .pj-piece[data-part='1'] { animation: pj-from-right 2.3s calc(var(--t-enter) + .14s) cubic-bezier(.22, .9, .28, 1) both, pj-dark 2.8s calc(var(--t-enter) + .14s) cubic-bezier(.45, 0, .4, 1) both; }
   .pjh__logo .pj-late { animation: pj-appear 1.5s var(--t-appear) cubic-bezier(.16, 1, .3, 1) both, pj-dark 2s var(--t-appear) cubic-bezier(.45, 0, .4, 1) both; }  /* el rombo se abre desde el centro, girando un poco */
   .pjh__name .pj-late { animation: pj-rise 1.6s calc(var(--t-appear) + .25s) cubic-bezier(.16, 1, .3, 1) both, pj-dark 2.1s calc(var(--t-appear) + .25s) cubic-bezier(.45, 0, .4, 1) both; } /* el nombre sube y se enfoca */
-  /* Los vectores se abren desde el centro de la portada, cada mitad hacia su lado, y después "respiran" muy despacio, cada uno a su ritmo */
-  .pjh__orn .pj-piece { animation: pj-orn-in 3s var(--od, .6s) cubic-bezier(.16, 1, .3, 1) both, pj-dark 3.4s var(--od, .6s) cubic-bezier(.45, 0, .4, 1) both, pj-breathe calc(7s + var(--k) * 0.6s) calc(var(--od, .6s) + 3.2s) ease-in-out infinite alternate; }
-  .pjh__orn--r .pj-piece { animation-delay: calc(var(--od, .6s) + .1s), calc(var(--od, .6s) + .1s), calc(var(--od, .6s) + 3.3s); }
+  /* Los vectores sólo aparecen con un fundido (del centro hacia afuera, de a pares) y ahí se quedan: sin movimiento, brillo ni pulsos */
+  .pjh__orn .pj-piece { animation: pj-fade 2.4s var(--od, .3s) ease-out both; }
   /* Los vectores se funden con el fondo (pantalla), sin desenfoque; cuando todo está armado bajan su opacidad */
-  /* Y cuando pasa el brillo por cada vector, su opacidad sube sólo durante ese pasaje (mismo ciclo y retraso que el brillo) */
-  .pj-screen { mix-blend-mode: screen; animation: pj-settle 1s var(--t-settle) ease-in-out both, pj-lift 10s calc(var(--t-shine) + var(--sd, 0s)) infinite; }
-  @keyframes pj-lift { 0% { opacity: .55; animation-timing-function: ease-out; } 3.4% { opacity: 1; animation-timing-function: ease-in; } 8%, 100% { opacity: .55; } }
+  .pj-screen { mix-blend-mode: screen; } /* los vectores se funden con el fondo (pantalla) */
   /* El logotipo y el nombre hacen lo mismo que los vectores, pero cambiando su tono a uno más claro mientras pasa el brillo; (mismo ciclo y retraso que el brillo sobre el logotipo) */
   .pj-tone { animation: pj-tone 10s calc(var(--t-shine) + var(--sd, 0s)) infinite; }
   @keyframes pj-tone { 0% { filter: none; animation-timing-function: ease-out; } 3.4% { filter: brightness(1.32) saturate(.8); animation-timing-function: ease-in; } 8%, 100% { filter: none; } }
   /* Brillo de barras planas: una pasada, en una sola ola de izquierda a derecha sobre todo (vectores, logotipo y nombre), que se repite cada 10 s */
   .pj-shine { opacity: 0; animation: pj-shine 10s calc(var(--t-shine) + var(--sd, 0s)) infinite; }
   @keyframes pj-shine { 0% { translate: 0 0; opacity: 0; animation-timing-function: cubic-bezier(.45, .05, .55, .95); } 0.8% { opacity: 1; } 6.8% { translate: var(--gw) 0; opacity: 1; } 8%, 100% { translate: var(--gw) 0; opacity: 0; } }
-  @keyframes pj-settle { from { opacity: 1; } to { opacity: .55; } }
   @keyframes pj-from-left { from { transform: translateX(-60vw) rotate(-7deg); opacity: 0; } 35% { opacity: var(--a, 1); } to { transform: none; opacity: var(--a, 1); } }
   @keyframes pj-from-right { from { transform: translateX(60vw) rotate(7deg); opacity: 0; } 35% { opacity: var(--a, 1); } to { transform: none; opacity: var(--a, 1); } }
   @keyframes pj-appear { from { opacity: 0; transform: scale(.55) rotate(-14deg); } to { opacity: var(--a, 1); transform: none; } }
   @keyframes pj-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: var(--a, 1); transform: none; } }
-  @keyframes pj-orn-in { from { transform: translateX(calc(var(--from, 0) * 1px)); opacity: 0; } 30% { opacity: var(--a, 1); } to { transform: none; opacity: var(--a, 1); } }
+  @keyframes pj-fade { from { opacity: 0; } to { opacity: var(--a, 1); } }
   @keyframes pj-dark { from { filter: brightness(0); } to { filter: none; } } /* nacen del negro y van tomando color (sin desenfoque) */
-  @keyframes pj-breathe { from { opacity: var(--a, 1); } to { opacity: calc(var(--a, 1) * .78); } }
 
   /* ── Movimiento reducido: todo se ve ya armado */
-  @media (prefers-reduced-motion: reduce) { .pj-piece, .pj-late, .pj-screen, .pj-shine, .pj-tone { animation: none !important; } .pj-screen { opacity: .55; } .pj-shine { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .pj-piece, .pj-late, .pj-shine, .pj-tone { animation: none !important; } .pj-shine { display: none; } }
 </style>
 
 <script>
