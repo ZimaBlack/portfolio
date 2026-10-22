@@ -40,7 +40,7 @@ export default config({
         cover: image('Portada vertical (2:3)', 'La tarjeta del índice y de la Home. PNG o JPG, unos 1200 × 1800 px.'),
         hero: image('Cabecera panorámica (21:9)', 'Arriba en la página del proyecto. Unos 2560 px de ancho; dejá 10 % de aire arriba y abajo.'),
         logo: image('Logotipo de la portada animada', 'SVG o PNG con fondo transparente. Queda centrado en la portada de la página del proyecto.'),
-        mark: image('Isotipo / símbolo (opcional)', 'Se usa junto al logotipo en la animación de la portada.'),
+        mark: image('Isotipo / nombre (opcional)', 'Elemento secundario de la portada. Con la animación "Ensamblar" es el nombre, que aparece al terminar de armarse la marca.'),
         widget: fields.select({ label: 'Widget de la página', description: 'Un extra fijo abajo a la derecha.', options: [{ label: 'Ninguno', value: '' }, { label: 'Paleta de color', value: 'palette' }], defaultValue: '' }),
         paletteColors: fields.array(fields.text({ label: 'Color (hex)' }), { label: 'Colores de la marca (widget de paleta)', description: 'Los dos primeros son los colores con los que arrancan los dos manejadores (principal y secundario). Ej. #AE0407.', itemLabel: (p) => p.value }),
         heroAnimation: fields.select({ label: 'Animación de la portada', description: 'Ensamblar: el logotipo debe tener 3 trazos (ala izquierda, ala derecha y centro).', options: [{ label: 'Ninguna', value: '' }, { label: 'Ensamblar piezas', value: 'assemble' }], defaultValue: '' }),

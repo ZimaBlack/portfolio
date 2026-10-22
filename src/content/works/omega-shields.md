@@ -11,7 +11,7 @@ text:
   en: "[Context, challenge, design decisions and outcome.]"
 heroAnimation: assemble
 logo: /works/omega-shields/logo.svg
-mark: /works/omega-shields/mark.svg
+mark: /works/omega-shields/name.svg
 featured: false
 order: 2
 tones: ["#0d1620", "#223446"]
