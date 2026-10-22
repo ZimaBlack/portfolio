@@ -26,10 +26,11 @@ import preset from '../data/background.json';
     bg ??= initTuringBackground(canvas, JSON.parse(canvas.dataset.preset || '{}'));
     io?.disconnect();
     canvas.classList.remove('is-hero');
+    bg.setGlitch(false);
     const hero = document.querySelector<HTMLElement>('.hero');
     bg.setMode(hero ? 'cursor' : 'ambient');
     if (!hero) return;
-    io = new IntersectionObserver(([e]) => canvas.classList.toggle('is-hero', e.isIntersecting), { threshold: 0.35 });
+    io = new IntersectionObserver(([e]) => { canvas.classList.toggle('is-hero', e.isIntersecting); bg?.setGlitch(e.isIntersecting); }, { threshold: 0.35 }); // el glitch, sólo con el hero a la vista
     io.observe(hero);
   };
   document.addEventListener('astro:page-load', wire);

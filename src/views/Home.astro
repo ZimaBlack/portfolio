@@ -27,6 +27,8 @@ const alt = lang === 'es' ? 'en' : 'es';
     </div>
   </section>
 
+  <!-- Todo lo que no es el hero se oscurece un poco más: un velo negro sobre el patrón de fondo, que entra con suavidad al salir del hero -->
+  <div class="home__rest">
   <section class="section wrap" id="trabajos">
     <header class="head">
       <p class="eyebrow" data-reveal>{c.featured.eyebrow}</p>
@@ -63,9 +65,12 @@ const alt = lang === 'es' ? 'en' : 'es';
       ))}
     </ul>
   </section>
+  </div>
 </Base>
 
 <style>
+  .home__rest { background: linear-gradient(to bottom, rgb(0 0 0 / 0), rgb(0 0 0 / .58) 18rem); }
+  @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .home__rest { background: none; } } /* el velo es para fondo oscuro */
   .hero { position: relative; overflow: hidden; min-height: 100svh; display: flex; align-items: flex-end; padding-block: 7rem 3rem; }
   .hero__in { position: relative; z-index: 3; display: grid; align-content: end; }
   /* Misma medida para los tres textos; la jerarquía sale del peso y del blanco/gris */

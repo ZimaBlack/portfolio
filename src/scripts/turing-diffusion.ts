@@ -13,17 +13,39 @@ export interface TuringControls {
   resize: () => void;
   apply: () => void;
   enable: (on: boolean) => void; // apaga/enciende la reacción al cursor (apagado: no dibuja ni escucha)
+  glitch: (on: boolean) => void; // permite o no el glitch de canales alfa cuando el cursor lleva mucho tiempo quieto
 }
 export interface TuringOptions {
   target?: Window | HTMLElement;       // dónde se escucha el cursor (por defecto, el propio canvas)
   ignore?: (e: Event) => boolean;      // eventos que no cuentan (por ejemplo, los que ocurren sobre el footer)
   params?: Partial<TuringParams>;      // valores iniciales (por defecto, DEFAULTS)
+  glitch?: boolean;                    // glitch permitido desde el comienzo (por defecto, sí)
 }
 
 interface Seed { x: number; y: number; t: number; trail: boolean } // x, y en celdas; t = instante de la siembra
 
 const TRAIL_CELLS = 12;  // alcance de un rastro (en celdas)
 const NUCLEI_MS = 3200;  // los núcleos al azar sólo caen los primeros segundos de cada foco
+const GLITCH_MS = 1100;  // duración de un glitch
+const GLITCH_ID = 'turing-glitch';
+
+/** Filtro SVG del glitch (se crea una sola vez): bandas horizontales desplazadas, copias fantasma del canal alfa y alfa posterizado. */
+function glitchFilter() {
+  let svg = document.getElementById(`${GLITCH_ID}-svg`);
+  if (!svg) {
+    document.body.insertAdjacentHTML('beforeend', `<svg id="${GLITCH_ID}-svg" width="0" height="0" aria-hidden="true" style="position:absolute"><filter id="${GLITCH_ID}" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0 0.05" numOctaves="1" seed="1" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G" result="bands"/>
+      <feOffset in="bands" dx="0" dy="0" result="ghostA"/><feColorMatrix in="ghostA" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 .55 0" result="ghostA2"/>
+      <feOffset in="bands" dx="0" dy="0" result="ghostB"/><feColorMatrix in="ghostB" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 .45 0" result="ghostB2"/>
+      <feComponentTransfer in="bands" result="poster"><feFuncA type="discrete" tableValues="0 .3 0 .7 1 .45 1"/></feComponentTransfer>
+      <feMerge><feMergeNode in="ghostA2"/><feMergeNode in="ghostB2"/><feMergeNode in="poster"/></feMerge>
+    </filter></svg>`);
+    svg = document.getElementById(`${GLITCH_ID}-svg`)!;
+  }
+  const q = (sel: string) => svg!.querySelector(sel)!;
+  return { turb: q('feTurbulence'), disp: q('feDisplacementMap'), a: svg.querySelectorAll('feOffset')[0], b: svg.querySelectorAll('feOffset')[1], table: q('feFuncA') };
+}
 
 export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLElement | null, opts: TuringOptions = {}): TuringControls | null {
   if (!canvas.getContext('2d') || matchMedia('(prefers-reduced-motion: reduce)').matches) return null;
@@ -32,7 +54,7 @@ export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLEleme
   const target: Window | HTMLElement = opts.target ?? canvas;
   const ignored = (e: Event) => !!opts.ignore?.(e);
   let seeds: Seed[] = [];
-  let on = true, raf = 0, startedAt = 0, disturbedAt = 0, idleTimer = 0, inside = false, trailAcc = 0;
+  let on = true, glitchOn = opts.glitch ?? true, glitching = false, lastMoveAt = performance.now(), raf = 0, startedAt = 0, disturbedAt = 0, idleTimer = 0, inside = false, trailAcc = 0;
   let pointer = { x: 0, y: 0 };
 
   const apply = () => { canvas.style.filter = `blur(${P.blur}px) contrast(1.1)`; canvas.parentElement?.style.setProperty('--grain', String(P.grain)); };
@@ -105,6 +127,7 @@ export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLEleme
     const d = Math.hypot(p.x - pointer.x, p.y - pointer.y);
     inside = true;
     if (d > 6) {
+      lastMoveAt = performance.now();
       disturb();
       trailAcc += d;
       // Rastros: pequeños focos a lo largo del camino del cursor (si están activados)
@@ -123,7 +146,7 @@ export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLEleme
   const onDown = (ev: Event) => {
     const e = ev as PointerEvent;
     if (!on || ignored(e)) return;
-    pointer = rel(e); inside = true;
+    pointer = rel(e); inside = true; lastMoveAt = performance.now();
     // Con un patrón en curso, el clic siembra otro foco (el patrón persiste); si no, empieza uno nuevo
     if (seeds.some((s) => !s.trail)) { disturbedAt = 0; addSeed(pointer.x, pointer.y); startedAt = Math.max(startedAt, performance.now() - P.hold + 4000); kick(); }
     else armIdle();
@@ -133,8 +156,35 @@ export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLEleme
   target.addEventListener('pointerdown', onDown);
   panel?.addEventListener('pointerenter', () => { disturbedAt = 0; });
 
+  /** Glitch: durante un instante las bandas se desplazan, el canal alfa se duplica en fantasmas y se posteriza, a golpes (como una señal que falla). */
+  const burst = () => {
+    glitching = true;
+    const f = glitchFilter(), base = canvas.style.filter.replace(/\s*url\(#[^)]*\)/, ''), t0 = performance.now();
+    const tick = () => {
+      const elapsed = performance.now() - t0;
+      if (elapsed > GLITCH_MS) { canvas.style.filter = base; glitching = false; lastMoveAt = performance.now(); return; }
+      const hit = Math.random() < 0.7; // a veces la señal "vuelve" un instante
+      const r = (a: number, b: number) => a + Math.random() * (b - a);
+      f.turb.setAttribute('seed', String(Math.floor(r(1, 999))));
+      f.turb.setAttribute('baseFrequency', `0 ${r(0.012, 0.14).toFixed(3)}`);
+      f.disp.setAttribute('scale', hit ? String(r(20, 90).toFixed(0)) : '0');
+      const g = hit ? r(3, 22) : 0;
+      f.a.setAttribute('dx', String(g)); f.a.setAttribute('dy', String(r(-3, 3)));
+      f.b.setAttribute('dx', String(-g * r(0.5, 1.2))); f.b.setAttribute('dy', String(r(-3, 3)));
+      f.table.setAttribute('tableValues', Array.from({ length: 7 }, () => r(0, 1).toFixed(2)).sort(() => Math.random() - 0.5).join(' '));
+      canvas.style.filter = `${base} url(#${GLITCH_ID})`;
+      setTimeout(tick, r(55, 130));
+    };
+    tick();
+  };
+  // Si el cursor lleva `glitchIdle` ms quieto (y el glitch está permitido), ocurre un glitch; vuelve a ocurrir tras otro tiempo igual quieto
+  setInterval(() => {
+    if (on && glitchOn && !glitching && P.glitchIdle > 0 && !document.hidden && performance.now() - lastMoveAt > P.glitchIdle) burst();
+  }, 400);
+
   return {
     params: P, apply, resize, clear,
+    glitch: (v) => { glitchOn = v; lastMoveAt = performance.now(); },
     restart: (x = sim.w / 2, y = sim.h / 2) => { if (on) start(x, y); },
     enable: (v) => { if (v === on) return; on = v; if (on) { sim.resize(); inside = false; } else { clearTimeout(idleTimer); clear(); } },
   };

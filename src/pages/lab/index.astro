@@ -52,7 +52,7 @@ import Base from '../../layouts/Base.astro';
     [['nuclei', 'Núcleos iniciales', 0, 0.003, 0.0001], ['jitter', 'Irregularidad', 0, 0.04, 0.001]],
     [['threshold', 'Umbral', 0.01, 0.2, 0.005], ['gain', 'Nitidez', 1, 10, 0.1], ['pixelNoise', 'Ruido del gris', 0, 100, 1], ['peak', 'Brillo máximo', 40, 235, 5], ['blur', 'Desenfoque (px)', 0, 6, 0.1], ['grain', 'Grano de película', 0, 0.5, 0.01]],
     [['trailEvery', 'Rastro cada (px)', 10, 120, 2], ['trailLife', 'Duración del rastro (ms)', 600, 6000, 100]],
-    [['idle', 'Quieto antes de empezar (ms)', 100, 2000, 50], ['hold', 'Dura (ms)', 3000, 40000, 500], ['fade', 'Se disuelve en (ms)', 500, 8000, 100]],
+    [['glitchIdle', 'Glitch tras quieto (ms, 0 = no)', 0, 20000, 500], ['idle', 'Quieto antes de empezar (ms)', 100, 2000, 50], ['hold', 'Dura (ms)', 3000, 40000, 500], ['fade', 'Se disuelve en (ms)', 500, 8000, 100]],
   ];
   const TITLES = ['Reacción', 'Resolución y crecimiento', 'Ruptura de simetría', 'Aspecto', 'Rastros del cursor', 'Tiempos'];
 
