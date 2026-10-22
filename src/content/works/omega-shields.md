@@ -15,7 +15,7 @@ logo: /works/omega-shields/logo.svg
 mark: /works/omega-shields/name.svg
 featured: false
 order: 2
-tones: ["#0d1620", "#223446"]
+tones: ["#0b0b0a", "#171717"]
 gallery:
   - { kind: full, ratio: "21 / 9", caption: { es: "[Imagen principal]", en: "[Main image]" } }
   - { kind: pair, caption: { es: "[Sistema tipográfico y paleta]", en: "[Typography and palette]" } }

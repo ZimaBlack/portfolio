@@ -13,12 +13,12 @@ const FLASH = 2.3; // empieza la 1.ª pasada de barras
 const PASS = 1;    // separación entre pasadas
 const LAST = FLASH + PASS * 2; // 3.ª pasada: pinta todo de oro
 let name = '';
-let orn = ['', '']; // ornamento: [izquierdo, derecho] // con "ensamblar": el nombre (lettering) que aparece al terminar de armarse la marca
+let orn: string[] = []; // ornamento: mitades izquierda y derecha de cada par (el central lleva el logotipo; los demás repiten el patrón) // con "ensamblar": el nombre (lettering) que aparece al terminar de armarse la marca
 
 /** Metal forjado. Con `base` (un color), las piezas nacen en ese tono y un destello de barras blancas planas cruza el logotipo
  *  (recortado con su propia forma); en la pasada indicada por `wipeAt` el oro se revela por debajo, detrás de la primera barra.
  *  Sin `base`, las piezas ya son doradas y sólo pasa el destello. `delay` = segundos hasta que empieza el destello; `passes` = cuántas veces cruza. */
-function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; wipeAt?: number; shineAt?: number; gold?: string; flip?: boolean; fade?: boolean; alpha?: number } = {}) {
+function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number; wipeAt?: number; shineAt?: number; gold?: string; flip?: boolean; fade?: boolean; alpha?: number; blend?: boolean } = {}) {
   const [vx, vy, vw, vh] = (svg.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 100 100').split(/\s+/).map(Number);
   const all = [...svg.matchAll(/<path\b[^>]*?\sd="([^"]+)"/g)].map((m) => m[1]);
   const gold = opts.gold ?? '#CFC65C'; // oro de la marca: un solo tono, sin degradados
@@ -37,7 +37,7 @@ function forge(svg: string, id: string, delay: number, opts: { base?: string; pa
     ${opts.base ? sweep('w', opts.wipeAt ?? delay) : ''}
     ${opts.fade ? `<linearGradient id="${id}-fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".12" stop-color="#fff"/><stop offset=".88" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${id}-f" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}"><rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="url(#${id}-fg)"/></mask>` : ''}
   </defs>
-  ${opts.base ? `<g${opts.fade ? ` mask="url(#${id}-f)"` : ''}${opts.alpha ? ` opacity="${opts.alpha}"` : ''}><g mask="url(#${id}-w)"><g${T}>${all.map((d) => `<path d="${d}" fill="${gold}"/>`).join('')}</g></g></g>` : ''}
+  ${opts.base ? `<g${opts.blend ? ' class="pj-screen"' : ''}${opts.fade ? ` mask="url(#${id}-f)"` : ''}${opts.alpha ? ` opacity="${opts.alpha}"` : ''}><g mask="url(#${id}-w)"><g${T}>${all.map((d) => `<path d="${d}" fill="${gold}"/>`).join('')}</g></g></g>` : ''}
   <g mask="url(#${id}-m)">${opts.shineAt === undefined ? '' : `<g class="pj-shine" style="--gw:${travel.toFixed(1)}px;--gd:${opts.shineAt}s"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g>`}<g class="pj-flash" style="--gw:${travel.toFixed(1)}px;--gd:${delay}s;--gn:${opts.passes ?? 1}"><g transform="translate(${tx} ${vy}) skewX(-22)">${bars}</g></g></g>`;
   return svg.replace('</svg>', `${extra}</svg>`);
 }
@@ -59,19 +59,20 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   if (assemble && ornament.toLowerCase().endsWith('.svg')) {
     const raw = readFileSync(join(process.cwd(), 'public', ornament), 'utf8');
     const color = raw.match(/fill="(#[0-9a-f]{3,8})"/i)?.[1] ?? '#8E7748';
-    const side = (cls: string, id: string, flip: boolean) =>
-      forge(raw, id, FLASH, { base: DARK, passes: 3, wipeAt: LAST, gold: color, flip, fade: true, alpha: 0.55 })
-        .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__orn ${cls}" aria-hidden="true">`);
-    orn = [side('pjh__orn--l', 'pjol', true), side('pjh__orn--r', 'pjor', false)]; // mismos tiempos que el logotipo: los brillos van sincronizados
+    // Patrón: el par central (k = 0) enmarca el logotipo; a los lados se repite, cada vez más tenue
+    const alpha: Record<number, number> = { 0: 0.36, 1: 0.2, 2: 0.09 };
+    const side = (k: number, left: boolean) =>
+      forge(raw, `pjo${k + 2}${left ? 'l' : 'r'}`, FLASH, { base: DARK, passes: 3, wipeAt: LAST, gold: color, flip: left, fade: true, alpha: alpha[Math.abs(k)], blend: true })
+        .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__orn ${left ? 'pjh__orn--l' : 'pjh__orn--r'}" style="--k:${k};--od:${(0.5 + 0.14 * Math.abs(k)).toFixed(2)}s" aria-hidden="true">`);
+    orn = [-2, -1, 0, 1, 2].flatMap((k) => [side(k, true), side(k, false)]); // mismos tiempos para todos: los brillos van sincronizados
   }
   inline = svg.replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__logo" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
 }
 ---
-<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} data-orn={orn[0] ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]}`} aria-label={title}>
+<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} data-orn={orn.length ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]}`} aria-label={title}>
   <div class="pjh__bg" data-pj-bg aria-hidden="true"></div>
   {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
-  {orn[0] && <Fragment set:html={orn[0]} />}
-  {orn[1] && <Fragment set:html={orn[1]} />}
+  {orn.map((s) => <Fragment set:html={s} />)}
   <div class="pjh__stage" data-pj-stage>
     {mark && !name && <img class="pjh__mark" data-pj-mark src={src(mark)} alt="" aria-hidden="true" decoding="async" draggable="false" />}
     {inline
@@ -93,21 +94,22 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
     -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%); mask-image: linear-gradient(to bottom, transparent 0, #000 16%); } /* se desvanece bajo el menú, para que se lea */
   @keyframes pjh-ht-in { from { opacity: 0; } to { opacity: 1; } }
   /* Ornamento: dos mitades que flanquean el logotipo, en la misma animación pero con un leve retraso */
-  .pjh { --oh: min(84vh, 46rem); }
+  .pjh { --oh: min(66vh, 38rem); --hw: calc(var(--oh) * .2756); --og: calc(var(--oh) * .066); --pw: calc(2 * var(--hw) + var(--og) + var(--oh) * .05); }
   .pjh[data-assemble] .pjh__bg { background:
-    radial-gradient(ellipse 36% 44% at 50% 50%, rgb(76 112 160 / .28), transparent 72%),
+    radial-gradient(ellipse 36% 44% at 50% 50%, rgb(210 210 210 / .10), transparent 72%),
     radial-gradient(ellipse 62% 70% at var(--ax) var(--ay), color-mix(in srgb, var(--ga) 95%, transparent), transparent 72%),
-    radial-gradient(ellipse 70% 62% at var(--bx) var(--by), color-mix(in srgb, var(--gb) 90%, transparent), transparent 74%); } /* una luz leve al centro: sobre ella la "sombra" (multiplicar) se lee */
+    radial-gradient(ellipse 70% 62% at var(--bx) var(--by), color-mix(in srgb, var(--gb) 90%, transparent), transparent 74%); } /* una luz neutra y leve al centro: sobre ella la "sombra" (multiplicar) se lee */
   .pjh[data-assemble] :global(svg.pjh__orn) { position: absolute; top: 50%; translate: 0 -50%; z-index: -1; height: var(--oh); width: auto; aspect-ratio: 116 / 421; overflow: visible; }
-  .pjh[data-assemble] :global(svg.pjh__orn--l) { right: calc(50% + var(--oh) * .033); animation: pj-orn-l 1.8s .5s cubic-bezier(.22, 1, .36, 1) both; }
-  .pjh[data-assemble] :global(svg.pjh__orn--r) { left: calc(50% + var(--oh) * .033); animation: pj-orn-r 1.8s .5s cubic-bezier(.22, 1, .36, 1) both; }
+  .pjh[data-assemble] :global(svg.pjh__orn--l) { right: calc(50% - var(--k) * var(--pw) + var(--og) / 2); animation: pj-orn-l 1.8s var(--od, .5s) cubic-bezier(.22, 1, .36, 1) both; }
+  .pjh[data-assemble] :global(svg.pjh__orn--r) { left: calc(50% + var(--k) * var(--pw) + var(--og) / 2); animation: pj-orn-r 1.8s var(--od, .5s) cubic-bezier(.22, 1, .36, 1) both; }
   @keyframes pj-orn-l { from { transform: translateX(-14vw); opacity: 0; filter: blur(22px); } 40% { opacity: .7; } to { transform: none; opacity: 1; filter: none; } }
   @keyframes pj-orn-r { from { transform: translateX(14vw); opacity: 0; filter: blur(22px); } 40% { opacity: .7; } to { transform: none; opacity: 1; filter: none; } }
+  .pjh :global(.pj-screen) { mix-blend-mode: screen; } /* el oro del ornamento se funde con el fondo (pantalla) */
   /* Efecto multiplicar: mientras son "sombra", las piezas oscuras oscurecen lo que tienen detrás; el oro llega encima, sin mezcla */
   .pjh[data-assemble] :global(svg.pjh__logo > path), .pjh[data-assemble] :global(svg.pjh__name > path), .pjh[data-assemble] :global(svg.pjh__orn > path), .pjh[data-assemble] :global(svg.pjh__orn > g > path) { mix-blend-mode: multiply; }
   /* Con ornamento, el logotipo se achica para quedar enmarcado dentro del arco */
-  .pjh[data-orn][data-assemble] .pjh__stage > :global(svg.pjh__logo) { height: min(23vh, 10.5rem); }
-  .pjh[data-orn][data-assemble] .pjh__stage > :global(svg.pjh__name) { width: min(52vw, 12.5rem); }
+  .pjh[data-orn][data-assemble] .pjh__stage > :global(svg.pjh__logo) { height: min(19vh, 9rem); }
+  .pjh[data-orn][data-assemble] .pjh__stage > :global(svg.pjh__name) { width: min(44vw, 10.5rem); }
   .pjh__stage { position: relative; display: grid; place-items: center; width: min(88vw, 56rem); height: min(60vh, 34rem); }
   .pjh__stage > img { grid-area: 1 / 1; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; user-select: none; }
   .pjh__stage > .pjh__logo { width: min(100%, 40rem); animation: pjh-in 1.6s .2s var(--ease, ease) both; }
