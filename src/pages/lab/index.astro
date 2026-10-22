@@ -7,23 +7,108 @@ import Base from '../../layouts/Base.astro';
     <canvas class="lab__canvas" data-turing aria-hidden="true"></canvas>
     <div class="lab__noise" aria-hidden="true"></div>
     <p class="lab__hint eyebrow">Morfogénesis · deja el cursor quieto</p>
+    <aside class="lab__panel" data-lab-panel>
+      <button type="button" class="lab__toggle" data-lab-toggle aria-expanded="true">Controles <span aria-hidden="true">–</span></button>
+      <div class="lab__body" data-lab-body></div>
+    </aside>
   </section>
 </Base>
 
 <style>
-  .lab { position: relative; min-height: 100svh; background: #000; overflow: hidden; }
-  /* Desenfoque leve del patrón + grano fino que tiembla (ruido de película) por encima de todo */
-  .lab__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; filter: blur(1.6px) contrast(1.1); }
-  .lab__noise { position: absolute; inset: -10%; pointer-events: none; opacity: .16; mix-blend-mode: screen; animation: lab-grain .5s steps(5) infinite;
+  .lab { position: relative; min-height: 100svh; background: #000; overflow: hidden; --grain: .16; }
+  .lab__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  /* Grano fino que tiembla (ruido de película) por encima de todo */
+  .lab__noise { position: absolute; inset: -10%; pointer-events: none; opacity: var(--grain); mix-blend-mode: screen; animation: lab-grain .5s steps(5) infinite;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.4 0 0 0 -.55'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E"); }
   @keyframes lab-grain { 0% { transform: translate(0, 0); } 20% { transform: translate(-3%, 2%); } 40% { transform: translate(2%, -3%); } 60% { transform: translate(-2%, -1%); } 80% { transform: translate(3%, 3%); } 100% { transform: translate(0, 0); } }
   @media (prefers-reduced-motion: reduce) { .lab__noise { animation: none; } }
   .lab__hint { position: absolute; left: var(--gutter); bottom: var(--gutter); pointer-events: none; opacity: .7; }
+
+  /* Panel de controles */
+  .lab__panel { position: absolute; right: var(--gutter); top: 5.5rem; z-index: 5; width: min(17.5rem, calc(100vw - 2 * var(--gutter))); max-height: calc(100svh - 8rem); overflow: auto;
+    background: color-mix(in srgb, #000 78%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid var(--line); border-radius: 1rem; font-size: .72rem; }
+  .lab__toggle { all: unset; box-sizing: border-box; width: 100%; display: flex; justify-content: space-between; padding: .8rem 1rem; cursor: pointer; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .lab__toggle:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; border-radius: 1rem; }
+  .lab__panel.is-closed .lab__body { display: none; }
+  .lab__body { padding: 0 1rem 1rem; display: grid; gap: .55rem; }
+  .lab__body :global(.row) { display: grid; gap: .15rem; }
+  .lab__body :global(.row label) { display: flex; justify-content: space-between; color: var(--muted); letter-spacing: .04em; }
+  .lab__body :global(.row output) { color: var(--fg); font-variant-numeric: tabular-nums; }
+  .lab__body :global(input[type='range']) { width: 100%; accent-color: var(--fg); margin: 0; }
+  .lab__body :global(.group) { margin: .5rem 0 0; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-size: .62rem; }
+  .lab__body :global(.presets), .lab__body :global(.actions) { display: flex; flex-wrap: wrap; gap: .35rem; }
+  .lab__body :global(button.chip) { all: unset; box-sizing: border-box; cursor: pointer; padding: .3rem .65rem; border: 1px solid var(--line); border-radius: 999px; transition: background .3s var(--ease), color .3s var(--ease); }
+  .lab__body :global(button.chip:hover), .lab__body :global(button.chip:focus-visible), .lab__body :global(button.chip.is-on) { background: var(--fg); color: var(--bg); }
+  .lab__body :global(.check) { display: flex; align-items: center; gap: .5rem; color: var(--fg); cursor: pointer; }
 </style>
 
 <script>
-  import { initTuringDiffusion } from '../../scripts/turing-diffusion';
-  document.addEventListener('astro:page-load', () => {
-    document.querySelectorAll<HTMLCanvasElement>('[data-turing]:not([data-ready])').forEach((c) => { c.dataset.ready = '1'; initTuringDiffusion(c); });
-  });
+  import { initTuringDiffusion, DEFAULTS, PRESETS, type TuringParams } from '../../scripts/turing-diffusion';
+
+  // Cada control: [propiedad, rótulo, mínimo, máximo, paso]
+  const SLIDERS: [keyof TuringParams, string, number, number, number][][] = [
+    [['feed', 'Alimentación (F)', 0.01, 0.09, 0.0005], ['kill', 'Eliminación (k)', 0.04, 0.07, 0.0005], ['dv', 'Difusión (finura)', 0.3, 0.7, 0.01]],
+    [['cell', 'Tamaño de celda (px)', 2, 10, 1], ['steps', 'Velocidad (pasos/cuadro)', 4, 40, 1], ['radius', 'Alcance (px)', 120, 700, 10], ['grow', 'Expansión (ms)', 600, 6000, 100]],
+    [['nuclei', 'Núcleos iniciales', 0, 0.003, 0.0001], ['jitter', 'Irregularidad', 0, 0.04, 0.001]],
+    [['threshold', 'Umbral', 0.01, 0.2, 0.005], ['gain', 'Nitidez', 1, 10, 0.1], ['pixelNoise', 'Ruido del gris', 0, 100, 1], ['blur', 'Desenfoque (px)', 0, 6, 0.1], ['grain', 'Grano de película', 0, 0.5, 0.01]],
+    [['idle', 'Quieto antes de empezar (ms)', 100, 2000, 50], ['hold', 'Dura (ms)', 3000, 40000, 500], ['fade', 'Se disuelve en (ms)', 500, 8000, 100]],
+  ];
+  const TITLES = ['Reacción', 'Resolución y crecimiento', 'Ruptura de simetría', 'Aspecto', 'Tiempos'];
+
+  const init = () => {
+    const canvas = document.querySelector<HTMLCanvasElement>('[data-turing]:not([data-ready])');
+    const panel = document.querySelector<HTMLElement>('[data-lab-panel]');
+    const body = document.querySelector<HTMLElement>('[data-lab-body]');
+    if (!canvas || !panel || !body) return;
+    canvas.dataset.ready = '1';
+    const ctl = initTuringDiffusion(canvas, panel);
+    if (!ctl) { body.textContent = 'Movimiento reducido: efecto desactivado.'; return; }
+    const P = ctl.params;
+    const outs = new Map<keyof TuringParams, { input: HTMLInputElement; out: HTMLOutputElement }>();
+    const show = (k: keyof TuringParams) => { const o = outs.get(k)!; o.input.value = String(P[k]); o.out.textContent = String(+(+P[k]).toFixed(4)); };
+
+    // Combinaciones listas
+    const presets = document.createElement('div'); presets.className = 'presets';
+    for (const [name, vals] of Object.entries(PRESETS)) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = name;
+      b.addEventListener('click', () => { Object.assign(P, vals); (['feed', 'kill'] as const).forEach(show); presets.querySelectorAll('.chip').forEach((c) => c.classList.toggle('is-on', c === b)); ctl.restart(); });
+      presets.append(b);
+    }
+    body.append(Object.assign(document.createElement('p'), { className: 'group', textContent: 'Carácter' }), presets);
+
+    SLIDERS.forEach((group, gi) => {
+      body.append(Object.assign(document.createElement('p'), { className: 'group', textContent: TITLES[gi] }));
+      for (const [key, label, min, max, stepv] of group) {
+        const row = document.createElement('div'); row.className = 'row';
+        const id = `lab-${key}`;
+        row.innerHTML = `<label for="${id}"><span>${label}</span><output></output></label><input id="${id}" type="range" min="${min}" max="${max}" step="${stepv}">`;
+        const input = row.querySelector('input')!, out = row.querySelector('output')!;
+        outs.set(key, { input, out });
+        input.addEventListener('input', () => {
+          (P[key] as number) = Number(input.value);
+          out.textContent = String(+(+input.value).toFixed(4));
+          if (key === 'cell') { ctl.resize(); } // otra resolución: empieza de nuevo (el patrón se reinicia al quedarse quieto)
+          if (key === 'blur' || key === 'grain') ctl.apply();
+        });
+        // Al soltar un control de la reacción o la resolución, el patrón empieza de nuevo para ver el efecto completo
+        input.addEventListener('change', () => { if (['feed', 'kill', 'dv', 'cell', 'nuclei', 'jitter', 'radius', 'grow'].includes(key)) ctl.restart(); });
+        body.append(row);
+        show(key);
+      }
+    });
+
+    const pin = document.createElement('label'); pin.className = 'check';
+    pin.innerHTML = '<input type="checkbox"> Mantener el patrón (no se disuelve)';
+    pin.querySelector('input')!.addEventListener('change', (e) => { P.pinned = (e.target as HTMLInputElement).checked; });
+    const actions = document.createElement('div'); actions.className = 'actions';
+    const mk = (text: string, fn: () => void) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = text; b.addEventListener('click', fn); actions.append(b); };
+    mk('Sembrar en el centro', () => ctl.restart());
+    mk('Limpiar', () => ctl.clear());
+    mk('Restablecer', () => { Object.assign(P, DEFAULTS); outs.forEach((_, k) => show(k)); ctl.apply(); ctl.resize(); ctl.restart(); });
+    body.append(pin, actions);
+
+    const toggle = panel.querySelector<HTMLButtonElement>('[data-lab-toggle]')!;
+    toggle.addEventListener('click', () => { const closed = panel.classList.toggle('is-closed'); toggle.setAttribute('aria-expanded', String(!closed)); toggle.lastElementChild!.textContent = closed ? '+' : '–'; });
+  };
+  document.addEventListener('astro:page-load', init);
 </script>
