@@ -9,7 +9,7 @@ import { join } from 'node:path';
 /** Ritmo de la animación (segundos). Se publica como variables CSS (--t-*): el CSS y este módulo comparten una sola fuente. */
 export const TIMING = {
   enter: 0.3,   // entran las alas
-  appear: 2.2,  // rombo y nombre llegan, justo después de que las alas se juntan
+  appear: 1.9,  // rombo y nombre empiezan a llegar mientras las alas terminan de asentarse
 };
 export const timingVars = () => `--t-enter:${TIMING.enter}s;--t-appear:${TIMING.appear}s`;
 
