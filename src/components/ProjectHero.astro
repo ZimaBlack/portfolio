@@ -15,7 +15,7 @@ let name = ''; // con "ensamblar": el nombre (lettering) que aparece al terminar
 function forge(svg: string, id: string, delay: number, opts: { base?: string; passes?: number } = {}) {
   const [vx, vy, vw, vh] = (svg.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 100 100').split(/\s+/).map(Number);
   const ds = [...svg.matchAll(/<path\b[^>]*?\sd="([^"]+)"/g)].map((m) => m[1]);
-  const gold = `url(#${id}-gold)`;
+  const gold = '#CFC65C'; // oro de la marca: un solo tono, sin degradados
   let n = 0;
   svg = svg
     .replace(/<path\b/g, () => `<path id="${id}-p${n++}"`)
@@ -25,7 +25,6 @@ function forge(svg: string, id: string, delay: number, opts: { base?: string; pa
   const bars = [[0, 0.07], [0.12, 0.025], [0.19, 0.12]].map(([off, w]) => `<rect x="${(off * vw).toFixed(1)}" y="${(-vh * 0.1).toFixed(1)}" width="${(w * vw).toFixed(1)}" height="${(vh * 1.2).toFixed(1)}" fill="#fff"/>`).join('');
   const span = 0.31 * vw, travel = vw + span + skew * 2;
   const extra = `<defs>
-    <linearGradient id="${id}-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6F0AE"/><stop offset=".42" stop-color="#D4CB63"/><stop offset="1" stop-color="#9A8F34"/></linearGradient>
     <mask id="${id}-m" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}">${ds.map((d) => `<path d="${d}" fill="#fff"/>`).join('')}</mask>
   </defs>
   ${opts.base ? `<mask id="${id}-w" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}"><g class="pj-wipe" style="--gw:${travel.toFixed(1)}px;--gd:${delay}s"><g transform="translate(${(vx - span - skew * 1.1).toFixed(1)} ${vy}) skewX(-22)"><rect x="-4000" y="${(-vh * 0.1).toFixed(1)}" width="${(4000 + 0.14 * vw).toFixed(1)}" height="${(vh * 1.2).toFixed(1)}" fill="#fff"/></g></g></mask>
@@ -43,7 +42,7 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
     svg = svg.replace(new RegExp(`fill="${hex}"`, 'gi'), `style="fill:var(--pw-${i},${hex})"`);
   });
   // Para ensamblar: cada trazo recibe su número (0 = ala izquierda, 1 = ala derecha, 2 = centro), en el orden del archivo
-  if (assemble) { let n = 0; svg = svg.replace(/<path\b/g, () => `<path data-part="${n++}"`); svg = forge(svg, 'pjm', 3.15, { base: '#2B4560', passes: 2 }); }
+  if (assemble) { let n = 0; svg = svg.replace(/<path\b/g, () => `<path data-part="${n++}"`); svg = forge(svg, 'pjm', 3.15, { base: '#1B2C3E', passes: 2 }); }
   if (assemble && mark && mark.toLowerCase().endsWith('.svg')) {
     name = forge(readFileSync(join(process.cwd(), 'public', mark), 'utf8'), 'pjn', 4.9, { passes: 1 })
       .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__name" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
@@ -97,9 +96,9 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   .pjh[data-assemble] :global([data-part='0']) { animation: pj-from-left 1.7s .35s cubic-bezier(.22, 1, .36, 1) both; }
   .pjh[data-assemble] :global([data-part='1']) { animation: pj-from-right 1.7s .35s cubic-bezier(.22, 1, .36, 1) both; }
   .pjh[data-assemble] :global([data-part='2']) { animation: pj-pop 1s 2.05s cubic-bezier(.34, 1.4, .64, 1) both; }
-  @keyframes pj-from-left { from { transform: translateX(-70vw); opacity: 0; } 20% { opacity: 1; } to { transform: none; opacity: 1; } }
-  @keyframes pj-from-right { from { transform: translateX(70vw); opacity: 0; } 20% { opacity: 1; } to { transform: none; opacity: 1; } }
-  @keyframes pj-pop { from { transform: scale(.15); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes pj-from-left { from { transform: translateX(-70vw); opacity: 0; filter: blur(18px); } 25% { opacity: 1; } to { transform: none; opacity: 1; filter: blur(0); } }
+  @keyframes pj-from-right { from { transform: translateX(70vw); opacity: 0; filter: blur(18px); } 25% { opacity: 1; } to { transform: none; opacity: 1; filter: blur(0); } }
+  @keyframes pj-pop { from { transform: scale(.15); opacity: 0; filter: blur(12px); } to { transform: none; opacity: 1; filter: blur(0); } }
   @keyframes pjh-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .pjh__logo, .pjh[data-assemble] :global([data-part]), .pjh :global(.pj-flash), .pjh :global(.pj-wipe), .pjh :global(.pjh__name) { animation: none !important; } .pjh :global(.pj-flash) { display: none; } .pjh :global(.pj-wipe) { translate: var(--gw) 0; } }
 </style>
