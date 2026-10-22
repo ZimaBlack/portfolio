@@ -14,8 +14,11 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
 ---
 <footer class="footer section" id="contacto" style={fades}>
   <img class="footer__photo" src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/portrait.jpg`} alt="" aria-hidden="true" width="1386" height="1135" loading="lazy" decoding="async" />
-  <Crt />
-  <span class="footer__glitch" aria-hidden="true"></span>
+  <!-- La pantalla antigua (overlay) y el destello del glitch ocupan sólo la caja del retrato -->
+  <div class="footer__screen" aria-hidden="true">
+    <Crt />
+    <span class="footer__glitch"></span>
+  </div>
   <div class="wrap footer__content">
     <p class="eyebrow" data-reveal>{c.footer.eyebrow}</p>
     <figure class="quote" data-reveal>
@@ -44,6 +47,8 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
     -webkit-mask-image: linear-gradient(to right, var(--fade-l)), linear-gradient(to bottom, var(--fade-t)); -webkit-mask-composite: source-in;
     mask-image: linear-gradient(to right, var(--fade-l)), linear-gradient(to bottom, var(--fade-t)); mask-composite: intersect; }
   @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .footer__photo { display: none; } } /* la foto está pensada para fondo oscuro */
+  /* Misma caja que el retrato (sin z-index propio: así la mezcla "overlay"/"screen" de adentro se funde con el fondo del footer) */
+  .footer__screen { position: absolute; right: 0; bottom: 0; height: 82%; aspect-ratio: 1386 / 1135; max-width: 58%; overflow: hidden; pointer-events: none; }
   /* Entrada: la foto aparece con un fundido lento al llegar a la sección */
   :global(.js) .footer__photo { opacity: 0; transform: translateY(26px) scale(1.03); transition: opacity 2.4s var(--ease), transform 2.8s var(--ease); }
   :global(.js) .footer.is-in .footer__photo { opacity: .55; transform: none; }
@@ -56,6 +61,7 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
     .footer { display: flex; flex-direction: column; min-height: min(calc(200vw + 6.5rem), 78rem); padding-block: 5rem 2.25rem; }
     .footer__content { flex: 1; display: flex; flex-direction: column; }
     .footer .footer__base { margin-top: auto; padding-top: 4rem; } /* más específico: gana a la regla base que va después */
+    .footer__screen { right: auto; left: -13%; bottom: 6.5rem; width: 126%; max-width: none; height: auto; }
     .footer__photo { top: auto; bottom: 6.5rem; left: -13%; right: auto; width: 126%; max-width: none; height: auto; object-fit: fill;
       -webkit-mask-image: linear-gradient(to bottom, var(--fade-t-m), #000 34%, #000 72%, var(--fade-b-m)); -webkit-mask-composite: source-in;
       mask-image: linear-gradient(to bottom, var(--fade-t-m), #000 34%, #000 72%, var(--fade-b-m)); }
