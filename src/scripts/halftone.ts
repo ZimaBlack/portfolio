@@ -4,12 +4,13 @@
 // Cuando el widget de color cambia esas variables, las luces se desplazan y cambian de color con una transición.
 
 type Rgb = [number, number, number];
-type State = { ga: Rgb; gb: Rgb; ax: number; ay: number; bx: number; by: number };
+type State = { ga: Rgb; gb: Rgb; ax: number; ay: number; bx: number; by: number; gi: number };
 
-const CELL = 10;          // distancia entre puntos (px de CSS)
-const CELL_SMALL = 8;     // en pantallas chicas
+const CELL = 15;          // distancia entre puntos (px de CSS): trama grande
+const CELL_SMALL = 11;    // en pantallas chicas
+const REACH = 1.4;        // cuánto abarcan las luces, respecto de su tamaño base
 const ANGLE = Math.PI / 4;
-const TWEEN_MS = 1100;
+const TWEEN_MS = 1200;
 
 const smooth = (t: number) => { const x = Math.min(1, Math.max(0, t)); return x * x * (3 - 2 * x); };
 const ease = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -39,6 +40,7 @@ export function initHalftone(hero: HTMLElement) {
       gb: parseColor(cs.getPropertyValue('--gb'), [36, 13, 18]),
       ax: pct(cs.getPropertyValue('--ax'), 24), ay: pct(cs.getPropertyValue('--ay'), 34),
       bx: pct(cs.getPropertyValue('--bx'), 76), by: pct(cs.getPropertyValue('--by'), 72),
+      gi: pct(cs.getPropertyValue('--gi'), 1), // intensidad general (0 = apagadas)
     };
   };
 
@@ -50,7 +52,7 @@ export function initHalftone(hero: HTMLElement) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
     const cell = w < 700 ? CELL_SMALL : CELL;
-    const rA = { x: 0.446 * w, y: 0.504 * h }, rB = { x: 0.518 * w, y: 0.446 * h }; // mismos radios visibles que las luces en degradado
+    const rA = { x: 0.446 * w * REACH, y: 0.504 * h * REACH }, rB = { x: 0.518 * w * REACH, y: 0.446 * h * REACH }; // mismos radios visibles que las luces en degradado
     const ax = (s.ax / 100) * w, ay = (s.ay / 100) * h, bx = (s.bx / 100) * w, by = (s.by / 100) * h;
     const cos = Math.cos(ANGLE), sin = Math.sin(ANGLE);
     const span = Math.ceil(Math.hypot(w, h) / cell / 2) + 1;
@@ -61,11 +63,11 @@ export function initHalftone(hero: HTMLElement) {
         if (px < -cell || px > w + cell || py < -cell || py > h + cell) continue;
         const wa = smooth(1 - Math.hypot((px - ax) / rA.x, (py - ay) / rA.y));
         const wb = smooth(1 - Math.hypot((px - bx) / rB.x, (py - by) / rB.y));
-        const sum = wa + wb;
+        const sum = (wa + wb) * s.gi;
         if (sum < 0.02) continue;
         const r = cell * 0.66 * Math.sqrt(Math.min(1, sum * 1.05));
         if (r < 0.4) continue;
-        const k = wb / sum;
+        const k = wb / Math.max(1e-6, wa + wb);
         ctx.fillStyle = `rgb(${Math.round(lerp(s.ga[0], s.gb[0], k))} ${Math.round(lerp(s.ga[1], s.gb[1], k))} ${Math.round(lerp(s.ga[2], s.gb[2], k))})`;
         ctx.beginPath();
         ctx.arc(px, py, r, 0, Math.PI * 2);
@@ -76,7 +78,7 @@ export function initHalftone(hero: HTMLElement) {
 
   const mix = (a: State, b: State, t: number): State => ({
     ga: a.ga.map((v, i) => lerp(v, b.ga[i], t)) as Rgb, gb: a.gb.map((v, i) => lerp(v, b.gb[i], t)) as Rgb,
-    ax: lerp(a.ax, b.ax, t), ay: lerp(a.ay, b.ay, t), bx: lerp(a.bx, b.bx, t), by: lerp(a.by, b.by, t),
+    ax: lerp(a.ax, b.ax, t), ay: lerp(a.ay, b.ay, t), bx: lerp(a.bx, b.bx, t), by: lerp(a.by, b.by, t), gi: lerp(a.gi, b.gi, t),
   });
   const step = (now: number) => {
     const t = Math.min(1, (now - t0) / TWEEN_MS);

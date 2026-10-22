@@ -5,8 +5,8 @@
 import type { Lang } from '../lib/i18n';
 const { colors, lang } = Astro.props as { colors: string[]; lang: Lang };
 const t = {
-  es: { main: 'Color principal', second: 'Color secundario', toggle: 'Mostrar u ocultar los selectores de color', region: 'Selectores de color' },
-  en: { main: 'Main color', second: 'Secondary color', toggle: 'Show or hide the color pickers', region: 'Color pickers' },
+  es: { main: 'Color principal', second: 'Color secundario', random: 'Paleta al azar', toggle: 'Mostrar u ocultar los selectores de color', region: 'Selectores de color' },
+  en: { main: 'Main color', second: 'Secondary color', random: 'Random palette', toggle: 'Show or hide the color pickers', region: 'Color pickers' },
 }[lang];
 ---
 <aside class="pw" data-pw data-start={colors[0]} data-start2={colors[1] ?? colors[0]} aria-label={t.region}>
@@ -14,19 +14,31 @@ const t = {
     <i data-pw-dot="0"></i><i data-pw-dot="1"></i>
   </button>
   <div class="pw__panel">
+   <div class="pw__rails">
     <div class="pw__rail" data-pw-rail="0" role="slider" tabindex="0" aria-orientation="vertical" aria-label={t.main} aria-valuemin="0" aria-valuemax="360"><div class="pw__knob"></div></div>
     <div class="pw__rail" data-pw-rail="1" role="slider" tabindex="0" aria-orientation="vertical" aria-label={t.second} aria-valuemin="0" aria-valuemax="360"><div class="pw__knob"></div></div>
+   </div>
+   <button type="button" class="pw__random" data-pw-random aria-label={t.random} title={t.random}>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/></svg>
+   </button>
   </div>
 </aside>
 
 <style>
   /* Vertical, centrado en la altura de la pantalla y pegado al borde derecho */
   .pw { position: fixed; right: .6rem; top: 50%; transform: translateY(-50%); z-index: 55; display: flex; align-items: center; gap: .5rem; }
-  .pw__panel { order: 2; display: flex; align-items: stretch; gap: .9rem; height: min(46vh, 22rem); padding: .6rem .7rem; border: 1px solid var(--line); border-radius: 999px;
+  .pw__panel { order: 2; display: flex; flex-direction: column; align-items: center; gap: .7rem; padding: .6rem .7rem; border: 1px solid var(--line); border-radius: 999px;
     background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
     transition: transform .6s var(--ease), opacity .4s ease; }
   .pw.is-closed .pw__panel { transform: translateX(calc(100% + 1.2rem)); opacity: 0; pointer-events: none; position: absolute; right: 0; }
 
+  .pw__rails { display: flex; align-items: stretch; gap: .9rem; height: min(40vh, 19rem); }
+  .pw__random { all: unset; box-sizing: border-box; cursor: pointer; width: 2rem; height: 2rem; flex: none; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; color: var(--fg); transition: background .35s var(--ease), color .35s var(--ease), transform .5s var(--ease); }
+  .pw__random:hover, .pw__random:focus-visible { background: var(--fg); color: var(--bg); transform: rotate(180deg); }
+  .pw__random:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
+  .pw__random:disabled { opacity: .4; cursor: default; pointer-events: none; }
+  .pw__random svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .pw__knob.is-slide { transition: top .7s var(--ease), transform .3s var(--ease); }
   /* Cada barra: el arco iris, con una perilla que toma el color que aplica */
   .pw__rail { position: relative; width: 1.15rem; border-radius: 999px; cursor: grab; touch-action: none;
     background: linear-gradient(to bottom, #e8452a, #f1e63a 17%, #6df13a 33%, #3af1f1 50%, #1a1aff 67%, #c43af1 83%, #e8452a); } /* respaldo: el script la redibuja con los colores reales */
@@ -40,7 +52,7 @@ const t = {
   .pw__tab { all: unset; box-sizing: border-box; cursor: pointer; order: 1; display: grid; gap: 2px; padding: .3rem; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--bg) 82%, transparent); }
   .pw__tab:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
   .pw__tab i { width: .8rem; height: .8rem; border-radius: 50%; }
-  @media (max-width: 760px) { .pw { right: .35rem; } .pw__panel { height: min(40vh, 18rem); gap: .7rem; } }
+  @media (max-width: 760px) { .pw { right: .35rem; } .pw__rails { height: min(34vh, 15rem); gap: .7rem; } }
   @media (prefers-reduced-motion: reduce) { .pw__panel, .pw__knob { transition: none; } }
 </style>
 
@@ -88,9 +100,9 @@ const t = {
       // Cada manejador parte del color de la marca; su brillo y croma se mantienen al recorrer la barra,
       // así todos los matices pesan parecido. El 2.º (la sombra) conserva su propio brillo, más oscuro.
       const base = [hexToLch(pw.dataset.start || '#F5282C'), hexToLch(pw.dataset.start2 || '#840002')];
-      // Vibrantes pero cómodos: croma alto sin llegar al neón, y brillo medio (ni deslumbra ni se apaga sobre el fondo oscuro)
-      const L0 = [0.65, 0.47];
-      const C0 = [0.24, 0.2];
+      // Vibrantes y luminosos: croma alto y brillo alto (el 2.º, algo más oscuro para seguir haciendo de sombra)
+      const L0 = [0.73, 0.58];
+      const C0 = [0.27, 0.25];
       const hue = base.map((b) => b[2]);
       let touched = false;
       rails.forEach((rail, i) => {
@@ -106,8 +118,11 @@ const t = {
       };
       reroll();
 
+      // Estado del botón "al azar": a la 3.ª vez todo pasa a blanco y negro, las luces se desvanecen y vuelve con otra paleta
+      let bw = false, busy = false, presses = 0, intensity = 1;
+      const GRAYS = ['#F2F2F2', '#7C7C7C'];
       const render = () => {
-        const hex = hue.map((h, i) => toHex([L0[i], C0[i], h]));
+        const hex = bw ? GRAYS : hue.map((h, i) => toHex([L0[i], C0[i], h]));
         rails.forEach((rail, i) => {
           rail.querySelector<HTMLElement>('.pw__knob')!.style.setProperty('--k', hex[i]);
           rail.querySelector<HTMLElement>('.pw__knob')!.style.top = `${(hue[i] / 360) * 100}%`;
@@ -119,8 +134,9 @@ const t = {
           const set = (k: string, v: string) => hero.style.setProperty(k, v);
           set('--pw-0', hex[0]);
           set('--pw-1', hex[1]);
-          set('--ga', toHex([0.5, C0[0] * 0.85, hue[0]]));
-          set('--gb', toHex([0.46, C0[1] * 0.9, hue[1]]));
+          set('--ga', bw ? '#D8D8D8' : toHex([0.58, C0[0] * 0.9, hue[0]]));
+          set('--gb', bw ? '#8A8A8A' : toHex([0.54, C0[1] * 0.9, hue[1]]));
+          set('--gi', String(intensity));
           set('--ax', `${ax.toFixed(1)}%`); set('--ay', `${ay.toFixed(1)}%`);
           set('--bx', `${bx.toFixed(1)}%`); set('--by', `${by.toFixed(1)}%`);
         }
@@ -128,13 +144,14 @@ const t = {
 
       rails.forEach((rail, i) => {
         const setFromY = (clientY: number) => {
+          if (busy) return;
           const r = rail.getBoundingClientRect();
           hue[i] = clamp((clientY - r.top) / r.height, 0, 1) * 360;
           touched = true;
           render();
         };
         let id = -1;
-        rail.addEventListener('pointerdown', (e) => { id = e.pointerId; rail.setPointerCapture(id); rail.classList.add('is-drag'); reroll(); setFromY(e.clientY); });
+        rail.addEventListener('pointerdown', (e) => { if (busy) return; rail.querySelector('.pw__knob')!.classList.remove('is-slide'); id = e.pointerId; rail.setPointerCapture(id); rail.classList.add('is-drag'); reroll(); setFromY(e.clientY); });
         rail.addEventListener('pointermove', (e) => { if (e.pointerId === id) setFromY(e.clientY); });
         const end = (e: PointerEvent) => { if (e.pointerId === id) { id = -1; rail.classList.remove('is-drag'); } };
         rail.addEventListener('pointerup', end);
@@ -146,6 +163,33 @@ const t = {
           else return;
           e.preventDefault(); touched = true; render();
         });
+      });
+
+      // Paleta al azar: dos matices con relación armónica (análogo, complementario o triádico) y todo se desliza hacia ellos
+      const randomize = () => {
+        const base = rand(0, 360);
+        const rel = [() => rand(24, 38) * (Math.random() < 0.5 ? -1 : 1), () => 180 + rand(-12, 12), () => 120 * (Math.random() < 0.5 ? -1 : 1) + rand(-10, 10)][Math.floor(Math.random() * 3)]();
+        hue[0] = base; hue[1] = ((base + rel) % 360 + 360) % 360;
+        reroll();
+        rails.forEach((r) => r.querySelector('.pw__knob')!.classList.add('is-slide'));
+        touched = true; render();
+      };
+      const wait = (ms: number) => new Promise<void>((res) => setTimeout(res, ms));
+      const randomBtn = pw.querySelector<HTMLButtonElement>('[data-pw-random]')!;
+      randomBtn.addEventListener('click', async () => {
+        if (busy) return;
+        presses++;
+        if (presses < 3) { randomize(); return; }
+        // 3.ª vez: blanco y negro → se desvanecen las luces → vuelve con otra paleta
+        busy = true; randomBtn.disabled = true; presses = 0;
+        bw = true; touched = true; render();
+        await wait(1900);
+        intensity = 0; render();
+        await wait(1500);
+        bw = false; randomize();
+        intensity = 1; render();
+        await wait(1200);
+        busy = false; randomBtn.disabled = false;
       });
 
       const setOpen = (open: boolean) => { pw.classList.toggle('is-closed', !open); toggle.setAttribute('aria-expanded', String(open)); };

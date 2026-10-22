@@ -46,6 +46,8 @@ if (reactive.length && logo.toLowerCase().endsWith('.svg')) {
   .pjh__stage > .pjh__logo { width: min(100%, 40rem); animation: pjh-in 1.6s .2s var(--ease, ease) both; }
   .pjh__stage > :global(svg.pjh__logo) { grid-area: 1 / 1; width: auto; height: min(58vh, 32rem); max-width: 100%; animation: pjh-in 1.6s .2s var(--ease, ease) both; }
   .pjh__mark { opacity: 0; } /* en su lugar, listo para animar */
+  /* El logotipo reactivo cambia de color con suavidad (también al pasar a blanco y negro) */
+  .pjh__stage > :global(svg.pjh__logo) :global(path) { transition: fill .7s linear; }
   @keyframes pjh-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .pjh__logo { animation: none; } }
 </style>
