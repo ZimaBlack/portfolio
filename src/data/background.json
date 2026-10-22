@@ -20,5 +20,6 @@
   "trails": false,
   "trailEvery": 10,
   "trailLife": 600,
-  "glitchIdle": 8000
+  "stillFade": 8000,
+  "flashBright": 2.6
 }

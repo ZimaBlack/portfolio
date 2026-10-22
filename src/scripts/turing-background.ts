@@ -1,6 +1,6 @@
 // Fondo del sitio: un patrón de Turing (ver turing-core.ts) en un canvas fijo a pantalla completa, con dos modos que se alternan según la página:
 //  · "cursor" (Home): replica la animación del laboratorio. Cuando el cursor se queda quieto, desde ese punto crece el patrón; al moverlo se
-//    disuelve y deja rastros; un clic siembra otro foco; con el cursor muy quieto en el hero, un glitch distorsiona el canal alfa.
+//    disuelve y deja rastros; un clic siembra otro foco; con el cursor muy quieto en el hero, el patrón brilla un instante y se apaga.
 //    No actúa sobre el footer ni sobre enlaces y botones al hacer clic.
 //  · "ambient" (resto del sitio): un patrón que nace de varios focos al azar, crece unos segundos y se asienta (la simulación se detiene).
 // El preset sale de src/data/background.json (se guarda desde el laboratorio, /lab/).
@@ -11,7 +11,7 @@ const GROW_MS = 22000;  // modo ambient: tiempo que crece y se acomoda al empeza
 const MAX_STEPS = 10;   // modo ambient: tope de pasos por cuadro (debe ser liviano)
 
 export type BackgroundMode = 'cursor' | 'ambient';
-export interface TuringBackground { setMode: (m: BackgroundMode) => void; setGlitch: (on: boolean) => void }
+export interface TuringBackground { setMode: (m: BackgroundMode) => void; setStillFade: (on: boolean) => void }
 
 const INTERACTIVE = 'a, button, input, textarea, select, [data-no-seed]';
 
@@ -24,7 +24,7 @@ export function initTuringBackground(canvas: HTMLCanvasElement, preset: Partial<
   const cursor: TuringControls | null = initTuringDiffusion(canvas, null, {
     target: window,
     params: preset,
-    glitch: false, // sólo cuando el hero principal está a la vista (ver setGlitch)
+    stillFade: false, // sólo cuando el hero principal está a la vista (ver setStillFade)
     ignore: (e) => {
       const t = e.target as Element | null;
       return !!t?.closest?.('footer') || (e.type === 'pointerdown' && !!t?.closest?.(INTERACTIVE));
@@ -57,7 +57,7 @@ export function initTuringBackground(canvas: HTMLCanvasElement, preset: Partial<
   }).observe(canvas);
 
   return {
-    setGlitch: (on) => cursor?.glitch(on),
+    setStillFade: (on) => cursor?.stillFade(on),
     setMode(m) {
       if (m === mode) return;
       mode = m;

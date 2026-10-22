@@ -26,13 +26,14 @@ export interface TuringParams {
   trails: boolean;    // dejar rastros mientras el cursor se mueve (apagado: sólo crece cuando el cursor queda quieto)
   trailEvery: number; // px de cursor entre un rastro y el siguiente
   trailLife: number;  // ms que dura un rastro (se ve completo el 20 % y se apaga en el resto)
-  glitchIdle: number; // ms con el cursor quieto antes de un glitch (distorsión de canales alfa); 0 = sin glitch
+  stillFade: number;  // ms con el cursor quieto antes de que el patrón brille un instante y se apague; 0 = no ocurre
+  flashBright: number; // cuánto sube la luminosidad en ese destello (1 = nada, 3 = el triple)
   pinned: boolean;    // mantener el patrón (no se disuelve)
 }
 
 export const DEFAULTS: TuringParams = {
   feed: 0.029, kill: 0.057, dv: 0.5, cell: 4, steps: 20, radius: 340, grow: 2400, idle: 450, hold: 13000, fade: 3200,
-  nuclei: 0.0009, jitter: 0.012, threshold: 0.05, gain: 3.6, pixelNoise: 46, peak: 235, blur: 1.2, grain: 0.16, trails: true, trailEvery: 34, trailLife: 2150, glitchIdle: 8000, pinned: false,
+  nuclei: 0.0009, jitter: 0.012, threshold: 0.05, gain: 3.6, pixelNoise: 46, peak: 235, blur: 1.2, grain: 0.16, trails: true, trailEvery: 34, trailLife: 2150, stillFade: 8000, flashBright: 2.6, pinned: false,
 };
 
 /** Combinaciones de F y k que dan distintos "caracteres" (todas con Dv = 0,5). */
