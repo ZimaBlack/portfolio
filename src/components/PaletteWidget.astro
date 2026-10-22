@@ -120,7 +120,7 @@ const t = {
 
       // Estado del botón "al azar": a la 3.ª vez todo pasa a blanco y negro, las luces se desvanecen y vuelve con otra paleta
       let bw = false, busy = false, presses = 0, intensity = 1;
-      const GRAYS = ['#F2F2F2', '#7C7C7C'];
+      const GRAYS = ['#000000', '#CFCFCF']; // principal: negro; mechón: gris pálido
       const render = () => {
         const hex = bw ? GRAYS : hue.map((h, i) => toHex([L0[i], C0[i], h]));
         rails.forEach((rail, i) => {
