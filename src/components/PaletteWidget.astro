@@ -1,0 +1,235 @@
+---
+// Widget de paleta de color de un proyecto: fijo abajo a la derecha, plegable.
+// Un carrusel deslizable de paletas: la primera es la de la marca; las siguientes se generan al azar a partir de uno
+// de sus colores (el "base") y un segundo color análogo o complementario, con la paleta completa al lado.
+import type { Lang } from '../lib/i18n';
+const { colors, lang } = Astro.props as { colors: string[]; lang: Lang };
+const t = {
+  es: { title: 'Paleta', brand: 'Marca', base: 'Base', analogous: 'Análogo', complementary: 'Complementario', palette: 'Paleta', copied: 'Copiado', hint: 'Deslizá para generar más', toggle: 'Mostrar u ocultar la paleta', prev: 'Anterior', next: 'Siguiente', region: 'Paletas de color' },
+  en: { title: 'Palette', brand: 'Brand', base: 'Base', analogous: 'Analogous', complementary: 'Complementary', palette: 'Palette', copied: 'Copied', hint: 'Swipe to generate more', toggle: 'Show or hide the palette', prev: 'Previous', next: 'Next', region: 'Color palettes' },
+}[lang];
+---
+<aside class="pw" data-pw data-colors={JSON.stringify(colors)} data-labels={JSON.stringify(t)} aria-label={t.region}>
+  <button type="button" class="pw__head" data-pw-toggle aria-expanded="true" aria-label={t.toggle}>
+    <span class="pw__dots" aria-hidden="true">{colors.slice(0, 4).map((c) => <i style={`background:${c}`}></i>)}</span>
+    <span class="pw__title">{t.title}</span>
+    <span class="pw__status" data-pw-status aria-live="polite"></span>
+    <svg class="pw__chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+  </button>
+  <div class="pw__body">
+   <div class="pw__inner">
+    <div class="pw__track" data-pw-track tabindex="0"></div>
+    <div class="pw__bar">
+      <span class="pw__count" data-pw-count>01</span>
+      <span class="pw__hint">{t.hint}</span>
+      <div class="pw__nav">
+        <button type="button" data-pw-prev aria-label={t.prev}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></button>
+        <button type="button" data-pw-next aria-label={t.next}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+      </div>
+    </div>
+   </div>
+  </div>
+</aside>
+
+<style>
+  /* Arriba del botón de WhatsApp, a la derecha */
+  .pw { position: fixed; right: var(--gutter); bottom: calc(var(--gutter) + 3.25rem + .75rem); z-index: 55; width: min(21rem, calc(100vw - 2 * var(--gutter)));
+    background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    border: 1px solid var(--line); border-radius: 1rem; overflow: hidden; }
+  .pw__head { all: unset; box-sizing: border-box; width: 100%; display: flex; align-items: center; gap: .7rem; padding: .8rem 1rem; cursor: pointer; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .pw__head:focus-visible { outline: 1px solid var(--fg); outline-offset: -4px; border-radius: 1rem; }
+  .pw__dots { display: inline-flex; }
+  .pw__dots i { width: .9rem; height: .9rem; border-radius: 50%; border: 1px solid var(--bg); margin-left: -.3rem; }
+  .pw__dots i:first-child { margin-left: 0; }
+  .pw__title { color: var(--fg); }
+  .pw__status { margin-left: auto; letter-spacing: .04em; text-transform: none; opacity: 0; transition: opacity .3s ease; }
+  .pw__status.is-on { opacity: 1; }
+  .pw__chev { width: 1rem; height: 1rem; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: transform .5s var(--ease); }
+  .pw__status:empty + .pw__chev, .pw__chev { margin-left: auto; }
+  .pw__status:not(:empty) + .pw__chev { margin-left: .2rem; }
+  .pw.is-closed .pw__chev { transform: rotate(180deg); }
+  /* Plegado con una transición de altura */
+  .pw__body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .55s var(--ease); }
+  .pw__inner { min-height: 0; overflow: hidden; }
+  .pw.is-closed .pw__body { grid-template-rows: 0fr; }
+  .pw.is-closed .pw__inner { visibility: hidden; }
+
+  .pw__track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; cursor: grab; touch-action: pan-x pan-y; }
+  .pw__track::-webkit-scrollbar { display: none; }
+  .pw__track.is-drag { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+  .pw__track:focus-visible { outline: 1px solid var(--fg); outline-offset: -2px; }
+  .pw__bar { display: flex; align-items: center; gap: .75rem; padding: 0 1rem .8rem; font-size: .7rem; color: var(--muted); }
+  .pw__count { letter-spacing: .1em; color: var(--fg); }
+  .pw__hint { opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pw__nav { margin-left: auto; display: flex; gap: .4rem; }
+  .pw__nav button { all: unset; box-sizing: border-box; cursor: pointer; width: 1.9rem; height: 1.9rem; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; color: var(--fg); transition: background .35s var(--ease), color .35s var(--ease); }
+  .pw__nav button:hover, .pw__nav button:focus-visible { background: var(--fg); color: var(--bg); }
+  .pw__nav svg { width: .9rem; height: .9rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  @media (max-width: 760px) { .pw__hint { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .pw__body, .pw__chev { transition: none; } }
+</style>
+
+<!-- Las tarjetas se crean desde el script, así que sus estilos son globales (acotados bajo .pw) -->
+<style is:global>
+  .pw .pw__card { flex: 0 0 100%; scroll-snap-align: start; padding: .25rem 1rem 1rem; display: grid; gap: .9rem; }
+  .pw .pw__label { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0; }
+  .pw .pw__pair { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+  .pw .pw__sw { all: unset; box-sizing: border-box; cursor: pointer; display: grid; align-content: end; gap: .1rem; height: 5.25rem; padding: .6rem .7rem; border-radius: .7rem; border: 1px solid var(--line); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; transition: transform .45s var(--ease); }
+  .pw .pw__sw b { font-weight: 500; font-size: .78rem; letter-spacing: .04em; }
+  .pw .pw__sw:hover, .pw__sw:focus-visible { transform: translateY(-2px); }
+  .pw .pw__sw:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+  .pw .pw__chips { display: flex; gap: .35rem; }
+  .pw .pw__chip { all: unset; box-sizing: border-box; cursor: pointer; flex: 1; height: 2.1rem; border-radius: .5rem; border: 1px solid var(--line); transition: flex .5s var(--ease); }
+  .pw .pw__chip:hover, .pw__chip:focus-visible { flex: 1.8; }
+  .pw .pw__chip:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) { .pw .pw__sw, .pw .pw__chip { transition: none; } }
+</style>
+
+<script>
+  type Labels = Record<string, string>;
+  type HSL = [number, number, number]; // h 0-360, s 0-1, l 0-1
+
+  const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
+  const rand = (a: number, b: number) => a + Math.random() * (b - a);
+  const norm = (h: number) => ((h % 360) + 360) % 360;
+
+  const toHsl = (hex: string): HSL => {
+    const n = parseInt(hex.replace('#', ''), 16);
+    const r = ((n >> 16) & 255) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min;
+    if (!d) return [0, 0, l];
+    const s = d / (1 - Math.abs(2 * l - 1));
+    const h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return [norm(h * 60), s, l];
+  };
+  const toHex = ([h, s, l]: HSL) => {
+    const a = s * Math.min(l, 1 - l);
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)))).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
+  };
+  const ink = (hex: string) => {
+    const n = parseInt(hex.slice(1), 16);
+    return (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255 > 0.58 ? '#0b0b0a' : '#ecebe6';
+  };
+
+  /** Una paleta nueva: a partir de un color base crea un segundo, análogo (±18–42°) o complementario (180° ± 14°), y arma la paleta completa. */
+  const generate = (base: string) => {
+    const [h, s, l] = toHsl(base);
+    const complementary = Math.random() < 0.5;
+    const shift = complementary ? 180 + rand(-14, 14) : (Math.random() < 0.5 ? -1 : 1) * rand(18, 42);
+    const second: HSL = [norm(h + shift), clamp(s * rand(0.75, 1.05), 0.25, 0.95), clamp(l + rand(-0.08, 0.1), 0.3, 0.68)];
+    const baseHsl: HSL = [h, s, l];
+    const chips = [
+      toHex([h, clamp(s * 0.9, 0, 1), clamp(l - 0.24, 0.06, 1)]),   // sombra del base
+      base.toUpperCase(),
+      toHex(second),
+      toHex([second[0], clamp(second[1] * 0.8, 0, 1), clamp(second[2] + 0.24, 0, 0.92)]), // luz del segundo
+      toHex([h, 0.14, 0.09]),                                       // casi negro, con el matiz del base
+    ];
+    return { base: toHex(baseHsl), second: toHex(second), kind: complementary ? 'complementary' : 'analogous', chips };
+  };
+
+  const init = () => {
+    document.querySelectorAll<HTMLElement>('[data-pw]:not([data-ready])').forEach((pw) => {
+      pw.dataset.ready = '1';
+      const colors: string[] = JSON.parse(pw.dataset.colors || '[]');
+      const L: Labels = JSON.parse(pw.dataset.labels || '{}');
+      const track = pw.querySelector<HTMLElement>('[data-pw-track]')!;
+      const count = pw.querySelector<HTMLElement>('[data-pw-count]')!;
+      const status = pw.querySelector<HTMLElement>('[data-pw-status]')!;
+      const toggle = pw.querySelector<HTMLButtonElement>('[data-pw-toggle]')!;
+      const chromatic = colors.filter((c) => toHsl(c)[1] > 0.3); // los bases salen de los colores con matiz
+      const pool = chromatic.length ? chromatic : colors;
+
+      let statusTimer = 0;
+      const copy = async (hex: string) => {
+        try { await navigator.clipboard.writeText(hex); } catch { /* sin portapapeles: sólo avisa */ }
+        status.textContent = `${hex} · ${L.copied}`;
+        status.classList.add('is-on');
+        clearTimeout(statusTimer);
+        statusTimer = window.setTimeout(() => { status.classList.remove('is-on'); }, 1400);
+      };
+
+      const swatch = (hex: string, label: string) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'pw__sw'; b.style.background = hex; b.style.color = ink(hex);
+        b.setAttribute('aria-label', `${label} ${hex}`);
+        b.innerHTML = `<span>${label}</span><b>${hex}</b>`;
+        b.addEventListener('click', () => copy(hex));
+        return b;
+      };
+      const chip = (hex: string) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'pw__chip'; b.style.background = hex; b.title = hex;
+        b.setAttribute('aria-label', hex);
+        b.addEventListener('click', () => copy(hex));
+        return b;
+      };
+      const card = (label: string, big: [string, string][], chips: string[]) => {
+        const c = document.createElement('div');
+        c.className = 'pw__card';
+        const p = document.createElement('p'); p.className = 'pw__label'; p.textContent = label;
+        const pair = document.createElement('div'); pair.className = 'pw__pair';
+        big.forEach(([hex, l]) => pair.append(swatch(hex, l)));
+        const row = document.createElement('div'); row.className = 'pw__chips'; row.setAttribute('aria-label', L.palette);
+        chips.forEach((h) => row.append(chip(h)));
+        c.append(p, pair, row);
+        return c;
+      };
+
+      // Tarjeta 0: la paleta de la marca (los dos primeros colores en grande, todos en la fila)
+      track.append(card(L.brand, colors.slice(0, 2).map((h, i) => [h, i === 0 ? L.base : L.palette] as [string, string]), colors.slice(0, 5)));
+      const more = () => {
+        const g = generate(pool[Math.floor(Math.random() * pool.length)]);
+        track.append(card(`${L.base} + ${L[g.kind]}`, [[g.base, L.base], [g.second, L[g.kind]]], g.chips));
+      };
+      more(); more();
+
+      const cards = () => Array.from(track.children) as HTMLElement[];
+      const index = () => Math.round(track.scrollLeft / track.clientWidth);
+      const go = (n: number) => track.scrollTo({ left: Math.max(0, n) * track.clientWidth, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      // Infinito: al acercarse al final se genera otra paleta
+      const refill = () => { while (cards().length < index() + 3) more(); };
+      track.addEventListener('scroll', () => {
+        count.textContent = String(index() + 1).padStart(2, '0');
+        refill();
+      }, { passive: true });
+      pw.querySelector('[data-pw-prev]')!.addEventListener('click', () => go(index() - 1));
+      pw.querySelector('[data-pw-next]')!.addEventListener('click', () => { refill(); go(index() + 1); });
+      track.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') { e.preventDefault(); refill(); go(index() + 1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go(index() - 1); }
+      });
+
+      // Arrastre con el mouse (con el dedo o el trackpad ya se desliza solo)
+      let x0 = 0, s0 = 0, id = -1, dragging = false, swallow = false;
+      track.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse' || e.button !== 0) return; id = e.pointerId; x0 = e.clientX; s0 = track.scrollLeft; });
+      track.addEventListener('pointermove', (e) => {
+        if (e.pointerId !== id) return;
+        if (!dragging && Math.abs(e.clientX - x0) > 6) { dragging = true; track.classList.add('is-drag'); track.setPointerCapture(id); }
+        if (dragging) { track.scrollLeft = s0 - (e.clientX - x0); refill(); }
+      });
+      const end = (e: PointerEvent) => {
+        if (e.pointerId !== id) return;
+        id = -1;
+        if (!dragging) return;
+        dragging = false; swallow = true; setTimeout(() => (swallow = false), 0);
+        track.classList.remove('is-drag');
+        go(Math.round(track.scrollLeft / track.clientWidth));
+      };
+      track.addEventListener('pointerup', end);
+      track.addEventListener('pointercancel', end);
+      track.addEventListener('click', (e) => { if (swallow) { e.stopPropagation(); e.preventDefault(); } }, true);
+
+      // Plegado: abierto en escritorio, cerrado en móvil
+      const setOpen = (open: boolean) => { pw.classList.toggle('is-closed', !open); toggle.setAttribute('aria-expanded', String(open)); };
+      setOpen(!matchMedia('(max-width: 760px)').matches);
+      toggle.addEventListener('click', () => setOpen(pw.classList.contains('is-closed')));
+    });
+  };
+  document.addEventListener('astro:page-load', init);
+</script>

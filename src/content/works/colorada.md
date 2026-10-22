@@ -13,6 +13,8 @@ logo: /works/colorada/logo.svg
 mark: /works/colorada/mark.svg
 featured: false
 order: 16
+widget: palette
+paletteColors: ["#F5282C", "#AE0407", "#840002", "#0B0B0A", "#FFFFFF"]
 tones: ["#240d12", "#6a1b26"]
 gallery:
   - { kind: full, ratio: "21 / 9", caption: { es: "[Imagen principal]", en: "[Main image]" } }

@@ -45,6 +45,8 @@ const works = defineCollection({
     cover: z.string().optional(), // tarjeta vertical 2:3 (índice y Home)
     logo: z.string().optional(),  // logotipo centrado en la portada animada (/works/<slug>/logo.svg)
     mark: z.string().optional(),  // isotipo / símbolo, preparado para animar junto al logotipo
+    widget: z.enum(['palette']).optional(), // widget propio de la página del proyecto (fijo abajo a la derecha)
+    paletteColors: z.array(z.string()).default([]), // colores de la marca para el widget de paleta
     headerMarquee: z.boolean().default(false), // cabecera con marquesina de logos (b) sin color, en lugar de la imagen
     hero: z.string().optional(),  // cabecera panorámica 21:9 de la página del proyecto
     tones: z.array(z.string()).default(['#1a1a1a', '#2b2b2b']).transform((a) => [a[0] ?? '#1a1a1a', a[1] ?? a[0] ?? '#2b2b2b'] as [string, string]),

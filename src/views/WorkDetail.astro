@@ -7,6 +7,7 @@ import Icon from '../components/Icon.astro';
 import Carousel, { type Slide } from '../components/Carousel.astro';
 import Marquee from '../components/Marquee.astro';
 import ProjectHero from '../components/ProjectHero.astro';
+import PaletteWidget from '../components/PaletteWidget.astro';
 import { ambientOf, isLight, toneOfHex, type Tone } from '../lib/palette';
 import { site } from '../data/site';
 import { copy, loc, paths, type Lang } from '../lib/i18n';
@@ -124,6 +125,7 @@ const alt = lang === 'es' ? 'en' : 'es';
     )}
 
   </article>
+  {d.widget === 'palette' && d.paletteColors.length > 0 && <PaletteWidget colors={d.paletteColors} lang={lang} />}
 </Base>
 
 <style>
