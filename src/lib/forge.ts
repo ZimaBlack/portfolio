@@ -31,12 +31,15 @@ export function loadArt(file: string, id: string): Art {
 export const shapeDefs = (art: Art) =>
   `<svg class="pjh__defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>${art.paths.map((d, i) => `<path id="${art.id}-${i}" d="${d}"/>`).join('')}</defs></svg>`;
 
+/** Degradado lineal: paradas [posición 0–1, color] y dirección [x1, y1, x2, y2] como fracciones del ancho y el alto (por defecto, vertical). */
+export interface Gradient { stops: [number, string][]; dir?: [number, number, number, number] }
+
 export interface ForgeOpts {
   id: string;                      // único por SVG (prefijo de sus degradados y máscaras)
   cls: string;                     // clases del <svg>
   style?: string;                  // variables CSS del <svg> (--a = opacidad de las piezas)
   label?: string;                  // texto accesible; sin él, el SVG es decorativo
-  color: string | [string, string]; // color de las piezas: un tono, o un degradado vertical [arriba, abajo]
+  color: string | Gradient;        // color de las piezas: un tono, o un degradado
   alpha?: number;                  // opacidad de las piezas
   flip?: boolean;                  // espejado horizontal
   fade?: boolean;                  // se desvanece hacia arriba y abajo
@@ -55,9 +58,13 @@ export function forge(art: Art, o: ForgeOpts): string {
   const T = o.flip ? ` transform="matrix(-1 0 0 1 ${vx * 2 + vw} 0)"` : '';
   const late = new Set(o.late ?? []);
   const area = `x="${vx}" y="${vy}" width="${vw}" height="${vh}"`;
-  const fill = Array.isArray(o.color) ? `url(#${id}-g)` : o.color;
+  const grad = typeof o.color === 'string' ? null : o.color;
+  const fill = grad ? `url(#${id}-g)` : (o.color as string);
   const defs = [
-    Array.isArray(o.color) ? `<linearGradient id="${id}-g" gradientUnits="userSpaceOnUse" x1="0" y1="${vy}" x2="0" y2="${vy + vh}"><stop offset="0" stop-color="${o.color[0]}"/><stop offset="1" stop-color="${o.color[1]}"/></linearGradient>` : '',
+    grad ? (() => {
+      const [x1, y1, x2, y2] = grad.dir ?? [0, 0, 0, 1];
+      return `<linearGradient id="${id}-g" gradientUnits="userSpaceOnUse" x1="${vx + x1 * vw}" y1="${vy + y1 * vh}" x2="${vx + x2 * vw}" y2="${vy + y2 * vh}">${grad.stops.map(([t, c]) => `<stop offset="${t}" stop-color="${c}"/>`).join('')}</linearGradient>`;
+    })() : '',
     o.fade ? `<linearGradient id="${id}-fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".12" stop-color="#fff"/><stop offset=".88" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${id}-f" maskUnits="userSpaceOnUse" ${area}><rect ${area} fill="url(#${id}-fg)"/></mask>` : '',
   ].join('');
   const pieces = art.paths
