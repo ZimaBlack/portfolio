@@ -11,7 +11,7 @@ import { join } from 'node:path';
 export const TIMING = {
   enter: 2.0,   // entran las alas: cuando los vectores están por ponerse dorados
   appear: 3.7,  // rombo y nombre llegan mientras las alas terminan de juntarse
-  settle: 4.6,  // ya armado todo: los vectores se desenfocan un poco más y bajan su opacidad
+  settle: 4.2,  // ya armado todo: los vectores bajan su opacidad
   shine: 5.2,   // un único brillo recorre toda la composición, de izquierda a derecha
 };
 export const timingVars = () => `--t-enter:${TIMING.enter}s;--t-appear:${TIMING.appear}s;--t-settle:${TIMING.settle}s;--t-shine:${TIMING.shine}s`;
