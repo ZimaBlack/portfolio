@@ -2,7 +2,7 @@
 // Portada animada de un proyecto: pantalla completa, con el logotipo centrado. Tres modos, según el proyecto:
 //  · simple: el logotipo (imagen) entra con un fundido; el isotipo (`mark`) queda oculto y centrado, listo para animar;
 //  · reactivo (`reactive`): el SVG se inserta en la página y los colores indicados siguen al widget de paleta;
-//  · ensamblar (`assemble`): las piezas del logotipo llegan de los lados, se unen y se vuelven doradas (ver src/lib/forge.ts).
+//  · ensamblar (`assemble`): las alas del logotipo llegan de los lados y se juntan; después aparecen el rombo y el nombre, entre un ornamento (ver src/lib/forge.ts).
 // Las luces del fondo pueden ser un degradado suave o una trama de semitono (`halftone`).
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -24,37 +24,28 @@ if (!assemble && reactive.length && isSvg(logo)) {
 }
 
 // ── Modo ensamblar: iso (alas + rombo), nombre y un ornamento que se repite a los lados
-const DARK = '#05090F';  // color inicial de las piezas: casi negro azulado (con "multiplicar" se lee como sombra)
-const ALPHA = 0.36;      // opacidad común de todas las piezas oscuras
 const GOLD_ORN: [string, string] = ['#A8A152', '#58542F']; // el matiz del oro del logotipo, más claro arriba y más oscuro abajo
 let defs = '', logoSvg = '', nameSvg = '', orn: string[] = [];
 if (assemble && isSvg(logo)) {
   const logoArt = loadArt(logo, 'pjl');
   defs += shapeDefs(logoArt);
-  logoSvg = forge(logoArt, { id: 'pjm', cls: 'pjh__logo', label: title, base: DARK, alpha: ALPHA, gold: logoArt.color, reveal: 'fade', parts: true, late: [2], vig: { cx: 148, cy: 190, r: 230 }, shine: 1 });
+  logoSvg = forge(logoArt, { id: 'pjm', cls: 'pjh__logo', label: title, color: logoArt.color, parts: true, late: [2] });
 
   if (isSvg(mark)) {
     const nameArt = loadArt(mark!, 'pjn');
     defs += shapeDefs(nameArt);
-    nameSvg = forge(nameArt, { id: 'pjt', cls: 'pjh__name', base: DARK, alpha: ALPHA, gold: nameArt.color, reveal: 'bars', bars: 'last', late: nameArt.paths.map((_, i) => i), vig: { cx: 238, cy: 321, r: 290 }, shine: 1 });
+    nameSvg = forge(nameArt, { id: 'pjt', cls: 'pjh__name', color: nameArt.color, late: nameArt.paths.map((_, i) => i) });
   }
 
   if (isSvg(ornament)) {
     const ornArt = loadArt(ornament, 'pjo');
     defs += shapeDefs(ornArt);
-    // Patrón: el par central (k = 0) enmarca el logotipo y es el único con destello de revelado; a los lados se repite, cada vez más tenue
-    const alpha = [ALPHA, 0.2, 0.09], shine = [0.8, 0.5, 0.25];
-    const [, , VW, VH] = ornArt.vb;
-    const half = (k: number, left: boolean) => {
-      const n = Math.abs(k);
-      // La viñeta del brillo se centra en el centro de la portada (en unidades del SVG): el brillo se apaga hacia los extremos
-      const cx = left ? VW + (0.033 - k * 0.6672) * VH : -(k * 0.6672 + 0.033) * VH;
-      return forge(ornArt, {
-        id: `pjo${k + 2}${left ? 'l' : 'r'}`, cls: `pjh__orn pjh__orn--${left ? 'l' : 'r'}`, style: `--k:${k};--od:${(0.5 + 0.14 * n).toFixed(2)}s`,
-        base: DARK, alpha: alpha[n], goldAlpha: alpha[n], gold: GOLD_ORN, reveal: k === 0 ? 'bars' : 'fade', bars: 'two',
-        flip: left, fade: true, screen: true, vig: { cx, cy: VH / 2, r: 175 }, shine: shine[n],
-      });
-    };
+    // Patrón: el par central (k = 0) enmarca el logotipo; a los lados se repite, cada vez más tenue
+    const alpha = [0.36, 0.2, 0.09];
+    const half = (k: number, left: boolean) => forge(ornArt, {
+      id: `pjo${k + 2}${left ? 'l' : 'r'}`, cls: `pjh__orn pjh__orn--${left ? 'l' : 'r'}`, style: `--k:${k};--od:${(0.5 + 0.14 * Math.abs(k)).toFixed(2)}s`,
+      color: GOLD_ORN, alpha: alpha[Math.abs(k)], flip: left, fade: true, screen: true,
+    });
     orn = [-2, -1, 0, 1, 2].flatMap((k) => [half(k, true), half(k, false)]);
   }
 }
@@ -87,11 +78,6 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   .pjh__bg { position: absolute; inset: 0; z-index: -1; transition: --ax 1.1s var(--ease), --ay 1.1s var(--ease), --bx 1.1s var(--ease), --by 1.1s var(--ease), --ga .8s linear, --gb .8s linear;
     background: radial-gradient(ellipse 62% 70% at var(--ax) var(--ay), color-mix(in srgb, var(--ga) 95%, transparent), transparent 72%),
                 radial-gradient(ellipse 70% 62% at var(--bx) var(--by), color-mix(in srgb, var(--gb) 90%, transparent), transparent 74%); }
-  /* Ensamblar: una luz leve y azulada al centro; sobre ella la "sombra" (multiplicar) se lee */
-  .pjh[data-assemble] .pjh__bg { background:
-    radial-gradient(ellipse 36% 44% at 50% 50%, rgb(150 180 225 / .11), transparent 72%),
-    radial-gradient(ellipse 62% 70% at var(--ax) var(--ay), color-mix(in srgb, var(--ga) 95%, transparent), transparent 72%),
-    radial-gradient(ellipse 70% 62% at var(--bx) var(--by), color-mix(in srgb, var(--gb) 90%, transparent), transparent 74%); }
   /* Semitono: el degradado se reemplaza por una trama de puntos dibujada en el canvas (se desvanece bajo el menú, para que se lea) */
   .pjh[data-halftone] .pjh__bg { display: none; }
   .pjh__ht { position: absolute; left: 0; top: 0; z-index: -1; pointer-events: none; animation: ht-in 1.8s ease both;
@@ -130,41 +116,21 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   .pjh__orn--l { right: calc(50% - var(--k) * var(--pw) + var(--og) / 2); }
   .pjh__orn--r { left: calc(50% + var(--k) * var(--pw) + var(--og) / 2); }
 
-  /* ── Piezas. Los tiempos salen de las variables --t-* (src/lib/forge.ts). Nada anima la raíz del SVG (filtro, transformación u
-     opacidad): eso aislaría el SVG y cortaría el efecto multiplicar, con un parpadeo al terminar cada animación. */
-  .pj-base { mix-blend-mode: multiply; transform-box: fill-box; transform-origin: center; } /* "sombra": oscurece lo que hay detrás */
-  .pj-base[data-part='0'] { animation: pj-from-left 1.8s var(--t-enter) both; }
-  .pj-base[data-part='1'] { animation: pj-from-right 1.8s var(--t-enter) both; }
-  .pj-late { animation: pj-appear .9s var(--t-appear) var(--ease, ease) both; } /* rombo y nombre: llegan tras la 1.ª pasada, aún oscuros */
-  .pjh__orn .pj-base { animation: pj-orn-in 1.8s var(--od, .5s) cubic-bezier(.22, 1, .36, 1) both; }
+  /* ── Piezas. Los tiempos salen de las variables --t-* (src/lib/forge.ts). */
+  .pj-piece { transform-box: fill-box; transform-origin: center; }
+  .pj-piece[data-part='0'] { animation: pj-from-left 1.8s var(--t-enter) both; }
+  .pj-piece[data-part='1'] { animation: pj-from-right 1.8s var(--t-enter) both; }
+  .pj-late { animation: pj-appear .9s var(--t-appear) var(--ease, ease) both; } /* rombo y nombre: llegan cuando las alas se juntan */
+  .pjh__orn .pj-piece { animation: pj-orn-in 1.8s var(--od, .5s) cubic-bezier(.22, 1, .36, 1) both; }
+  .pj-screen { mix-blend-mode: screen; } /* el ornamento se funde con el fondo */
   /* Las alas llegan desenfocadas, aceleran hacia el centro, chocan (se pasan un poco), rebotan y se asientan */
   @keyframes pj-from-left { 0% { transform: translateX(-70vw); opacity: 0; filter: blur(20px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 30% { opacity: var(--a, 1); } 68% { transform: translateX(9px); filter: none; animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 84% { transform: translateX(-3px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: var(--a, 1); filter: none; } }
   @keyframes pj-from-right { 0% { transform: translateX(70vw); opacity: 0; filter: blur(20px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 30% { opacity: var(--a, 1); } 68% { transform: translateX(-9px); filter: none; animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 84% { transform: translateX(3px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: var(--a, 1); filter: none; } }
   @keyframes pj-appear { from { opacity: 0; filter: blur(14px); transform: scale(.6); } to { opacity: var(--a, 1); filter: none; transform: none; } }
   @keyframes pj-orn-in { from { transform: translateX(170px); opacity: 0; filter: blur(16px); } to { transform: none; opacity: var(--a, 1); filter: none; } }
 
-  /* ── Oro: llega encima, sin mezcla (en el ornamento, "pantalla"), por fundido o detrás de la cortina del destello */
-  .pj-gold { opacity: var(--g, 1); }
-  .pj-screen { mix-blend-mode: screen; }
-  .pj-gold--fade { opacity: 0; animation: pj-gold-in .8s calc(var(--t-last) + .1s) ease-out both; }
-  @keyframes pj-gold-in { to { opacity: var(--g, 1); } }
-
-  /* ── Destellos de barras planas: el de revelado (1.ª y última pasada; sólo la última en el nombre) y un brillo sutil que se repite */
-  .pj-flash { opacity: 0; animation: pj-flash 1s var(--t-flash) linear 2 both; }
-  .pj-flash--last { animation-delay: var(--t-last); animation-iteration-count: 1; }
-  .pj-wipe { animation: pj-wipe .75s var(--t-last) cubic-bezier(.45, .05, .55, .95) both; } /* el oro se revela detrás de la primera barra */
-  .pj-shine { opacity: 0; animation: pj-shine 11s var(--t-shine) linear infinite; }
-  @keyframes pj-flash { 0% { translate: 0 0; opacity: 1; animation-timing-function: cubic-bezier(.45, .05, .55, .95); } 75% { translate: var(--gw) 0; opacity: 1; } 75.1%, 100% { translate: var(--gw) 0; opacity: 0; } }
-  @keyframes pj-wipe { from { translate: 0 0; } to { translate: var(--gw) 0; } }
-  @keyframes pj-shine { 0% { translate: 0 0; opacity: 0; } 1.5% { opacity: .3; } 11% { translate: var(--gw) 0; opacity: .3; } 12%, 100% { translate: var(--gw) 0; opacity: 0; } }
-
-  /* ── Movimiento reducido: todo se ve ya armado y dorado, sin destellos */
-  @media (prefers-reduced-motion: reduce) {
-    .pj-base, .pj-late, .pj-gold--fade, .pj-flash, .pj-wipe, .pj-shine { animation: none !important; }
-    .pj-gold--fade { opacity: var(--g, 1); }
-    .pj-wipe { translate: var(--gw) 0; }
-    .pj-flash, .pj-shine { display: none; }
-  }
+  /* ── Movimiento reducido: todo se ve ya armado */
+  @media (prefers-reduced-motion: reduce) { .pj-piece, .pj-late { animation: none !important; } }
 </style>
 
 <script>

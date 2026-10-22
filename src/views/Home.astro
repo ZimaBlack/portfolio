@@ -69,7 +69,8 @@ const alt = lang === 'es' ? 'en' : 'es';
 </Base>
 
 <style>
-  .home__rest { background: linear-gradient(to bottom, rgb(0 0 0 / 0), rgb(0 0 0 / .58) 18rem); }
+  /* El velo entra suave bajo el hero y sale suave antes del footer, así el color del footer y el de la página son uno solo */
+  .home__rest { background: linear-gradient(to bottom, rgb(0 0 0 / 0), rgb(0 0 0 / .58) 18rem, rgb(0 0 0 / .58) calc(100% - 18rem), rgb(0 0 0 / 0)); }
   @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .home__rest { background: none; } } /* el velo es para fondo oscuro */
   .hero { position: relative; overflow: hidden; min-height: 100svh; display: flex; align-items: flex-end; padding-block: 7rem 3rem; }
   .hero__in { position: relative; z-index: 3; display: grid; align-content: end; }
