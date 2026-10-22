@@ -29,7 +29,7 @@ function forge(svg: string, id: string, delay: number, opts: { base?: string; pa
   const span = 0.31 * vw, travel = vw + span + skew * 2;
   const tx = (vx - span - skew * 1.1).toFixed(1);
   const sweep = (key: string, d: number) => `<mask id="${id}-${key}" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}"><g class="pj-wipe" style="--gw:${travel.toFixed(1)}px;--gd:${d}s"><g transform="translate(${tx} ${vy}) skewX(-22)"><rect x="-4000" y="${(-vh * 0.1).toFixed(1)}" width="${(4000 + 0.14 * vw).toFixed(1)}" height="${(vh * 1.2).toFixed(1)}" fill="#fff"/></g></g></mask>`;
-  const pass = 0.95; // segundos por pasada de las barras
+  const pass = 0.8; // segundos por pasada de las barras (en sincronía con .pj-flash y .pj-wipe)
   const lastPass = delay + pass * ((opts.passes ?? 1) - 1);
   const extra = `<defs>
     <mask id="${id}-m" maskUnits="userSpaceOnUse" x="${vx}" y="${vy}" width="${vw}" height="${vh}">${all.map((d) => `<path d="${d}" fill="#fff"/>`).join('')}</mask>
@@ -50,9 +50,9 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
     svg = svg.replace(new RegExp(`fill="${hex}"`, 'gi'), `style="fill:var(--pw-${i},${hex})"`);
   });
   // Para ensamblar: cada trazo recibe su número (0 = ala izquierda, 1 = ala derecha, 2 = centro), en el orden del archivo
-  if (assemble) { let n = 0; svg = svg.replace(/<path\b/g, () => `<path data-part="${n++}"`); svg = forge(svg, 'pjm', 2.55, { base: '#0B141E', passes: 3, late: [2] }); }
+  if (assemble) { let n = 0; svg = svg.replace(/<path\b/g, () => `<path data-part="${n++}"`); svg = forge(svg, 'pjm', 2.0, { base: '#0B141E', passes: 3, late: [2] }); }
   if (assemble && mark && mark.toLowerCase().endsWith('.svg')) {
-    name = forge(readFileSync(join(process.cwd(), 'public', mark), 'utf8'), 'pjn', 5.75, { passes: 1 })
+    name = forge(readFileSync(join(process.cwd(), 'public', mark), 'utf8'), 'pjn', 4.3, { passes: 1 })
       .replace(/<svg\b([^>]*)>/i, (_m, x) => `<svg${x.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__name" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
   }
   inline = svg.replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} class="pjh__logo" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`);
@@ -60,6 +60,7 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
 ---
 <section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]}`} aria-label={title}>
   <div class="pjh__bg" data-pj-bg aria-hidden="true"></div>
+  {assemble && <div class="pjh__lit" aria-hidden="true"></div>}
   {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
   <div class="pjh__stage" data-pj-stage>
     {mark && !name && <img class="pjh__mark" data-pj-mark src={src(mark)} alt="" aria-hidden="true" decoding="async" draggable="false" />}
@@ -89,28 +90,29 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   /* El logotipo reactivo cambia de color con suavidad (también al pasar a blanco y negro) */
   .pjh__stage > :global(svg.pjh__logo) :global(path) { transition: fill .7s linear; }
   /* Ensamblar: las alas llegan desde cada lado y se juntan; al terminar, aparece el rombo central */
-  .pjh[data-assemble] .pjh__stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(1rem, 3.4vh, 1.9rem); height: auto; animation: pj-glow-in 1.4s 6.1s ease-out both, pj-glow-pulse 2.6s 7.5s ease-in-out infinite alternate forwards; }
-  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__logo) { overflow: visible; height: min(30vh, 14rem); width: auto; transform-origin: 50% 62%; animation: pj-strike .6s 1.86s ease-out both; }
-  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__name) { width: min(64vw, 16.5rem); height: auto; flex: none; animation: pj-name 1.1s 5.25s var(--ease, ease) both; }
+  .pjh[data-assemble] .pjh__stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(1rem, 3.4vh, 1.9rem); height: auto; }
+  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__logo) { overflow: visible; height: min(30vh, 14rem); width: auto; transform-origin: 50% 62%; animation: pj-strike .55s 1.46s ease-out both; }
+  .pjh[data-assemble] .pjh__stage > :global(svg.pjh__name) { width: min(64vw, 16.5rem); height: auto; flex: none; animation: pj-name 1s 3.75s var(--ease, ease) both; }
   /* "Forja precisa": las piezas nacen en acero azulado, encajan con un leve golpe y un destello de barras planas pasa un par de veces;
      mientras cruza, el oro aparece por debajo (en sincronía con el reflejo). El nombre llega ya dorado y recibe un solo destello. */
-  .pjh :global(.pj-flash) { opacity: 0; animation: pj-flash .95s var(--gd, 3.15s) linear var(--gn, 1) both; }
-  .pjh :global(.pj-wipe) { animation: pj-wipe .684s var(--gd, 3.15s) linear both; } /* el oro se revela detrás de la primera barra */
+  .pjh :global(.pj-flash) { opacity: 0; animation: pj-flash .8s var(--gd, 3.15s) linear var(--gn, 1) both; }
+  .pjh :global(.pj-wipe) { animation: pj-wipe .576s var(--gd, 3.15s) linear both; } /* el oro se revela detrás de la primera barra */
   @keyframes pj-flash { 0% { translate: 0 0; opacity: 1; } 72% { translate: var(--gw) 0; opacity: 1; } 72.1%, 100% { translate: var(--gw) 0; opacity: 0; } }
   @keyframes pj-wipe { from { translate: 0 0; } to { translate: var(--gw) 0; } }
-  /* Glow final: se enciende y después pulsa, en un tono apenas más claro que el dorado */
-  @keyframes pj-glow-in { from { filter: drop-shadow(0 0 0 rgb(240 233 150 / 0)); } to { filter: drop-shadow(0 0 18px rgb(240 233 150 / .4)); } }
-  @keyframes pj-glow-pulse { from { filter: drop-shadow(0 0 18px rgb(240 233 150 / .4)); } to { filter: drop-shadow(0 0 32px rgb(244 238 168 / .7)); } }
+  /* Final: en lugar de un halo sobre el logotipo, el ambiente mismo se ilumina con una luz dorada que sube desde detrás */
+  .pjh__lit { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; animation: pj-lit 2.2s 4.3s ease-out both;
+    background: radial-gradient(ellipse 62% 56% at 50% 46%, rgb(207 198 92 / .34), rgb(207 198 92 / .12) 48%, transparent 74%); }
+  @keyframes pj-lit { from { opacity: 0; } to { opacity: 1; } }
   @keyframes pj-strike { 0% { transform: scale(1) translateY(0); } 30% { transform: scale(1.045) translateY(3px); } 62% { transform: scale(.992) translateY(-1px); } 100% { transform: scale(1) translateY(0); } }
   @keyframes pj-name { from { opacity: 0; filter: blur(10px); transform: translateY(10px); } to { opacity: 1; filter: none; transform: none; } }
   .pjh[data-assemble] :global(svg.pjh__logo path) { transform-box: fill-box; transform-origin: center; }
-  .pjh[data-assemble] :global([data-part='0']) { animation: pj-from-left 2.1s .35s both; }
-  .pjh[data-assemble] :global([data-part='1']) { animation: pj-from-right 2.1s .35s both; }
+  .pjh[data-assemble] :global([data-part='0']) { animation: pj-from-left 1.7s .3s both; }
+  .pjh[data-assemble] :global([data-part='1']) { animation: pj-from-right 1.7s .3s both; }
   /* Las alas llegan con menos opacidad y desenfocadas, aceleran hacia el centro, chocan (se pasan un poco), rebotan y se asientan */
   @keyframes pj-from-left { 0% { transform: translateX(-70vw); opacity: 0; filter: blur(26px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 24% { opacity: .55; } 68% { transform: translateX(16px); opacity: .6; filter: blur(0); animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 70% { opacity: 1; } 84% { transform: translateX(-6px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: 1; filter: blur(0); } }
   @keyframes pj-from-right { 0% { transform: translateX(70vw); opacity: 0; filter: blur(26px); animation-timing-function: cubic-bezier(.55, 0, .85, .45); } 24% { opacity: .55; } 68% { transform: translateX(-16px); opacity: .6; filter: blur(0); animation-timing-function: cubic-bezier(.2, .8, .4, 1); } 70% { opacity: 1; } 84% { transform: translateX(6px); animation-timing-function: ease-in-out; } 100% { transform: none; opacity: 1; filter: blur(0); } }
   @keyframes pjh-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
-  @media (prefers-reduced-motion: reduce) { .pjh__logo, .pjh[data-assemble] :global([data-part]), .pjh :global(.pj-flash), .pjh :global(.pj-wipe), .pjh :global(.pjh__name) { animation: none !important; } .pjh[data-assemble] .pjh__stage { animation: none; filter: drop-shadow(0 0 22px rgb(240 233 150 / .5)); } .pjh :global(.pj-flash) { display: none; } .pjh :global(.pj-wipe) { translate: var(--gw) 0; } }
+  @media (prefers-reduced-motion: reduce) { .pjh__logo, .pjh[data-assemble] :global([data-part]), .pjh :global(.pj-flash), .pjh :global(.pj-wipe), .pjh :global(.pjh__name) { animation: none !important; } .pjh__lit { animation: none; opacity: 1; } .pjh :global(.pj-flash) { display: none; } .pjh :global(.pj-wipe) { translate: var(--gw) 0; } }
 </style>
 
 <style is:global>
