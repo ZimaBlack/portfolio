@@ -51,11 +51,11 @@ const last = Math.max(...slides.map((s) => s.n)); // la lámina 00 no cuenta en 
             const R = s.swap ? { src: s.a, k: s.sizeA, dy: s.dyA, f: 'a' } : { src: s.b, k: s.sizeB, dy: s.dyB, f: 'b' };
             return [
               <figure class="cell cell--a" style={vars(L.k, L.dy)}>
-                {L.src ? <img src={L.src} alt={s.alt} loading="lazy" decoding="async" draggable="false" />
+                {L.src ? <><img src={L.src} alt={s.alt} loading="lazy" decoding="async" draggable="false" /><span class="sheen" aria-hidden="true" style={`--logo:url("${L.src}")`}></span></>
                   : <div class="ph"><b>{pad(s.n)}{L.f}</b><span>{labels.png}</span><strong>1800 × 1200 px</strong><em>3:2 · 8/12</em></div>}
               </figure>,
               <figure class="cell cell--b" style={vars(R.k, R.dy)}>
-                {R.src ? <img src={R.src} alt={s.alt} loading="lazy" decoding="async" draggable="false" />
+                {R.src ? <><img src={R.src} alt={s.alt} loading="lazy" decoding="async" draggable="false" /><span class="sheen" aria-hidden="true" style={`--logo:url("${R.src}")`}></span></>
                   : <div class="ph"><b>{pad(s.n)}{R.f}</b><span>{labels.png}</span><strong>900 × 1200 px</strong><em>3:4 · 4/12</em></div>}
               </figure>,
             ];
@@ -122,11 +122,19 @@ const last = Math.max(...slides.map((s) => s.n)); // la lámina 00 no cuenta en 
 
   /* Grilla de 12 columnas: la lámina "a" ocupa 8 y la "b" ocupa 4 */
   .slide__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); }
+  .cell > img, .cell > .sheen { grid-area: 1 / 1; }
+  /* Destello diagonal sobre el logo (recortado con su propia forma). Sólo se dispara cuando se llega a la lámina desde la marquesina. */
+  .sheen { width: min(94%, calc(var(--bw, 40%) * var(--k, 1))); height: min(94%, calc(var(--bh, 30%) * var(--k, 1))); translate: 0 var(--dy, 0); pointer-events: none; opacity: 0;
+    -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat;
+    background: linear-gradient(115deg, transparent 38%, rgb(255 255 255 / .85) 50%, transparent 62%) 130% 0 / 260% 100% no-repeat; }
+  .slide.is-sheen .sheen { animation: car-sheen 1.3s .75s ease-out 1 both; }
+  @keyframes car-sheen { 0% { opacity: 0; background-position: 130% 0; } 15% { opacity: .6; } 85% { opacity: .6; } 100% { opacity: 0; background-position: -30% 0; } }
   .cell--a { grid-column: span 8; }
   .cell--b { grid-column: span 4; }
   .cell { margin: 0; height: 75vh; height: 75svh; min-height: 20rem; display: grid; place-items: center; overflow: hidden; }
   /* Cada logo ocupa como máximo el 30% del alto y el 40% del ancho del cuadro, centrado; los SVG escalan sin perder nitidez */
   /* Tamaño base 40% × 30%; `--k` (por lámina y por logo, definido en el archivo del proyecto) lo multiplica, sin pasar del 94% */
+  .cell { --bw: 40%; --bh: 30%; }
   .cell img { --bw: 40%; --bh: 30%; width: min(94%, calc(var(--bw) * var(--k, 1))); height: min(94%, calc(var(--bh) * var(--k, 1))); object-fit: contain; user-select: none; }
   .cell > :global(.intro__logo) { width: min(94%, calc(var(--bw, 40%) * var(--k, 1))); height: auto; aspect-ratio: 465 / 338; color: var(--fg); }
   .intro__title { margin: 0; display: grid; gap: .5rem; justify-items: center; text-align: center; font-size: clamp(.95rem, 1.5vw, 1.25rem); font-weight: 700; letter-spacing: .3em; text-transform: uppercase; line-height: 1.4; padding-left: .3em; }
@@ -161,7 +169,7 @@ const last = Math.max(...slides.map((s) => s.n)); // la lámina 00 no cuenta en 
     .car[data-looped] .slide--intro .cell--a { display: none; }
     .car[data-looped] .slide--intro .cell--b { display: grid; grid-column: 1 / -1; }
     .cell--a { grid-column: 1 / -1; }
-    .cell img { --bw: 56%; }
+    .cell, .cell img { --bw: 56%; }
     .ph { padding: .5rem; gap: .3rem; } .ph span, .ph em { display: none; } .ph strong { font-size: .78rem; text-align: center; } .ph b { font-size: 1.1rem; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -197,7 +205,15 @@ const last = Math.max(...slides.map((s) => s.n)); // la lámina 00 no cuenta en 
       slides.forEach((s, k) => s.toggleAttribute('inert', k !== 0));
       prev.disabled = next.disabled = slides.length < 2;
 
-      car.addEventListener('car:goto', (e) => show((e as CustomEvent<number>).detail)); // lo usa la marquesina de la cabecera
+      // Lo usa la marquesina de la cabecera: lleva a la lámina de ese logo y le dispara el destello (sólo en este caso)
+      car.addEventListener('car:goto', (e) => {
+        show((e as CustomEvent<number>).detail);
+        const slide = slides[i];
+        slide.classList.remove('is-sheen');
+        void slide.offsetWidth;
+        slide.classList.add('is-sheen');
+        window.setTimeout(() => slide.classList.remove('is-sheen'), 3000);
+      });
       prev.addEventListener('click', () => show(i - 1));
       next.addEventListener('click', () => show(i + 1));
       stage.addEventListener('keydown', (e) => {
