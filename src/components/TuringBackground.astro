@@ -1,7 +1,7 @@
 ---
-// Fondo del sitio: patrón de Turing a pantalla completa, detrás de todo. En la Home responde al cursor (como el laboratorio; no actúa sobre
-// el footer) y se ve a pleno en el hero principal; en el resto del sitio es un patrón asentado al 15 %. El preset se guarda desde /lab/
-// en src/data/background.json.
+// Fondo de la Home: patrón de Turing a pantalla completa, detrás de todo, que responde al cursor como en el laboratorio (no actúa sobre el
+// footer). Se ve a pleno en el hero principal y al 15 % en el resto de la Home. En las demás páginas no existe (se oculta). El preset se
+// guarda desde /lab/ en src/data/background.json.
 import preset from '../data/background.json';
 ---
 <canvas class="tbg" data-tbg data-preset={JSON.stringify(preset)} aria-hidden="true" transition:persist="turing-bg"></canvas>
@@ -9,6 +9,7 @@ import preset from '../data/background.json';
 <style>
   .tbg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: .15; transition: opacity 1.2s var(--ease); }
   .tbg.is-hero { opacity: 1; }
+  .tbg.is-off { display: none; } /* fuera de la Home */
   /* Pensado para fondo oscuro */
   @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .tbg { display: none; } }
 </style>
@@ -19,7 +20,7 @@ import preset from '../data/background.json';
   let bg: TuringBackground | null = null;
   let io: IntersectionObserver | null = null;
 
-  // En cada página: con hero principal (Home), el fondo responde al cursor y está a pleno mientras el hero se ve; sin él, queda asentado al 15 %.
+  // En cada página: con hero principal (Home) el fondo está encendido (a pleno mientras el hero se ve); en las demás, apagado y oculto.
   const wire = () => {
     const canvas = document.querySelector<HTMLCanvasElement>('[data-tbg]');
     if (!canvas) return;
@@ -28,9 +29,10 @@ import preset from '../data/background.json';
     canvas.classList.remove('is-hero');
     bg.setStillFade(false);
     const hero = document.querySelector<HTMLElement>('.hero');
-    bg.setMode(hero ? 'cursor' : 'ambient');
+    canvas.classList.toggle('is-off', !hero);
+    bg.setActive(!!hero);
     if (!hero) return;
-    io = new IntersectionObserver(([e]) => { canvas.classList.toggle('is-hero', e.isIntersecting); bg?.setStillFade(e.isIntersecting); }, { threshold: 0.35 }); // el destello y desvanecido por cursor quieto, sólo con el hero a la vista
+    io = new IntersectionObserver(([e]) => { canvas.classList.toggle('is-hero', e.isIntersecting); bg?.setStillFade(e.isIntersecting); }, { threshold: 0.35 }); // el brillo y apagado por cursor quieto, sólo con el hero a la vista
     io.observe(hero);
   };
   document.addEventListener('astro:page-load', wire);
