@@ -2,7 +2,8 @@
 // Toma un SVG de trazos sueltos y arma otro, listo para animar con CSS (src/components/ProjectHero.astro):
 //  · cada trazo se define una sola vez (<path id>) en un SVG oculto y se reutiliza con <use>;
 //  · cada pieza lleva su número (data-part) para animarla por separado, y las "tardías" llegan después de las demás;
-//  · el color final es un tono, o un degradado vertical.
+//  · el color final es un tono, o un degradado vertical;
+//  · un único brillo de barras planas puede cruzar cada SVG (recortado con su forma); el retraso de cada uno (--sd) lo hace parte de una sola ola.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -11,8 +12,9 @@ export const TIMING = {
   enter: 2.0,   // entran las alas: cuando los vectores están por ponerse dorados
   appear: 3.7,  // rombo y nombre llegan mientras las alas terminan de juntarse
   settle: 4.6,  // ya armado todo: los vectores se desenfocan un poco más y bajan su opacidad
+  shine: 5.2,   // un único brillo recorre toda la composición, de izquierda a derecha
 };
-export const timingVars = () => `--t-enter:${TIMING.enter}s;--t-appear:${TIMING.appear}s;--t-settle:${TIMING.settle}s`;
+export const timingVars = () => `--t-enter:${TIMING.enter}s;--t-appear:${TIMING.appear}s;--t-settle:${TIMING.settle}s;--t-shine:${TIMING.shine}s`;
 
 export type ViewBox = [number, number, number, number];
 export interface Art { id: string; vb: ViewBox; paths: string[]; color: string }
@@ -41,7 +43,11 @@ export interface ForgeOpts {
   screen?: boolean;                // se funde con el fondo (mezcla "pantalla")
   parts?: boolean;                 // numera los trazos (data-part) para animar las alas por separado
   late?: number[];                 // trazos que llegan después de los demás (rombo, nombre)
+  shine?: number;                  // intensidad (0–1) del brillo de barras que lo cruza; sin él, no hay brillo
 }
+
+const SKEW = Math.tan((22 * Math.PI) / 180);
+const BARS = [[0, 0.07], [0.12, 0.025], [0.19, 0.12]]; // posición y ancho de las barras (fracción del ancho)
 
 export function forge(art: Art, o: ForgeOpts): string {
   const id = o.id;
@@ -58,6 +64,15 @@ export function forge(art: Art, o: ForgeOpts): string {
     .map((_, i) => `<use href="#${art.id}-${i}" class="pj-piece${late.has(i) ? ' pj-late' : ''}" fill="${fill}"${o.alpha ? ` opacity="${o.alpha}"` : ''}${o.parts ? ` data-part="${i}"` : ''}/>`)
     .join('');
   const a11y = o.label ? `role="img" aria-label="${o.label.replace(/"/g, '&quot;')}"` : 'aria-hidden="true"';
+  // Brillo: barras planas en diagonal, recortadas con la forma de las piezas
+  let shine = '';
+  if (o.shine) {
+    const span = 0.31 * vw, travel = vw + span + vh * SKEW * 2;
+    const origin = `translate(${(vx - span - vh * SKEW * 1.1).toFixed(1)} ${vy}) skewX(-22)`;
+    const bars = BARS.map(([x, w]) => `<rect x="${(x * vw).toFixed(1)}" y="${(-vh * 0.1).toFixed(1)}" width="${(w * vw).toFixed(1)}" height="${(vh * 1.2).toFixed(1)}" fill="#fff" fill-opacity=".88"/>`).join('');
+    const uses = art.paths.map((_, i) => `<use href="#${art.id}-${i}" fill="#fff"/>`).join('');
+    shine = `<mask id="${id}-m" maskUnits="userSpaceOnUse" ${area}><g${T}>${uses}</g></mask><g mask="url(#${id}-m)" opacity="${o.shine}"><g class="pj-shine" style="--gw:${travel.toFixed(1)}px"><g transform="${origin}">${bars}</g></g></g>`;
+  }
   const group = `<g${T}${o.screen ? ' class="pj-screen"' : ''}${o.fade ? ` mask="url(#${id}-f)"` : ''}>${pieces}</g>`;
-  return `<svg viewBox="${vx} ${vy} ${vw} ${vh}" fill="none" xmlns="http://www.w3.org/2000/svg" class="${o.cls}" style="--a:${o.alpha ?? 1};${o.style ?? ''}" ${a11y}><defs>${defs}</defs>${group}</svg>`;
+  return `<svg viewBox="${vx} ${vy} ${vw} ${vh}" fill="none" xmlns="http://www.w3.org/2000/svg" class="${o.cls}" style="--a:${o.alpha ?? 1};${o.style ?? ''}" ${a11y}><defs>${defs}</defs>${group}${shine}</svg>`;
 }

@@ -25,26 +25,28 @@ if (!assemble && reactive.length && isSvg(logo)) {
 
 // ── Modo ensamblar: iso (alas + rombo), nombre y un ornamento que se repite a los lados
 const GOLD_ORN: [string, string] = ['#A8A152', '#58542F']; // el matiz del oro del logotipo, más claro arriba y más oscuro abajo
+/** Retraso (s) del brillo según la posición horizontal (en alturas del ornamento, desde el centro): así los brillos de cada SVG forman una sola ola de izquierda a derecha. */
+const wave = (x: number) => ((x + 1.55) / 3.1 * 1.3).toFixed(2);
 let defs = '', logoSvg = '', nameSvg = '', orn: string[] = [];
 if (assemble && isSvg(logo)) {
   const logoArt = loadArt(logo, 'pjl');
   defs += shapeDefs(logoArt);
-  logoSvg = forge(logoArt, { id: 'pjm', cls: 'pjh__logo', label: title, color: logoArt.color, parts: true, late: [2] });
+  logoSvg = forge(logoArt, { id: 'pjm', cls: 'pjh__logo', style: `--sd:${wave(0)}s`, label: title, color: logoArt.color, parts: true, late: [2], shine: 0.95 });
 
   if (isSvg(mark)) {
     const nameArt = loadArt(mark!, 'pjn');
     defs += shapeDefs(nameArt);
-    nameSvg = forge(nameArt, { id: 'pjt', cls: 'pjh__name', color: nameArt.color, late: nameArt.paths.map((_, i) => i) });
+    nameSvg = forge(nameArt, { id: 'pjt', cls: 'pjh__name', style: `--sd:${wave(0)}s`, color: nameArt.color, late: nameArt.paths.map((_, i) => i), shine: 0.95 });
   }
 
   if (isSvg(ornament)) {
     const ornArt = loadArt(ornament, 'pjo');
     defs += shapeDefs(ornArt);
     // Patrón: el par central (k = 0) enmarca el logotipo; a los lados se repite, cada vez más tenue
-    const alpha = [0.42, 0.24, 0.12];
+    const alpha = [0.42, 0.24, 0.12], shine = [0.9, 0.6, 0.35];
     const half = (k: number, left: boolean) => forge(ornArt, {
-      id: `pjo${k + 2}${left ? 'l' : 'r'}`, cls: `pjh__orn pjh__orn--${left ? 'l' : 'r'}`, style: `--k:${k};--od:${(0.3 + 0.2 * Math.abs(k)).toFixed(2)}s`,
-      color: GOLD_ORN, alpha: alpha[Math.abs(k)], flip: left, fade: true, screen: true,
+      id: `pjo${k + 2}${left ? 'l' : 'r'}`, cls: `pjh__orn pjh__orn--${left ? 'l' : 'r'}`, style: `--k:${k};--od:${(0.3 + 0.2 * Math.abs(k)).toFixed(2)}s;--sd:${wave(k * 0.6672 + (left ? -0.1708 : 0.1708))}s`,
+      color: GOLD_ORN, alpha: alpha[Math.abs(k)], flip: left, fade: true, screen: true, shine: shine[Math.abs(k)],
     });
     orn = [-2, -1, 0, 1, 2].flatMap((k) => [half(k, true), half(k, false)]);
   }
@@ -128,6 +130,9 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   .pjh__orn--r .pj-piece { animation-delay: calc(var(--od, .6s) + .12s), calc(var(--od, .6s) + .12s), calc(var(--od, .6s) + 3.12s); }
   /* Los vectores se funden con el fondo (pantalla) y llevan un desenfoque muy leve; cuando todo está armado se desenfocan un poco más y bajan su opacidad */
   .pj-screen { mix-blend-mode: screen; filter: blur(.5px); animation: pj-settle 1.8s var(--t-settle) ease-in-out both; }
+  /* Un único brillo de barras planas (una pasada), en una sola ola de izquierda a derecha sobre todo: vectores, logotipo y nombre */
+  .pj-shine { opacity: 0; animation: pj-shine .8s calc(var(--t-shine) + var(--sd, 0s)) both; }
+  @keyframes pj-shine { 0% { translate: 0 0; opacity: 0; animation-timing-function: cubic-bezier(.45, .05, .55, .95); } 8% { opacity: 1; } 85% { translate: var(--gw) 0; opacity: 1; } 100% { translate: var(--gw) 0; opacity: 0; } }
   @keyframes pj-settle { from { filter: blur(.5px); opacity: 1; } to { filter: blur(1.5px); opacity: .55; } }
   @keyframes pj-from-left { from { transform: translateX(-60vw) rotate(-7deg); opacity: 0; } 35% { opacity: var(--a, 1); } to { transform: none; opacity: var(--a, 1); } }
   @keyframes pj-from-right { from { transform: translateX(60vw) rotate(7deg); opacity: 0; } 35% { opacity: var(--a, 1); } to { transform: none; opacity: var(--a, 1); } }
@@ -138,7 +143,7 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   @keyframes pj-breathe { from { opacity: var(--a, 1); } to { opacity: calc(var(--a, 1) * .78); } }
 
   /* ── Movimiento reducido: todo se ve ya armado */
-  @media (prefers-reduced-motion: reduce) { .pj-piece, .pj-late, .pj-screen { animation: none !important; } .pj-screen { filter: blur(1.5px); opacity: .55; } }
+  @media (prefers-reduced-motion: reduce) { .pj-piece, .pj-late, .pj-screen, .pj-shine { animation: none !important; } .pj-screen { filter: blur(1.5px); opacity: .55; } .pj-shine { display: none; } }
 </style>
 
 <script>
