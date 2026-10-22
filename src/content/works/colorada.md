@@ -15,7 +15,7 @@ featured: false
 order: 16
 widget: palette
 reactiveColors: ["#AE0407", "#840002"]
-paletteColors: ["#F5282C", "#AE0407", "#840002", "#0B0B0A", "#FFFFFF"]
+paletteColors: ["#AE0407", "#840002"]
 tones: ["#240d12", "#6a1b26"]
 gallery:
   - { kind: full, ratio: "21 / 9", caption: { es: "[Imagen principal]", en: "[Main image]" } }
