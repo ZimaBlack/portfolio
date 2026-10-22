@@ -88,8 +88,9 @@ const t = {
       // Cada manejador parte del color de la marca; su brillo y croma se mantienen al recorrer la barra,
       // así todos los matices pesan parecido. El 2.º (la sombra) conserva su propio brillo, más oscuro.
       const base = [hexToLch(pw.dataset.start || '#F5282C'), hexToLch(pw.dataset.start2 || '#840002')];
-      const L0 = base.map((b, i) => clamp(b[0], i ? 0.3 : 0.5, i ? 0.55 : 0.7));
-      const C0 = base.map((b) => clamp(b[1], 0.1, 0.22));
+      // Vibrantes pero cómodos: croma alto sin llegar al neón, y brillo medio (ni deslumbra ni se apaga sobre el fondo oscuro)
+      const L0 = [0.65, 0.47];
+      const C0 = [0.24, 0.2];
       const hue = base.map((b) => b[2]);
       let touched = false;
       rails.forEach((rail, i) => {
@@ -118,8 +119,8 @@ const t = {
           const set = (k: string, v: string) => hero.style.setProperty(k, v);
           set('--pw-0', hex[0]);
           set('--pw-1', hex[1]);
-          set('--ga', toHex([0.46, C0[0] * 0.95, hue[0]]));
-          set('--gb', toHex([0.42, C0[1] * 0.95, hue[1]]));
+          set('--ga', toHex([0.5, C0[0] * 0.85, hue[0]]));
+          set('--gb', toHex([0.46, C0[1] * 0.9, hue[1]]));
           set('--ax', `${ax.toFixed(1)}%`); set('--ay', `${ay.toFixed(1)}%`);
           set('--bx', `${bx.toFixed(1)}%`); set('--by', `${by.toFixed(1)}%`);
         }
