@@ -101,8 +101,8 @@ if ((reactive.length || assemble) && logo.toLowerCase().endsWith('.svg')) {
   /* Efecto multiplicar: mientras son "sombra", las piezas oscuras oscurecen lo que tienen detrás; el oro llega encima, sin mezcla */
   .pjh[data-assemble] :global(svg.pjh__logo > path), .pjh[data-assemble] :global(svg.pjh__name > path), .pjh[data-assemble] :global(svg.pjh__orn > path), .pjh[data-assemble] :global(svg.pjh__orn > g > path) { mix-blend-mode: multiply; }
   /* Con ornamento, el logotipo se achica para quedar enmarcado dentro del arco */
-  .pjh[data-orn] .pjh__stage > :global(svg.pjh__logo) { height: min(23vh, 10.5rem); }
-  .pjh[data-orn] .pjh__stage > :global(svg.pjh__name) { width: min(52vw, 12.5rem); }
+  .pjh[data-orn][data-assemble] .pjh__stage > :global(svg.pjh__logo) { height: min(23vh, 10.5rem); }
+  .pjh[data-orn][data-assemble] .pjh__stage > :global(svg.pjh__name) { width: min(52vw, 12.5rem); }
   .pjh__stage { position: relative; display: grid; place-items: center; width: min(88vw, 56rem); height: min(60vh, 34rem); }
   .pjh__stage > img { grid-area: 1 / 1; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; user-select: none; }
   .pjh__stage > .pjh__logo { width: min(100%, 40rem); animation: pjh-in 1.6s .2s var(--ease, ease) both; }
