@@ -11,8 +11,10 @@ const { items } = Astro.props as { items: { src: string; label: string; slide: n
       <ul class="mq__set" aria-hidden={copy === 1 ? 'true' : undefined}>
         {items.map((m) => (
           <li>
-            <button type="button" class="mq__logo" data-slide={m.slide} aria-label={m.label} tabindex={copy === 1 ? -1 : undefined}>
-              <img src={m.src} alt="" loading="lazy" decoding="async" draggable="false" />
+            <button type="button" class="mq__logo" data-slide={m.slide} aria-label={m.label} tabindex={copy === 1 ? -1 : undefined} style={`--logo:url("${m.src}")`}>
+              <img class="mq__glow" src={m.src} alt="" aria-hidden="true" loading="lazy" decoding="async" draggable="false" />
+              <img class="mq__img" src={m.src} alt="" loading="lazy" decoding="async" draggable="false" />
+              <span class="mq__sheen" aria-hidden="true"></span>
             </button>
           </li>
         ))}
@@ -28,13 +30,24 @@ const { items } = Astro.props as { items: { src: string; label: string; slide: n
   .mq:hover .mq__track, .mq:focus-within .mq__track { animation-play-state: paused; }
   .mq__set { display: flex; align-items: center; gap: var(--gap); padding: 0 var(--gap) 0 0; margin: 0; list-style: none; }
   .mq__set li { display: grid; place-items: center; }
-  .mq__logo { display: grid; place-items: center; padding: 0; margin: 0; border: 0; background: none; color: inherit; cursor: pointer; }
-  .mq img { height: 11.9vh; height: 11.9svh; min-height: 3.85rem; width: auto; max-width: 15.4rem; object-fit: contain; filter: grayscale(1) brightness(1.15); opacity: .06; user-select: none;
-    transition: filter .5s var(--ease, ease), opacity .5s var(--ease, ease); }
-  .mq__logo:hover img, .mq__logo:focus-visible img { filter: none; opacity: .28; }
+  .mq__logo { position: relative; display: grid; place-items: center; padding: 0; margin: 0; border: 0; background: none; color: inherit; cursor: pointer;
+    transition: transform .6s var(--ease, ease); }
+  .mq img { grid-area: 1 / 1; height: 11.9vh; height: 11.9svh; min-height: 3.85rem; width: auto; max-width: 15.4rem; object-fit: contain; user-select: none; }
+  .mq__img { filter: grayscale(1) brightness(1.15); opacity: .06; transition: filter .5s var(--ease, ease), opacity .5s var(--ease, ease); }
+  /* Resplandor: el mismo logo, desenfocado y detrás, así que brilla con sus propios colores */
+  .mq__glow { filter: blur(14px) saturate(1.5); opacity: 0; transition: opacity .6s var(--ease, ease); pointer-events: none; }
+  /* Destello: una banda de luz diagonal que cruza el logo (recortada con la forma del propio SVG) */
+  .mq__sheen { position: absolute; inset: 0; pointer-events: none; opacity: 0;
+    -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat;
+    background: linear-gradient(115deg, transparent 38%, rgb(255 255 255 / .85) 50%, transparent 62%) 130% 0 / 260% 100% no-repeat; }
+  .mq__logo:hover, .mq__logo:focus-visible { transform: scale(1.1); }
+  .mq__logo:hover .mq__img, .mq__logo:focus-visible .mq__img { filter: none; opacity: 1; }
+  .mq__logo:hover .mq__glow, .mq__logo:focus-visible .mq__glow { opacity: .5; }
+  .mq__logo:hover .mq__sheen, .mq__logo:focus-visible .mq__sheen { animation: mq-sheen 1.1s .1s ease-out 1 forwards; }
   .mq__logo:focus-visible { outline: 1px solid var(--line); outline-offset: 6px; }
+  @keyframes mq-sheen { 0% { opacity: 0; background-position: 130% 0; } 15% { opacity: .55; } 85% { opacity: .55; } 100% { opacity: 0; background-position: -30% 0; } }
   @keyframes mq-drift { to { transform: translateX(-50%); } }
-  @media (prefers-reduced-motion: reduce) { .mq__track { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .mq__track { animation: none; } .mq__sheen { display: none; } }
 </style>
 
 <script>
