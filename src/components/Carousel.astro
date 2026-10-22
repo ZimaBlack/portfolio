@@ -197,6 +197,7 @@ const last = Math.max(...slides.map((s) => s.n)); // la lámina 00 no cuenta en 
       slides.forEach((s, k) => s.toggleAttribute('inert', k !== 0));
       prev.disabled = next.disabled = slides.length < 2;
 
+      car.addEventListener('car:goto', (e) => show((e as CustomEvent<number>).detail)); // lo usa la marquesina de la cabecera
       prev.addEventListener('click', () => show(i - 1));
       next.addEventListener('click', () => show(i + 1));
       stage.addEventListener('keydown', (e) => {

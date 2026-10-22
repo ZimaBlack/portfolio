@@ -57,7 +57,7 @@ const slides: Slide[] = entries.map((e) => {
   };
 });
 // La marquesina de la cabecera usa los logos "b" en el orden de las láminas
-const marqueeItems = slides.filter((s) => !s.intro && s.b).map((s) => s.b as string);
+const marqueeItems = slides.map((s, i) => ({ src: s.b as string, label: s.subtitle, slide: i })).filter((m, i) => !slides[i].intro && m.src);
 const alt = lang === 'es' ? 'en' : 'es';
 ---
 <Base lang={lang} section="works" title={d.title} description={loc(d.summary, lang)}

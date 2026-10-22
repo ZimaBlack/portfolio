@@ -1,13 +1,21 @@
 ---
-// Marquesina de logos sin color (escala de grises) con un desplazamiento lento y continuo.
+// Marquesina de logos en escala de grises con un desplazamiento lento y continuo.
 // Dos copias idénticas de la lista, para que el bucle sea continuo (se desplaza -50% y reinicia sin saltos).
-const { items } = Astro.props as { items: string[] };
+// Es interactiva: al pasar el mouse se detiene y el logo recupera su color; al hacer clic, la página baja hasta
+// centrar el carrusel (`[data-car]`) y lo posiciona en la lámina de ese logo (`slide` = posición en el carrusel).
+const { items } = Astro.props as { items: { src: string; label: string; slide: number }[] };
 ---
-<div class="mq" aria-hidden="true">
+<div class="mq">
   <div class="mq__track">
-    {[0, 1].map(() => (
-      <ul class="mq__set">
-        {items.map((src) => <li><img src={src} alt="" loading="lazy" decoding="async" draggable="false" /></li>)}
+    {[0, 1].map((copy) => (
+      <ul class="mq__set" aria-hidden={copy === 1 ? 'true' : undefined}>
+        {items.map((m) => (
+          <li>
+            <button type="button" class="mq__logo" data-slide={m.slide} aria-label={m.label} tabindex={copy === 1 ? -1 : undefined}>
+              <img src={m.src} alt="" loading="lazy" decoding="async" draggable="false" />
+            </button>
+          </li>
+        ))}
       </ul>
     ))}
   </div>
@@ -17,9 +25,32 @@ const { items } = Astro.props as { items: string[] };
   .mq { --gap: clamp(2.5rem, 5vw, 5rem); height: 20vh; height: 20svh; min-height: 8rem; overflow: hidden; display: flex; align-items: center;
     -webkit-mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%); }
   .mq__track { display: flex; width: max-content; animation: mq-drift 140s linear infinite; will-change: transform; }
+  .mq:hover .mq__track, .mq:focus-within .mq__track { animation-play-state: paused; }
   .mq__set { display: flex; align-items: center; gap: var(--gap); padding: 0 var(--gap) 0 0; margin: 0; list-style: none; }
   .mq__set li { display: grid; place-items: center; }
-  .mq img { height: 11.9vh; height: 11.9svh; min-height: 3.85rem; width: auto; max-width: 15.4rem; object-fit: contain; filter: grayscale(1) brightness(1.15); opacity: .06; user-select: none; }
+  .mq__logo { display: grid; place-items: center; padding: 0; margin: 0; border: 0; background: none; color: inherit; cursor: pointer; }
+  .mq img { height: 11.9vh; height: 11.9svh; min-height: 3.85rem; width: auto; max-width: 15.4rem; object-fit: contain; filter: grayscale(1) brightness(1.15); opacity: .06; user-select: none;
+    transition: filter .5s var(--ease, ease), opacity .5s var(--ease, ease); }
+  .mq__logo:hover img, .mq__logo:focus-visible img { filter: none; opacity: .28; }
+  .mq__logo:focus-visible { outline: 1px solid var(--line); outline-offset: 6px; }
   @keyframes mq-drift { to { transform: translateX(-50%); } }
   @media (prefers-reduced-motion: reduce) { .mq__track { animation: none; } }
 </style>
+
+<script>
+  // Clic en un logo → baja hasta centrar el carrusel y lo lleva a la lámina de ese logo
+  const init = () => {
+    document.querySelectorAll<HTMLElement>('.mq:not([data-ready])').forEach((mq) => {
+      mq.dataset.ready = '1';
+      mq.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-slide]');
+        const car = document.querySelector<HTMLElement>('[data-car]');
+        if (!btn || !car) return;
+        car.dispatchEvent(new CustomEvent('car:goto', { detail: Number(btn.dataset.slide) }));
+        const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        car.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'center' });
+      });
+    });
+  };
+  document.addEventListener('astro:page-load', init);
+</script>
