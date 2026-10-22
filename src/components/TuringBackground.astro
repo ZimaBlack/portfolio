@@ -1,0 +1,40 @@
+---
+// Fondo del sitio: patrón de Turing a pantalla completa, detrás de todo. Se ve con toda su opacidad sólo en el hero principal de la Home
+// (donde, además, cada clic siembra un foco nuevo); en el resto del sitio queda al 15 %. El preset se guarda desde /lab/ en src/data/background.json.
+import preset from '../data/background.json';
+---
+<canvas class="tbg" data-tbg data-preset={JSON.stringify(preset)} aria-hidden="true" transition:persist="turing-bg"></canvas>
+
+<style>
+  .tbg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: .15; transition: opacity 1.2s var(--ease); }
+  .tbg.is-hero { opacity: 1; }
+  /* Pensado para fondo oscuro */
+  @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .tbg { display: none; } }
+</style>
+
+<script>
+  import { initTuringBackground, type TuringBackground } from '../scripts/turing-background';
+
+  let bg: TuringBackground | null = null;
+  let io: IntersectionObserver | null = null;
+
+  // En cada página: ¿hay hero principal? Entonces el fondo está a pleno mientras se ve y los clics en él siembran focos.
+  const wire = () => {
+    const canvas = document.querySelector<HTMLCanvasElement>('[data-tbg]');
+    if (!canvas) return;
+    bg ??= initTuringBackground(canvas, JSON.parse(canvas.dataset.preset || '{}'));
+    io?.disconnect();
+    canvas.classList.remove('is-hero');
+    const hero = document.querySelector<HTMLElement>('.hero');
+    if (!hero) return;
+    io = new IntersectionObserver(([e]) => canvas.classList.toggle('is-hero', e.isIntersecting), { threshold: 0.35 });
+    io.observe(hero);
+    if (hero.dataset.tbg) return;
+    hero.dataset.tbg = '1';
+    hero.addEventListener('pointerdown', (e) => {
+      if ((e.target as HTMLElement).closest('a, button, input, textarea, select, [data-no-seed]')) return; // los clics en enlaces y botones no siembran
+      bg?.seed(e.clientX, e.clientY);
+    });
+  };
+  document.addEventListener('astro:page-load', wire);
+</script>

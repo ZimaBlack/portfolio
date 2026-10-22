@@ -50,7 +50,7 @@ import Base from '../../layouts/Base.astro';
     [['feed', 'Alimentación (F)', 0.01, 0.09, 0.0005], ['kill', 'Eliminación (k)', 0.04, 0.07, 0.0005], ['dv', 'Difusión (finura)', 0.3, 0.7, 0.01]],
     [['cell', 'Tamaño de celda (px)', 2, 10, 1], ['steps', 'Velocidad (pasos/cuadro)', 4, 40, 1], ['radius', 'Alcance (px)', 120, 700, 10], ['grow', 'Expansión (ms)', 600, 6000, 100]],
     [['nuclei', 'Núcleos iniciales', 0, 0.003, 0.0001], ['jitter', 'Irregularidad', 0, 0.04, 0.001]],
-    [['threshold', 'Umbral', 0.01, 0.2, 0.005], ['gain', 'Nitidez', 1, 10, 0.1], ['pixelNoise', 'Ruido del gris', 0, 100, 1], ['blur', 'Desenfoque (px)', 0, 6, 0.1], ['grain', 'Grano de película', 0, 0.5, 0.01]],
+    [['threshold', 'Umbral', 0.01, 0.2, 0.005], ['gain', 'Nitidez', 1, 10, 0.1], ['pixelNoise', 'Ruido del gris', 0, 100, 1], ['peak', 'Brillo máximo', 40, 235, 5], ['blur', 'Desenfoque (px)', 0, 6, 0.1], ['grain', 'Grano de película', 0, 0.5, 0.01]],
     [['idle', 'Quieto antes de empezar (ms)', 100, 2000, 50], ['hold', 'Dura (ms)', 3000, 40000, 500], ['fade', 'Se disuelve en (ms)', 500, 8000, 100]],
   ];
   const TITLES = ['Reacción', 'Resolución y crecimiento', 'Ruptura de simetría', 'Aspecto', 'Tiempos'];
@@ -104,8 +104,20 @@ import Base from '../../layouts/Base.astro';
     const mk = (text: string, fn: () => void) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = text; b.addEventListener('click', fn); actions.append(b); };
     mk('Sembrar en el centro', () => ctl.restart());
     mk('Limpiar', () => ctl.clear());
+    mk('Guardar como fondo del sitio', async () => {
+      // Se guarda en src/data/background.json (sólo con el servidor de desarrollo); si no hay servidor, copia el JSON
+      const { pinned, idle, hold, fade, ...preset } = P;
+      const json = JSON.stringify(preset, null, 2);
+      try {
+        const r = await fetch('/__turing-preset', { method: 'POST', body: JSON.stringify(preset) });
+        if (!r.ok) throw new Error();
+        note('Guardado: el fondo del sitio usa este preset.');
+      } catch { await navigator.clipboard?.writeText(json); note('Sin servidor de desarrollo: JSON copiado al portapapeles.'); }
+    });
     mk('Restablecer', () => { Object.assign(P, DEFAULTS); outs.forEach((_, k) => show(k)); ctl.apply(); ctl.resize(); ctl.restart(); });
-    body.append(pin, actions);
+    const status = document.createElement('p'); status.className = 'group'; status.setAttribute('aria-live', 'polite');
+    function note(t: string) { status.textContent = t; }
+    body.append(pin, actions, status);
 
     const toggle = panel.querySelector<HTMLButtonElement>('[data-lab-toggle]')!;
     toggle.addEventListener('click', () => { const closed = panel.classList.toggle('is-closed'); toggle.setAttribute('aria-expanded', String(!closed)); toggle.lastElementChild!.textContent = closed ? '+' : '–'; });

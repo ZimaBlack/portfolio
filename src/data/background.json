@@ -1,0 +1,15 @@
+{
+  "feed": 0.029,
+  "kill": 0.057,
+  "dv": 0.5,
+  "cell": 6,
+  "steps": 8,
+  "nuclei": 0.0009,
+  "jitter": 0.012,
+  "threshold": 0.05,
+  "gain": 3.6,
+  "pixelNoise": 30,
+  "peak": 150,
+  "blur": 1.2,
+  "grain": 0.12
+}
