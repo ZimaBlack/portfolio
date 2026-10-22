@@ -1,6 +1,7 @@
 // Reproductor del video de fondo del hero.
 //
-// Ciclo: aparece apenas termina de desplegarse el hero → se reproduce una vez → se desvanece → pausa → vuelve a aparecer.
+// Ciclo: aparece apenas termina de desplegarse el hero → se reproduce un tramo → se desvanece → pausa → vuelve a aparecer.
+// Cada aparición arranca en un punto al azar del video (y dura `segment` segundos de video).
 // En cada aparición el video cambia de lugar, de escala, de giro y de velocidad (todo sutil), y mientras dura:
 //   · su opacidad y su luminosidad suben a 100 % / brillo normal, se sostienen en el centro del clip y vuelven a bajar;
 //   · deriva y gira lentamente con un movimiento irregular, y la viñeta lo acompaña y "respira".
@@ -24,7 +25,7 @@ const TUNING = {
   wobble: { video: 0.018, vignette: 0.014, tilt: 0.45, breathing: 0.06 },
 } as const;
 
-type Config = { after: number; gap: number; baseRate: number; rateVariation: number };
+type Config = { after: number; gap: number; baseRate: number; rateVariation: number; segment: number };
 
 let timers: number[] = [];
 let raf = 0;
@@ -34,6 +35,7 @@ const readConfig = (video: HTMLVideoElement): Config => ({
   gap: Number(video.dataset.gap) || 10000,        // ms de negro entre reproducciones
   baseRate: Number(video.dataset.rate) || 1,      // velocidad base (1 = normal)
   rateVariation: Number(video.dataset.rateVar) || 0, // variación entre reapariciones (± sobre la base)
+  segment: Number(video.dataset.segment) || 0,    // segundos de video por aparición (0 = el video entero)
 });
 
 const rand = (min: number, range: number) => min + Math.random() * range;
@@ -73,6 +75,8 @@ export function initHeroVideo() {
   let fade = TUNING.fadeMaxSeconds;
   let last = { x: 50, y: 44 };
   let level: Animation | undefined;
+  let from = 0; // segundo donde arranca la aparición en curso
+  let to = 0;   // segundo donde termina
 
   /** Velocidad de esta reproducción: levemente distinta de la anterior. */
   const pickRate = () => {
@@ -160,26 +164,45 @@ export function initHeroVideo() {
     await visible();
     if (video.readyState < 3) await new Promise<void>((res) => video.addEventListener('canplay', () => res(), { once: true }));
 
-    video.currentTime = 0;
+    // Tramo al azar: arranca en cualquier punto que deje espacio para el tramo completo
+    const length = cfg.segment > 0 ? Math.min(cfg.segment, video.duration) : video.duration;
+    const previous = from;
+    for (let k = 0; k < 8; k++) {
+      from = Math.random() * (video.duration - length);
+      if (Math.abs(from - previous) > length * 0.8) break; // distinto del tramo anterior
+    }
+    to = from + length;
+    video.currentTime = from;
     rate = pickRate();
     video.playbackRate = rate;
-    const clipMs = (video.duration / rate) * 1000;
+    const clipMs = (length / rate) * 1000;
     fade = Math.min(TUNING.fadeMaxSeconds, (clipMs / 1000) * TUNING.fadeShareOfClip);
     media.style.setProperty('--fade', `${fade}s`);
     hero.style.setProperty('--fade', `${fade}s`);
     place();
 
     try { await video.play(); } catch { return later(play, cfg.gap); } // si el navegador no lo permite, reintenta más tarde
+    finished = false;
     animateLevel(clipMs);
     animateFloat(clipMs);
     show();
   };
 
   // Empieza el fundido de salida un poco antes del final, y vuelve a empezar tras la pausa
+  let finished = true;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    video.pause();
+    hide();
+    later(play, cfg.gap);
+  };
   video.addEventListener('timeupdate', () => {
-    if (video.duration && (video.duration - video.currentTime) / rate < fade) hide();
+    if (finished) return;
+    if (video.currentTime >= to - 0.05) return finish();
+    if ((to - video.currentTime) / rate < fade) hide();
   });
-  video.addEventListener('ended', () => { hide(); later(play, cfg.gap); });
+  video.addEventListener('ended', finish);
 
   // Arranque: descarga enseguida y reproduce `after` ms después de que el hero termina de desplegarse
   load();

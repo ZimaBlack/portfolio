@@ -1,5 +1,5 @@
 ---
-// Video de fondo del hero (los últimos 10 s del original, en blanco y negro, sin audio ni controles).
+// Video de fondo del hero (40 s en blanco y negro; cada aparición muestra un tramo al azar, sin audio ni controles).
 // Capas, de abajo hacia arriba: video (ventana enmascarada) → viñeta negra → pantalla antigua (CRT) → texto del hero.
 // El ciclo de reproducción y el movimiento viven en src/scripts/hero-video.ts.
 import Crt from './Crt.astro';
@@ -20,7 +20,7 @@ const maskStops = Array.from({ length: N + 1 }, (_, i) => {
 ---
 <div class="hero__media" aria-hidden="true" style={`--mask-stops:${maskStops}`}>
   <div class="hero__frame">
-    <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-after="0" data-gap="10000" data-rate="1.7" data-rate-var="0.1"></video>
+    <video class="hero__video" muted playsinline preload="none" tabindex="-1" disablepictureinpicture data-src={src} data-after="0" data-gap="10000" data-rate="1.7" data-segment="10" data-rate-var="0.1"></video>
   </div>
 </div>
 <!-- Viñeta: círculo negro por fuera que se abre hacia el centro; sólo existe mientras el video es visible -->
