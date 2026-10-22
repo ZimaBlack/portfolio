@@ -42,7 +42,7 @@ export default config({
         logo: image('Logotipo de la portada animada', 'SVG o PNG con fondo transparente. Queda centrado en la portada de la página del proyecto.'),
         mark: image('Isotipo / símbolo (opcional)', 'Se usa junto al logotipo en la animación de la portada.'),
         widget: fields.select({ label: 'Widget de la página', description: 'Un extra fijo abajo a la derecha.', options: [{ label: 'Ninguno', value: '' }, { label: 'Paleta de color', value: 'palette' }], defaultValue: '' }),
-        paletteColors: fields.array(fields.text({ label: 'Color (hex)' }), { label: 'Colores de la marca (widget de paleta)', description: 'Ej. #F5282C. Los de matiz se usan como base para generar paletas.', itemLabel: (p) => p.value }),
+        paletteColors: fields.array(fields.text({ label: 'Color (hex)' }), { label: 'Colores de la marca (widget de paleta)', description: 'El primero es el color con el que arranca el selector. Ej. #F5282C.', itemLabel: (p) => p.value }),
         headerMarquee: fields.checkbox({ label: 'Cabecera con marquesina de logos', description: 'Usa los logos del carrusel en lugar de la imagen panorámica.' }),
         tones: fields.array(fields.text({ label: 'Color (hex)' }), { label: 'Colores de fondo (2)', description: 'Se ven mientras no hay imagen. Dos colores hex, ej. #1a1a1a.', itemLabel: (p) => p.value }),
 
