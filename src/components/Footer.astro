@@ -18,7 +18,10 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
   <span class="footer__glitch" aria-hidden="true"></span>
   <div class="wrap footer__content">
     <p class="eyebrow" data-reveal>{c.footer.eyebrow}</p>
-    <h2 class="display" data-split-scroll>{c.footer.title}</h2>
+    <figure class="quote" data-reveal>
+      <blockquote class="display" data-split-scroll>“{c.footer.quote}”</blockquote>
+      <figcaption class="eyebrow">— {c.footer.author}</figcaption>
+    </figure>
     <div class="footer__row" data-reveal>
       <a class="btn btn--solid" href={waLink(lang)} target="_blank" rel="noopener noreferrer">{c.footer.wa} <Icon name="arrow-up-right" /></a>
       <a class="btn" href={`mailto:${site.email}`}>{site.email}</a>
@@ -74,7 +77,9 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
   @media (prefers-reduced-motion: reduce) { .footer__glitch { display: none; } .footer__photo.is-glitch { animation: none; } }
 
   .footer__content { position: relative; z-index: 1; }
-  .footer .display { margin: 1.5rem 0 2.5rem; }
+  .quote { margin: 1.5rem 0 2.5rem; max-width: 22ch; }
+  .quote blockquote { margin: 0; font-size: clamp(1.9rem, 4.6vw, 4rem); line-height: 1.12; text-wrap: balance; }
+  .quote figcaption { margin-top: 1.75rem; }
   .footer__row { display: flex; flex-wrap: wrap; gap: .75rem; }
   .footer__base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-top: clamp(5rem, 10vw, 9rem); font-size: .85rem; }
   .foot-soc { display: inline-flex; align-items: center; gap: .45rem; }

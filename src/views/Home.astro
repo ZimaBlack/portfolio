@@ -11,7 +11,7 @@ import { copy, paths, type Lang } from '../lib/i18n';
 
 const { lang } = Astro.props as { lang: Lang };
 const c = copy[lang];
-const featured = (await getCollection('works')).filter((w) => w.data.featured).sort((a, b) => (a.data.homeOrder ?? a.data.order) - (b.data.homeOrder ?? b.data.order));
+const featured = (await getCollection('works', (w) => !w.data.draft)).filter((w) => w.data.featured).sort((a, b) => (a.data.homeOrder ?? a.data.order) - (b.data.homeOrder ?? b.data.order));
 const alt = lang === 'es' ? 'en' : 'es';
 ---
 <Base lang={lang} section="home" altHref={paths.home(alt)} esHref={paths.home('es')} enHref={paths.home('en')}>

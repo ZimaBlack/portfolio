@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import WorkDetail from '../../views/WorkDetail.astro';
 
 export async function getStaticPaths() {
-  return (await getCollection('works')).map((work) => ({ params: { slug: work.id }, props: { work } }));
+  return (await getCollection('works', (w) => !w.data.draft)).map((work) => ({ params: { slug: work.id }, props: { work } }));
 }
 const { work } = Astro.props;
 ---

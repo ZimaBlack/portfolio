@@ -6,7 +6,7 @@ import { copy, paths, type Lang } from '../lib/i18n';
 
 const { lang } = Astro.props as { lang: Lang };
 const c = copy[lang];
-const works = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
+const works = (await getCollection('works', (w) => !w.data.draft)).sort((a, b) => a.data.order - b.data.order);
 const alt = lang === 'es' ? 'en' : 'es';
 ---
 <Base lang={lang} section="works" title={c.works.title} description={c.works.metaDesc}

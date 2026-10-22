@@ -9,6 +9,7 @@ summary:
 text:
   es: "[Contexto, desafío, decisiones de diseño y resultado.]"
   en: "[Context, challenge, design decisions and outcome.]"
+draft: true
 featured: false
 order: 16
 tones: ["#240d12", "#6a1b26"]

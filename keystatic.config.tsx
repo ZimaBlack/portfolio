@@ -42,6 +42,7 @@ export default config({
         headerMarquee: fields.checkbox({ label: 'Cabecera con marquesina de logos', description: 'Usa los logos del carrusel en lugar de la imagen panorámica.' }),
         tones: fields.array(fields.text({ label: 'Color (hex)' }), { label: 'Colores de fondo (2)', description: 'Se ven mientras no hay imagen. Dos colores hex, ej. #1a1a1a.', itemLabel: (p) => p.value }),
 
+        draft: fields.checkbox({ label: 'Oculto (borrador)', description: 'Tildado: el proyecto no se ve en el sitio. Destildalo cuando esté completo.' }),
         featured: fields.checkbox({ label: 'Destacado en la Home' }),
         homeOrder: fields.integer({ label: 'Posición en la Home', description: 'Solo si es destacado. 1 = primero.' }),
         order: fields.integer({ label: 'Posición en la lista de trabajos', description: 'Menor número = primero.', defaultValue: 99 }),
@@ -147,7 +148,7 @@ function pageTexts(label: string) {
         },
         { label: 'Perfil' },
       ),
-      footer: fields.object({ eyebrow: fields.text({ label: 'Etiqueta' }), title: fields.text({ label: 'Título' }), wa: fields.text({ label: 'Botón de WhatsApp' }), cv: fields.text({ label: 'Botón del CV' }) }, { label: 'Pie de página (contacto)' }),
+      footer: fields.object({ eyebrow: fields.text({ label: 'Etiqueta' }), quote: fields.text({ label: 'Cita', multiline: true }), author: fields.text({ label: 'Autor de la cita' }), wa: fields.text({ label: 'Botón de WhatsApp' }), cv: fields.text({ label: 'Botón del CV' }) }, { label: 'Pie de página (contacto)' }),
       waText: fields.text({ label: 'Mensaje que abre WhatsApp', multiline: true }),
     },
     { label },

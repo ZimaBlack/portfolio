@@ -9,6 +9,7 @@ summary:
 text:
   es: "[Contexto, desafío, decisiones de diseño y resultado.]"
   en: "[Context, challenge, design decisions and outcome.]"
+draft: true
 featured: true
 homeOrder: 1
 order: 15

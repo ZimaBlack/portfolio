@@ -65,9 +65,10 @@
     },
     "footer": {
       "eyebrow": "Contacto",
-      "title": "Hablemos de tu próximo proyecto.",
       "wa": "Escribir por WhatsApp",
-      "cv": "Ver CV"
+      "cv": "Ver CV",
+      "quote": "La perfección se logra, no cuando no queda nada que añadir, sino cuando no hay nada más que quitar.",
+      "author": "Antoine de Saint-Exupéry"
     },
     "waText": "Hola Pablo, vi tu portfolio y me gustaría conversar sobre un proyecto."
   },
@@ -111,9 +112,10 @@
     },
     "footer": {
       "eyebrow": "Contact",
-      "title": "Let’s talk about your next project.",
       "wa": "Message on WhatsApp",
-      "cv": "View CV"
+      "cv": "View CV",
+      "quote": "Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.",
+      "author": "Antoine de Saint-Exupéry"
     },
     "waText": "Hi Pablo, I saw your portfolio and I’d like to talk about a project."
   }

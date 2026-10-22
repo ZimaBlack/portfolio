@@ -13,8 +13,7 @@ import { copy, loc, paths, type Lang } from '../lib/i18n';
 const { lang, work } = Astro.props as { lang: Lang; work: CollectionEntry<'works'> };
 const c = copy[lang];
 const d = work.data;
-const all = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
-const next = all[(all.findIndex((w) => w.id === work.id) + 1) % all.length];
+const all = (await getCollection('works', (w) => !w.data.draft)).sort((a, b) => a.data.order - b.data.order);
 const isCode = d.kind === 'code';
 
 // Carrusel: las imágenes (SVG o PNG) se detectan en src/assets/works/<slug>/carrusel/ con nombres 01a.png, 01b.png, 02a.png…
@@ -116,12 +115,6 @@ const alt = lang === 'es' ? 'en' : 'es';
       </section>
     )}
 
-    <a class="next" href={paths.work(lang, next.id)} data-cursor={c.detail.nextCursor}>
-      <div class="wrap next__in">
-        <span class="eyebrow">{c.detail.next}</span>
-        <span class="display next__t">{next.data.title}</span>
-      </div>
-    </a>
   </article>
 </Base>
 
@@ -144,9 +137,5 @@ const alt = lang === 'es' ? 'en' : 'es';
   .blk--inset { width: 100%; max-width: 70rem; margin-inline: auto; padding-inline: var(--gutter); }
   .blk--pair .pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); padding-inline: var(--gutter); }
   .blk figcaption { font-size: .8rem; padding: .75rem var(--gutter) 0; }
-  .next { display: block; margin-top: clamp(6rem, 12vw, 12rem); border-top: 1px solid var(--line); padding-block: clamp(4rem, 8vw, 8rem); transition: background .6s var(--ease), color .6s var(--ease); }
-  .next:hover { background: var(--fg); color: var(--bg); }
-  .next:hover .eyebrow { color: inherit; }
-  .next__in { display: grid; gap: 1rem; }
   @media (max-width: 640px) { .meta__stack { grid-column: auto; } .blk--pair .pair { grid-template-columns: 1fr; } }
 </style>

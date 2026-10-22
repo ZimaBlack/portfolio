@@ -38,6 +38,7 @@ const works = defineCollection({
     summary: t,
     text: t.partial().optional(), // texto largo del proyecto (opcional)
     badge: z.string().optional(), // etiqueta destacada, ej. "pre-ia"
+    draft: z.boolean().default(false), // true = oculto: no aparece en el índice, la Home ni tiene página
     featured: z.boolean().default(false),
     homeOrder: z.number().optional(), // posición en la Home (si es destacado); por defecto, `order`
     order: z.number().default(99),
