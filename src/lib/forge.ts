@@ -65,7 +65,7 @@ export function forge(art: Art, o: ForgeOpts): string {
       const [x1, y1, x2, y2] = grad.dir ?? [0, 0, 0, 1];
       return `<linearGradient id="${id}-g" gradientUnits="userSpaceOnUse" x1="${vx + x1 * vw}" y1="${vy + y1 * vh}" x2="${vx + x2 * vw}" y2="${vy + y2 * vh}">${grad.stops.map(([t, c]) => `<stop offset="${t}" stop-color="${c}"/>`).join('')}</linearGradient>`;
     })() : '',
-    o.fade ? `<linearGradient id="${id}-fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".12" stop-color="#fff"/><stop offset=".88" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${id}-f" maskUnits="userSpaceOnUse" ${area}><rect ${area} fill="url(#${id}-fg)"/></mask>` : '',
+    o.fade ? `<linearGradient id="${id}-fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".12" stop-color="#fff"/><stop offset=".88" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${id}-f" maskUnits="userSpaceOnUse" x="${vx - 4000}" y="${vy}" width="${vw + 8000}" height="${vh}"><rect x="${vx - 4000}" y="${vy}" width="${vw + 8000}" height="${vh}" fill="url(#${id}-fg)"/></mask>` : '',
   ].join('');
   const pieces = art.paths
     .map((_, i) => `<use href="#${art.id}-${i}" class="pj-piece${late.has(i) ? ' pj-late' : ''}" fill="${fill}"${o.alpha ? ` opacity="${o.alpha}"` : ''}${o.parts ? ` data-part="${i}"` : ''}/>`)
