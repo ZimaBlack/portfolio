@@ -91,17 +91,6 @@ const t = es ? {
       <figure class="cm__pola cm__pola--b">
         <TintPhoto photo="/works/colorada/manual/foto-03.webp" shapes="/works/colorada/manual/foto-03.svg" alt={t.photo2Cap} ratio="1298 / 1718" blur={1.6} />
       </figure>
-      <svg class="cm__pop" viewBox="0 0 400 300" aria-hidden="true">
-        <g class="cm__pop-a">
-          <path d="M70 18l12 28 30-8-14 27 26 17-31 7 3 31-25-19-22 22-4-31-30-6 24-19-17-26 29 8z"/>
-        </g>
-        <g class="cm__pop-b">
-          <rect x="150" y="262" width="110" height="24" rx="6" transform="rotate(-4 150 262)"/>
-          <circle cx="376" cy="28" r="20"/>
-        </g>
-        <path class="cm__pop-zz" d="M10 236l16-16 16 16 16-16 16 16 16-16 16 16"/>
-        <g class="cm__pop-dots"><circle cx="300" cy="272" r="5"/><circle cx="322" cy="272" r="5"/><circle cx="344" cy="272" r="5"/><circle cx="366" cy="272" r="5"/></g>
-      </svg>
     </div>
     <div class="cm__side">
       <h2 class="h2">{t.tint}</h2>
@@ -159,12 +148,6 @@ const t = es ? {
   .cm__pola--a { transform: rotate(-3.5deg) translateY(.6rem); }
   .cm__pola--b { transform: rotate(3deg) translateY(-.6rem); }
   .cm__pola:hover { transform: rotate(0) scale(1.03); z-index: 2; }
-  .cm__pop { position: absolute; inset: -4% -4% -2%; width: 108%; height: 106%; pointer-events: none; z-index: 3; overflow: visible; }
-  .cm__pop-a path, .cm__pop-b rect { fill: var(--c0); stroke: #111; stroke-width: 5; stroke-linejoin: round; }
-  .cm__pop-b circle { fill: var(--c1); stroke: #111; stroke-width: 5; }
-  .cm__pop-zz { fill: none; stroke: var(--c1); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
-  .cm__pop-dots circle { fill: var(--c0); }
-  .cm__pop :global(*) { transition: fill .8s linear, stroke .8s linear; }
   .cm__photo--solo { max-width: 26rem; justify-self: center; width: 100%; }
   .cm__row--rev { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
   .cm__photo figcaption { font-size: .8rem; padding-top: .75rem; }
