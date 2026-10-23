@@ -10,8 +10,8 @@ import { withBase } from '../lib/i18n';
 import { forge, loadArt, shapeDefs, timingVars, type Gradient } from '../lib/forge';
 import { wavesSvg } from '../lib/waves';
 
-const { logo = '', mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, assemble = false, ornament = '', pattern = '' } = Astro.props as {
-  logo?: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; assemble?: boolean; ornament?: string; pattern?: string;
+const { logo = '', mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, liquid = false, assemble = false, ornament = '', pattern = '' } = Astro.props as {
+  logo?: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; liquid?: boolean; assemble?: boolean; ornament?: string; pattern?: string;
 };
 const src = (p: string) => (p.startsWith('/') ? withBase(p) : p);
 const isSvg = (p?: string) => !!p && p.toLowerCase().endsWith('.svg');
@@ -56,12 +56,13 @@ if (assemble && isSvg(logo)) {
 const wavesMarkup = pattern === 'waves' ? wavesSvg([tones[0], tones[1]]) : '';
 const stageSvg = assemble ? logoSvg : reactiveSvg;
 ---
-<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} data-pattern={pattern ? '' : undefined} data-orn={orn.length ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]};${timingVars()}`} aria-label={title}>
+<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-liquid-on={liquid ? '' : undefined} data-assemble={assemble ? '' : undefined} data-pattern={pattern ? '' : undefined} data-orn={orn.length ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]};${timingVars()}`} aria-label={title}>
   {defs && <Fragment set:html={defs} />}
   <!-- La escena entera (fondo, ornamento y logotipo) es un solo grupo: al hacer scroll se desvanece junta -->
   <div class="pjh__scene" data-pj-scene>
     <div class="pjh__bg" data-pj-bg aria-hidden="true"></div>
     {wavesMarkup && <Fragment set:html={wavesMarkup} />}
+    {liquid && <canvas class="pjh__liquid" data-pj-liquid aria-hidden="true"></canvas>}
     {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
     {orn.map((s) => <Fragment set:html={s} />)}
     <div class="pjh__stage" data-pj-stage>
@@ -86,6 +87,9 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   .pjh__bg { position: absolute; inset: 0; z-index: -1; transition: --ax 1.1s var(--ease), --ay 1.1s var(--ease), --bx 1.1s var(--ease), --by 1.1s var(--ease), --ga .8s linear, --gb .8s linear;
     background: radial-gradient(ellipse 62% 70% at var(--ax) var(--ay), color-mix(in srgb, var(--ga) 95%, transparent), transparent 72%),
                 radial-gradient(ellipse 70% 62% at var(--bx) var(--by), color-mix(in srgb, var(--gb) 90%, transparent), transparent 74%); }
+  /* Líquido: el canvas WebGL va sobre el fondo de luces suaves (que queda de respaldo si no hay WebGL2) */
+  .pjh__liquid { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; animation: ht-in 2.2s ease both; }
+  .pjh[data-liquid='1'] .pjh__bg { opacity: 0; }
   /* Semitono: el degradado se reemplaza por una trama de puntos dibujada en el canvas (se desvanece bajo el menú, para que se lea) */
   .pjh[data-halftone] .pjh__bg { display: none; }
   .pjh__ht { position: absolute; left: 0; top: 0; z-index: -1; pointer-events: none; animation: ht-in 1.8s ease both;
@@ -163,6 +167,7 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
 
 <script>
   import { initHalftone } from '../scripts/halftone';
+  import { initLiquid } from '../scripts/liquid';
 
   // Con el scroll, la escena se desvanece (clase is-leaving); al volver arriba, reaparece. Un solo oyente para toda la sesión.
   let ticking = false;
@@ -175,6 +180,7 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
 
   document.addEventListener('astro:page-load', () => {
     document.querySelectorAll<HTMLElement>('[data-halftone]:not([data-ready])').forEach(initHalftone);
+    document.querySelectorAll<HTMLElement>('[data-liquid-on]:not([data-liquid])').forEach(initLiquid);
     update();
   });
 </script>

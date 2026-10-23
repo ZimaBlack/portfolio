@@ -14,10 +14,10 @@ mark: /works/colorada/mark.svg
 featured: false
 order: 16
 widget: palette
-heroLights: halftone
+heroLights: liquid
 reactiveColors: ["#AE0407", "#840002"]
 paletteColors: ["#AE0407", "#840002"]
-tones: ["#240d12", "#6a1b26"]
+tones: ["#5a0b10", "#c4252d"]
 gallery:
   - { kind: full, ratio: "21 / 9", caption: { es: "[Imagen principal]", en: "[Main image]" } }
   - { kind: pair, caption: { es: "[Sistema tipográfico y paleta]", en: "[Typography and palette]" } }
