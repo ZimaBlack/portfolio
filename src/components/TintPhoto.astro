@@ -6,23 +6,59 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { withBase } from '../lib/i18n';
 
-const { photo, shapes, alt = '', ratio = '1792 / 2400', blur = 1.1, strength = 1 } = Astro.props as { photo: string; shapes: string; alt?: string; ratio?: string; blur?: number; strength?: number };
+const { photo, shapes, alt = '', ratio = '1792 / 2400', blur = 1.1, strength = 1, picker = false } = Astro.props as { photo: string; shapes: string; alt?: string; ratio?: string; blur?: number; strength?: number; picker?: boolean };
+const modes = ['soft-light', 'overlay', 'hard-light', 'color', 'hue', 'saturation', 'luminosity', 'multiply', 'screen', 'color-dodge', 'color-burn', 'darken', 'lighten', 'difference', 'normal'];
 const svg = readFileSync(join(process.cwd(), 'public', shapes), 'utf8')
   .replace(/<\?xml[^>]*>|<!DOCTYPE[^>]*>/g, '')
   .replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} preserveAspectRatio="xMidYMid slice" aria-hidden="true">`)
   .replace(/fill:\s*rgb\(\s*223\s*,\s*0\s*,\s*255\s*\)/g, 'fill:var(--c0)')
   .replace(/fill:\s*rgb\(\s*132\s*,\s*216\s*,\s*142\s*\)/g, 'fill:var(--c1)');
 ---
-<figure class="tp" style={`--r:${ratio};--blur:${blur};--k:${strength}`}>
-  <img src={withBase(photo)} alt={alt} loading="lazy" decoding="async" />
-  <div class="tp__tint" set:html={svg} />
-  {strength > 1 && <div class="tp__tint tp__tint--2" set:html={svg} />}
-</figure>
+<div class="tpw" data-tp style={`--blur:${blur}`}>
+  <figure class="tp" style={`--r:${ratio}`}>
+    <img src={withBase(photo)} alt={alt} loading="lazy" decoding="async" />
+    <div class="tp__tint" set:html={svg} />
+    {strength > 1 && <div class="tp__tint tp__tint--2" set:html={svg} />}
+  </figure>
+  {picker && (
+    <div class="tp__ctl">
+      <label>Fusión
+        <select data-tp-mode>{modes.map((m) => <option value={m} selected={m === 'soft-light'}>{m}</option>)}</select>
+      </label>
+      <label>Desenfoque <output data-tp-blur-out>{blur}</output>
+        <input type="range" min="0" max="5" step="0.1" value={blur} data-tp-blur />
+      </label>
+      <label>Opacidad <output data-tp-op-out>100</output>
+        <input type="range" min="0" max="100" step="1" value="100" data-tp-op />
+      </label>
+    </div>
+  )}
+</div>
 
 <style>
   .tp { position: relative; margin: 0; aspect-ratio: var(--r); overflow: hidden; container-type: inline-size; border-radius: 3px; background: #000; isolation: isolate; }
   .tp img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-  .tp__tint { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: soft-light; filter: blur(calc(var(--blur) * 1cqw)); transform: scale(1.04); }
+  .tpw { display: grid; gap: .75rem; }
+  .tp__ctl { display: grid; gap: .6rem; font-size: .75rem; color: var(--muted); }
+  .tp__ctl label { display: grid; grid-template-columns: 6.5rem 1fr; align-items: center; gap: .5rem; }
+  .tp__ctl output { display: none; }
+  .tp__ctl select { font: inherit; color: var(--fg); background: color-mix(in srgb, var(--bg) 70%, transparent); border: 1px solid var(--line); border-radius: 999px; padding: .3rem .8rem; }
+  .tp__ctl input[type=range] { width: 100%; accent-color: var(--fg); }
+  .tp__tint { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: soft-light; filter: blur(calc(var(--blur) * 1cqw)); opacity: var(--op, 1); transform: scale(1.04); }
   .tp__tint :global(svg) { width: 100%; height: 100%; display: block; }
   .tp__tint :global(path) { transition: fill .8s linear; }
 </style>
+
+<script>
+  // Selector de prueba: modo de fusión, desenfoque y opacidad de la capa de color (delegado, sirve tras cada navegación)
+  const bind = () => {
+    document.querySelectorAll<HTMLElement>('[data-tp]:not([data-tp-ready])').forEach((w) => {
+      w.dataset.tpReady = '1';
+      const layers = () => Array.from(w.querySelectorAll<HTMLElement>('.tp__tint'));
+      w.querySelector<HTMLSelectElement>('[data-tp-mode]')?.addEventListener('change', (e) => layers().forEach((l) => (l.style.mixBlendMode = (e.target as HTMLSelectElement).value)));
+      w.querySelector<HTMLInputElement>('[data-tp-blur]')?.addEventListener('input', (e) => w.style.setProperty('--blur', (e.target as HTMLInputElement).value));
+      w.querySelector<HTMLInputElement>('[data-tp-op]')?.addEventListener('input', (e) => w.style.setProperty('--op', String(Number((e.target as HTMLInputElement).value) / 100)));
+    });
+  };
+  document.addEventListener('astro:page-load', bind);
+</script>
