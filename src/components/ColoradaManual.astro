@@ -75,28 +75,34 @@ const t = es ? {
     <ul class="cm__tags">{t.tags.map((x) => <li>{x}</li>)}</ul>
   </div>
 
-  <div class="wrap cm__row cm__row--sketch" data-reveal>
-    <div class="cm__duo">
-      <figure class="cm__sketch">
-        <img src={sketch} alt={t.sketchCap} loading="lazy" decoding="async" />
-        <figcaption class="muted">{t.sketchCap}</figcaption>
-      </figure>
-      <figure class="cm__photo">
-        <TintPhoto photo="/works/colorada/manual/foto-01.webp" shapes="/works/colorada/manual/foto-01.svg" alt={t.photoCap} ratio="1792 / 2400" blur={1.6} />
-        <figcaption class="muted">{t.photoCap}</figcaption>
-      </figure>
-    </div>
-    <div class="cm__side">
-      <h2 class="h2">{t.sketch}</h2>
-      <p class="cm__txt">{t.sketchTxt}</p>
-      <div class="cm__logo cm__logo--big" set:html={character} />
-    </div>
+  <div class="wrap cm__row cm__row--sketch cm__row--plain" data-reveal>
+    <figure class="cm__sketch">
+      <img src={sketch} alt={t.sketchCap} loading="lazy" decoding="async" />
+      <figcaption class="muted">{t.sketchCap}</figcaption>
+    </figure>
+    <div class="cm__logo cm__logo--big" set:html={character} />
   </div>
 
-  <div class="wrap cm__row cm__row--rev" data-reveal>
-    <figure class="cm__photo cm__photo--solo">
-      <TintPhoto photo="/works/colorada/manual/foto-03.webp" shapes="/works/colorada/manual/foto-03.svg" alt={t.photo2Cap} ratio="1298 / 1718" blur={1.6} />
-    </figure>
+  <div class="wrap cm__row cm__row--rev cm__row--polaroid" data-reveal>
+    <div class="cm__polas">
+      <figure class="cm__pola cm__pola--a">
+        <TintPhoto photo="/works/colorada/manual/foto-01.webp" shapes="/works/colorada/manual/foto-01.svg" alt={t.photoCap} ratio="1792 / 2400" blur={1.6} />
+      </figure>
+      <figure class="cm__pola cm__pola--b">
+        <TintPhoto photo="/works/colorada/manual/foto-03.webp" shapes="/works/colorada/manual/foto-03.svg" alt={t.photo2Cap} ratio="1298 / 1718" blur={1.6} />
+      </figure>
+      <svg class="cm__pop" viewBox="0 0 400 300" aria-hidden="true">
+        <g class="cm__pop-a">
+          <path d="M70 18l12 28 30-8-14 27 26 17-31 7 3 31-25-19-22 22-4-31-30-6 24-19-17-26 29 8z"/>
+        </g>
+        <g class="cm__pop-b">
+          <rect x="150" y="262" width="110" height="24" rx="6" transform="rotate(-4 150 262)"/>
+          <circle cx="376" cy="28" r="20"/>
+        </g>
+        <path class="cm__pop-zz" d="M10 236l16-16 16 16 16-16 16 16 16-16 16 16"/>
+        <g class="cm__pop-dots"><circle cx="300" cy="272" r="5"/><circle cx="322" cy="272" r="5"/><circle cx="344" cy="272" r="5"/><circle cx="366" cy="272" r="5"/></g>
+      </svg>
+    </div>
     <div class="cm__side">
       <h2 class="h2">{t.tint}</h2>
       <p class="cm__txt">{t.tintA}</p>
@@ -144,6 +150,21 @@ const t = es ? {
   .cm__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }
   .cm__row--sketch { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
   .cm__duo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1rem, 3vw, 2.5rem); align-items: start; }
+  .cm__row--plain { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .cm__row--plain .cm__logo--big { margin: 0; justify-self: center; width: min(100%, 22rem); }
+  .cm__row--plain .cm__sketch { max-width: 30rem; justify-self: center; width: 100%; }
+  /* Polaroids pop: marcos claros apenas girados, y un SVG de formas con los colores del widget por encima */
+  .cm__polas { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.5rem, 2vw, 1.5rem); padding: 1rem .5rem 2rem; }
+  .cm__pola { margin: 0; padding: .55rem .55rem 2.6rem; background: #f6f1e7; border-radius: 3px; box-shadow: 0 18px 40px rgb(0 0 0 / .45); transition: transform .6s var(--ease); }
+  .cm__pola--a { transform: rotate(-3.5deg) translateY(.6rem); }
+  .cm__pola--b { transform: rotate(3deg) translateY(-.6rem); }
+  .cm__pola:hover { transform: rotate(0) scale(1.03); z-index: 2; }
+  .cm__pop { position: absolute; inset: -4% -4% -2%; width: 108%; height: 106%; pointer-events: none; z-index: 3; overflow: visible; }
+  .cm__pop-a path, .cm__pop-b rect { fill: var(--c0); stroke: #111; stroke-width: 5; stroke-linejoin: round; }
+  .cm__pop-b circle { fill: var(--c1); stroke: #111; stroke-width: 5; }
+  .cm__pop-zz { fill: none; stroke: var(--c1); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
+  .cm__pop-dots circle { fill: var(--c0); }
+  .cm__pop :global(*) { transition: fill .8s linear, stroke .8s linear; }
   .cm__photo--solo { max-width: 26rem; justify-self: center; width: 100%; }
   .cm__row--rev { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
   .cm__photo figcaption { font-size: .8rem; padding-top: .75rem; }
@@ -164,6 +185,5 @@ const t = es ? {
   .cm__sw { width: 1.6rem; height: 1.6rem; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
   @media (max-width: 860px) {
     .cm__row, .cm__row--sketch, .cm__pair { grid-template-columns: 1fr; }
-    .cm__duo { grid-template-columns: 1fr 1fr; }
     }
 </style>
