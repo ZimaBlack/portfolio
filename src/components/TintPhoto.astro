@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { withBase } from '../lib/i18n';
 
-const { photo, shapes, alt = '', ratio = '1792 / 2400', blur = 1.1, strength = 1, picker = false } = Astro.props as { photo: string; shapes: string; alt?: string; ratio?: string; blur?: number; strength?: number; picker?: boolean };
+const { photo, shapes, alt = '', ratio = '1792 / 2400', blur = 1.1, strength = 1, picker = false, mode = 'color', opacity = 0.67 } = Astro.props as { photo: string; shapes: string; alt?: string; ratio?: string; blur?: number; strength?: number; picker?: boolean; mode?: string; opacity?: number };
 const modes = ['soft-light', 'overlay', 'hard-light', 'color', 'hue', 'saturation', 'luminosity', 'multiply', 'screen', 'color-dodge', 'color-burn', 'darken', 'lighten', 'difference', 'normal'];
 const svg = readFileSync(join(process.cwd(), 'public', shapes), 'utf8')
   .replace(/<\?xml[^>]*>|<!DOCTYPE[^>]*>/g, '')
@@ -14,7 +14,7 @@ const svg = readFileSync(join(process.cwd(), 'public', shapes), 'utf8')
   .replace(/fill:\s*rgb\(\s*223\s*,\s*0\s*,\s*255\s*\)/g, 'fill:var(--c0)')
   .replace(/fill:\s*rgb\(\s*132\s*,\s*216\s*,\s*142\s*\)/g, 'fill:var(--c1)');
 ---
-<div class="tpw" data-tp style={`--blur:${blur}`}>
+<div class="tpw" data-tp style={`--blur:${blur};--op:${opacity};--mode:${mode}`}>
   <figure class="tp" style={`--r:${ratio}`}>
     <img src={withBase(photo)} alt={alt} loading="lazy" decoding="async" />
     <div class="tp__tint" set:html={svg} />
@@ -23,13 +23,13 @@ const svg = readFileSync(join(process.cwd(), 'public', shapes), 'utf8')
   {picker && (
     <div class="tp__ctl">
       <label>Fusión
-        <select data-tp-mode>{modes.map((m) => <option value={m} selected={m === 'soft-light'}>{m}</option>)}</select>
+        <select data-tp-mode>{modes.map((m) => <option value={m} selected={m === mode}>{m}</option>)}</select>
       </label>
       <label>Desenfoque <output data-tp-blur-out>{blur}</output>
         <input type="range" min="0" max="5" step="0.1" value={blur} data-tp-blur />
       </label>
       <label>Opacidad <output data-tp-op-out>100</output>
-        <input type="range" min="0" max="100" step="1" value="100" data-tp-op />
+        <input type="range" min="0" max="100" step="1" value={Math.round(opacity * 100)} data-tp-op />
       </label>
     </div>
   )}
@@ -44,7 +44,7 @@ const svg = readFileSync(join(process.cwd(), 'public', shapes), 'utf8')
   .tp__ctl output { display: none; }
   .tp__ctl select { font: inherit; color: var(--fg); background: color-mix(in srgb, var(--bg) 70%, transparent); border: 1px solid var(--line); border-radius: 999px; padding: .3rem .8rem; }
   .tp__ctl input[type=range] { width: 100%; accent-color: var(--fg); }
-  .tp__tint { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: soft-light; filter: blur(calc(var(--blur) * 1cqw)); opacity: var(--op, 1); transform: scale(1.04); }
+  .tp__tint { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: var(--mode, color); filter: blur(calc(var(--blur) * 1cqw)); opacity: var(--op, 1); transform: scale(1.04); }
   .tp__tint :global(svg) { width: 100%; height: 100%; display: block; }
   .tp__tint :global(path) { transition: fill .8s linear; }
 </style>

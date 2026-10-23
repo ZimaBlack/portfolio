@@ -26,6 +26,9 @@ const t = es ? {
   sketch: 'Del boceto al personaje',
   sketchCap: 'Boceto original',
   photoCap: 'La marca tiñe la imagen: cambia los colores de la derecha',
+  photo2Cap: 'Retrato teñido con los colores de la marca',
+  tint: 'La marca tiñe la imagen',
+  tintA: 'Pelo y prenda toman los dos colores de la marca: el principal en el cabello, el acento en el mechón y la remera. Las formas se desenfocan y se funden con la foto, así que cualquier paleta que elijas se integra sin perder las luces y sombras originales.',
   sketchTxt: 'Todo parte de un trazo a lápiz: una cabeza que se acurruca, el flequillo como gesto y una mirada de reojo. La marca conserva esa actitud.',
   system: 'Un sistema variable',
   systemA: 'Colorada se apoya en dos aspectos icónicos: su personaje (Character) y su accesorio (Capsule), el conejo. Puede presentarse por cualquiera de los dos caminos; ante reducciones extremas, la cápsula es siempre la mejor opción.',
@@ -47,6 +50,9 @@ const t = es ? {
   sketch: 'From sketch to character',
   sketchCap: 'Original sketch',
   photoCap: 'The brand tints the image: change the colors on the right',
+  photo2Cap: 'Portrait tinted with the brand colors',
+  tint: 'The brand tints the image',
+  tintA: 'Hair and garment take the brand’s two colors: the main one on the hair, the accent on the streak and the shirt. The shapes are blurred and blended into the photo, so any palette you pick integrates while keeping the original lights and shadows.',
   sketchTxt: 'It all starts with a pencil line: a head curling up, the fringe as a gesture and a sideways glance. The brand keeps that attitude.',
   system: 'A variable system',
   systemA: 'Colorada rests on two iconic aspects: its character (Character) and its accessory (Capsule), the bunny. It can present itself through either path; in extreme reductions, the capsule is always the best option.',
@@ -78,7 +84,7 @@ const t = es ? {
         <figcaption class="muted">{t.sketchCap}</figcaption>
       </figure>
       <figure class="cm__photo">
-        <TintPhoto photo="/works/colorada/manual/foto-01.webp" shapes="/works/colorada/manual/foto-01.svg" alt={t.photoCap} picker />
+        <TintPhoto photo="/works/colorada/manual/foto-01.webp" shapes="/works/colorada/manual/foto-01.svg" alt={t.photoCap} ratio="1792 / 2400" blur={1.6} />
         <figcaption class="muted">{t.photoCap}</figcaption>
       </figure>
     </div>
@@ -86,6 +92,16 @@ const t = es ? {
       <h2 class="h2">{t.sketch}</h2>
       <p class="cm__txt">{t.sketchTxt}</p>
       <div class="cm__logo cm__logo--big" set:html={character} />
+    </div>
+  </div>
+
+  <div class="wrap cm__row cm__row--rev" data-reveal>
+    <figure class="cm__photo cm__photo--solo">
+      <TintPhoto photo="/works/colorada/manual/foto-02.webp" shapes="/works/colorada/manual/foto-02.svg" alt={t.photo2Cap} ratio="1493 / 2000" blur={1.6} />
+    </figure>
+    <div class="cm__side">
+      <h2 class="h2">{t.tint}</h2>
+      <p class="cm__txt">{t.tintA}</p>
     </div>
   </div>
 
@@ -135,6 +151,8 @@ const t = es ? {
   .cm__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }
   .cm__row--sketch { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
   .cm__duo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1rem, 3vw, 2.5rem); align-items: start; }
+  .cm__photo--solo { max-width: 26rem; justify-self: center; width: 100%; }
+  .cm__row--rev { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
   .cm__photo figcaption { font-size: .8rem; padding-top: .75rem; }
   .cm__side { display: grid; gap: 1.25rem; align-content: start; }
   .cm__sketch { justify-self: stretch; }
