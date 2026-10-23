@@ -9,6 +9,8 @@ summary:
 text:
   es: "[Contexto, desafío, decisiones de diseño y resultado.]"
   en: "[Context, challenge, design decisions and outcome.]"
+heroImage: /works/global-citizen/bg
+heroAnimation: glass
 logo: /works/global-citizen/logo.svg
 mark: /works/global-citizen/mark.svg
 featured: true

@@ -47,8 +47,9 @@ const works = defineCollection({
     mark: z.string().optional(),  // isotipo / símbolo, preparado para animar junto al logotipo
     widget: z.enum(['palette']).optional(), // widget propio de la página del proyecto (fijo abajo a la derecha)
     ornament: z.string().optional(), // vector decorativo (media pieza, lado derecho) que la portada anima a ambos lados del logotipo
+    heroImage: z.string().optional(), // foto de fondo de la portada: ruta base (/works/<slug>/bg); se esperan bg-1280.webp, bg-1920.webp, bg-2560.webp y bg.jpg
     heroPattern: z.enum(['waves']).optional(), // trama de fondo de la portada (waves: ondas fluidas de diseño plano, con los colores de `tones`)
-    heroAnimation: z.enum(['assemble']).optional(), // animación de entrada de la portada (assemble: las piezas del logotipo llegan de los lados y se arman)
+    heroAnimation: z.enum(['assemble', 'glass']).optional(), // animación de entrada de la portada (assemble: las piezas del logotipo llegan de los lados y se arman)
     heroLights: z.enum(['soft', 'halftone', 'liquid']).default('soft'), // luces de la portada: degradado suave, trama de semitono o líquido realista
     reactiveColors: z.array(z.string()).default([]), // colores del logotipo que siguen al widget de paleta (1.º = elegido, 2.º = automático)
     paletteColors: z.array(z.string()).default([]), // colores de la marca para el widget de paleta
