@@ -4,21 +4,18 @@ kind: design
 discipline: { es: "Branding", en: "Branding" }
 role: { es: "Identidad visual", en: "Visual identity" }
 summary:
-  es: "[Breve descripción del impacto del proyecto]"
-  en: "[Short description of the project's impact]"
+  es: "Identidad para una marca de accesorios TCG: un emblema-escudo Art Déco que protege y distingue, entre lo fantástico y lo tecnológico."
+  en: "Identity for a TCG accessories brand: an Art Deco shield emblem that protects and distinguishes, between the fantastical and the technological."
 text:
-  es: "[Contexto, desafío, decisiones de diseño y resultado.]"
-  en: "[Context, challenge, design decisions and outcome.]"
+  es: "Omega Shields protege y conserva mazos, cartas y colecciones. Su identidad convierte la función en lujo y la protección en mística: un emblema donde la Ω abraza lo protegido, tramas ornamentales que sugieren circuitos y runas, y un sistema de packaging modular, el «puzzle invertido»."
+  en: "Omega Shields protects and preserves decks, cards and collections. Its identity turns function into luxury and protection into mystique: an emblem where the Ω embraces what it protects, ornamental weaves that suggest circuits and runes, and a modular packaging system, the “inverted puzzle”."
 heroAnimation: assemble
+manual: omega-shields
 ornament: /works/omega-shields/ornament.svg
 logo: /works/omega-shields/logo.svg
 mark: /works/omega-shields/name.svg
 featured: false
 order: 2
 tones: ["#0b0b0a", "#171717"]
-gallery:
-  - { kind: full, ratio: "21 / 9", caption: { es: "[Imagen principal]", en: "[Main image]" } }
-  - { kind: pair, caption: { es: "[Sistema tipográfico y paleta]", en: "[Typography and palette]" } }
-  - { kind: inset, ratio: "4 / 5", caption: { es: "[Aplicaciones]", en: "[Applications]" } }
-  - { kind: full, ratio: "16 / 9", caption: { es: "[Imagen full-frame de cierre]", en: "[Closing full-frame image]" } }
+gallery: []
 ---
