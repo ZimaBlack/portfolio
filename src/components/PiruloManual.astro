@@ -1,0 +1,135 @@
+---
+// Resumen del manual de Pirulo (marca satélite) para el portfolio, con el estilo del sitio.
+// Piezas del manual en /works/pirulo-coleccionables/manual/
+import { withBase, type Lang } from '../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const es = lang === 'es';
+const img = (n: string) => withBase(`/works/pirulo-coleccionables/manual/${n}.webp`);
+
+const t = es ? {
+  kicker: 'Manual de marca',
+  lead: 'Pirulo es una marca satélite: un proyecto ilustrativo que se nutre de la cultura popular, el cómic, el manga y todo su entorno.',
+  brandA: 'Hereda de su marca padre la amabilidad, la pertenencia y un poco de sentimiento nostálgico, y busca a la vez una identidad visual propia, que se acople de manera orgánica a la imagen de su marca líder, MTG Pirulo.',
+  tags: ['Ilustrativa', 'Cómic y manga', 'Amable', 'Nostálgica'],
+  rebrand: 'Rebranding',
+  rebrandA: 'El trabajo gráfico parte del elemento «pirulo», presente en la mascota de la marca padre. No solo sintetiza al personaje: muestra una actitud amable, la de ofrecer al espectador algo mágico y preciado.',
+  rebrandB: 'El centro de la marca es el pirulo: el vínculo directo entre marcas, de pertenencia, sin lugar a la competencia sino como referencia de una a la otra.',
+  system: 'Un sistema flexible',
+  systemA: 'Isologotipo, isotipo, isotipo simplificado y logotipo con gráfica: el pirulo siempre es el eje, y el isotipo es la opción preferida porque en la ilustración se condensan las actitudes. Un outline blanco delimita la marca y asegura que se mantenga íntegra sobre cualquier fondo.',
+  type: 'Logotipo',
+  typeA: 'Adaptado de la tipografía original, respetando su gestualidad pero con detalles «bubble» para acercarlo a la estética de la ilustración. Los textos de uso van en Nunito, de trazos redondeados.',
+  color: 'Color y adaptación',
+  colorA: 'Marca ilustrativa y comercial: sus colores institucionales pueden variar según el contexto. Solo el rojo del pirulo se respeta siempre, para mantener la coherencia. Vintage u Halloween son dos ejemplos.',
+  palette: 'Paleta',
+  paletteBg: 'Fondos sugeridos',
+  res: 'Recursos gráficos',
+  resA: 'Una gráfica compleja y de mucho impacto pide elementos que complementen sin sumar ruido: filtros de semitono circular y plenos flat en contenedores de bordes redondeados.',
+  env: 'En su entorno',
+  envA: 'Aproximaciones a su ecosistema; ninguna es una aplicación final.',
+  captions: ['Rojo', 'Oscuro', 'Azul'],
+} : {
+  kicker: 'Brand guidelines',
+  lead: 'Pirulo is a satellite brand: an illustrative project that draws on pop culture, comics, manga and everything around them.',
+  brandA: 'It inherits friendliness, belonging and a touch of nostalgia from its parent brand, while seeking a visual identity of its own that blends organically with the image of its lead brand, MTG Pirulo.',
+  tags: ['Illustrative', 'Comics & manga', 'Friendly', 'Nostalgic'],
+  rebrand: 'Rebranding',
+  rebrandA: 'The graphic work starts from the “pirulo” (candy cane), present in the parent brand’s mascot. It doesn’t just synthesize the character: it shows a friendly attitude, that of offering the viewer something magical and precious.',
+  rebrandB: 'The center of the brand is the pirulo: the direct bond between brands, one of belonging, with no room for competition but rather a reference from one to the other.',
+  system: 'A flexible system',
+  systemA: 'Isologotype, isotype, simplified isotype and logotype with graphic: the pirulo is always the axis, and the isotype is the preferred option since the illustration condenses the attitudes. A white outline delimits the brand and keeps it intact over any background.',
+  type: 'Logotype',
+  typeA: 'Adapted from the original typeface, respecting its gesture but adding “bubble” details to bring it closer to the illustration. Text uses Nunito, with rounded strokes.',
+  color: 'Color and adaptation',
+  colorA: 'An illustrative and commercial brand: its institutional colors can vary with the context. Only the red of the pirulo is always respected, to keep coherence. Vintage and Halloween are two examples.',
+  palette: 'Palette',
+  paletteBg: 'Suggested backgrounds',
+  res: 'Graphic resources',
+  resA: 'A complex, high-impact graphic calls for elements that complement without adding noise: circular halftone filters and flat fills in rounded-corner containers.',
+  env: 'In its environment',
+  envA: 'Approximations to its ecosystem; none is a final application.',
+  captions: ['Red', 'Dark', 'Blue'],
+};
+const brand = [['#D11126', ''], ['#AD2A24', ''], ['#AD7EA6', ''], ['#905C89', ''], ['#F9D9CA', ''], ['#F6C4A3', '']];
+const bgs = ['#551113', '#1D2443'];
+---
+<section class="pr" aria-label={t.kicker}>
+  <div class="wrap pr__head" data-reveal>
+    <p class="eyebrow">{t.kicker}</p>
+    <p class="pr__lead">{t.lead}</p>
+    <p class="pr__txt">{t.brandA}</p>
+    <ul class="pr__tags">{t.tags.map((x) => <li>{x}</li>)}</ul>
+  </div>
+
+  <figure class="wrap pr__ph" data-reveal><img src={img('color')} alt="Pirulo" loading="lazy" decoding="async" /></figure>
+
+  <div class="wrap pr__row" data-reveal>
+    <div class="pr__side"><h2 class="h2">{t.rebrand}</h2><p class="pr__txt">{t.rebrandA}</p><p class="pr__txt">{t.rebrandB}</p></div>
+    <figure class="pr__ph"><img src={img('ventana')} alt={t.rebrand} loading="lazy" decoding="async" /></figure>
+  </div>
+
+  <div class="wrap pr__row pr__row--rev" data-reveal>
+    <figure class="pr__ph"><img src={img('cartel')} alt={t.system} loading="lazy" decoding="async" /></figure>
+    <div class="pr__side"><h2 class="h2">{t.system}</h2><p class="pr__txt">{t.systemA}</p></div>
+  </div>
+
+  <div class="wrap pr__row" data-reveal>
+    <div class="pr__side"><h2 class="h2">{t.type}</h2><p class="pr__txt">{t.typeA}</p></div>
+    <div class="pr__ph pr__halftone" role="img" aria-label={t.res}></div>
+  </div>
+
+  <div class="wrap pr__row pr__row--rev" data-reveal>
+    <div class="pr__pal">
+      <ul>{brand.map(([h]) => <li><span style={`background:${h}`}></span><em>{h}</em></li>)}</ul>
+      <p class="muted">{t.paletteBg}</p>
+      <ul>{bgs.map((h) => <li><span style={`background:${h}`}></span><em>{h}</em></li>)}</ul>
+    </div>
+    <div class="pr__side"><h2 class="h2">{t.palette}</h2><p class="pr__txt">{t.colorA}</p></div>
+  </div>
+
+  <div class="wrap pr__tri" data-reveal>
+    <figure class="pr__ph"><img src={img('textura')} alt={t.captions[0]} loading="lazy" decoding="async" /></figure>
+    <figure class="pr__ph"><img src={img('oscuro')} alt={t.captions[1]} loading="lazy" decoding="async" /></figure>
+    <figure class="pr__ph"><img src={img('azul')} alt={t.captions[2]} loading="lazy" decoding="async" /></figure>
+  </div>
+
+  <div class="wrap pr__side pr__res" data-reveal><h2 class="h2">{t.res}</h2><p class="pr__txt">{t.resA}</p></div>
+
+  <div class="wrap" data-reveal>
+    <div class="pr__side"><h2 class="h2">{t.env}</h2><p class="pr__txt">{t.envA}</p></div>
+    <div class="pr__pair">
+      <figure class="pr__ph"><img src={img('caja')} alt="Pirulo" loading="lazy" decoding="async" /></figure>
+      <figure class="pr__ph"><img src={img('chapas')} alt="Pirulo" loading="lazy" decoding="async" /></figure>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pr { --red: #d11126; display: grid; gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(4rem, 8vw, 8rem); }
+  .pr figure { margin: 0; }
+  .pr img { width: 100%; height: auto; display: block; }
+  .pr__head { display: grid; gap: 1.5rem; max-width: 62rem; }
+  .pr__lead { margin: 0; font-size: clamp(1.25rem, 2.2vw, 2rem); line-height: 1.35; }
+  .pr__txt { margin: 0; color: var(--muted); max-width: 40rem; }
+  .pr__tags { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; margin: .5rem 0 0; padding: 0; }
+  .pr__tags li { padding: .35rem 1rem; border: 1px solid color-mix(in srgb, var(--red) 70%, transparent); border-radius: 999px; font-size: .85rem; color: #ee6a74; }
+  .pr .h2 { margin-bottom: 1rem; }
+  .pr__ph img, .pr__halftone { border-radius: 14px; }
+  .pr__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }
+  .pr__row--rev { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .pr__side { display: grid; gap: 1.25rem; align-content: start; }
+  /* Semitono circular sólido, en CSS: el recurso gráfico del manual */
+  .pr__halftone { aspect-ratio: 16 / 10; background: radial-gradient(circle, #1d0507 0 30%, transparent 33%) 0 0 / 16px 16px, radial-gradient(ellipse at 30% 40%, #d11126, #551113 80%); -webkit-mask-image: radial-gradient(ellipse at 40% 45%, #000 20%, transparent 80%); mask-image: radial-gradient(ellipse at 40% 45%, #000 20%, transparent 80%); border-radius: 0; }
+  .pr__pal { display: grid; gap: 1rem; }
+  .pr__pal ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 1rem; }
+  .pr__pal li { display: grid; justify-items: center; gap: .4rem; }
+  .pr__pal span { width: 3.2rem; aspect-ratio: 1; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
+  .pr__pal em { font-style: normal; font-size: .75rem; color: var(--muted); }
+  .pr__pal p { margin: .5rem 0 0; font-size: .8rem; }
+  .pr__tri { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); }
+  .pr__res { max-width: 62rem; }
+  .pr__pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); margin-top: 2rem; }
+  @media (max-width: 860px) {
+    .pr__row, .pr__row--rev, .pr__pair, .pr__tri { grid-template-columns: 1fr; }
+  }
+</style>

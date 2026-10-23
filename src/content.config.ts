@@ -53,7 +53,8 @@ const works = defineCollection({
     heroLights: z.enum(['soft', 'halftone', 'liquid']).default('soft'), // luces de la portada: degradado suave, trama de semitono o líquido realista
     reactiveColors: z.array(z.string()).default([]), // colores del logotipo que siguen al widget de paleta (1.º = elegido, 2.º = automático)
     paletteColors: z.array(z.string()).default([]), // colores de la marca para el widget de paleta
-    manual: z.enum(['global-citizen', 'cdxx', 'colorada', 'omega-shields']).optional(), // sección «Manual de marca» del proyecto (piezas en /works/<slug>/manual/)
+    links: z.array(z.object({ label: z.string(), url: z.string() })).default([]), // enlaces del proyecto (redes del cliente, sitio…)
+    manual: z.enum(['global-citizen', 'cdxx', 'colorada', 'omega-shields', 'pirulo']).optional(), // sección «Manual de marca» del proyecto (piezas en /works/<slug>/manual/)
     headerMarquee: z.boolean().default(false), // cabecera con marquesina de logos (b) sin color, en lugar de la imagen
     hero: z.string().optional(),  // cabecera panorámica 21:9 de la página del proyecto
     tones: z.array(z.string()).default(['#1a1a1a', '#2b2b2b']).transform((a) => [a[0] ?? '#1a1a1a', a[1] ?? a[0] ?? '#2b2b2b'] as [string, string]),
