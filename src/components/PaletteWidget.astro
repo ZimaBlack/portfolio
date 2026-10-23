@@ -132,7 +132,8 @@ const t = {
         });
         // Los colores reactivos del logotipo (1.º y 2.º) y las dos luces del fondo
         if (touched && hero) {
-          const set = (k: string, v: string) => hero.style.setProperty(k, v);
+          const scope = hero.closest<HTMLElement>('[data-pw-scope]'); // toda la página del proyecto hereda los colores
+          const set = (k: string, v: string) => { hero.style.setProperty(k, v); scope?.style.setProperty(k, v); };
           set('--pw-0', hex[0]);
           set('--pw-1', hex[1]);
           set('--ga', bw ? '#D8D8D8' : toHex([0.58, C0[0] * 0.9, hue[0]]));

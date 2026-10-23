@@ -1,0 +1,160 @@
+---
+// Resumen del manual de Colorada para el portfolio. Sin la tipografía ni los fondos del manual original:
+// los logos van en línea (SVG) y toman los colores del widget del hero (--pw-0 / --pw-1); el resto de la página también.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { withBase, type Lang } from '../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const es = lang === 'es';
+const sketch = withBase('/works/colorada/manual/boceto.webp');
+
+// Logo en línea: el pelo (#AE0407 y #F5282C) y el mechón (#840002) leen --c0 / --c1, que por defecto siguen al widget
+const inline = (file: string, label: string) => readFileSync(join(process.cwd(), 'public/works/colorada', file), 'utf8')
+  .replace(/fill="#(AE0407|F5282C)"/gi, 'style="fill:var(--c0)"')
+  .replace(/fill="#840002"/gi, 'style="fill:var(--c1)"')
+  .replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} role="img" aria-label="${label}">`);
+const character = inline('logo.svg', 'Colorada — character');
+const wordmark = inline('mark.svg', 'Colorada — logotipo');
+
+const t = es ? {
+  kicker: 'Manual de marca',
+  lead: 'Colorada es una identidad gráfica compuesta y variable, con un branding estético enfocado en el color y el dinamismo de sus formas.',
+  brandA: 'Nació como marca personal para productos de cuidado y teñido del cabello fantasía. Se presenta audaz, joven y rebelde, pero a la vez sensual y simpática: una marca de contrastes, cómplice y desafiante.',
+  tags: ['Audaz', 'Joven y rebelde', 'Sensual y simpática', 'De contrastes'],
+  sketch: 'Del boceto al personaje',
+  sketchCap: 'Boceto original',
+  sketchTxt: 'Todo parte de un trazo a lápiz: una cabeza que se acurruca, el flequillo como gesto y una mirada de reojo. La marca conserva esa actitud.',
+  system: 'Un sistema variable',
+  systemA: 'Colorada se apoya en dos aspectos icónicos: su personaje (Character) y su accesorio (Capsule), el conejo. Puede presentarse por cualquiera de los dos caminos; ante reducciones extremas, la cápsula es siempre la mejor opción.',
+  systemB: 'El logotipo vive dentro de un contenedor oscuro que le da peso a su mensaje y lo posiciona, con la legibilidad como prioridad.',
+  charCap: 'Isologotipo · Character',
+  wordCap: 'Logotipo con refuerzo gráfico',
+  color: 'El color como variable',
+  colorA: 'Colorada está pensada para moverse entre paletas según lo que necesite: se alienta a modificar su paleta principal según evento, entorno o circunstancia. Probalo con los selectores de color de la derecha: esta página entera cambia con ellos.',
+  base: 'Paleta base',
+  baseCap: 'Rosa y verde, el punto de partida del manual',
+  dark: 'Entorno oscuro',
+  darkA: 'Cuando el contorno y los contenedores de la marca pierden visibilidad, se emplea la sombra de color: gracias a la «ley de cierre» se conservan siempre las formas puras de la marca.',
+  region: 'Variaciones de color de la marca',
+} : {
+  kicker: 'Brand guidelines',
+  lead: 'Colorada is a composite, variable graphic identity with an aesthetic branding focused on color and the dynamism of its shapes.',
+  brandA: 'It was born as a personal brand for fantasy hair-care and dye products. It presents itself as bold, young and rebellious, yet sensual and sympathetic: a brand of contrasts, complicit and defiant.',
+  tags: ['Bold', 'Young & rebellious', 'Sensual & sympathetic', 'Of contrasts'],
+  sketch: 'From sketch to character',
+  sketchCap: 'Original sketch',
+  sketchTxt: 'It all starts with a pencil line: a head curling up, the fringe as a gesture and a sideways glance. The brand keeps that attitude.',
+  system: 'A variable system',
+  systemA: 'Colorada rests on two iconic aspects: its character (Character) and its accessory (Capsule), the bunny. It can present itself through either path; in extreme reductions, the capsule is always the best option.',
+  systemB: 'The logotype lives inside a dark container that gives its message weight and positions it, with legibility as the priority.',
+  charCap: 'Isologotype · Character',
+  wordCap: 'Logotype with graphic reinforcement',
+  color: 'Color as a variable',
+  colorA: 'Colorada is designed to move between palettes as needed: modifying its main palette by event, environment or circumstance is encouraged. Try it with the color pickers on the right: this whole page changes with them.',
+  base: 'Base palette',
+  baseCap: 'Pink and green, the manual’s starting point',
+  dark: 'Dark environments',
+  darkA: 'When the brand’s outline and containers lose visibility, the color shadow is used: thanks to the “closing law” the pure forms of the brand are always preserved.',
+  region: 'Brand color variations',
+};
+
+// Variaciones del manual (pelo / mechón)
+const variants = [
+  ['#1e1e1e', '#d4a52f'], ['#c47ba8', '#6a2563'], ['#343b8f', '#deb7d6'],
+  ['#e9c04a', '#c4372b'], ['#86bb78', '#1c1c1c'], ['#85562f', '#d19972'],
+];
+---
+<section class="cm" aria-label={t.kicker}>
+  <div class="wrap cm__head" data-reveal>
+    <p class="eyebrow">{t.kicker}</p>
+    <p class="cm__lead">{t.lead}</p>
+    <p class="cm__txt">{t.brandA}</p>
+    <ul class="cm__tags">{t.tags.map((x) => <li>{x}</li>)}</ul>
+  </div>
+
+  <div class="wrap cm__row cm__row--sketch" data-reveal>
+    <figure class="cm__sketch">
+      <img src={sketch} alt={t.sketchCap} loading="lazy" decoding="async" />
+      <figcaption class="muted">{t.sketchCap}</figcaption>
+    </figure>
+    <div class="cm__side">
+      <h2 class="h2">{t.sketch}</h2>
+      <p class="cm__txt">{t.sketchTxt}</p>
+      <div class="cm__logo cm__logo--big" set:html={character} />
+    </div>
+  </div>
+
+  <div class="wrap cm__row" data-reveal>
+    <div class="cm__side">
+      <h2 class="h2">{t.system}</h2>
+      <p class="cm__txt">{t.systemA}</p>
+      <p class="cm__txt">{t.systemB}</p>
+    </div>
+    <div class="cm__pair">
+      <figure><div class="cm__logo" set:html={character} /><figcaption class="muted">{t.charCap}</figcaption></figure>
+      <figure><div class="cm__logo cm__logo--word" set:html={wordmark} /><figcaption class="muted">{t.wordCap}</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="wrap cm__color" data-reveal>
+    <h2 class="h2">{t.color}</h2>
+    <p class="cm__txt">{t.colorA}</p>
+    <ul class="cm__grid" aria-label={t.region}>
+      {variants.map(([a, b]) => <li style={`--c0:${a};--c1:${b}`}><div class="cm__logo" set:html={character} /></li>)}
+    </ul>
+    <div class="cm__base">
+      <span class="cm__sw" style="background:#E03B7A"></span><span class="cm__sw" style="background:#6CE829"></span>
+      <p class="muted"><strong>{t.base}</strong> · #E03B7A · #6CE829 — {t.baseCap}</p>
+    </div>
+  </div>
+
+  <div class="wrap cm__row cm__row--dark" data-reveal>
+    <div class="cm__side">
+      <h2 class="h2">{t.dark}</h2>
+      <p class="cm__txt">{t.darkA}</p>
+    </div>
+    <div class="cm__pair cm__pair--dark">
+      <div class="cm__logo cm__logo--shadow" set:html={character} />
+      <div class="cm__logo cm__logo--word cm__logo--shadow" set:html={wordmark} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .cm { --c0: var(--pw-0, #ae0407); --c1: var(--pw-1, #840002); display: grid; gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(4rem, 8vw, 8rem); }
+  .cm figure { margin: 0; }
+  .cm :global(.wrap) { padding-right: max(var(--gutter), 5.5rem); } /* deja libre el borde donde va el widget de color */
+  .cm__head { display: grid; gap: 1.5rem; max-width: 62rem; }
+  .cm__lead { margin: 0; font-size: clamp(1.25rem, 2.2vw, 2rem); line-height: 1.35; }
+  .cm__txt { margin: 0; color: var(--muted); max-width: 40rem; }
+  .cm__tags { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; margin: .5rem 0 0; padding: 0; }
+  .cm__tags li { padding: .35rem 1rem; border: 1px solid color-mix(in srgb, var(--c0) 70%, transparent); border-radius: 999px; font-size: .85rem; color: color-mix(in srgb, var(--c0) 55%, var(--fg)); transition: border-color .8s linear, color .8s linear; }
+  .cm .h2 { margin-bottom: 1rem; }
+  .cm__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }
+  .cm__row--sketch { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+  .cm__side { display: grid; gap: 1.25rem; align-content: start; }
+  .cm__sketch { max-width: 26rem; justify-self: center; }
+  .cm__sketch img { width: 100%; height: auto; border-radius: 3px; box-shadow: 0 30px 80px rgb(0 0 0 / .5), 0 0 0 1px var(--line); }
+  .cm__sketch figcaption, .cm__pair figcaption { font-size: .8rem; padding-top: .75rem; }
+  .cm__logo :global(svg) { width: 100%; height: auto; }
+  .cm__logo :global(svg path) { transition: fill .8s linear; }
+  .cm__logo--big { width: min(100%, 15rem); margin-top: 1rem; }
+  .cm__pair { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 4vw, 4rem); align-items: end; }
+  .cm__pair .cm__logo { max-width: 17rem; margin-inline: auto; }
+  .cm__pair .cm__logo--word { max-width: 21rem; }
+  .cm__pair figcaption { text-align: center; }
+  .cm__color { display: grid; gap: 1.25rem; }
+  .cm__grid { list-style: none; margin: 1.5rem 0 .5rem; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(.75rem, 2vw, 2rem); }
+  .cm__grid .cm__logo :global(svg path) { transition: none; }
+  .cm__base { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+  .cm__base p { margin: 0 0 0 .5rem; font-size: .82rem; }
+  .cm__sw { width: 1.6rem; height: 1.6rem; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
+  /* Entorno oscuro: la sombra de color mantiene las formas puras */
+  .cm__pair--dark { align-items: center; }
+  .cm__logo--shadow :global(svg) { filter: drop-shadow(.35rem .5rem 0 color-mix(in srgb, var(--c0) 85%, #000)); }
+  @media (max-width: 860px) {
+    .cm__row, .cm__row--sketch, .cm__pair { grid-template-columns: 1fr; }
+    .cm__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+</style>
