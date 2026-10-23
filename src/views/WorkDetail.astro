@@ -86,9 +86,10 @@ const alt = lang === 'es' ? 'en' : 'es';
         {d.year && <div><dt>{c.detail.year}</dt><dd>{d.year}</dd></div>}
         <div><dt>{c.detail.role}</dt><dd>{loc(d.role, lang)}</dd></div>
         {d.client && <div><dt>{c.detail.client}</dt><dd>{d.client}</dd></div>}
+        {loc(d.summary, lang).trim() && <div class="meta__wide"><dt>{lang === 'es' ? 'Resumen' : 'Summary'}</dt><dd>{loc(d.summary, lang)}</dd></div>}
+        {loc(d.text, lang).trim() && <div class="meta__wide"><dt>{lang === 'es' ? 'Descripción' : 'Description'}</dt><dd>{loc(d.text, lang)}</dd></div>}
         {isCode && d.stack.length > 0 && <div class="meta__stack"><dt>{c.detail.stack}</dt><dd><ul>{d.stack.map((s) => <li>{s}</li>)}</ul></dd></div>}
       </dl>
-      <p class="lead" data-hero>{loc(d.summary, lang)}</p>
       {isCode && (d.repo || d.live) && (
         <div class="cta" data-hero>
           {d.repo && <a class="btn btn--solid" href={d.repo} target="_blank" rel="noopener noreferrer"><Icon name="github" /> {c.detail.repo}</a>}
@@ -106,7 +107,6 @@ const alt = lang === 'es' ? 'en' : 'es';
       <div class="hero-img" data-reveal><Frame src={d.hero} alt={d.title} tones={d.tones} ratio="21 / 9" label={c.detail.hero} parallax={7} note={c.detail.safe} /></div>
     )}
 
-    {loc(d.text, lang).trim() && <div class="wrap prose" data-reveal><p>{loc(d.text, lang)}</p></div>}
 
     {slides.length > 0 && (
       <section class="wrap car-sec">
@@ -159,6 +159,8 @@ const alt = lang === 'es' ? 'en' : 'es';
   .meta ul { display: flex; flex-wrap: wrap; gap: .4rem; list-style: none; margin: 0; padding: 0; }
   .meta li { border: 1px solid var(--line); border-radius: 999px; padding: .15rem .7rem; font-size: .8rem; }
   .meta__stack { grid-column: span 2; }
+  .meta__wide { grid-column: 1 / -1; max-width: 46rem; }
+  .meta__wide dd { color: var(--fg); line-height: 1.6; }
   .cta { display: flex; flex-wrap: wrap; gap: .75rem; }
   .mq-bleed { width: 100vw; margin-left: calc(50% - 50vw); }
   .hero-img { margin-top: clamp(3rem, 6vw, 6rem); }
