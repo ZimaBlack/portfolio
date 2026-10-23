@@ -8,11 +8,13 @@ import { withBase } from '../lib/i18n';
 
 const { photo, shapes, alt = '', ratio = '1792 / 2400', blur = 1.1, strength = 1, picker = false, mode = 'color', opacity = 0.67 } = Astro.props as { photo: string; shapes: string; alt?: string; ratio?: string; blur?: number; strength?: number; picker?: boolean; mode?: string; opacity?: number };
 const modes = ['soft-light', 'overlay', 'hard-light', 'color', 'hue', 'saturation', 'luminosity', 'multiply', 'screen', 'color-dodge', 'color-burn', 'darken', 'lighten', 'difference', 'normal'];
-const svg = readFileSync(join(process.cwd(), 'public', shapes), 'utf8')
+// Los dos colores de relleno del SVG (en orden de aparición) se reemplazan por --c0 y --c1, sea cual sea su valor
+const raw = readFileSync(join(process.cwd(), 'public', shapes), 'utf8');
+const fills = [...new Set([...raw.matchAll(/fill:\s*(rgb\([^)]*\)|#[0-9a-fA-F]{3,8})/g)].map((m) => m[1]))];
+let svg = raw
   .replace(/<\?xml[^>]*>|<!DOCTYPE[^>]*>/g, '')
-  .replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} preserveAspectRatio="xMidYMid slice" aria-hidden="true">`)
-  .replace(/fill:\s*rgb\(\s*223\s*,\s*0\s*,\s*255\s*\)/g, 'fill:var(--c0)')
-  .replace(/fill:\s*rgb\(\s*132\s*,\s*216\s*,\s*142\s*\)/g, 'fill:var(--c1)');
+  .replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} preserveAspectRatio="xMidYMid slice" aria-hidden="true">`);
+fills.slice(0, 2).forEach((f, i) => { svg = svg.split(`fill:${f}`).join(`fill:var(--c${i})`); });
 ---
 <div class="tpw" data-tp style={`--blur:${blur};--op:${opacity};--mode:${mode}`}>
   <figure class="tp" style={`--r:${ratio}`}>

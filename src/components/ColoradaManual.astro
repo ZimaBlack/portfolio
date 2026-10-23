@@ -96,9 +96,10 @@ const t = es ? {
   </div>
 
   <div class="wrap cm__row cm__row--rev" data-reveal>
-    <figure class="cm__photo cm__photo--solo">
-      <TintPhoto photo="/works/colorada/manual/foto-02.webp" shapes="/works/colorada/manual/foto-02.svg" alt={t.photo2Cap} ratio="1493 / 2000" blur={1.6} />
-    </figure>
+    <div class="cm__duo cm__duo--photos">
+      <figure class="cm__photo"><TintPhoto photo="/works/colorada/manual/foto-02.webp" shapes="/works/colorada/manual/foto-02.svg" alt={t.photo2Cap} ratio="1493 / 2000" blur={1.6} /></figure>
+      <figure class="cm__photo"><TintPhoto photo="/works/colorada/manual/foto-03.webp" shapes="/works/colorada/manual/foto-03.svg" alt={t.photo2Cap} ratio="1298 / 1718" blur={1.6} /></figure>
+    </div>
     <div class="cm__side">
       <h2 class="h2">{t.tint}</h2>
       <p class="cm__txt">{t.tintA}</p>
