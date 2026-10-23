@@ -113,8 +113,9 @@ const t = {
       let ax = 20, ay = 30, bx = 78, by = 74;
       const reroll = () => {
         const left = Math.random() < 0.5;
-        ax = left ? rand(6, 30) : rand(70, 94); ay = rand(14, 40);
-        bx = left ? rand(66, 92) : rand(8, 34); by = rand(60, 90);
+        // Los focos de color quedan cerca del centro (asimétricos, pero juntos): ax/bx a los lados del 50 %, ay/by apenas arriba y abajo
+        ax = left ? rand(30, 43) : rand(57, 70); ay = rand(34, 50);
+        bx = left ? rand(57, 70) : rand(30, 43); by = rand(50, 66);
       };
       reroll();
 

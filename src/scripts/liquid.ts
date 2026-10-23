@@ -39,8 +39,11 @@ void main(){
 
   // Diseño plano: colores sólidos, sin luz ni degradados; los bordes son nítidos (se suavizan sólo un píxel para que no se escalonen)
   float aaH = fwidth(h) * 1.3 + 1e-4, aaK = fwidth(k) * 1.3 + 1e-4;
-  float cov = smoothstep(-aaH, aaH, h + (w1 + w2) * .1 - .46);   // cuánto líquido hay: el resto es el negro del fondo
+  float cov = smoothstep(-aaH, aaH, h + (w1 + w2) * .15 - .46);   // cuánto líquido hay: el resto es el negro del fondo
   vec3 col = mix(uC1, uC2, smoothstep(-aaK, aaK, k - .5));        // cuál de los dos tonos
+  // Viñeta: una sombra suave que oscurece los bordes de la portada (el color se apaga hacia el negro)
+  float vig = smoothstep(.3, 1.0, length((uv - .5) * vec2(1.05, 1.2) * 1.5));
+  col *= 1. - .72 * vig;
   o = vec4(col * cov * uI, cov * uI);
 }`;
 const VERT = `#version 300 es

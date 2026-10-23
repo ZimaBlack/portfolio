@@ -56,7 +56,7 @@ if (assemble && isSvg(logo)) {
 const wavesMarkup = pattern === 'waves' ? wavesSvg([tones[0], tones[1]]) : '';
 const stageSvg = assemble ? logoSvg : reactiveSvg;
 ---
-<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-liquid-on={liquid ? '' : undefined} data-assemble={assemble ? '' : undefined} data-pattern={pattern ? '' : undefined} data-orn={orn.length ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]};${timingVars()}`} aria-label={title}>
+<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-liquid-on={liquid ? '' : undefined} data-assemble={assemble ? '' : undefined} data-pattern={pattern ? '' : undefined} data-orn={orn.length ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]};${liquid ? '--ax:36%;--ay:42%;--bx:64%;--by:58%;' : ''}${timingVars()}`} aria-label={title}>
   {defs && <Fragment set:html={defs} />}
   <!-- La escena entera (fondo, ornamento y logotipo) es un solo grupo: al hacer scroll se desvanece junta -->
   <div class="pjh__scene" data-pj-scene>
