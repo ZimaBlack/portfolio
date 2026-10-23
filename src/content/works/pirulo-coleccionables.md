@@ -10,11 +10,13 @@ summary:
 text:
   es: "[Contexto, desafío, decisiones de diseño y resultado.]"
   en: "[Context, challenge, design decisions and outcome.]"
-draft: true
+draft: false
+heroLights: halftone
+heroPattern: waves
 featured: true
 homeOrder: 3
 order: 7
-tones: ["#20150d", "#5c3a17"]
+tones: ["#7A0F16", "#E02B33"]
 gallery:
   - { kind: full, ratio: "21 / 9", caption: { es: "[Imagen principal]", en: "[Main image]" } }
   - { kind: pair, caption: { es: "[Sistema tipográfico y paleta]", en: "[Typography and palette]" } }

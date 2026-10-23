@@ -8,9 +8,10 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { withBase } from '../lib/i18n';
 import { forge, loadArt, shapeDefs, timingVars, type Gradient } from '../lib/forge';
+import { wavesSvg } from '../lib/waves';
 
-const { logo, mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, assemble = false, ornament = '' } = Astro.props as {
-  logo: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; assemble?: boolean; ornament?: string;
+const { logo = '', mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, assemble = false, ornament = '', pattern = '' } = Astro.props as {
+  logo?: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; assemble?: boolean; ornament?: string; pattern?: string;
 };
 const src = (p: string) => (p.startsWith('/') ? withBase(p) : p);
 const isSvg = (p?: string) => !!p && p.toLowerCase().endsWith('.svg');
@@ -51,20 +52,25 @@ if (assemble && isSvg(logo)) {
     orn = [-2, -1, 0, 1, 2].flatMap((k) => [half(k, true), half(k, false)]);
   }
 }
+// ── Trama fluida de diseño plano (ondas con los colores del proyecto)
+const wavesMarkup = pattern === 'waves' ? wavesSvg([tones[0], tones[1]]) : '';
 const stageSvg = assemble ? logoSvg : reactiveSvg;
 ---
-<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} data-orn={orn.length ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]};${timingVars()}`} aria-label={title}>
+<section class="pjh" data-pj-hero data-halftone={halftone ? '' : undefined} data-assemble={assemble ? '' : undefined} data-pattern={pattern ? '' : undefined} data-orn={orn.length ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]};${timingVars()}`} aria-label={title}>
   {defs && <Fragment set:html={defs} />}
   <!-- La escena entera (fondo, ornamento y logotipo) es un solo grupo: al hacer scroll se desvanece junta -->
   <div class="pjh__scene" data-pj-scene>
     <div class="pjh__bg" data-pj-bg aria-hidden="true"></div>
+    {wavesMarkup && <Fragment set:html={wavesMarkup} />}
     {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
     {orn.map((s) => <Fragment set:html={s} />)}
     <div class="pjh__stage" data-pj-stage>
       {mark && !nameSvg && <img class="pjh__mark" data-pj-mark src={src(mark)} alt="" aria-hidden="true" decoding="async" draggable="false" />}
       {stageSvg
         ? <Fragment set:html={stageSvg} />
-        : <img class="pjh__logo" data-pj-logo src={src(logo)} alt={title} decoding="async" draggable="false" />}
+        : logo
+          ? <img class="pjh__logo" data-pj-logo src={src(logo)} alt={title} decoding="async" draggable="false" />
+          : <h2 class="pjh__title display" data-pj-logo>{title}</h2>}
       {nameSvg && <Fragment set:html={nameSvg} />}
     </div>
   </div>
@@ -102,6 +108,16 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   @property --by { syntax: '<percentage>'; inherits: true; initial-value: 72%; }
   @property --ga { syntax: '<color>'; inherits: true; initial-value: #6a1b26; }
   @property --gb { syntax: '<color>'; inherits: true; initial-value: #240d12; }
+
+  /* ── Trama fluida: capas de ondas lisas que se desplazan un ancho de pantalla en bucle, a distinta velocidad y en sentidos opuestos */
+  .pjh__waves { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; overflow: hidden; pointer-events: none; opacity: .9; }
+  .pjh__wave { animation: pj-flow var(--dur, 60s) linear infinite; animation-direction: normal; }
+  .pjh__wave[style*='--dir:-1'] { animation-direction: reverse; }
+  @keyframes pj-flow { from { transform: translateX(0); } to { transform: translateX(-1440px); } }
+  /* Con trama fluida, el semitono acompaña (más tenue y sólo hacia arriba), para que las ondas planas se lean */
+  .pjh[data-pattern] .pjh__ht { opacity: .55; -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 35%, transparent 80%); mask-image: linear-gradient(to bottom, #000 0, #000 35%, transparent 80%); animation: none; }
+  @media (prefers-reduced-motion: reduce) { .pjh__wave { animation: none; } }
+  .pjh__title { margin: 0; text-align: center; font-size: clamp(2rem, 6vw, 5rem); }
 
   /* ── Logotipo SVG (modo reactivo y ensamblar) */
   .pjh__defs { position: absolute; width: 0; height: 0; overflow: hidden; }
