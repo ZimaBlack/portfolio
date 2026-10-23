@@ -1,0 +1,230 @@
+---
+// Manual normativo de Conexión CDXX adaptado al sitio, con la identidad propia de la marca (Black Raisin, oro, Krona One + Lexend).
+// Texto nativo (bilingüe) + piezas recortadas del manual original en /works/cdxx/manual/
+import '@fontsource/krona-one/400.css';
+import '@fontsource-variable/lexend/wght.css';
+import { withBase, type Lang } from '../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const es = lang === 'es';
+const img = (n: string) => withBase(`/works/cdxx/manual/${n}.webp`);
+const bg = withBase('/works/cdxx/bg-1920.webp');
+
+const t = es ? {
+  kicker: 'Manual normativo',
+  brand: 'La marca',
+  brandA: 'Conexión CDXX se define como una propuesta sensorial que transforma la experiencia del chocolate artesanal. Más allá de lo gourmet, es una invitación a explorar las dimensiones de la percepción, la emoción y la conciencia a través del chocolate, también acompañado del maridaje con destilados y elixires selectos.',
+  brandB: 'La marca conecta lo tangible con lo etéreo, ofreciendo una travesía única para los más curiosos y conocedores, donde cada degustación abre puertas hacia nuevas realidades sensoriales.',
+  concept: 'Concepto visual',
+  conceptA: 'Conexión CDXX explora el concepto de la dualidad fusionada: desde lo terrenal hacia lo cósmico, con una fuerte inspiración en las hifas micelares y en los sistemas de circuitos tecnológicos. Esta fusión simboliza la interconexión entre lo natural y lo abstracto, donde las redes subterráneas de los hongos y las estructuras del silicio en los procesadores comparten un mismo principio: la transmisión de información, la expansión del conocimiento y la evolución de la percepción y lo sensorial.',
+  conceptB: 'Visualmente, este concepto se traduce en una estética que evoca un diseño tradicional, con texturas orgánicas que se entrelazan con patrones geométricos. La marca se despliega en un lenguaje visual que recuerda diseños de casas heráldicas simplificadas, pero con un gran giro contemporáneo.',
+  main: 'Versión principal',
+  mainA: 'La versión principal del isologo de Conexión CDXX es la representación más completa y simbólica de la marca. Debe usarse en los principales puntos de contacto, ya que contiene la totalidad del concepto visual y comunica de manera directa el mensaje de interconexión, lujo y exploración sensorial.',
+  safe: 'Área segura',
+  variants: 'Variantes',
+  iso: 'Isotipo',
+  isoA: 'El isotipo de Conexión CDXX es un símbolo que integra referencias naturales y futuristas. La figura principal, un árbol cuyas raíces se entrelazan con hifas micelares, simboliza una red de conexiones profundas.',
+  isoB: 'Esta estructura se extiende hacia formas abstractas que evocan circuitos neuronales, representando la conexión entre la percepción sensorial y la conciencia.',
+  isoC: 'La elección de estas formas no es casual: la naturaleza arbórea sugiere crecimiento, mientras que las líneas orgánicas y las abstracciones tecnológicas representan la expansión del pensamiento y la percepción.',
+  reduce: 'Reducciones mínimas',
+  reduceA: 'Al reducir el logotipo hay estratos de preferencia según el tamaño: cambian el posicionamiento y la dimensión del iso sobre la tipografía para preservar la legibilidad, hasta que en el límite se usa solo el iso, sin tipografía.',
+  palette: 'Paleta de colores',
+  paletteA: 'La paleta de Conexión CDXX está diseñada para evocar una sensación de sofisticación y profundidad sensorial.',
+  paletteB: 'Los tonos Moss, Gold y Black Raisin comunican lujo, naturaleza y una conexión con lo orgánico, mientras que el Wine Cream aporta una suavidad que equilibra la intensidad de los otros colores.',
+  paletteC: 'Cada color refleja un aspecto distinto de la marca: la serenidad del Wine Cream, la riqueza y opulencia del Gold y la profundidad del Black Raisin.',
+  type: 'Tipografía',
+  typeA: 'Lexend, diseñada para optimizar la legibilidad, aporta claridad y transparencia con su espaciado amplio y formas abiertas, transmitiendo confianza en un tono formal y accesible.',
+  typeB: 'Krona One introduce un contraste disruptivo con su geometría audaz y aire futurista, añadiendo dinamismo sin perder sofisticación.',
+  res: 'Recursos visuales',
+  resA: 'Los recursos visuales de CDXX fusionan tradición artesanal y sofisticación contemporánea. La textura fluida del papel marmolado se incorpora como un recurso gráfico clave, evocando el movimiento sedoso del chocolate derretido, el veteado de bombones y la mezcla armónica de cacao.',
+  resB: 'Cada patrón es irrepetible, al igual que cada pieza de chocolate artesanal. Sus formas efímeras y sutiles remiten a experiencias únicas, despertando una sensación abstracta en el observador. A su vez, estas estructuras orgánicas encuentran un paralelismo en las conexiones micelares, cuya morfología refleja redes de interconexión y crecimiento, evocando la naturaleza viva y expansiva del cacao.',
+  resC: 'Este recurso enriquece la identidad con una estética elegante y orgánica, conectando lo visual con la experiencia sensorial del producto.',
+  colors: 'Ejemplo de aplicación de color sobre marca y recurso',
+  barra: 'Barra Gold',
+  foil: 'Isotipo en hot stamping dorado',
+  stickers: 'Sellos adhesivos',
+  note: 'Tipografía de uso: Lexend, disponible en Google Fonts. Ante cualquier duda, respetar estas especificaciones asegura la correcta comunicación de Conexión CDXX con su entorno.',
+} : {
+  kicker: 'Brand guidelines',
+  brand: 'The brand',
+  brandA: 'Conexión CDXX is defined as a sensory proposal that transforms the experience of artisanal chocolate. Beyond the gourmet, it is an invitation to explore the dimensions of perception, emotion and consciousness through chocolate, also paired with select spirits and elixirs.',
+  brandB: 'The brand connects the tangible with the ethereal, offering a unique journey for the most curious and discerning, where every tasting opens doors to new sensory realities.',
+  concept: 'Visual concept',
+  conceptA: 'Conexión CDXX explores the concept of fused duality: from the earthly to the cosmic, strongly inspired by mycelial hyphae and technological circuit systems. This fusion symbolizes the interconnection between the natural and the abstract, where the underground networks of fungi and the silicon structures in processors share a single principle: the transmission of information, the expansion of knowledge and the evolution of perception and the sensorial.',
+  conceptB: 'Visually, the concept becomes an aesthetic that evokes traditional design, with organic textures interwoven with geometric patterns. The brand unfolds in a visual language reminiscent of simplified heraldic designs, but with a strong contemporary twist.',
+  main: 'Primary version',
+  mainA: 'The primary version of the Conexión CDXX isologo is the brand’s most complete and symbolic representation. It must be used at the main touchpoints, as it holds the whole visual concept and directly conveys the message of interconnection, luxury and sensory exploration.',
+  safe: 'Safe area',
+  variants: 'Variants',
+  iso: 'Isotype',
+  isoA: 'The Conexión CDXX isotype is a symbol that blends natural and futuristic references. Its main figure, a tree whose roots intertwine with mycelial hyphae, symbolizes a network of deep connections.',
+  isoB: 'This structure extends into abstract forms that evoke neural circuits, representing the connection between sensory perception and consciousness.',
+  isoC: 'These forms are no accident: the tree suggests growth, while the organic lines and technological abstractions represent the expansion of thought and perception.',
+  reduce: 'Minimum reductions',
+  reduceA: 'When the logotype is reduced there are tiers of preference by size: the placement and scale of the icon over the lettering change to preserve legibility, until at the limit only the icon is used, without lettering.',
+  palette: 'Color palette',
+  paletteA: 'The Conexión CDXX palette is designed to evoke a sense of sophistication and sensory depth.',
+  paletteB: 'Moss, Gold and Black Raisin convey luxury, nature and a connection with the organic, while Wine Cream adds a softness that balances the intensity of the others.',
+  paletteC: 'Each color reflects a different aspect of the brand: the serenity of Wine Cream, the richness and opulence of Gold and the depth of Black Raisin.',
+  type: 'Typography',
+  typeA: 'Lexend, designed to optimize legibility, brings clarity and transparency with its wide spacing and open forms, conveying trust in a formal yet accessible tone.',
+  typeB: 'Krona One introduces a disruptive contrast with its bold geometry and futuristic air, adding dynamism without losing sophistication.',
+  res: 'Visual resources',
+  resA: 'CDXX’s visual resources fuse artisanal tradition with contemporary sophistication. The fluid texture of marbled paper is a key graphic resource, evoking the silky movement of melted chocolate, the veining of bonbons and the harmonious blending of cacao.',
+  resB: 'Every pattern is unrepeatable, just like every piece of artisanal chocolate. Its ephemeral, subtle forms point to unique experiences, awakening an abstract sensation in the viewer. In turn, these organic structures find a parallel in mycelial connections, whose morphology reflects networks of interconnection and growth, evoking the living, expansive nature of cacao.',
+  resC: 'This resource enriches the identity with an elegant, organic aesthetic, connecting the visual with the sensory experience of the product.',
+  colors: 'Example of color applied to brand and resource',
+  barra: 'Gold Bar',
+  foil: 'Isotype in gold hot stamping',
+  stickers: 'Adhesive seals',
+  note: 'Typeface in use: Lexend, available on Google Fonts. When in doubt, respecting these specifications ensures Conexión CDXX communicates correctly with its environment.',
+};
+
+const colors = [
+  { n: 'Moss', hex: '#988F5A', dark: '#7d7548' },
+  { n: 'Gold', hex: '#D6B56E', dark: '#a88f58' },
+  { n: 'White Moon', hex: '#ACB4C1', dark: '#8d94a0' },
+  { n: 'Wine Cream', hex: '#142129', dark: '#10191f' },
+  { n: 'Black Raisin', hex: '#0C1618', dark: '#0c1618', line: true },
+];
+const abc = ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '0123456789', '!@#$%^&*()-_+={}[]:;"\'<>,.?/'];
+---
+<section class="cx" aria-label={t.kicker}>
+  <div class="cx__in cx__center" data-reveal>
+    <p class="cx__kicker">{t.kicker}</p>
+    <h2 class="cx__h">{t.brand}</h2>
+    <p>{t.brandA}</p>
+    <p>{t.brandB}</p>
+  </div>
+
+  <figure class="cx__bleed" data-reveal><img src={img('barra')} alt={t.barra} loading="lazy" decoding="async" /></figure>
+
+  <div class="cx__in cx__center" data-reveal>
+    <h2 class="cx__h">{t.concept}</h2>
+    <p>{t.conceptA}</p>
+    <p>{t.conceptB}</p>
+  </div>
+
+  <figure class="cx__bleed" data-reveal><img src={img('foil')} alt={t.foil} loading="lazy" decoding="async" /></figure>
+
+  <div class="cx__in cx__split" data-reveal>
+    <figure class="cx__fig"><img src={img('principal')} alt={`${t.main} · ${t.safe}`} loading="lazy" decoding="async" /></figure>
+    <div class="cx__text">
+      <h2 class="cx__h">{t.main}</h2>
+      <p>{t.mainA}</p>
+    </div>
+  </div>
+
+  <div class="cx__in cx__center cx__wide" data-reveal>
+    <h2 class="cx__h">{t.variants}</h2>
+    <img src={img('variantes')} alt={t.variants} loading="lazy" decoding="async" />
+  </div>
+
+  <div class="cx__in cx__split cx__split--iso" data-reveal>
+    <figure class="cx__fig"><img src={img('isotipo')} alt={t.iso} loading="lazy" decoding="async" /></figure>
+    <div class="cx__text">
+      <h2 class="cx__h">{t.iso}</h2>
+      <p>{t.isoA}</p><p>{t.isoB}</p><p>{t.isoC}</p>
+    </div>
+  </div>
+
+  <div class="cx__in cx__center cx__wide" data-reveal>
+    <img src={img('reducciones')} alt={t.reduce} loading="lazy" decoding="async" />
+    <h2 class="cx__h">{t.reduce}</h2>
+    <p>{t.reduceA}</p>
+  </div>
+
+  <div class="cx__in cx__split cx__split--pal" data-reveal>
+    <div class="cx__text">
+      <h2 class="cx__h">{t.palette}</h2>
+      <p>{t.paletteA}</p><p>{t.paletteB}</p><p>{t.paletteC}</p>
+    </div>
+    <ul class="cx__pal">
+      {colors.map((c) => (
+        <li>
+          <span class="cx__name"><strong>{c.n}</strong><em>{c.hex}</em></span>
+          <span class:list={['cx__dot', { 'cx__dot--line': c.line }]} style={`background:linear-gradient(90deg, ${c.hex} 50%, ${c.dark} 50%)`}></span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="cx__in" data-reveal>
+    <h2 class="cx__h">{t.type}</h2>
+    <div class="cx__type">
+      <div class="cx__krona">
+        <p class="cx__fam">Krona One</p>
+        {abc.map((l) => <p>{l}</p>)}
+      </div>
+      <div class="cx__lex">
+        <p class="cx__fam">Lexend</p>
+        {abc.map((l) => <p>{l}</p>)}
+      </div>
+    </div>
+    <div class="cx__cols"><p>{t.typeA}</p><p>{t.typeB}</p></div>
+  </div>
+
+  <div class="cx__res" data-reveal style={`--bg:url(${bg})`}>
+    <div class="cx__in cx__text">
+      <h2 class="cx__h">{t.res}</h2>
+      <p>{t.resA}</p><p>{t.resB}</p><p>{t.resC}</p>
+    </div>
+  </div>
+
+  <div class="cx__in cx__center cx__wide" data-reveal>
+    <img src={img('colores')} alt={t.colors} loading="lazy" decoding="async" />
+    <p class="cx__cap">{t.colors}</p>
+  </div>
+
+  <figure class="cx__bleed" data-reveal><img src={img('stickers')} alt={t.stickers} loading="lazy" decoding="async" /></figure>
+
+  <p class="cx__in cx__note" data-reveal>{t.note}</p>
+</section>
+
+<style>
+  .cx { --raisin: #0c1618; --gold: #d6b56e; --moon: #acb4c1; background: var(--raisin); color: var(--moon); display: grid; gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(4rem, 9vw, 9rem); font-family: 'Lexend Variable', 'Lexend', var(--sans); font-weight: 300; }
+  .cx img { width: 100%; height: auto; display: block; }
+  .cx figure { margin: 0; }
+  .cx p { margin: 0; font-size: clamp(.92rem, 1.1vw, 1.02rem); line-height: 1.85; letter-spacing: .01em; }
+  .cx__in { width: 100%; max-width: 72rem; margin-inline: auto; padding-inline: var(--gutter); }
+  .cx__kicker { text-align: center; letter-spacing: .4em; text-transform: uppercase; font-size: .7rem !important; color: var(--moon); opacity: .7; margin-bottom: 1.5rem !important; }
+  .cx__h { margin: 0 0 1.75rem; font-family: 'Krona One', var(--sans); font-weight: 400; font-size: clamp(.9rem, 1.4vw, 1.2rem); letter-spacing: .3em; text-transform: uppercase; color: var(--gold); line-height: 1.5; }
+  .cx__center { display: grid; gap: 1.5rem; justify-items: center; text-align: center; max-width: 46rem; }
+  .cx__center p { text-align: justify; text-align-last: left; }
+  .cx__wide { max-width: 64rem; }
+  .cx__wide img { width: 100%; }
+  .cx__bleed { width: 100%; }
+  .cx__text { display: grid; gap: 1.5rem; }
+  .cx__split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }
+  .cx__split--pal { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+  .cx__fig { display: grid; place-items: center; }
+  .cx__fig img { max-width: 34rem; }
+  .cx__pal { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.4rem; justify-items: end; }
+  .cx__pal li { display: flex; align-items: center; gap: 1.5rem; }
+  .cx__name { display: grid; text-align: right; line-height: 1.35; }
+  .cx__name strong { font-weight: 700; font-size: .95rem; }
+  .cx__name em { font-style: normal; font-size: .85rem; opacity: .85; }
+  .cx__dot { width: 5.4rem; aspect-ratio: 1; border-radius: 50%; flex: none; }
+  .cx__dot--line { box-shadow: inset 0 0 0 1px rgb(172 180 193 / .3); }
+  .cx__type { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-bottom: 3rem; }
+  .cx__type > div { display: grid; gap: .55rem; padding-inline: 0 2rem; }
+  .cx__lex { border-left: 1px solid rgb(172 180 193 / .2); padding-left: 2rem; }
+  .cx__type p { font-size: clamp(.8rem, 1.2vw, 1.05rem); letter-spacing: .12em; line-height: 1.4; color: var(--gold); overflow-wrap: anywhere; }
+  .cx__krona p { font-family: 'Krona One', var(--sans); }
+  .cx__lex p { font-family: 'Lexend Variable', 'Lexend', var(--sans); font-weight: 300; }
+  .cx p.cx__fam { font-weight: 600; letter-spacing: .04em; margin-bottom: .75rem; font-size: 1rem; }
+  .cx__cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 4vw, 4rem); }
+  /* Recursos visuales: el marmolado del fondo asoma a la derecha, como en el manual */
+  .cx__res { background: linear-gradient(90deg, var(--raisin) 38%, rgb(12 22 24 / .55) 70%, rgb(12 22 24 / .2)), var(--bg) center / cover; padding-block: clamp(4rem, 8vw, 8rem); }
+  .cx__res .cx__text { max-width: 44rem; margin-inline: auto 0; margin-left: max(var(--gutter), calc((100% - 72rem) / 2)); }
+  .cx__cap { font-size: .72rem !important; letter-spacing: .24em; text-transform: uppercase; opacity: .75; }
+  .cx__note { max-width: 46rem; text-align: center; font-size: .85rem !important; opacity: .75; }
+  @media (max-width: 860px) {
+    .cx__split, .cx__split--pal, .cx__cols { grid-template-columns: 1fr; }
+    .cx__pal { justify-items: start; }
+    .cx__pal li { flex-direction: row-reverse; }
+    .cx__name { text-align: left; }
+    .cx__type { grid-template-columns: 1fr; gap: 2rem; }
+    .cx__lex { border-left: 0; padding-left: 0; }
+  }
+</style>

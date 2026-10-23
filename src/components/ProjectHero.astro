@@ -65,7 +65,7 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
       <div class="pjh__photo" aria-hidden="true">
         <picture>
           <source type="image/webp" srcset={`${src(photo)}-1280.webp 1280w, ${src(photo)}-1920.webp 1920w, ${src(photo)}-2560.webp 2560w`} sizes="100vw" />
-          <img src={`${src(photo)}.jpg`} alt="" width="3168" height="1344" fetchpriority="high" decoding="async" />
+          <img src={`${src(photo)}.jpg`} alt="" fetchpriority="high" decoding="async" />
         </picture>
       </div>
     )}
@@ -129,10 +129,11 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   /* ── Foto de fondo (si hay): cubre la portada y se coloca para que la figura clara quede hacia la derecha (a ~66 % del ancho) */
   .pjh[data-photo] .pjh__bg { display: none; }
   .pjh__photo { position: absolute; inset: 0; z-index: -1; overflow: hidden; container-type: size; animation: photo-in 2.1s cubic-bezier(.3, .6, .3, 1) both; }
-  .pjh__photo img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 30% 50%; user-select: none; }
+  .pjh__photo img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 50%; user-select: none; }
+  .pjh[data-glass] .pjh__photo img { object-position: 30% 50%; }
   @supports (width: 1cqw) {
     /* La imagen es más ancha que la pantalla: se desplaza para que la figura (que está al 51 % de su ancho) caiga al 66 % de la pantalla, sin dejar huecos */
-    .pjh__photo img { width: max(100cqw, calc(100cqh * 2.357)); object-fit: fill;
+    .pjh[data-glass] .pjh__photo img { width: max(100cqw, calc(100cqh * 2.357)); object-fit: fill;
       left: clamp(calc(100cqw - max(100cqw, calc(100cqh * 2.357))), calc(66cqw - .51 * max(100cqw, calc(100cqh * 2.357))), 0px); }
   }
   @keyframes photo-in { from { opacity: 0; filter: blur(26px); transform: scale(1.05); } to { opacity: 1; filter: blur(0); transform: none; } }

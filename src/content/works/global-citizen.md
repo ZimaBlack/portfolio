@@ -13,7 +13,7 @@ heroImage: /works/global-citizen/bg
 heroAnimation: glass
 logo: /works/global-citizen/logo.svg
 mark: /works/global-citizen/mark.svg
-manual: true
+manual: global-citizen
 featured: true
 homeOrder: 1
 order: 15

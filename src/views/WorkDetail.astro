@@ -9,6 +9,7 @@ import Marquee from '../components/Marquee.astro';
 import ProjectHero from '../components/ProjectHero.astro';
 import PaletteWidget from '../components/PaletteWidget.astro';
 import BrandManual from '../components/BrandManual.astro';
+import CdxxManual from '../components/CdxxManual.astro';
 import { ambientOf, isLight, toneOfHex, type Tone } from '../lib/palette';
 import { site } from '../data/site';
 import { copy, loc, paths, type Lang } from '../lib/i18n';
@@ -105,7 +106,8 @@ const alt = lang === 'es' ? 'en' : 'es';
       </section>
     )}
 
-    {d.manual && <BrandManual lang={lang} />}
+    {d.manual === 'global-citizen' && <BrandManual lang={lang} />}
+    {d.manual === 'cdxx' && <CdxxManual lang={lang} />}
 
     {d.video?.id && <section class="wrap vid" data-reveal><VideoEmbed provider={d.video.provider} id={d.video.id} title={d.title} play={c.detail.play} /></section>}
 
