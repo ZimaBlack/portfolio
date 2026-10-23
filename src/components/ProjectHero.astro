@@ -80,6 +80,7 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
       {glass && logo && mark ? (
         <div class="pjh__glass" role="img" aria-label={title}>
           <!-- Cristal: el propio iso es de vidrio (máscara + desenfoque del fondo); se abre desde un círculo, gira de canto y deja ver el logotipo completo -->
+          <div class="pjh__glow"></div>
           <div class="pjh__flip">
             <img class="pjh__iso" src={src(mark)} alt="" decoding="async" draggable="false" />
           </div>
@@ -122,7 +123,7 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
 
   /* ── Foto de fondo (si hay): cubre la portada y se coloca para que la figura clara quede hacia la derecha (a ~66 % del ancho) */
   .pjh[data-photo] .pjh__bg { display: none; }
-  .pjh__photo { position: absolute; inset: 0; z-index: -1; overflow: hidden; container-type: size; animation: photo-in 2.8s cubic-bezier(.3, .6, .3, 1) both; }
+  .pjh__photo { position: absolute; inset: 0; z-index: -1; overflow: hidden; container-type: size; animation: photo-in 2.1s cubic-bezier(.3, .6, .3, 1) both; }
   .pjh__photo img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 30% 50%; user-select: none; }
   @supports (width: 1cqw) {
     /* La imagen es más ancha que la pantalla: se desplaza para que la figura (que está al 51 % de su ancho) caiga al 66 % de la pantalla, sin dejar huecos */
@@ -134,26 +135,30 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   .pjh__vig { position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse 85% 80% at 52% 48%, transparent 50%, rgb(0 0 0 / .5) 100%); }
   /* Velo verde: opaca apenas la foto; entra despacio cuando ya está el logotipo completo */
   .pjh__tint { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
-    background: linear-gradient(115deg, rgb(10 60 44 / .52), rgb(26 88 52 / .46), rgb(12 72 66 / .5), rgb(40 92 48 / .44), rgb(10 60 44 / .52));
+    background: linear-gradient(115deg, rgb(4 30 22 / .74), rgb(10 44 26 / .7), rgb(5 36 34 / .74), rgb(16 46 22 / .68), rgb(4 30 22 / .74));
     background-size: 320% 320%;
-    animation: tint-in 3.4s 6s ease-in-out both, tint-drift 22s 6s ease-in-out infinite alternate; }
+    animation: tint-in 2.6s 4.4s ease-in-out both, tint-drift 22s 4.4s ease-in-out infinite alternate; }
   @keyframes tint-in { from { opacity: 0; } to { opacity: 1; } }
   @keyframes tint-drift { from { background-position: 0% 30%; } to { background-position: 100% 70%; } }
 
   /* ── Iso de cristal (Global Citizen): se abre como un círculo, gira de canto y aparece el logotipo completo */
   .pjh__glass { position: relative; display: grid; place-items: center; width: min(94vw, 44rem); height: min(54vh, 28rem); perspective: 1500px; }
-  .pjh__flip { grid-area: 1 / 1; display: grid; place-items: center; transform-style: preserve-3d; animation: glass-turn 2.2s 5s cubic-bezier(.55, .05, .3, 1) both; }
-  .pjh__iso { width: min(48vh, 25rem); height: auto; animation: glass-open 3.6s .6s cubic-bezier(.22, .9, .28, 1) both; }
+  .pjh__flip { grid-area: 1 / 1; display: grid; place-items: center; transform-style: preserve-3d; animation: glass-turn 1.6s 3.7s cubic-bezier(.55, .05, .3, 1) both; }
+  .pjh__iso { width: min(48vh, 25rem); height: auto; animation: glass-open 2.7s .4s cubic-bezier(.22, .9, .28, 1) both; }
+  /* Brillo: un resplandor verde-blanco que sube justo antes del giro */
+  .pjh__glow { grid-area: 1 / 1; width: min(90vh, 52rem); aspect-ratio: 1; border-radius: 50%; pointer-events: none; mix-blend-mode: screen; opacity: 0;
+    background: radial-gradient(closest-side, rgb(210 255 230 / .85), rgb(93 185 138 / .45) 38%, transparent 72%); animation: glow 1.9s 2.2s ease-in-out both; }
+  @keyframes glow { 0% { opacity: 0; transform: scale(.55); } 55% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.15); } }
   /* Desenfoque del fondo: acompaña la aparición del iso y se retira cuando llega el logotipo completo */
   .pjh__blur { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
-    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); animation: bg-blur 6.4s .3s ease-in-out both; }
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); animation: bg-blur 5s .2s ease-in-out both; }
   @keyframes bg-blur { 0% { opacity: 0; } 30% { opacity: 1; } 68% { opacity: 1; } 100% { opacity: 0; } }
-  .pjh__logo--full { grid-area: 1 / 1; width: min(92vw, 40rem); height: auto; animation: logo-turn 2.6s 5.7s cubic-bezier(.22, .9, .28, 1) both; }
+  .pjh__logo--full { grid-area: 1 / 1; width: min(92vw, 40rem); height: auto; animation: logo-turn 2s 4.3s cubic-bezier(.22, .9, .28, 1) both; }
   @keyframes glass-open { from { clip-path: circle(0% at 50% 50%); opacity: 0; transform: rotate(-140deg) scale(.86); } 20% { opacity: 1; } to { clip-path: circle(72% at 50% 50%); opacity: 1; transform: none; } }
   @keyframes glass-turn { from { transform: rotateY(0deg); opacity: 1; } 70% { opacity: .6; } to { transform: rotateY(90deg); opacity: 0; } }
   @keyframes logo-turn { from { opacity: 0; transform: rotateY(-90deg) scale(.94); } 40% { opacity: .5; } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) {
-    .pjh__iso, .pjh__flip, .pjh__logo--full, .pjh__photo, .pjh__tint, .pjh__blur { animation: none; }
+    .pjh__iso, .pjh__flip, .pjh__logo--full, .pjh__photo, .pjh__tint, .pjh__blur, .pjh__glow { animation: none; } .pjh__glow { display: none; }
     .pjh__flip { display: none; } .pjh__tint { opacity: 1; }
   }
 
