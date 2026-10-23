@@ -16,8 +16,8 @@ order: 16
 manual: colorada
 widget: palette
 heroLights: liquid
-reactiveColors: ["#AE0407", "#840002"]
-paletteColors: ["#AE0407", "#840002"]
-tones: ["#5a0b10", "#c4252d"]
+reactiveColors: ["#E03B7A", "#6CE829"]
+paletteColors: ["#E03B7A", "#6CE829"]
+tones: ["#3f8a14", "#c42c69"]
 gallery: []
 ---

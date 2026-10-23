@@ -9,10 +9,10 @@ const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
 const sketch = withBase('/works/colorada/manual/boceto.webp');
 
-// Logo en línea: el pelo (#AE0407 y #F5282C) y el mechón (#840002) leen --c0 / --c1, que por defecto siguen al widget
+// Logo en línea: el pelo (#E03B7A) y el mechón (#6CE829) leen --c0 / --c1, que por defecto siguen al widget
 const inline = (file: string, label: string) => readFileSync(join(process.cwd(), 'public/works/colorada', file), 'utf8')
-  .replace(/fill="#(AE0407|F5282C)"/gi, 'style="fill:var(--c0)"')
-  .replace(/fill="#840002"/gi, 'style="fill:var(--c1)"')
+  .replace(/fill="#E03B7A"/gi, 'style="fill:var(--c0)"')
+  .replace(/fill="#6CE829"/gi, 'style="fill:var(--c1)"')
   .replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} role="img" aria-label="${label}">`);
 const character = inline('logo.svg', 'Colorada — character');
 const wordmark = inline('mark.svg', 'Colorada — logotipo');
@@ -59,11 +59,6 @@ const t = es ? {
   region: 'Brand color variations',
 };
 
-// Variaciones del manual (pelo / mechón)
-const variants = [
-  ['#1e1e1e', '#d4a52f'], ['#c47ba8', '#6a2563'], ['#343b8f', '#deb7d6'],
-  ['#e9c04a', '#c4372b'], ['#86bb78', '#1c1c1c'], ['#85562f', '#d19972'],
-];
 ---
 <section class="cm" aria-label={t.kicker}>
   <div class="wrap cm__head" data-reveal>
@@ -100,9 +95,6 @@ const variants = [
   <div class="wrap cm__color" data-reveal>
     <h2 class="h2">{t.color}</h2>
     <p class="cm__txt">{t.colorA}</p>
-    <ul class="cm__grid" aria-label={t.region}>
-      {variants.map(([a, b]) => <li style={`--c0:${a};--c1:${b}`}><div class="cm__logo" set:html={character} /></li>)}
-    </ul>
     <div class="cm__base">
       <span class="cm__sw" style="background:#E03B7A"></span><span class="cm__sw" style="background:#6CE829"></span>
       <p class="muted"><strong>{t.base}</strong> · #E03B7A · #6CE829 — {t.baseCap}</p>
@@ -122,7 +114,7 @@ const variants = [
 </section>
 
 <style>
-  .cm { --c0: var(--pw-0, #ae0407); --c1: var(--pw-1, #840002); display: grid; gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(4rem, 8vw, 8rem); }
+  .cm { --c0: var(--pw-0, #e03b7a); --c1: var(--pw-1, #6ce829); display: grid; gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(4rem, 8vw, 8rem); }
   .cm figure { margin: 0; }
   .cm :global(.wrap) { padding-right: max(var(--gutter), 5.5rem); } /* deja libre el borde donde va el widget de color */
   .cm__head { display: grid; gap: 1.5rem; max-width: 62rem; }
@@ -145,8 +137,6 @@ const variants = [
   .cm__pair .cm__logo--word { max-width: 21rem; }
   .cm__pair figcaption { text-align: center; }
   .cm__color { display: grid; gap: 1.25rem; }
-  .cm__grid { list-style: none; margin: 1.5rem 0 .5rem; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(.75rem, 2vw, 2rem); }
-  .cm__grid .cm__logo :global(svg path) { transition: none; }
   .cm__base { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
   .cm__base p { margin: 0 0 0 .5rem; font-size: .82rem; }
   .cm__sw { width: 1.6rem; height: 1.6rem; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
@@ -155,6 +145,5 @@ const variants = [
   .cm__logo--shadow :global(svg) { filter: drop-shadow(.35rem .5rem 0 color-mix(in srgb, var(--c0) 85%, #000)); }
   @media (max-width: 860px) {
     .cm__row, .cm__row--sketch, .cm__pair { grid-template-columns: 1fr; }
-    .cm__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  }
+    }
 </style>
