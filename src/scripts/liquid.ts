@@ -1,5 +1,5 @@
-// Fondo de "líquido realista" para la portada de un proyecto: dos fluidos (los colores --ga y --gb de la portada) que se mezclan y se
-// deslizan despacio sobre el negro, con luz, brillo suave y borde apenas más claro, como tinta o pintura líquida.
+// Fondo de líquido de diseño plano para la portada de un proyecto: dos fluidos (los colores --ga y --gb de la portada), cada uno de un solo
+// tono sólido, que se enroscan y se deslizan despacio sobre el negro, como tinta o pintura líquida pero sin luz ni degradados.
 // Se dibuja en WebGL2 con ruido fractal deformado (domain warping), a media resolución. Si WebGL2 no está disponible, no hace nada
 // (la portada conserva su fondo de luces suaves). Los colores y las posiciones se leen de las variables CSS de la portada, así que el
 // widget de color de Colorada los cambia en vivo, con transición.
@@ -8,7 +8,7 @@ type Rgb = [number, number, number];
 type State = { ga: Rgb; gb: Rgb; ax: number; ay: number; bx: number; by: number; gi: number };
 
 const TWEEN_MS = 1400;
-const SCALE = 0.5;          // resolución del dibujo respecto de la pantalla
+const SCALE = 0.8;          // resolución del dibujo respecto de la pantalla (los bordes nítidos piden más que un fondo difuso)
 const SPEED = 0.045;        // velocidad del flujo
 
 const FRAG = `#version 300 es
@@ -33,23 +33,14 @@ void main(){
   float t = uT * ${SPEED.toFixed(3)};
   float h = field(p, t);
 
-  // Superficie suave: la normal sale de cómo cambia la altura (diferencias finitas); da la luz y el brillo del líquido
-  float e = .012;
-  vec3 n = normalize(vec3((h - field(p + vec2(e, 0.), t)) / e * .11, (h - field(p + vec2(0., e), t)) / e * .11, 1.));
-  vec3 L = normalize(vec3(-.45, .6, .7));
-  float diff = clamp(dot(n, L), 0., 1.);
-  float spec = pow(clamp(dot(reflect(-L, n), vec3(0., 0., 1.)), 0., 1.), 28.);
-
-  // Dos tonos: cada uno domina cerca de su luz; entre medio se mezclan según el flujo
+  // Dos tonos: cada uno domina cerca de su luz; entre medio se reparten según el flujo
   float w1 = exp(-pow(distance(uv, uP1) * 1.6, 2.)), w2 = exp(-pow(distance(uv, uP2) * 1.6, 2.));
   float k = clamp(w2 / (w1 + w2 + 1e-4) + (h - .5) * .9, 0., 1.);
-  vec3 base = mix(uC1, uC2, smoothstep(.15, .85, k));
 
-  // Cuánto líquido hay: el resto es el negro del fondo (sobre la mitad de la pantalla queda negro)
-  float cov = smoothstep(.40, .52, h + (w1 + w2) * .1);
-  float rim = smoothstep(.40, .45, h) - smoothstep(.45, .54, h);  // borde apenas más claro, como la tensión de la superficie
-
-  vec3 col = base * (.6 + .8 * diff) + vec3(1., .93, .9) * spec * .18 + base * rim * .4;
+  // Diseño plano: colores sólidos, sin luz ni degradados; los bordes son nítidos (se suavizan sólo un píxel para que no se escalonen)
+  float aaH = fwidth(h) * 1.3 + 1e-4, aaK = fwidth(k) * 1.3 + 1e-4;
+  float cov = smoothstep(-aaH, aaH, h + (w1 + w2) * .1 - .46);   // cuánto líquido hay: el resto es el negro del fondo
+  vec3 col = mix(uC1, uC2, smoothstep(-aaK, aaK, k - .5));        // cuál de los dos tonos
   o = vec4(col * cov * uI, cov * uI);
 }`;
 const VERT = `#version 300 es
