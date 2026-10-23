@@ -78,9 +78,12 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
     <div class="pjh__stage" data-pj-stage>
       {glass && logo && mark ? (
         <div class="pjh__glass" role="img" aria-label={title}>
-          <!-- Cristal: un disco que se abre mostrando el iso, gira de canto y deja ver el logotipo completo -->
+          <!-- Cristal: el propio iso es de vidrio (máscara + desenfoque del fondo); se abre desde un círculo, gira de canto y deja ver el logotipo completo -->
           <div class="pjh__flip">
-            <div class="pjh__disc"><img class="pjh__iso" src={src(mark)} alt="" decoding="async" draggable="false" /></div>
+            <div class="pjh__iso" style={`--iso:url(${src(mark)})`}>
+              <span class="pjh__iso-body"></span>
+              <span class="pjh__iso-rim"></span>
+            </div>
           </div>
           <img class="pjh__logo pjh__logo--full" src={src(logo)} alt="" decoding="async" draggable="false" />
         </div>
@@ -121,36 +124,41 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
 
   /* ── Foto de fondo (si hay): cubre la portada y se coloca para que la figura clara quede hacia la derecha (a ~66 % del ancho) */
   .pjh[data-photo] .pjh__bg { display: none; }
-  .pjh__photo { position: absolute; inset: 0; z-index: -1; overflow: hidden; container-type: size; animation: photo-in 1.8s ease both; }
+  .pjh__photo { position: absolute; inset: 0; z-index: -1; overflow: hidden; container-type: size; animation: photo-in 2.8s cubic-bezier(.3, .6, .3, 1) both; }
   .pjh__photo img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 30% 50%; user-select: none; }
   @supports (width: 1cqw) {
     /* La imagen es más ancha que la pantalla: se desplaza para que la figura (que está al 51 % de su ancho) caiga al 66 % de la pantalla, sin dejar huecos */
     .pjh__photo img { width: max(100cqw, calc(100cqh * 2.357)); object-fit: fill;
       left: clamp(calc(100cqw - max(100cqw, calc(100cqh * 2.357))), calc(66cqw - .51 * max(100cqw, calc(100cqh * 2.357))), 0px); }
   }
-  @keyframes photo-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes photo-in { from { opacity: 0; filter: blur(26px); transform: scale(1.05); } to { opacity: 1; filter: blur(0); transform: none; } }
   /* Viñeta leve por delante de la foto y del velo verde */
   .pjh__vig { position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse 85% 80% at 52% 48%, transparent 50%, rgb(0 0 0 / .5) 100%); }
   /* Velo verde: opaca apenas la foto; entra despacio cuando ya está el logotipo completo */
-  .pjh__tint { position: absolute; inset: 0; z-index: -1; pointer-events: none; background: rgb(12 58 42 / .5); opacity: 0; animation: tint-in 3s 4.6s ease-in-out both; }
+  .pjh__tint { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
+    background: linear-gradient(115deg, rgb(10 60 44 / .52), rgb(26 88 52 / .46), rgb(12 72 66 / .5), rgb(40 92 48 / .44), rgb(10 60 44 / .52));
+    background-size: 320% 320%;
+    animation: tint-in 3.4s 6s ease-in-out both, tint-drift 22s 6s ease-in-out infinite alternate; }
   @keyframes tint-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes tint-drift { from { background-position: 0% 30%; } to { background-position: 100% 70%; } }
 
-  /* ── Cristal que se abre (Global Citizen): el disco se abre como un círculo, muestra el iso, gira de canto y aparece el logotipo completo */
-  .pjh__glass { position: relative; display: grid; place-items: center; width: min(80vw, 30rem); height: min(40vh, 19rem); perspective: 1500px; }
-  .pjh__flip { grid-area: 1 / 1; display: grid; place-items: center; transform-style: preserve-3d; animation: glass-turn 1.9s 3.3s cubic-bezier(.55, .05, .3, 1) both; }
-  .pjh__disc { position: relative; display: grid; place-items: center; width: min(34vh, 17rem); aspect-ratio: 1; border-radius: 50%;
-    background: linear-gradient(150deg, rgb(255 255 255 / .26), rgb(255 255 255 / .07) 55%, rgb(255 255 255 / .14));
-    -webkit-backdrop-filter: blur(16px) saturate(1.35); backdrop-filter: blur(16px) saturate(1.35);
-    border: 1px solid rgb(255 255 255 / .38); box-shadow: inset 0 1px 0 rgb(255 255 255 / .5), inset 0 -10px 30px rgb(255 255 255 / .06), 0 18px 50px rgb(0 0 0 / .28);
-    animation: glass-open 2.4s .5s cubic-bezier(.22, .9, .28, 1) both; }
-  .pjh__iso { width: 58%; height: auto; filter: drop-shadow(0 3px 10px rgb(0 0 0 / .25)); animation: iso-in 1.9s 1.5s cubic-bezier(.22, .9, .28, 1) both; }
-  .pjh__logo--full { grid-area: 1 / 1; width: min(78vw, 28rem); height: auto; animation: logo-turn 2.2s 3.9s cubic-bezier(.22, .9, .28, 1) both; }
-  @keyframes glass-open { from { clip-path: circle(0% at 50% 50%); opacity: 0; transform: scale(.82); } 25% { opacity: 1; } to { clip-path: circle(50% at 50% 50%); opacity: 1; transform: none; } }
-  @keyframes iso-in { from { opacity: 0; transform: rotate(-28deg) scale(.82); } to { opacity: 1; transform: none; } }
+  /* ── Iso de cristal (Global Citizen): se abre como un círculo, gira de canto y aparece el logotipo completo */
+  .pjh__glass { position: relative; display: grid; place-items: center; width: min(94vw, 44rem); height: min(54vh, 28rem); perspective: 1500px; }
+  .pjh__flip { grid-area: 1 / 1; display: grid; place-items: center; transform-style: preserve-3d; animation: glass-turn 2.2s 5s cubic-bezier(.55, .05, .3, 1) both; }
+  .pjh__iso { position: relative; width: min(48vh, 25rem); aspect-ratio: 1; animation: glass-open 3.6s .6s cubic-bezier(.22, .9, .28, 1) both; }
+  .pjh__iso-body, .pjh__iso-rim { position: absolute; inset: 0; -webkit-mask: var(--iso) center / contain no-repeat; mask: var(--iso) center / contain no-repeat; }
+  .pjh__iso-body { background: linear-gradient(150deg, rgb(255 255 255 / .5), rgb(255 255 255 / .16) 55%, rgb(255 255 255 / .36));
+    -webkit-backdrop-filter: blur(12px) saturate(1.6) brightness(.9); backdrop-filter: blur(12px) saturate(1.6) brightness(.9); }
+  /* Brillo en el borde: la silueta menos una copia algo menor deja un canto fino de luz sobre el vidrio */
+  .pjh__iso-rim { -webkit-mask: var(--iso) center / 100% no-repeat, var(--iso) center / 96% no-repeat; -webkit-mask-composite: xor;
+    mask: var(--iso) center / 100% no-repeat, var(--iso) center / 96% no-repeat; mask-composite: exclude;
+    background: linear-gradient(150deg, rgb(255 255 255 / .95), rgb(255 255 255 / .1) 48%, rgb(255 255 255 / .7)); }
+  .pjh__logo--full { grid-area: 1 / 1; width: min(92vw, 40rem); height: auto; animation: logo-turn 2.6s 5.7s cubic-bezier(.22, .9, .28, 1) both; }
+  @keyframes glass-open { from { clip-path: circle(0% at 50% 50%); opacity: 0; transform: rotate(-24deg) scale(.86); } 20% { opacity: 1; } to { clip-path: circle(72% at 50% 50%); opacity: 1; transform: none; } }
   @keyframes glass-turn { from { transform: rotateY(0deg); opacity: 1; } 70% { opacity: .6; } to { transform: rotateY(90deg); opacity: 0; } }
   @keyframes logo-turn { from { opacity: 0; transform: rotateY(-90deg) scale(.94); } 40% { opacity: .5; } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) {
-    .pjh__disc, .pjh__iso, .pjh__flip, .pjh__logo--full, .pjh__photo, .pjh__tint { animation: none; }
+    .pjh__iso, .pjh__flip, .pjh__logo--full, .pjh__photo, .pjh__tint { animation: none; }
     .pjh__flip { display: none; } .pjh__tint { opacity: 1; }
   }
 
