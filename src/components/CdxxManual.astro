@@ -11,42 +11,40 @@ const wordmark = withBase('/works/cdxx/logo.svg');
 const marble = withBase('/works/cdxx/bg-1920.webp');
 
 const t = es ? {
-  kicker: 'Manual de marca',
-  lead: 'Conexión CDXX es una propuesta sensorial que transforma la experiencia del chocolate artesanal, acompañada del maridaje con destilados y elixires selectos.',
-  brandA: 'La marca conecta lo tangible con lo etéreo: una travesía para curiosos y conocedores, donde cada degustación abre puertas hacia nuevas realidades sensoriales.',
+  lead: 'Experiencia sensorial de chocolate artesanal, con maridaje de destilados y elixires.',
+  brandA: 'Une lo tangible con lo etéreo.',
   tags: ['Lujo', 'Naturaleza', 'Percepción', 'Interconexión'],
   concept: 'Concepto visual',
-  conceptA: 'La dualidad fusionada: de lo terrenal a lo cósmico, entre hifas micelares y circuitos tecnológicos. Redes subterráneas y estructuras de silicio comparten un mismo principio, la transmisión de información.',
-  conceptB: 'Visualmente, texturas orgánicas se entrelazan con patrones geométricos, en un lenguaje que recuerda a la heráldica simplificada, con un gran giro contemporáneo.',
+  conceptA: 'Dualidad fusionada: hifas micelares y circuitos, de lo terrenal a lo cósmico.',
+  conceptB: 'Texturas orgánicas y patrones geométricos, con aire heráldico y un giro contemporáneo.',
   barra: 'Barra Gold',
   iso: 'Isotipo',
-  isoA: 'Un árbol cuyas raíces se entrelazan con hifas micelares simboliza una red de conexiones profundas, y se extiende en formas abstractas que evocan circuitos neuronales: la conexión entre la percepción sensorial y la conciencia.',
+  isoA: 'Un árbol de raíces micelares que se abre en circuitos: la conexión entre percepción y conciencia.',
   foil: 'Isotipo en hot stamping dorado',
   reduce: 'Reducciones',
-  reduceA: 'Al reducir el logotipo cambian la posición y la escala del iso sobre la tipografía para preservar la legibilidad, hasta que en el límite se usa solo el iso.',
+  reduceA: 'El iso cambia de posición y escala según el tamaño, hasta quedar solo.',
   palette: 'Paleta',
-  paletteA: 'Moss, Gold y Black Raisin comunican lujo, naturaleza y organicidad; el Wine Cream aporta la suavidad que equilibra la intensidad del resto.',
+  paletteA: 'Moss, Gold y Black Raisin: lujo y naturaleza. Wine Cream equilibra.',
   res: 'Recurso visual',
-  resA: 'La textura fluida del papel marmolado evoca el chocolate derretido y el veteado de los bombones. Cada patrón es irrepetible, como cada pieza artesanal, y encuentra su paralelo en las conexiones micelares.',
+  resA: 'Papel marmolado: chocolate derretido y veteado. Cada patrón es irrepetible.',
   stickers: 'Sellos adhesivos',
 } : {
-  kicker: 'Brand guidelines',
-  lead: 'Conexión CDXX is a sensory proposal that transforms the experience of artisanal chocolate, paired with select spirits and elixirs.',
-  brandA: 'The brand connects the tangible with the ethereal: a journey for the curious and the discerning, where every tasting opens doors to new sensory realities.',
+  lead: 'A sensory artisanal-chocolate experience, paired with spirits and elixirs.',
+  brandA: 'It connects the tangible with the ethereal.',
   tags: ['Luxury', 'Nature', 'Perception', 'Interconnection'],
   concept: 'Visual concept',
-  conceptA: 'Fused duality: from the earthly to the cosmic, between mycelial hyphae and technological circuits. Underground networks and silicon structures share a single principle, the transmission of information.',
-  conceptB: 'Visually, organic textures intertwine with geometric patterns, in a language reminiscent of simplified heraldry, with a strong contemporary twist.',
+  conceptA: 'Fused duality: mycelial hyphae and circuits, from the earthly to the cosmic.',
+  conceptB: 'Organic textures and geometric patterns, with a heraldic air and a contemporary twist.',
   barra: 'Gold Bar',
   iso: 'Isotype',
-  isoA: 'A tree whose roots intertwine with mycelial hyphae symbolizes a network of deep connections, and extends into abstract forms that evoke neural circuits: the connection between sensory perception and consciousness.',
+  isoA: 'A tree with mycelial roots opening into circuits: the link between perception and consciousness.',
   foil: 'Isotype in gold hot stamping',
   reduce: 'Reductions',
-  reduceA: 'When the logotype is reduced, the position and scale of the icon over the lettering change to preserve legibility, until at the limit only the icon is used.',
+  reduceA: 'The icon shifts position and scale with size, until it stands alone.',
   palette: 'Palette',
-  paletteA: 'Moss, Gold and Black Raisin convey luxury, nature and organic feel; Wine Cream adds the softness that balances the intensity of the rest.',
+  paletteA: 'Moss, Gold and Black Raisin: luxury and nature. Wine Cream balances.',
   res: 'Visual resource',
-  resA: 'The fluid texture of marbled paper evokes melted chocolate and the veining of bonbons. Each pattern is unrepeatable, like each artisanal piece, and finds its parallel in mycelial connections.',
+  resA: 'Marbled paper: melted chocolate and veining. Every pattern is unrepeatable.',
   stickers: 'Adhesive seals',
 };
 
@@ -56,9 +54,8 @@ const colors = [
 ];
 const sizes = ['13rem', '8rem', '4.6rem', '2.6rem'];
 ---
-<section class="cx" aria-label={t.kicker}>
+<section class="cx" aria-label={es ? 'Identidad' : 'Identity'}>
   <div class="wrap cx__head" data-reveal>
-    <p class="eyebrow">{t.kicker}</p>
     <p class="cx__lead">{t.lead}</p>
     <p class="cx__txt">{t.brandA}</p>
     <ul class="cx__tags">{t.tags.map((x) => <li>{x}</li>)}</ul>

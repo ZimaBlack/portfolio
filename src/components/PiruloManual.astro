@@ -8,54 +8,51 @@ const es = lang === 'es';
 const img = (n: string) => withBase(`/works/pirulo-coleccionables/manual/${n}.webp`);
 
 const t = es ? {
-  kicker: 'Manual de marca',
-  lead: 'Pirulo es una marca satélite: un proyecto ilustrativo que se nutre de la cultura popular, el cómic, el manga y todo su entorno.',
-  brandA: 'Hereda de su marca padre la amabilidad, la pertenencia y un poco de sentimiento nostálgico, y busca a la vez una identidad visual propia, que se acople de manera orgánica a la imagen de su marca líder, MTG Pirulo.',
+  lead: 'Marca satélite de MTG Pirulo: ilustrativa, nutrida de cómic y manga.',
+  brandA: 'Hereda amabilidad y nostalgia, y busca identidad propia.',
   tags: ['Ilustrativa', 'Cómic y manga', 'Amable', 'Nostálgica'],
   rebrand: 'Rebranding',
-  rebrandA: 'El trabajo gráfico parte del elemento «pirulo», presente en la mascota de la marca padre. No solo sintetiza al personaje: muestra una actitud amable, la de ofrecer al espectador algo mágico y preciado.',
-  rebrandB: 'El centro de la marca es el pirulo: el vínculo directo entre marcas, de pertenencia, sin lugar a la competencia sino como referencia de una a la otra.',
+  rebrandA: 'Parte del pirulo de la mascota de la marca padre y lo vuelve un gesto amable: ofrecer algo preciado.',
+  rebrandB: 'El pirulo es el vínculo entre marcas.',
   system: 'Un sistema flexible',
-  systemA: 'Isologotipo, isotipo, isotipo simplificado y logotipo con gráfica: el pirulo siempre es el eje, y el isotipo es la opción preferida porque en la ilustración se condensan las actitudes. Un outline blanco delimita la marca y asegura que se mantenga íntegra sobre cualquier fondo.',
+  systemA: 'Isologotipo, isotipo, isotipo simplificado y logotipo con gráfica. El isotipo es la opción preferida; un outline blanco mantiene la marca íntegra sobre cualquier fondo.',
   type: 'Logotipo',
-  typeA: 'Adaptado de la tipografía original, respetando su gestualidad pero con detalles «bubble» para acercarlo a la estética de la ilustración. Los textos de uso van en Nunito, de trazos redondeados.',
+  typeA: 'Logotipo adaptado de la tipografía original, con detalles «bubble». Textos en Nunito.',
   color: 'Color y adaptación',
-  colorA: 'Marca ilustrativa y comercial: sus colores institucionales pueden variar según el contexto. Solo el rojo del pirulo se respeta siempre, para mantener la coherencia. Vintage u Halloween son dos ejemplos.',
+  colorA: 'Los colores pueden variar según el contexto; solo el rojo del pirulo se respeta siempre.',
   palette: 'Paleta',
   paletteBg: 'Fondos sugeridos',
   res: 'Recursos gráficos',
-  resA: 'Una gráfica compleja y de mucho impacto pide elementos que complementen sin sumar ruido: filtros de semitono circular y plenos flat en contenedores de bordes redondeados.',
+  resA: 'Semitono circular y plenos flat en contenedores redondeados, sin ruido adicional.',
   env: 'En su entorno',
-  envA: 'Aproximaciones a su ecosistema; ninguna es una aplicación final.',
+  envA: 'Aproximaciones a su ecosistema.',
   captions: ['Rojo', 'Oscuro', 'Azul'],
 } : {
-  kicker: 'Brand guidelines',
-  lead: 'Pirulo is a satellite brand: an illustrative project that draws on pop culture, comics, manga and everything around them.',
-  brandA: 'It inherits friendliness, belonging and a touch of nostalgia from its parent brand, while seeking a visual identity of its own that blends organically with the image of its lead brand, MTG Pirulo.',
+  lead: 'A satellite brand of MTG Pirulo: illustrative, drawn from comics and manga.',
+  brandA: 'It inherits friendliness and nostalgia, and seeks an identity of its own.',
   tags: ['Illustrative', 'Comics & manga', 'Friendly', 'Nostalgic'],
   rebrand: 'Rebranding',
-  rebrandA: 'The graphic work starts from the “pirulo” (candy cane), present in the parent brand’s mascot. It doesn’t just synthesize the character: it shows a friendly attitude, that of offering the viewer something magical and precious.',
-  rebrandB: 'The center of the brand is the pirulo: the direct bond between brands, one of belonging, with no room for competition but rather a reference from one to the other.',
+  rebrandA: 'It starts from the candy cane of the parent brand’s mascot and turns it into a friendly gesture: offering something precious.',
+  rebrandB: 'The candy cane is the bond between brands.',
   system: 'A flexible system',
-  systemA: 'Isologotype, isotype, simplified isotype and logotype with graphic: the pirulo is always the axis, and the isotype is the preferred option since the illustration condenses the attitudes. A white outline delimits the brand and keeps it intact over any background.',
+  systemA: 'Isologotype, isotype, simplified isotype and logotype with graphic. The isotype is preferred; a white outline keeps the brand intact over any background.',
   type: 'Logotype',
-  typeA: 'Adapted from the original typeface, respecting its gesture but adding “bubble” details to bring it closer to the illustration. Text uses Nunito, with rounded strokes.',
+  typeA: 'A logotype adapted from the original typeface, with “bubble” details. Text in Nunito.',
   color: 'Color and adaptation',
-  colorA: 'An illustrative and commercial brand: its institutional colors can vary with the context. Only the red of the pirulo is always respected, to keep coherence. Vintage and Halloween are two examples.',
+  colorA: 'Colors can vary with context; only the red of the candy cane is always kept.',
   palette: 'Palette',
   paletteBg: 'Suggested backgrounds',
   res: 'Graphic resources',
-  resA: 'A complex, high-impact graphic calls for elements that complement without adding noise: circular halftone filters and flat fills in rounded-corner containers.',
+  resA: 'Circular halftone and flat fills in rounded containers, with no extra noise.',
   env: 'In its environment',
-  envA: 'Approximations to its ecosystem; none is a final application.',
+  envA: 'Approximations to its ecosystem.',
   captions: ['Red', 'Dark', 'Blue'],
 };
 const brand = [['#D11126', ''], ['#AD2A24', ''], ['#AD7EA6', ''], ['#905C89', ''], ['#F9D9CA', ''], ['#F6C4A3', '']];
 const bgs = ['#551113', '#1D2443'];
 ---
-<section class="pr" aria-label={t.kicker}>
+<section class="pr" aria-label={es ? 'Identidad' : 'Identity'}>
   <div class="wrap pr__head" data-reveal>
-    <p class="eyebrow">{t.kicker}</p>
     <p class="pr__lead">{t.lead}</p>
     <p class="pr__txt">{t.brandA}</p>
     <ul class="pr__tags">{t.tags.map((x) => <li>{x}</li>)}</ul>

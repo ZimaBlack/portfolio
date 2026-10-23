@@ -21,55 +21,52 @@ const character = inline('logo.svg', 'Colorada — character');
 const wordmark = inline('mark.svg', 'Colorada — logotipo');
 
 const t = es ? {
-  kicker: 'Manual de marca',
-  lead: 'Colorada es una identidad gráfica compuesta y variable, con un branding estético enfocado en el color y el dinamismo de sus formas.',
-  brandA: 'Nació como marca personal para productos de cuidado y teñido del cabello fantasía. Se presenta audaz, joven y rebelde, pero a la vez sensual y simpática: una marca de contrastes, cómplice y desafiante.',
+  lead: 'Identidad variable para una marca personal de cabello fantasía.',
+  brandA: 'Un personaje, un conejo y una paleta que cambia según el momento.',
   tags: ['Audaz', 'Joven y rebelde', 'Sensual y simpática', 'De contrastes'],
   sketch: 'Del boceto al personaje',
   sketchCap: 'Boceto original',
   photoCap: 'La marca tiñe la imagen: cambia los colores de la derecha',
   photo2Cap: 'Retrato teñido con los colores de la marca',
   tint: 'La marca tiñe la imagen',
-  tintA: 'El cabello toma los dos colores de la marca: el principal en la melena y el acento en los mechones. Las formas se desenfocan y se funden con la foto, así que cualquier paleta que elijas se integra sin perder las luces y sombras originales.',
+  tintA: 'El cabello toma los dos colores de la marca. Las formas se desenfocan y se funden con la foto.',
   sketchTxt: 'Todo parte de un trazo a lápiz: una cabeza que se acurruca, el flequillo como gesto y una mirada de reojo. La marca conserva esa actitud.',
   system: 'Un sistema variable',
-  systemA: 'Colorada se apoya en dos aspectos icónicos: su personaje (Character) y su accesorio (Capsule), el conejo. Puede presentarse por cualquiera de los dos caminos; ante reducciones extremas, la cápsula es siempre la mejor opción.',
-  systemB: 'El logotipo vive dentro de un contenedor oscuro que le da peso a su mensaje y lo posiciona, con la legibilidad como prioridad.',
+  systemA: 'Dos íconos: el personaje (Character) y el conejo (Capsule). En reducciones extremas, la cápsula.',
+  systemB: 'El logotipo vive en un contenedor oscuro que prioriza la legibilidad.',
   charCap: 'Isologotipo · Character',
   wordCap: 'Logotipo con refuerzo gráfico',
   color: 'El color como variable',
-  colorA: 'Colorada está pensada para moverse entre paletas según lo que necesite: se alienta a modificar su paleta principal según evento, entorno o circunstancia. Probalo con los selectores de color de la derecha: esta página entera cambia con ellos. La paleta base, en cambio, queda fija.',
+  colorA: 'La paleta se adapta al evento o al entorno. Probala con los selectores: la página cambia con ellos. La base queda fija.',
   base: 'Paleta base',
-  baseCap: 'Rosa y verde, el punto de partida del manual',
+  baseCap: 'Rosa y verde, el punto de partida',
   region: 'Variaciones de color de la marca',
 } : {
-  kicker: 'Brand guidelines',
-  lead: 'Colorada is a composite, variable graphic identity with an aesthetic branding focused on color and the dynamism of its shapes.',
-  brandA: 'It was born as a personal brand for fantasy hair-care and dye products. It presents itself as bold, young and rebellious, yet sensual and sympathetic: a brand of contrasts, complicit and defiant.',
+  lead: 'A variable identity for a fantasy hair-care personal brand.',
+  brandA: 'A character, a bunny and a palette that changes with the moment.',
   tags: ['Bold', 'Young & rebellious', 'Sensual & sympathetic', 'Of contrasts'],
   sketch: 'From sketch to character',
   sketchCap: 'Original sketch',
   photoCap: 'The brand tints the image: change the colors on the right',
   photo2Cap: 'Portrait tinted with the brand colors',
   tint: 'The brand tints the image',
-  tintA: 'The hair takes the brand’s two colors: the main one on the mane, the accent on the strands. The shapes are blurred and blended into the photo, so any palette you pick integrates while keeping the original lights and shadows.',
+  tintA: 'The hair takes the brand’s two colors. The shapes are blurred and blended into the photo.',
   sketchTxt: 'It all starts with a pencil line: a head curling up, the fringe as a gesture and a sideways glance. The brand keeps that attitude.',
   system: 'A variable system',
-  systemA: 'Colorada rests on two iconic aspects: its character (Character) and its accessory (Capsule), the bunny. It can present itself through either path; in extreme reductions, the capsule is always the best option.',
-  systemB: 'The logotype lives inside a dark container that gives its message weight and positions it, with legibility as the priority.',
+  systemA: 'Two icons: the character (Character) and the bunny (Capsule). In extreme reductions, the capsule.',
+  systemB: 'The logotype lives in a dark container that prioritizes legibility.',
   charCap: 'Isologotype · Character',
   wordCap: 'Logotype with graphic reinforcement',
   color: 'Color as a variable',
-  colorA: 'Colorada is designed to move between palettes as needed: modifying its main palette by event, environment or circumstance is encouraged. Try it with the color pickers on the right: this whole page changes with them. The base palette, however, stays fixed.',
+  colorA: 'The palette adapts to the event or environment. Try it with the pickers: the page changes with them. The base stays fixed.',
   base: 'Base palette',
-  baseCap: 'Pink and green, the manual’s starting point',
+  baseCap: 'Pink and green, the starting point',
   region: 'Brand color variations',
 };
 
 ---
-<section class="cm" aria-label={t.kicker}>
+<section class="cm" aria-label={es ? 'Identidad' : 'Identity'}>
   <div class="wrap cm__head" data-reveal>
-    <p class="eyebrow">{t.kicker}</p>
     <p class="cm__lead">{t.lead}</p>
     <p class="cm__txt">{t.brandA}</p>
     <ul class="cm__tags">{t.tags.map((x) => <li>{x}</li>)}</ul>

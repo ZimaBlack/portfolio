@@ -10,57 +10,55 @@ const img = (n: string) => withBase(`/works/global-citizen/manual/${n}.webp`);
 const iso = [...markRaw.matchAll(/\bd="([^"]+)"/g)].map((m) => m[1]).join(' ');
 
 const t = es ? {
-  kicker: 'Manual de marca',
-  intro: 'Este manual acompaña a las normas generales de la marca. Su propósito es establecer una base estética y gráfica sólida, y articular las ideas y conceptos centrales que definen a Global Citizen.',
-  logos: 'Isotipo, versión vertical y versión horizontal con bajada: “Ideas globales · Desarrollos locales”.',
-  insp: 'Inspiración gráfica',
-  inspA: 'Global Citizen es una marca moldeada por el estilo que define su identidad: el conocido Estilo Internacional o Modernismo suizo.',
-  inspB: 'Es un estilo de rasgos muy distintivos, que deben considerarse con cuidado al desarrollar cualquier comunicación o pieza de exposición de marca. Estos ejemplos sirven de punto de partida.',
+  intro: 'Identidad para una marca de bienes raíces e inversión, de inspiración suiza: grilla, geometría y espacio negativo.',
+  logos: 'Isotipo, versión vertical y horizontal.',
+  insp: 'Estilo Internacional',
+  inspA: 'La referencia gráfica de la marca: el modernismo suizo.',
+  inspB: 'Tipografía clara, jerarquía simple y mucho espacio.',
   refs: 'Referencias',
   refsBy: 'Josef Müller-Brockmann · Armin Hofmann',
   map: 'Mapa conceptual',
-  mapA: 'Al definir la dirección gráfica y sus recursos, el primer paso fue comprobar que los principios fundacionales del estilo internacional estuvieran alineados con la esencia de la marca.',
-  mapB: 'De ese paso surgieron varias ramas conceptuales principales; a partir de ellas se incorporaron conceptos del rubro y sus objetivos, formando este primer mapa.',
-  mapC: 'Es un modelo en construcción, dinámico y en evolución: no es definitivo y siempre estará sujeto a revisión.',
-  mock: 'Mock ups',
+  mapA: 'Del estilo internacional al rubro: ramas conceptuales que ordenan la identidad.',
+  mapB: '',
+  mapC: 'Un modelo vivo, siempre en revisión.',
+  mock: 'Aplicaciones',
   cards: 'Tarjetería',
   avatars: 'Avatares para redes',
   paper: 'Papelería comercial, A4 membrete y tubo de planos',
   fence: 'Gráfica de obra',
   boards: 'Cartelería',
   dark: 'Modo oscuro',
-  darkA: 'Como opción adicional, la marca puede explorar un tratamiento oscuro para sus piezas más premium o para materiales de una audiencia más reservada o interna, usando el concepto “BLUEPRINT”.',
-  darkB: 'Este concepto evoca la planificación fundacional, el acceso total y ser parte integral del proceso. Con él se ajustan los tonos para alinearse mejor con el logotipo y aprovechar la grilla como soporte geométrico y recurso ilustrativo.',
-  darkC: 'El uso de este tratamiento es opcional.',
-  end: 'Conclusión',
-  endA: 'Confiamos en que este compañero, más adaptable y orientado a la marca, ayude a consolidar la dirección estética de Global Citizen. Alentamos a evitar una lectura demasiado restrictiva de esta dirección visual: la marca tiene una gran flexibilidad geométrica que la hace muy versátil, y es posible emular los tratamientos gráficos clásicos de los diseñadores del movimiento.',
-  endB: 'Es esencial tener presentes los principios gráficos de la marca: minimalismo, funcionalidad e innovación. Para comunicar con eficacia hay que construir mensajes simples, evocadores del estilo, armónicos en su jerarquía y que hagan un uso intencional del espacio negativo. Todo ello es fundamental para que Global Citizen se comunique con claridad y alto impacto en su entorno y ante su público.',
+  darkA: 'Opción «blueprint» para piezas premium o internas.',
+  darkB: 'Usa la grilla como soporte geométrico.',
+  darkC: 'Es opcional.',
+  end: 'Principios',
+  endA: 'Minimalismo, funcionalidad e innovación.',
+  endB: 'Mensajes simples, jerarquía armónica y uso intencional del espacio negativo.',
 } : {
-  kicker: 'Brand manual',
-  intro: 'This manual is intended as a companion piece to the brand’s overarching normative guidelines. Its purpose is to establish a solid aesthetic and graphic foundation, and to articulate the core ideas and concepts that define Global Citizen.',
-  logos: 'Isotype, stacked version and horizontal version with tagline: “Ideas globales · Desarrollos locales”.',
-  insp: 'Graphic inspiration',
-  inspA: 'Global Citizen is a brand shaped by the style that defines its identity: the well-known International Style, or Swiss Modernism.',
-  inspB: 'This style carries highly distinctive characteristics that must be carefully considered when developing any communication or brand-exposure material. These examples may serve as effective starting points.',
+  intro: 'Identity for a real estate and investment brand, Swiss-inspired: grid, geometry and negative space.',
+  logos: 'Isotype, stacked and horizontal versions.',
+  insp: 'International Style',
+  inspA: 'The brand’s graphic reference: Swiss modernism.',
+  inspB: 'Clear type, simple hierarchy and plenty of space.',
   refs: 'References',
   refsBy: 'Josef Müller-Brockmann · Armin Hofmann',
   map: 'Concept map',
-  mapA: 'When defining the brand’s graphic direction and its resources, the first step was to establish that the foundational principles of the international style were aligned with the essence of the brand.',
-  mapB: 'This step led to several main conceptual branches; from these, concepts related to the field and its objectives were added, forming this first conceptual map.',
-  mapC: 'It is a work in progress, dynamic and ever-evolving: not a final model, and always subject to revision.',
-  mock: 'Mock ups',
+  mapA: 'From the international style to the field: conceptual branches that organize the identity.',
+  mapB: '',
+  mapC: 'A living model, always under review.',
+  mock: 'Applications',
   cards: 'Business cards',
   avatars: 'Social media avatars',
   paper: 'Commercial stationery, A4 letterhead and plan tube',
   fence: 'Construction hoarding',
   boards: 'Signage',
   dark: 'Dark mode',
-  darkA: 'As an additional option, the brand may explore a dark-mode treatment for its more premium pieces or for materials intended for a more reserved or internal audience, using the “BLUEPRINT” concept.',
-  darkB: 'This concept evokes foundational planning, full access, and being an integral part of the process. With it the tones can be adjusted to align better with the logotype, using the grid as both a geometric support and a direct illustrative resource.',
-  darkC: 'Use of this treatment is optional.',
-  end: 'Conclusion',
-  endA: 'We trust this more adaptable, brand-oriented companion will help solidify the aesthetic direction of Global Citizen. We also encourage avoiding an overly restrictive interpretation of this visual direction: the brand has significant geometric flexibility that makes it highly versatile, and it is entirely possible to emulate the classic graphic treatments of notable designers from the movement.',
-  endB: 'It is essential to keep the brand’s core graphic principles in mind: minimalism, functionality and innovation. To communicate effectively, we must craft messages that are simple, evocative of the style, harmonious in hierarchy, and that make purposeful use of negative space. All of this is fundamental for Global Citizen to communicate clearly and with high impact in its environment and to its audience.',
+  darkA: 'A “blueprint” option for premium or internal pieces.',
+  darkB: 'It uses the grid as geometric support.',
+  darkC: 'It is optional.',
+  end: 'Principles',
+  endA: 'Minimalism, functionality and innovation.',
+  endB: 'Simple messages, harmonious hierarchy and intentional use of negative space.',
 };
 
 // Mapa conceptual: cada fila es una tanda de conceptos (v = verde de marca; b = negrita)
@@ -74,9 +72,8 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   { b: false, chips: [['Ergonomia', true], ['Materializacion disruptiva'], ['Ecosisitemas', true], ['Ecobrutalismo'], ['Simbiosis']] },
 ];
 ---
-<section class="gcm" aria-label={t.kicker}>
+<section class="gcm" aria-label={es ? 'Identidad' : 'Identity'}>
   <div class="wrap gcm__head" data-reveal>
-    <p class="eyebrow">{t.kicker}</p>
     <p class="gcm__intro">{t.intro}</p>
   </div>
 
@@ -142,7 +139,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
         <path d={iso} class="gcm__iso" />
       </svg>
       <div>
-        <h2 class="gcm__dark-title"><span class="o">DARK</span>MODE</h2>
+        <h2 class="gcm__dark-title">{t.dark}</h2>
         <p>{t.darkA}</p>
         <p>{t.darkB}</p>
         <p>{t.darkC}</p>
@@ -169,7 +166,8 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   .gcm figure { margin: 0; }
   .gcm figcaption { font-size: .8rem; padding-top: .75rem; }
   .gcm__head { display: grid; gap: 1.25rem; max-width: 62rem; }
-  .gcm__intro { margin: 0; font-size: clamp(1.15rem, 1.8vw, 1.6rem); line-height: 1.45; color: var(--fg); }
+  .gcm__intro { margin: 0; font-size: clamp(1.25rem, 2.2vw, 2rem); line-height: 1.35; }
+  .gcm__text p:empty { display: none; }
   .gcm__bleed { width: 100%; }
   .gcm__bleed--flush { margin-top: calc(-1 * clamp(3rem, 7vw, 7rem)); }
   .gcm__block { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 6rem); align-items: start; }
@@ -197,8 +195,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   .gcm__grid path { fill: none; stroke: rgb(236 235 230 / .12); stroke-width: .5; }
   .gcm__iso { fill: #3d3b3a; stroke: #5db98a; stroke-width: 1; stroke-linejoin: round; }
   .gcm__dark p { margin: 0 0 1rem; max-width: 40rem; font-weight: 500; line-height: 1.5; }
-  .gcm__dark-title { margin: 0 0 1.5rem; font-size: clamp(2.4rem, 6vw, 5.2rem); font-weight: 800; letter-spacing: -.01em; line-height: 1; color: #181818; }
-  .gcm__dark-title .o { color: transparent; -webkit-text-stroke: 2px #5db98a; }
+  .gcm__dark-title { margin: 0 0 1.5rem; font-family: var(--sans); font-weight: 700; font-size: clamp(1.15rem, 2vw, 1.6rem); letter-spacing: .3em; text-transform: uppercase; line-height: 1.4; color: #5db98a; }
   /* Conclusión */
   .gcm__end { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 6rem); color: var(--muted); }
   .gcm__end > div { display: grid; gap: 1.25rem; max-width: 46rem; }
