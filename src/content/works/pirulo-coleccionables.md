@@ -12,7 +12,6 @@ text:
   en: "[Context, challenge, design decisions and outcome.]"
 draft: false
 heroLights: halftone
-heroPattern: waves
 featured: true
 homeOrder: 3
 order: 7
