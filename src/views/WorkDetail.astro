@@ -8,6 +8,7 @@ import Carousel, { type Slide } from '../components/Carousel.astro';
 import Marquee from '../components/Marquee.astro';
 import ProjectHero from '../components/ProjectHero.astro';
 import PaletteWidget from '../components/PaletteWidget.astro';
+import BrandManual from '../components/BrandManual.astro';
 import { ambientOf, isLight, toneOfHex, type Tone } from '../lib/palette';
 import { site } from '../data/site';
 import { copy, loc, paths, type Lang } from '../lib/i18n';
@@ -103,6 +104,8 @@ const alt = lang === 'es' ? 'en' : 'es';
         <Carousel slides={slides} title={d.title} cta={{ title: c.detail.loopTitle, button: c.detail.loopCta, subtitle: c.detail.loopSubtitle, href: `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(c.detail.loopWa)}` }} labels={{ prev: c.detail.prev, next: c.detail.next_, region: c.detail.slides, png: c.detail.pngHint, details: c.detail.details, more: c.detail.fullDev }} />
       </section>
     )}
+
+    {d.manual && <BrandManual lang={lang} />}
 
     {d.video?.id && <section class="wrap vid" data-reveal><VideoEmbed provider={d.video.provider} id={d.video.id} title={d.title} play={c.detail.play} /></section>}
 

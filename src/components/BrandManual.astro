@@ -1,0 +1,210 @@
+---
+// Manual de marca de Global Citizen adaptado al sitio: texto nativo (bilingüe) + piezas recortadas del manual original en /works/global-citizen/manual/
+import { withBase, type Lang } from '../lib/i18n';
+import markRaw from '../../public/works/global-citizen/mark.svg?raw';
+
+const { lang } = Astro.props as { lang: Lang };
+const es = lang === 'es';
+const img = (n: string) => withBase(`/works/global-citizen/manual/${n}.webp`);
+// Trazo del isotipo, para dibujarlo en modo "blueprint" (contorno)
+const iso = [...markRaw.matchAll(/\bd="([^"]+)"/g)].map((m) => m[1]).join(' ');
+
+const t = es ? {
+  kicker: 'Manual de marca',
+  intro: 'Este manual acompaña a las normas generales de la marca. Su propósito es establecer una base estética y gráfica sólida, y articular las ideas y conceptos centrales que definen a Global Citizen.',
+  logos: 'Isotipo, versión vertical y versión horizontal con bajada: “Ideas globales · Desarrollos locales”.',
+  insp: 'Inspiración gráfica',
+  inspA: 'Global Citizen es una marca moldeada por el estilo que define su identidad: el conocido Estilo Internacional o Modernismo suizo.',
+  inspB: 'Es un estilo de rasgos muy distintivos, que deben considerarse con cuidado al desarrollar cualquier comunicación o pieza de exposición de marca. Estos ejemplos sirven de punto de partida.',
+  refs: 'Referencias',
+  refsBy: 'Josef Müller-Brockmann · Armin Hofmann',
+  map: 'Mapa conceptual',
+  mapA: 'Al definir la dirección gráfica y sus recursos, el primer paso fue comprobar que los principios fundacionales del estilo internacional estuvieran alineados con la esencia de la marca.',
+  mapB: 'De ese paso surgieron varias ramas conceptuales principales; a partir de ellas se incorporaron conceptos del rubro y sus objetivos, formando este primer mapa.',
+  mapC: 'Es un modelo en construcción, dinámico y en evolución: no es definitivo y siempre estará sujeto a revisión.',
+  mock: 'Mock ups',
+  cards: 'Tarjetería',
+  avatars: 'Avatares para redes',
+  paper: 'Papelería comercial, A4 membrete y tubo de planos',
+  fence: 'Gráfica de obra',
+  boards: 'Cartelería',
+  dark: 'Modo oscuro',
+  darkA: 'Como opción adicional, la marca puede explorar un tratamiento oscuro para sus piezas más premium o para materiales de una audiencia más reservada o interna, usando el concepto “BLUEPRINT”.',
+  darkB: 'Este concepto evoca la planificación fundacional, el acceso total y ser parte integral del proceso. Con él se ajustan los tonos para alinearse mejor con el logotipo y aprovechar la grilla como soporte geométrico y recurso ilustrativo.',
+  darkC: 'El uso de este tratamiento es opcional.',
+  end: 'Conclusión',
+  endA: 'Confiamos en que este compañero, más adaptable y orientado a la marca, ayude a consolidar la dirección estética de Global Citizen. Alentamos a evitar una lectura demasiado restrictiva de esta dirección visual: la marca tiene una gran flexibilidad geométrica que la hace muy versátil, y es posible emular los tratamientos gráficos clásicos de los diseñadores del movimiento.',
+  endB: 'Es esencial tener presentes los principios gráficos de la marca: minimalismo, funcionalidad e innovación. Para comunicar con eficacia hay que construir mensajes simples, evocadores del estilo, armónicos en su jerarquía y que hagan un uso intencional del espacio negativo. Todo ello es fundamental para que Global Citizen se comunique con claridad y alto impacto en su entorno y ante su público.',
+} : {
+  kicker: 'Brand manual',
+  intro: 'This manual is intended as a companion piece to the brand’s overarching normative guidelines. Its purpose is to establish a solid aesthetic and graphic foundation, and to articulate the core ideas and concepts that define Global Citizen.',
+  logos: 'Isotype, stacked version and horizontal version with tagline: “Ideas globales · Desarrollos locales”.',
+  insp: 'Graphic inspiration',
+  inspA: 'Global Citizen is a brand shaped by the style that defines its identity: the well-known International Style, or Swiss Modernism.',
+  inspB: 'This style carries highly distinctive characteristics that must be carefully considered when developing any communication or brand-exposure material. These examples may serve as effective starting points.',
+  refs: 'References',
+  refsBy: 'Josef Müller-Brockmann · Armin Hofmann',
+  map: 'Concept map',
+  mapA: 'When defining the brand’s graphic direction and its resources, the first step was to establish that the foundational principles of the international style were aligned with the essence of the brand.',
+  mapB: 'This step led to several main conceptual branches; from these, concepts related to the field and its objectives were added, forming this first conceptual map.',
+  mapC: 'It is a work in progress, dynamic and ever-evolving: not a final model, and always subject to revision.',
+  mock: 'Mock ups',
+  cards: 'Business cards',
+  avatars: 'Social media avatars',
+  paper: 'Commercial stationery, A4 letterhead and plan tube',
+  fence: 'Construction hoarding',
+  boards: 'Signage',
+  dark: 'Dark mode',
+  darkA: 'As an additional option, the brand may explore a dark-mode treatment for its more premium pieces or for materials intended for a more reserved or internal audience, using the “BLUEPRINT” concept.',
+  darkB: 'This concept evokes foundational planning, full access, and being an integral part of the process. With it the tones can be adjusted to align better with the logotype, using the grid as both a geometric support and a direct illustrative resource.',
+  darkC: 'Use of this treatment is optional.',
+  end: 'Conclusion',
+  endA: 'We trust this more adaptable, brand-oriented companion will help solidify the aesthetic direction of Global Citizen. We also encourage avoiding an overly restrictive interpretation of this visual direction: the brand has significant geometric flexibility that makes it highly versatile, and it is entirely possible to emulate the classic graphic treatments of notable designers from the movement.',
+  endB: 'It is essential to keep the brand’s core graphic principles in mind: minimalism, functionality and innovation. To communicate effectively, we must craft messages that are simple, evocative of the style, harmonious in hierarchy, and that make purposeful use of negative space. All of this is fundamental for Global Citizen to communicate clearly and with high impact in its environment and to its audience.',
+};
+
+// Mapa conceptual: cada fila es una tanda de conceptos (v = verde de marca; b = negrita)
+type Chip = [string, boolean?];
+const rows: { b: boolean; chips: Chip[] }[] = [
+  { b: true, chips: [['BIENES RAICES'], ['INVERSIÓN', true], ['INNOVACION', true], ['ESPACIOS HUMANOS']] },
+  { b: true, chips: [['Implementacion'], ['Rentabilidad', true], ['Global Mundial', true], ['Arquitectura'], ['Experiencial']] },
+  { b: true, chips: [['Enfoque humano', true], ['Enfoque Ambiental', true], ['Tecnología']] },
+  { b: false, chips: [['Viabilidad'], ['Versatilidad'], ['Adaptavilidad'], ['Funcionalidad', true], ['Aplicabilidad', true], ['Sustentabilidad', true]] },
+  { b: false, chips: [['Cultura organizativa', true], ['Construtivismo', true], ['Minimalismo']] },
+  { b: false, chips: [['Ergonomia', true], ['Materializacion disruptiva'], ['Ecosisitemas', true], ['Ecobrutalismo'], ['Simbiosis']] },
+];
+---
+<section class="gcm" aria-label={t.kicker}>
+  <div class="wrap gcm__head" data-reveal>
+    <p class="eyebrow">{t.kicker}</p>
+    <p class="gcm__intro">{t.intro}</p>
+  </div>
+
+  <figure class="gcm__bleed" data-reveal>
+    <img src={img('logos')} alt={t.logos} loading="lazy" decoding="async" width="1800" height="1110" />
+    <figcaption class="wrap muted">{t.logos}</figcaption>
+  </figure>
+
+  <div class="wrap gcm__block">
+    <div class="gcm__text" data-reveal>
+      <h2 class="h2">{t.insp}</h2>
+      <p>{t.inspA}</p>
+      <p class="gcm__strong">{t.inspB}</p>
+    </div>
+    <figure class="gcm__mood" data-reveal>
+      <img src={img('moodboard')} alt={t.insp} loading="lazy" decoding="async" width="1800" height="2118" />
+      <figcaption class="muted">{t.refs}: <strong>{t.refsBy}</strong></figcaption>
+    </figure>
+  </div>
+
+  <div class="wrap gcm__block gcm__block--map">
+    <div class="gcm__text" data-reveal>
+      <h2 class="h2">{t.map}</h2>
+      <p>{t.mapA}</p>
+      <p>{t.mapB}</p>
+      <p class="gcm__strong">{t.mapC}</p>
+    </div>
+    <div class="gcm__chips" data-reveal>
+      {rows.map((r) => (
+        <ul class:list={['chips', { 'chips--b': r.b }]}>
+          {r.chips.map(([label, green]) => <li class:list={{ 'is-green': green }}>{label}</li>)}
+        </ul>
+      ))}
+    </div>
+  </div>
+
+  <div class="wrap gcm__title" data-reveal><h2 class="h2">{t.mock}</h2></div>
+
+  <div class="wrap gcm__pair" data-reveal>
+    <figure><img src={img('card-green')} alt={t.cards} loading="lazy" decoding="async" /></figure>
+    <figure><img src={img('card-tray')} alt={t.cards} loading="lazy" decoding="async" /></figure>
+  </div>
+  <figure class="gcm__bleed" data-reveal>
+    <img src={img('banner-dark')} alt="Global Citizen" loading="lazy" decoding="async" />
+  </figure>
+  <figure class="wrap gcm__avatars" data-reveal>
+    <img src={img('avatars')} alt={t.avatars} loading="lazy" decoding="async" />
+    <figcaption class="muted">{t.avatars}</figcaption>
+  </figure>
+  <figure class="gcm__bleed" data-reveal>
+    <img src={img('tube-flatlay')} alt={t.paper} loading="lazy" decoding="async" />
+    <figcaption class="wrap muted">{t.paper}</figcaption>
+  </figure>
+  <figure class="gcm__bleed" data-reveal>
+    <img src={img('fence')} alt={t.fence} loading="lazy" decoding="async" />
+    <figcaption class="wrap muted">{t.fence}</figcaption>
+  </figure>
+
+  <div class="gcm__dark" data-reveal>
+    <div class="wrap gcm__dark-in">
+      <svg class="gcm__bp" viewBox="-6 -6 246 246" aria-hidden="true">
+        <g class="gcm__grid"><path d="M117 -6V240M-6 117H240M-6 240L240 -6"/></g>
+        <path d={iso} class="gcm__iso" />
+      </svg>
+      <div>
+        <h2 class="gcm__dark-title"><span class="o">DARK</span>MODE</h2>
+        <p>{t.darkA}</p>
+        <p>{t.darkB}</p>
+        <p>{t.darkC}</p>
+      </div>
+    </div>
+  </div>
+  <figure class="gcm__bleed gcm__bleed--flush" data-reveal>
+    <img src={img('banner-wide')} alt="Global Citizen" loading="lazy" decoding="async" />
+  </figure>
+  <figure class="gcm__bleed gcm__bleed--flush" data-reveal>
+    <img src={img('billboard')} alt={t.boards} loading="lazy" decoding="async" />
+    <figcaption class="wrap muted">{t.boards}</figcaption>
+  </figure>
+
+  <div class="wrap gcm__end" data-reveal>
+    <h2 class="h2">{t.end}</h2>
+    <div><p>{t.endA}</p><p>{t.endB}</p></div>
+  </div>
+</section>
+
+<style>
+  .gcm { display: grid; gap: clamp(3rem, 7vw, 7rem); padding-bottom: clamp(3rem, 6vw, 6rem); --gc: #5db98a; }
+  .gcm img { width: 100%; height: auto; display: block; }
+  .gcm figure { margin: 0; }
+  .gcm figcaption { font-size: .8rem; padding-top: .75rem; }
+  .gcm__head { display: grid; gap: 1.25rem; max-width: 62rem; }
+  .gcm__intro { margin: 0; font-size: clamp(1.15rem, 1.8vw, 1.6rem); line-height: 1.45; color: var(--fg); }
+  .gcm__bleed { width: 100%; }
+  .gcm__bleed--flush { margin-top: calc(-1 * clamp(3rem, 7vw, 7rem)); }
+  .gcm__block { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 6rem); align-items: start; }
+  .gcm__text { display: grid; gap: 1.25rem; color: var(--muted); max-width: 38rem; }
+  .gcm__text p { margin: 0; }
+  .gcm__text .h2 { color: var(--fg); margin-bottom: .5rem; }
+  .gcm__strong { color: var(--fg); font-weight: 500; }
+  .gcm__mood img { border-radius: 2px; }
+  .gcm__mood figcaption strong { color: var(--fg); font-weight: 500; }
+  .gcm__block--map { align-items: center; }
+  .gcm__chips { display: grid; gap: .8rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; margin: 0; padding: 0; }
+  .chips li { padding: .5rem 1rem; border: 1px solid var(--line); border-radius: 999px; font-size: .92rem; font-weight: 400; color: var(--fg); transition: border-color .5s var(--ease), background .5s var(--ease); }
+  .chips--b li { font-weight: 600; }
+  .chips li.is-green { color: var(--gc); }
+  .chips li:hover { border-color: var(--gc); background: rgb(93 185 138 / .08); }
+  .gcm__title { margin-bottom: calc(-1 * clamp(1.5rem, 4vw, 4rem)); }
+  .gcm__pair { display: grid; grid-template-columns: 1.55fr 1fr; gap: var(--gutter); }
+  .gcm__pair img { height: 100%; object-fit: cover; }
+  .gcm__avatars { max-width: 70rem; }
+  /* Modo oscuro "blueprint" */
+  .gcm__dark { background: #2c2c2c; padding-block: clamp(4rem, 9vw, 9rem); color: #5db98a; }
+  .gcm__dark-in { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 6rem); align-items: center; }
+  .gcm__bp { width: min(100%, 26rem); justify-self: center; overflow: visible; }
+  .gcm__grid path { fill: none; stroke: rgb(236 235 230 / .12); stroke-width: .5; }
+  .gcm__iso { fill: #3d3b3a; stroke: #5db98a; stroke-width: 1; stroke-linejoin: round; }
+  .gcm__dark p { margin: 0 0 1rem; max-width: 40rem; font-weight: 500; line-height: 1.5; }
+  .gcm__dark-title { margin: 0 0 1.5rem; font-size: clamp(2.4rem, 6vw, 5.2rem); font-weight: 800; letter-spacing: -.01em; line-height: 1; color: #181818; }
+  .gcm__dark-title .o { color: transparent; -webkit-text-stroke: 2px #5db98a; }
+  /* Conclusión */
+  .gcm__end { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 6rem); color: var(--muted); }
+  .gcm__end > div { display: grid; gap: 1.25rem; max-width: 46rem; }
+  .gcm__end p { margin: 0; }
+  @media (max-width: 860px) {
+    .gcm__block, .gcm__dark-in, .gcm__end { grid-template-columns: 1fr; }
+    .gcm__pair { grid-template-columns: 1fr; }
+  }
+</style>

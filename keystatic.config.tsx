@@ -49,6 +49,7 @@ export default config({
         heroAnimation: fields.select({ label: 'Animación de la portada', description: 'Ensamblar: el logotipo debe tener 3 trazos (ala izquierda, ala derecha y centro).', options: [{ label: 'Ninguna', value: '' }, { label: 'Ensamblar piezas', value: 'assemble' }, { label: 'Cristal que se abre', value: 'glass' }], defaultValue: '' }),
         heroLights: fields.select({ label: 'Luces de la portada', description: 'Degradado suave, trama de puntos (semitono) o fluidos líquidos.', options: [{ label: 'Degradado suave', value: 'soft' }, { label: 'Semitono', value: 'halftone' }, { label: 'Líquido realista', value: 'liquid' }], defaultValue: 'soft' }),
         reactiveColors: fields.array(fields.text({ label: 'Color del logotipo (hex)' }), { label: 'Colores del logotipo que cambian con la paleta', description: 'El primero sigue al color elegido y el segundo al automático. Deben ser colores que existan en el SVG del logotipo.', itemLabel: (p) => p.value }),
+        manual: fields.checkbox({ label: 'Sección manual de marca', description: 'Muestra el manual de marca de Global Citizen (texto, mapa conceptual y mockups).' }),
         headerMarquee: fields.checkbox({ label: 'Cabecera con marquesina de logos', description: 'Usa los logos del carrusel en lugar de la imagen panorámica.' }),
         tones: fields.array(fields.text({ label: 'Color (hex)' }), { label: 'Colores de fondo (2)', description: 'Se ven mientras no hay imagen. Dos colores hex, ej. #1a1a1a.', itemLabel: (p) => p.value }),
 
