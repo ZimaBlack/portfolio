@@ -9,6 +9,8 @@ import TintPhoto from './TintPhoto.astro';
 const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
 const sketch = withBase('/works/colorada/manual/boceto.webp');
+const palettePhoto = withBase('/works/colorada/manual/paleta-foto.webp');
+const fixedLogo = withBase('/works/colorada/logo.svg');
 
 // Logo en línea: el pelo (#E03B7A) y el mechón (#6CE829) leen --c0 / --c1, que por defecto siguen al widget
 const inline = (file: string, label: string) => readFileSync(join(process.cwd(), 'public/works/colorada', file), 'utf8')
@@ -36,11 +38,9 @@ const t = es ? {
   charCap: 'Isologotipo · Character',
   wordCap: 'Logotipo con refuerzo gráfico',
   color: 'El color como variable',
-  colorA: 'Colorada está pensada para moverse entre paletas según lo que necesite: se alienta a modificar su paleta principal según evento, entorno o circunstancia. Probalo con los selectores de color de la derecha: esta página entera cambia con ellos.',
+  colorA: 'Colorada está pensada para moverse entre paletas según lo que necesite: se alienta a modificar su paleta principal según evento, entorno o circunstancia. Probalo con los selectores de color de la derecha: esta página entera cambia con ellos. La paleta base, en cambio, queda fija.',
   base: 'Paleta base',
   baseCap: 'Rosa y verde, el punto de partida del manual',
-  dark: 'Entorno oscuro',
-  darkA: 'Cuando el contorno y los contenedores de la marca pierden visibilidad, se emplea la sombra de color: gracias a la «ley de cierre» se conservan siempre las formas puras de la marca.',
   region: 'Variaciones de color de la marca',
 } : {
   kicker: 'Brand guidelines',
@@ -60,11 +60,9 @@ const t = es ? {
   charCap: 'Isologotype · Character',
   wordCap: 'Logotype with graphic reinforcement',
   color: 'Color as a variable',
-  colorA: 'Colorada is designed to move between palettes as needed: modifying its main palette by event, environment or circumstance is encouraged. Try it with the color pickers on the right: this whole page changes with them.',
+  colorA: 'Colorada is designed to move between palettes as needed: modifying its main palette by event, environment or circumstance is encouraged. Try it with the color pickers on the right: this whole page changes with them. The base palette, however, stays fixed.',
   base: 'Base palette',
   baseCap: 'Pink and green, the manual’s starting point',
-  dark: 'Dark environments',
-  darkA: 'When the brand’s outline and containers lose visibility, the color shadow is used: thanks to the “closing law” the pure forms of the brand are always preserved.',
   region: 'Brand color variations',
 };
 
@@ -117,23 +115,18 @@ const t = es ? {
     </div>
   </div>
 
-  <div class="wrap cm__color" data-reveal>
-    <h2 class="h2">{t.color}</h2>
-    <p class="cm__txt">{t.colorA}</p>
-    <div class="cm__base">
-      <span class="cm__sw" style="background:#E03B7A"></span><span class="cm__sw" style="background:#6CE829"></span>
-      <p class="muted"><strong>{t.base}</strong> · #E03B7A · #6CE829 — {t.baseCap}</p>
-    </div>
-  </div>
-
-  <div class="wrap cm__row cm__row--dark" data-reveal>
+  <div class="wrap cm__row cm__row--rev cm__color" data-reveal>
+    <figure class="cm__photo cm__photo--solo">
+      <img src={palettePhoto} alt={t.baseCap} loading="lazy" decoding="async" />
+    </figure>
     <div class="cm__side">
-      <h2 class="h2">{t.dark}</h2>
-      <p class="cm__txt">{t.darkA}</p>
-    </div>
-    <div class="cm__pair cm__pair--dark">
-      <div class="cm__logo cm__logo--shadow" set:html={character} />
-      <div class="cm__logo cm__logo--word cm__logo--shadow" set:html={wordmark} />
+      <h2 class="h2">{t.color}</h2>
+      <p class="cm__txt">{t.colorA}</p>
+      <img class="cm__fixed" src={fixedLogo} alt="Colorada" loading="lazy" decoding="async" />
+      <div class="cm__base">
+        <span class="cm__sw" style="background:#E03B7A"></span><span class="cm__sw" style="background:#6CE829"></span>
+        <p class="muted"><strong>{t.base}</strong> · #E03B7A · #6CE829 — {t.baseCap}</p>
+      </div>
     </div>
   </div>
 </section>
@@ -165,13 +158,10 @@ const t = es ? {
   .cm__pair .cm__logo { max-width: 17rem; margin-inline: auto; }
   .cm__pair .cm__logo--word { max-width: 21rem; }
   .cm__pair figcaption { text-align: center; }
-  .cm__color { display: grid; gap: 1.25rem; }
+  .cm__fixed { width: min(100%, 14rem); height: auto; margin-block: .5rem; }
   .cm__base { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
   .cm__base p { margin: 0 0 0 .5rem; font-size: .82rem; }
   .cm__sw { width: 1.6rem; height: 1.6rem; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
-  /* Entorno oscuro: la sombra de color mantiene las formas puras */
-  .cm__pair--dark { align-items: center; }
-  .cm__logo--shadow :global(svg) { filter: drop-shadow(.35rem .5rem 0 color-mix(in srgb, var(--c0) 85%, #000)); }
   @media (max-width: 860px) {
     .cm__row, .cm__row--sketch, .cm__pair { grid-template-columns: 1fr; }
     .cm__duo { grid-template-columns: 1fr 1fr; }
