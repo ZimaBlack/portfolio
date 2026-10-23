@@ -28,7 +28,7 @@ const t = es ? {
   photoCap: 'La marca tiñe la imagen: cambia los colores de la derecha',
   photo2Cap: 'Retrato teñido con los colores de la marca',
   tint: 'La marca tiñe la imagen',
-  tintA: 'Pelo y prenda toman los dos colores de la marca: el principal en el cabello, el acento en el mechón y la remera. Las formas se desenfocan y se funden con la foto, así que cualquier paleta que elijas se integra sin perder las luces y sombras originales.',
+  tintA: 'El cabello toma los dos colores de la marca: el principal en la melena y el acento en los mechones. Las formas se desenfocan y se funden con la foto, así que cualquier paleta que elijas se integra sin perder las luces y sombras originales.',
   sketchTxt: 'Todo parte de un trazo a lápiz: una cabeza que se acurruca, el flequillo como gesto y una mirada de reojo. La marca conserva esa actitud.',
   system: 'Un sistema variable',
   systemA: 'Colorada se apoya en dos aspectos icónicos: su personaje (Character) y su accesorio (Capsule), el conejo. Puede presentarse por cualquiera de los dos caminos; ante reducciones extremas, la cápsula es siempre la mejor opción.',
@@ -52,7 +52,7 @@ const t = es ? {
   photoCap: 'The brand tints the image: change the colors on the right',
   photo2Cap: 'Portrait tinted with the brand colors',
   tint: 'The brand tints the image',
-  tintA: 'Hair and garment take the brand’s two colors: the main one on the hair, the accent on the streak and the shirt. The shapes are blurred and blended into the photo, so any palette you pick integrates while keeping the original lights and shadows.',
+  tintA: 'The hair takes the brand’s two colors: the main one on the mane, the accent on the strands. The shapes are blurred and blended into the photo, so any palette you pick integrates while keeping the original lights and shadows.',
   sketchTxt: 'It all starts with a pencil line: a head curling up, the fringe as a gesture and a sideways glance. The brand keeps that attitude.',
   system: 'A variable system',
   systemA: 'Colorada rests on two iconic aspects: its character (Character) and its accessory (Capsule), the bunny. It can present itself through either path; in extreme reductions, the capsule is always the best option.',
@@ -96,10 +96,9 @@ const t = es ? {
   </div>
 
   <div class="wrap cm__row cm__row--rev" data-reveal>
-    <div class="cm__duo cm__duo--photos">
-      <figure class="cm__photo"><TintPhoto photo="/works/colorada/manual/foto-02.webp" shapes="/works/colorada/manual/foto-02.svg" alt={t.photo2Cap} ratio="1493 / 2000" blur={1.6} /></figure>
-      <figure class="cm__photo"><TintPhoto photo="/works/colorada/manual/foto-03.webp" shapes="/works/colorada/manual/foto-03.svg" alt={t.photo2Cap} ratio="1298 / 1718" blur={1.6} /></figure>
-    </div>
+    <figure class="cm__photo cm__photo--solo">
+      <TintPhoto photo="/works/colorada/manual/foto-03.webp" shapes="/works/colorada/manual/foto-03.svg" alt={t.photo2Cap} ratio="1298 / 1718" blur={1.6} />
+    </figure>
     <div class="cm__side">
       <h2 class="h2">{t.tint}</h2>
       <p class="cm__txt">{t.tintA}</p>
