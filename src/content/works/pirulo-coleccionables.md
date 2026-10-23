@@ -11,7 +11,9 @@ text:
   es: "Pirulo Coleccionables es una marca satélite de MTG Pirulo. El rediseño toma el pirulo de la mascota de la marca padre y lo convierte en un isotipo amable, con outline blanco y semitono, pensado para moverse entre colores, entornos y soportes."
   en: "Pirulo Coleccionables is a satellite brand of MTG Pirulo. The redesign takes the candy cane from the parent brand’s mascot and turns it into a friendly isotype, with a white outline and halftone, built to move across colors, environments and media."
 draft: false
-heroImage: /works/pirulo-coleccionables/bg
+heroLights: halftone
+logo: /works/pirulo-coleccionables/logo.svg
+mark: /works/pirulo-coleccionables/mark.svg
 manual: pirulo
 links:
   - { label: "Instagram", url: "https://www.instagram.com/pirulocoleccionables" }
