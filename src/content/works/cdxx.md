@@ -5,11 +5,11 @@ discipline: { es: "Branding", en: "Branding" }
 role: { es: "Identidad visual", en: "Visual identity" }
 badge: "pre-ia"
 summary:
-  es: "Identidad para una experiencia sensorial de chocolate artesanal."
-  en: "Identity for a sensory artisanal-chocolate experience."
+  es: "Dualidad fusionada: identidad para una experiencia sensorial de chocolate artesanal."
+  en: "Fused duality: identity for a sensory artisanal-chocolate experience."
 text:
-  es: "Un árbol de raíces micelares y circuitos, en oro sobre negro, con marmolado como recurso."
-  en: "A tree of mycelial roots and circuits, in gold over black, with marbling as a resource."
+  es: "Naturaleza y tecnología en un mismo símbolo: un árbol de raíces micelares que se extiende en circuitos."
+  en: "Nature and technology in one symbol: a tree with mycelial roots that extends into circuits."
 heroImage: /works/cdxx/bg
 manual: cdxx
 logo: /works/cdxx/logo.svg
