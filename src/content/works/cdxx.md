@@ -11,6 +11,7 @@ text:
   es: "Naturaleza y tecnología en un mismo símbolo: un árbol de raíces micelares que se extiende en circuitos."
   en: "Nature and technology in one symbol: a tree with mycelial roots that extends into circuits."
 heroImage: /works/cdxx/bg
+cover: /works/cdxx/cover.webp
 manual: cdxx
 logo: /works/cdxx/logo.svg
 mark: /works/cdxx/mark.svg

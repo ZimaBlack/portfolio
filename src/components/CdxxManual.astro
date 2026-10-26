@@ -25,7 +25,7 @@ const t = es ? {
   typeA: 'La tipografía refleja la dualidad del concepto. Lexend aporta claridad formal, accesibilidad y espacios abiertos. Como contrapeso, Krona One irrumpe con una geometría audaz y futurista, e inyecta dinamismo sin perder elegancia.',
   res: 'Recursos gráficos',
   resA: 'Lo fluido y lo irrepetible: la textura del papel marmolado es el recurso principal porque imita la sedosidad del chocolate derretido. Es orgánico, efímero y, al igual que cada pieza de chocolate artesanal, visualmente irrepetible.',
-  apps: 'Aplicaciones',
+  studio: 'Fotografías reales de estudio',
   social: 'Redes',
 } : {
   title: 'Fused duality: the design behind a sensory experience',
@@ -44,7 +44,7 @@ const t = es ? {
   typeA: 'The typography reflects the duality of the concept. Lexend brings formal clarity, accessibility and open spaces. As a counterweight, Krona One bursts in with a bold, futuristic geometry and injects dynamism without losing elegance.',
   res: 'Graphic resources',
   resA: 'The fluid and the unrepeatable: the texture of marbled paper is the main resource because it imitates the silkiness of melted chocolate. It is organic, ephemeral and, like every piece of artisanal chocolate, visually unrepeatable.',
-  apps: 'Applications',
+  studio: 'Real studio photography',
   social: 'Social',
 };
 
@@ -54,31 +54,40 @@ const colors = [
 ];
 ---
 <section class="cx" aria-label={es ? 'Identidad' : 'Identity'}>
-  <div class="wrap cx__row cx__row--cover" data-reveal>
-    <div class="cx__side">
-      <h2 class="h2">{t.title}</h2>
-      <p class="cx__txt">{t.introA}</p>
-      <p class="cx__txt">{t.introB}</p>
-    </div>
-    <figure class="cx__cover"><img src={img('portada')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
+  <div class="wrap cx__intro" data-reveal>
+    <h2 class="h2">{t.title}</h2>
+    <div class="cx__cols"><p class="cx__txt">{t.introA}</p><p class="cx__txt">{t.introB}</p></div>
   </div>
 
   <div class="wrap cx__row cx__row--rev" data-reveal>
-    <figure class="cx__art"><img src={img('badge')} alt={t.roots} loading="lazy" decoding="async" /></figure>
-    <div class="cx__side">
+    <div class="cx__col">
+      <figure class="cx__art"><img src={img('badge')} alt={t.roots} loading="lazy" decoding="async" /></figure>
+      <div class="cx__duo">
+        <figure><img src={img('pistacho')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
+        <figure><img src={img('oreo')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
+      </div>
+    </div>
+    <div class="cx__side cx__sticky">
       <h2 class="h2">{t.roots}</h2>
       <p class="cx__txt">{t.rootsA}</p>
     </div>
   </div>
 
-  <figure class="wrap cx__photo" data-reveal>
-    <img src={img('boceto')} alt={t.sketch} loading="lazy" decoding="async" />
-    <figcaption class="muted">{t.sketch}</figcaption>
-  </figure>
-
-  <div class="wrap cx__stack" data-reveal>
-    <figure><img class="cx__svg" src={svg('variantes')} alt={t.variants} loading="lazy" decoding="async" /><figcaption class="muted">{t.variants}</figcaption></figure>
-    <figure><img class="cx__svg" src={svg('reducciones')} alt={t.reduce} loading="lazy" decoding="async" /><figcaption class="muted">{t.reduce}</figcaption></figure>
+  <div class="wrap cx__row cx__row--study" data-reveal>
+    <figure class="cx__sketch">
+      <img src={img('boceto')} alt={t.sketch} loading="lazy" decoding="async" />
+      <figcaption class="muted">{t.sketch}</figcaption>
+    </figure>
+    <div class="cx__stack">
+      <figure class="cx__rv" data-rv>
+        <img class="cx__svg" src={svg('variantes')} alt={t.variants} loading="lazy" decoding="async" />
+        <figcaption class="muted">{t.variants}</figcaption>
+      </figure>
+      <figure class="cx__rv" data-rv>
+        <img class="cx__svg" src={svg('reducciones')} alt={t.reduce} loading="lazy" decoding="async" />
+        <figcaption class="muted">{t.reduce}</figcaption>
+      </figure>
+    </div>
   </div>
 
   <div class="wrap cx__row" data-reveal>
@@ -93,67 +102,90 @@ const colors = [
     </ul>
   </div>
 
-  <div class="wrap cx__side cx__type" data-reveal>
-    <h2 class="h2">{t.type}</h2>
-    <p class="cx__txt">{t.typeA}</p>
-  </div>
-
   <div class="cx__res" data-reveal style={`--m:url(${marble})`}>
-    <div class="wrap cx__side">
-      <h2 class="h2">{t.res}</h2>
-      <p class="cx__txt">{t.resA}</p>
+    <div class="wrap cx__row cx__row--res">
+      <div class="cx__side">
+        <h2 class="h2">{t.res}</h2>
+        <p class="cx__txt">{t.resA}</p>
+      </div>
+      <figure class="cx__box"><img src={img('caja')} alt={t.res} loading="lazy" decoding="async" /></figure>
     </div>
   </div>
 
-  <figure class="wrap cx__photo" data-reveal><img src={img('pack')} alt={t.res} loading="lazy" decoding="async" /></figure>
+  <figure class="wrap cx__pack" data-reveal><img src={img('pack')} alt={t.res} loading="lazy" decoding="async" /></figure>
 
-  <div class="wrap cx__apps" data-reveal>
-    <h2 class="h2">{t.apps}</h2>
-    <div class="cx__grid">
-      <figure><img src={img('caja')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
-      <figure><img src={img('pistacho')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
-      <figure><img src={img('oreo')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
-    </div>
-    <figure><img src={img('fotos')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
-  </div>
+  <figure class="wrap cx__photo" data-reveal>
+    <img src={img('fotos')} alt={t.studio} loading="lazy" decoding="async" />
+    <figcaption class="muted">{t.studio}</figcaption>
+  </figure>
 
   <div class="wrap cx__row cx__row--rev cx__row--ig" data-reveal>
-    <figure class="cx__ig"><img src={img('ig')} alt="Instagram" loading="lazy" decoding="async" /></figure>
+    <div class="cx__phone" role="img" aria-label="Instagram">
+      <i class="cx__notch"></i>
+      <img src={img('ig')} alt="" loading="lazy" decoding="async" />
+    </div>
     <div class="cx__side"><h2 class="h2">{t.social}</h2></div>
   </div>
 </section>
 
 <style>
-  .cx { --gold: #d6b56e; display: grid; gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(4rem, 8vw, 8rem); }
+  .cx { --gold: #d6b56e; display: grid; gap: clamp(5rem, 11vw, 11rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(5rem, 10vw, 10rem); }
   .cx figure { margin: 0; }
   .cx img { width: 100%; height: auto; display: block; }
   .cx figcaption { font-size: .8rem; padding-top: .75rem; }
-  .cx__txt { margin: 0; color: var(--muted); max-width: 40rem; }
-  .cx .h2 { margin-bottom: 1rem; }
-  .cx__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }
-  .cx__row--rev { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .cx__txt { margin: 0; color: var(--muted); max-width: 36rem; }
+  .cx .h2 { margin-bottom: 1.25rem; }
+  .cx__intro { display: grid; gap: 1.5rem; max-width: 62rem; }
+  .cx__cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); }
+  .cx__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(3rem, 8vw, 9rem); align-items: center; }
+  .cx__row--rev { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .cx__side { display: grid; gap: 1.25rem; align-content: start; }
-  .cx__cover { max-width: 26rem; justify-self: center; width: 100%; }
-  .cx__cover img, .cx__photo img, .cx__grid img, .cx__ig img { border-radius: 2px; }
-  /* Arte del isotipo (círculo oscuro): se difumina hacia los bordes para fundirse con la página */
-  .cx__art img { max-width: 30rem; margin-inline: auto; }
-  .cx__stack { display: grid; gap: clamp(2rem, 4vw, 4rem); }
-  .cx__svg { border-radius: 2px; }
-  .cx__pal { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+  .cx__sticky { align-self: center; }
+  .cx__col { display: grid; gap: clamp(1.25rem, 3vw, 2.5rem); justify-items: center; }
+  .cx__art { width: min(100%, 24rem); }
+  .cx__duo { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.75rem, 2vw, 1.5rem); width: min(100%, 30rem); }
+  .cx__duo img { aspect-ratio: 4 / 5; object-fit: cover; border-radius: 2px; }
+  .cx__sketch { max-width: 24rem; width: 100%; justify-self: center; }
+  .cx__stack { display: grid; gap: clamp(2rem, 4vw, 3.5rem); max-width: 28rem; }
+  .cx__sketch img, .cx__svg, .cx__photo img, .cx__pack img, .cx__box img { border-radius: 2px; }
+  /* Aparición fluida de los SVG: un velo de máscara que barre de izquierda a derecha, con desenfoque y leve escala */
+  @property --rv { syntax: '<number>'; inherits: false; initial-value: 0; }
+  .cx__rv .cx__svg { --rv: 0; opacity: 0; filter: blur(8px); transform: scale(.96); transform-origin: 50% 50%;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--rv) * 1% - 30%), transparent calc(var(--rv) * 1%)); mask-image: linear-gradient(90deg, #000 calc(var(--rv) * 1% - 30%), transparent calc(var(--rv) * 1%)); }
+  .cx__rv.is-in .cx__svg { opacity: 1; filter: blur(0); transform: none; --rv: 130; transition: --rv 2.6s cubic-bezier(.22, .8, .3, 1), opacity 1.2s ease, filter 1.6s ease, transform 2s var(--ease); }
+  .cx__rv figcaption { opacity: 0; transition: opacity 1s 1.6s ease; }
+  .cx__rv.is-in figcaption { opacity: 1; }
+  .cx__pal { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; justify-self: start; }
   .cx__pal li { display: flex; align-items: center; gap: 1.1rem; }
   .cx__pal span:last-child { display: grid; line-height: 1.35; }
   .cx__pal em { font-style: normal; font-size: .82rem; color: var(--muted); }
   .cx__dot { width: 3.2rem; aspect-ratio: 1; border-radius: 50%; flex: none; box-shadow: 0 0 0 1px var(--line); }
-  .cx__type { max-width: 62rem; }
-  /* Recurso visual: el marmolado de la portada asoma tras el texto */
-  .cx__res { padding-block: clamp(4rem, 8vw, 8rem); background: linear-gradient(90deg, var(--bg) 30%, color-mix(in srgb, var(--bg) 40%, transparent)), var(--m) center / cover; }
-  .cx__apps { display: grid; gap: 2rem; }
-  .cx__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); align-items: stretch; }
-  .cx__grid figure, .cx__grid img { height: 100%; }
-  .cx__grid img { object-fit: cover; }
-  .cx__ig { max-width: 18rem; justify-self: center; width: 100%; }
+  /* Recursos gráficos sobre el marmolado (el fondo fluido) */
+  .cx__res { padding-block: clamp(5rem, 10vw, 10rem); background: linear-gradient(90deg, var(--bg) 18%, color-mix(in srgb, var(--bg) 35%, transparent)), var(--m) center / cover; }
+  .cx__row--res { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .cx__box { max-width: 30rem; justify-self: center; width: 100%; filter: drop-shadow(0 30px 50px rgb(0 0 0 / .5)); }
+  .cx__pack { max-width: 62rem; }
+  .cx__photo { max-width: 62rem; }
+  /* Redes: la captura montada en un celular */
+  .cx__phone { position: relative; width: min(100%, 15rem); aspect-ratio: 9 / 18.5; justify-self: center; padding: .55rem; border-radius: 2.4rem; background: #0b0b0a; border: 1px solid color-mix(in srgb, var(--fg) 24%, transparent);
+    box-shadow: 0 30px 70px rgb(0 0 0 / .55), inset 0 0 0 2px #1d1d1b; overflow: hidden; }
+  .cx__phone img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 1.9rem; }
+  .cx__notch { position: absolute; top: 1rem; left: 50%; width: 28%; height: 1.05rem; margin-left: -14%; border-radius: 999px; background: #0b0b0a; z-index: 2; }
+  @media (prefers-reduced-motion: reduce) { .cx__rv .cx__svg { opacity: 1; filter: none; transform: none; -webkit-mask-image: none; mask-image: none; } .cx__rv figcaption { opacity: 1; } }
   @media (max-width: 860px) {
-    .cx__row, .cx__row--rev, .cx__grid { grid-template-columns: 1fr; }
-    .cx__art, .cx__cover { order: -1; }
+    .cx__row, .cx__row--rev, .cx__row--res, .cx__cols { grid-template-columns: 1fr; }
+    .cx__col { order: -1; }
+    .cx__row--ig .cx__phone { order: -1; }
   }
 </style>
+
+<script>
+  // Dispara la aparición de los SVG al entrar en pantalla
+  const wire = () => {
+    const els = document.querySelectorAll<HTMLElement>('[data-rv]:not([data-rv-ready])');
+    if (!els.length) return;
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }), { threshold: 0.35 });
+    els.forEach((el) => { el.dataset.rvReady = '1'; io.observe(el); });
+  };
+  document.addEventListener('astro:page-load', wire);
+</script>
