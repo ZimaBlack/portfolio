@@ -141,9 +141,9 @@ const colors = [
   .cx__row--rev { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .cx__side { display: grid; gap: 1.25rem; align-content: start; }
   .cx__sticky { align-self: center; }
-  .cx__col { display: grid; gap: clamp(1.25rem, 3vw, 2.5rem); justify-items: center; }
-  .cx__art { width: min(100%, 24rem); }
-  .cx__duo { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.75rem, 2vw, 1.5rem); width: min(100%, 30rem); }
+  .cx__col { display: grid; gap: clamp(1rem, 2vw, 1.5rem); }
+  .cx__art { width: 100%; }
+  .cx__duo { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.75rem, 2vw, 1.5rem); width: 100%; }
   .cx__duo img { aspect-ratio: 4 / 5; object-fit: cover; border-radius: 2px; }
   .cx__sketch { max-width: 24rem; width: 100%; justify-self: center; }
   .cx__stack { display: grid; gap: clamp(2rem, 4vw, 3.5rem); max-width: 28rem; }
@@ -163,9 +163,7 @@ const colors = [
   /* Recursos gráficos sobre el marmolado (el fondo fluido) */
   .cx__res { padding-block: clamp(5rem, 10vw, 10rem); background: linear-gradient(90deg, var(--bg) 18%, color-mix(in srgb, var(--bg) 35%, transparent)), var(--m) center / cover; }
   .cx__row--res { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .cx__box { max-width: 30rem; justify-self: center; width: 100%; filter: drop-shadow(0 30px 50px rgb(0 0 0 / .5)); }
-  .cx__pack { max-width: 62rem; }
-  .cx__photo { max-width: 62rem; }
+  .cx__box { width: 100%; filter: drop-shadow(0 30px 50px rgb(0 0 0 / .5)); }
   /* Redes: la captura montada en un celular */
   .cx__phone { position: relative; width: min(100%, 15rem); aspect-ratio: 9 / 18.5; justify-self: center; padding: .55rem; border-radius: 2.4rem; background: #0b0b0a; border: 1px solid color-mix(in srgb, var(--fg) 24%, transparent);
     box-shadow: 0 30px 70px rgb(0 0 0 / .55), inset 0 0 0 2px #1d1d1b; overflow: hidden; }

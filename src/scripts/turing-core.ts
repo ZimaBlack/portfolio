@@ -64,7 +64,7 @@ export class TuringSim {
     this.dpr = Math.min(2, devicePixelRatio || 1);
     this.w = r.width; this.h = r.height;
     this.canvas.width = Math.round(this.w * this.dpr); this.canvas.height = Math.round(this.h * this.dpr);
-    this.gw = Math.ceil(this.w / this.P.cell); this.gh = Math.ceil(this.h / this.P.cell);
+    this.gw = Math.max(1, Math.ceil(this.w / this.P.cell)); this.gh = Math.max(1, Math.ceil(this.h / this.P.cell)); // 1 como mínimo: con el lienzo sin medir (panel oculto) no debe fallar
     const n = this.gw * this.gh;
     this.U = new Float32Array(n).fill(1); this.V = new Float32Array(n); this.U2 = new Float32Array(n); this.V2 = new Float32Array(n);
     this.buf = document.createElement('canvas'); this.buf.width = this.gw; this.buf.height = this.gh;
