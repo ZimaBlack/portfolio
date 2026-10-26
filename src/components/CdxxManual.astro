@@ -59,35 +59,20 @@ const colors = [
     <div class="cx__cols"><p class="cx__txt">{t.introA}</p><p class="cx__txt">{t.introB}</p></div>
   </div>
 
-  <div class="wrap cx__row cx__row--rev" data-reveal>
-    <div class="cx__col">
-      <figure class="cx__art"><img src={img('badge')} alt={t.roots} loading="lazy" decoding="async" /></figure>
-      <div class="cx__duo">
-        <figure><img src={img('pistacho')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
-        <figure><img src={img('oreo')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
-      </div>
-    </div>
-    <div class="cx__side cx__sticky">
-      <h2 class="h2">{t.roots}</h2>
-      <p class="cx__txt">{t.rootsA}</p>
-    </div>
+  <figure class="wrap cx__sketch" data-reveal>
+    <img src={img('boceto')} alt={t.sketch} loading="lazy" decoding="async" />
+    <figcaption class="muted">{t.sketch}</figcaption>
+  </figure>
+
+  <div class="wrap cx__text" data-reveal>
+    <h2 class="h2">{t.roots}</h2>
+    <p class="cx__txt">{t.rootsA}</p>
   </div>
 
-  <div class="wrap cx__row cx__row--study" data-reveal>
-    <figure class="cx__sketch">
-      <img src={img('boceto')} alt={t.sketch} loading="lazy" decoding="async" />
-      <figcaption class="muted">{t.sketch}</figcaption>
-    </figure>
-    <div class="cx__stack">
-      <figure class="cx__rv" data-rv>
-        <img class="cx__svg" src={svg('variantes')} alt={t.variants} loading="lazy" decoding="async" />
-        <figcaption class="muted">{t.variants}</figcaption>
-      </figure>
-      <figure class="cx__rv" data-rv>
-        <img class="cx__svg" src={svg('reducciones')} alt={t.reduce} loading="lazy" decoding="async" />
-        <figcaption class="muted">{t.reduce}</figcaption>
-      </figure>
-    </div>
+  <div class="wrap cx__trio" data-reveal>
+    <figure class="cx__t cx__t--l"><img src={img('pistacho')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
+    <figure class="cx__t cx__t--c"><img src={img('badge')} alt={t.roots} loading="lazy" decoding="async" /></figure>
+    <figure class="cx__t cx__t--r"><img src={img('oreo')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
   </div>
 
   <div class="wrap cx__row" data-reveal>
@@ -102,6 +87,11 @@ const colors = [
     </ul>
   </div>
 
+  <figure class="wrap cx__center cx__rv" data-rv>
+    <img class="cx__svg cx__svg--var" src={svg('variantes')} alt={t.variants} loading="lazy" decoding="async" />
+    <figcaption class="muted">{t.variants}</figcaption>
+  </figure>
+
   <div class="cx__res" data-reveal style={`--m:url(${marble})`}>
     <div class="wrap cx__row cx__row--res">
       <div class="cx__side">
@@ -112,11 +102,16 @@ const colors = [
     </div>
   </div>
 
-  <figure class="wrap cx__pack" data-reveal><img src={img('pack')} alt={t.res} loading="lazy" decoding="async" /></figure>
+  <figure class="wrap cx__photo" data-reveal><img src={img('pack')} alt={t.res} loading="lazy" decoding="async" /></figure>
 
   <figure class="wrap cx__photo" data-reveal>
     <img src={img('fotos')} alt={t.studio} loading="lazy" decoding="async" />
     <figcaption class="muted">{t.studio}</figcaption>
+  </figure>
+
+  <figure class="wrap cx__center cx__rv" data-rv>
+    <img class="cx__svg cx__svg--red" src={svg('reducciones')} alt={t.reduce} loading="lazy" decoding="async" />
+    <figcaption class="muted">{t.reduce}</figcaption>
   </figure>
 
   <div class="wrap cx__row cx__row--rev cx__row--ig" data-reveal>
@@ -140,14 +135,19 @@ const colors = [
   .cx__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(3rem, 8vw, 9rem); align-items: center; }
   .cx__row--rev { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .cx__side { display: grid; gap: 1.25rem; align-content: start; }
-  .cx__sticky { align-self: center; }
-  .cx__col { display: grid; gap: clamp(1rem, 2vw, 1.5rem); }
-  .cx__art { width: 100%; }
-  .cx__duo { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.75rem, 2vw, 1.5rem); width: 100%; }
-  .cx__duo img { aspect-ratio: 4 / 5; object-fit: cover; border-radius: 2px; }
-  .cx__sketch { max-width: 24rem; width: 100%; justify-self: center; }
-  .cx__stack { display: grid; gap: clamp(2rem, 4vw, 3.5rem); max-width: 28rem; }
   .cx__sketch img, .cx__svg, .cx__photo img, .cx__pack img, .cx__box img { border-radius: 2px; }
+  .cx__text { display: grid; gap: 1.25rem; max-width: 46rem; }
+  .cx__center { display: grid; justify-items: center; text-align: center; }
+  .cx__sketch { display: grid; justify-items: center; }
+  .cx__sketch img { width: min(100%, 26rem); }
+  .cx__svg--var { width: min(100%, 26rem); }
+  .cx__svg--red { width: min(100%, 38rem); }
+  /* Trío: foto · isotipo · foto, con el isotipo montado entre las dos */
+  .cx__trio { display: flex; align-items: center; justify-content: center; }
+  .cx__t { flex: 1 1 0; min-width: 0; }
+  .cx__t img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 2px; }
+  .cx__t--c { flex: 0 0 38%; margin-inline: -9%; z-index: 2; }
+  .cx__t--c img { aspect-ratio: 1; object-fit: contain; border-radius: 50%; }
   /* Aparición fluida de los SVG: un velo de máscara que barre de izquierda a derecha, con desenfoque y leve escala */
   @property --rv { syntax: '<number>'; inherits: false; initial-value: 0; }
   .cx__rv .cx__svg { --rv: 0; opacity: 0; filter: blur(8px); transform: scale(.96); transform-origin: 50% 50%;
@@ -172,8 +172,7 @@ const colors = [
   @media (prefers-reduced-motion: reduce) { .cx__rv .cx__svg { opacity: 1; filter: none; transform: none; -webkit-mask-image: none; mask-image: none; } .cx__rv figcaption { opacity: 1; } }
   @media (max-width: 860px) {
     .cx__row, .cx__row--rev, .cx__row--res, .cx__cols { grid-template-columns: 1fr; }
-    .cx__col { order: -1; }
-    .cx__row--ig .cx__phone { order: -1; }
+      .cx__row--ig .cx__phone { order: -1; }
   }
 </style>
 
