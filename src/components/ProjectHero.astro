@@ -195,11 +195,12 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   .pjh[data-draw] .pjh__scene::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, transparent 55%, var(--bg) 100%); }
   .pjh__drawwrap { position: relative; width: min(84vw, 38rem); }
   :global(.pjh__draw) { width: 100%; height: auto; overflow: visible; }
-  :global(.dr-line) { fill: none; stroke: #998e59; stroke-width: 2.4; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: dr-trace 2.8s .4s cubic-bezier(.45, .05, .25, 1) forwards, dr-line-out 1s 2.7s ease forwards; }
-  :global(.dr-fill) { opacity: 0; animation: dr-in 1.5s 2.5s ease forwards; }
-  :global(.dr-tx) { opacity: 0; transform: translateY(12px); filter: blur(6px); animation: dr-tx 1s calc(3.3s + var(--i) * .09s) cubic-bezier(.22, .9, .28, 1) forwards; }
-  .pjh__sheen--draw { animation: pjh-sheen 1.8s 5.4s ease-out 1 both; }
-  .pjh[data-draw] .pjh__photo { animation: photo-in 2.8s 3.4s cubic-bezier(.3, .6, .3, 1) both; }
+  :global(.dr-line) { fill: none; stroke: #998e59; stroke-width: 2.4; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: dr-trace 1.7s .2s cubic-bezier(.45, .05, .25, 1) forwards, dr-line-out .7s 1.7s ease forwards; }
+  :global(.dr-fill) { opacity: 0; animation: dr-in 1s 1.5s ease forwards; }
+  :global(.dr-tx) { opacity: 0; transform: translateY(12px); filter: blur(6px); animation: dr-tx .7s calc(2.1s + var(--i) * .06s) cubic-bezier(.22, .9, .28, 1) forwards; }
+  .pjh__sheen--draw { animation: pjh-sheen 1.5s 3.5s ease-out 1 both; }
+  .pjh[data-draw] .pjh__photo { animation: photo-in 2s 2.1s cubic-bezier(.3, .6, .3, 1) both; }
+  @media (max-width: 760px) { .pjh__drawwrap { width: min(68vw, 24rem); } }
   @keyframes dr-trace { to { stroke-dashoffset: 0; } }
   @keyframes dr-line-out { to { opacity: 0; } }
   @keyframes dr-in { to { opacity: 1; } }

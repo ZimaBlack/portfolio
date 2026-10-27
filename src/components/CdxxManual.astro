@@ -69,7 +69,7 @@ const colors = [
   <div class="wrap cx__label" data-reveal>
     <h2 class="h2">{t.variants}</h2>
     <figure class="cx__rv" data-rv>
-      <div class="cx__fig"><img class="cx__svg" src={svg('variantes')} alt={t.variants} loading="lazy" decoding="async" /><span class="cx__shine" aria-hidden="true" style={`--logo:url(${svg('variantes')})`}></span></div>
+      <div class="cx__fig"><img class="cx__svg cx__svg--var" src={svg('variantes')} alt={t.variants} loading="lazy" decoding="async" /><span class="cx__shine" aria-hidden="true" style={`--logo:url(${svg('variantes')})`}></span></div>
     </figure>
   </div>
 
@@ -89,7 +89,7 @@ const colors = [
     </figure>
   </div>
 
-  <figure class="wrap cx__bleed" data-reveal><img src={img('recursos')} alt={t.res} loading="lazy" decoding="async" /></figure>
+  <figure class="wrap cx__bleed cx__bleed--box" data-reveal><img src={img('recursos')} alt={t.res} loading="lazy" decoding="async" /></figure>
 
   <div class="wrap cx__sec cx__over" data-reveal>
     <h2 class="h2">{t.res}</h2>
@@ -153,6 +153,14 @@ const colors = [
   @media (max-width: 860px) {
     .cx__cols, .cx__paltxt, .cx__label { grid-template-columns: 1fr; }
     .cx__pal { justify-self: start; text-align: left; }
+    /* Móvil: título de variantes centrado y logos más grandes (se recorta el margen lateral del SVG) */
+    .cx__label { justify-items: center; text-align: center; }
+    .cx__label .cx__rv { width: 100%; overflow: hidden; }
+    .cx__label .cx__svg--var { width: 200%; max-width: none; margin-inline: -50%; }
+    .cx__label .cx__shine { display: none; }
+    /* Móvil: el banner de la caja crece y se desplaza para dejar la caja centrada */
+    .cx__bleed--box { overflow: hidden; }
+    .cx__bleed--box img { width: 230%; max-width: none; margin-left: -106%; }
   }
 </style>
 
