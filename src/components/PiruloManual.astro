@@ -100,6 +100,9 @@ const bgs = ['#551113', '#1D2443'];
 </section>
 
 <style>
+  /* Contenedor común: el contenido vive en un ancho centrado (72 rem), alineado con el encabezado */
+  .pr > .wrap { max-width: 72rem; }
+  .pr > figure.wrap { margin-inline: auto; }
   .pr { --red: #d11126; display: grid; gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(4rem, 8vw, 8rem); }
   .pr figure { margin: 0; }
   .pr img { width: 100%; height: auto; display: block; }

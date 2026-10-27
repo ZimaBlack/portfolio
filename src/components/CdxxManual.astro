@@ -91,7 +91,7 @@ const colors = [
 
   <figure class="wrap cx__bleed" data-reveal><img src={img('recursos')} alt={t.res} loading="lazy" decoding="async" /></figure>
 
-  <div class="wrap cx__sec" data-reveal>
+  <div class="wrap cx__sec cx__over" data-reveal>
     <h2 class="h2">{t.res}</h2>
     <p class="cx__txt">{t.resA}</p>
   </div>
@@ -123,7 +123,7 @@ const colors = [
   .cx__pal { list-style: none; margin: 0; padding: 0; display: grid; gap: .3rem; justify-self: end; text-align: right; font-size: .85rem; }
   .cx__pal em { font-style: normal; color: var(--muted); }
   .cx__roots { display: grid; gap: 1.25rem; max-width: 72rem; }
-  .cx__label { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: center; }
+  .cx__label { display: grid; grid-template-columns: minmax(0, .7fr) minmax(0, 3.2fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: center; }
   /* Contenedor: todo el contenido del proyecto vive en un ancho de lectura centrado; solo las imágenes con el patrón fluido van de borde a borde */
   .cx > .wrap { max-width: 72rem; }
   .cx > figure.wrap:not(.cx__bleed) { margin-inline: auto; }
@@ -131,6 +131,8 @@ const colors = [
   .cx__full figcaption { text-align: center; }
   .cx__bleed { width: 100vw; max-width: none !important; margin-inline: calc(50% - 50vw); padding: 0; }
   .cx__bleed img { border-radius: 0; }
+  /* El texto de recursos sube y se monta apenas sobre el borde inferior de la imagen */
+  .cx__over { margin-top: calc(-1 * clamp(4rem, 9vw, 9rem)); position: relative; z-index: 2; border-top: 0; text-shadow: 0 2px 24px rgb(0 0 0 / .8); }
   .cx__trio { display: grid; justify-items: center; }
   .cx__trio img { width: 100%; }
   .cx__end { display: grid; place-items: center; }

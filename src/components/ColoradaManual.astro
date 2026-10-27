@@ -122,6 +122,9 @@ const t = es ? {
 </section>
 
 <style>
+  /* Contenedor común: el contenido vive en un ancho centrado (72 rem), alineado con el encabezado */
+  .cm > .wrap { max-width: 72rem; }
+  .cm > figure.wrap { margin-inline: auto; }
   .cm { --c0: var(--pw-0, #e03b7a); --c1: var(--pw-1, #6ce829); display: grid; gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(4rem, 8vw, 8rem); }
   .cm figure { margin: 0; }
   .cm :global(.wrap) { padding-right: max(var(--gutter), 5.5rem); } /* deja libre el borde donde va el widget de color */

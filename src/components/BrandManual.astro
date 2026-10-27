@@ -157,6 +157,9 @@ const rows: { b: boolean; chips: Chip[] }[] = [
 </section>
 
 <style>
+  /* Contenedor común: el contenido vive en un ancho centrado (72 rem), alineado con el encabezado */
+  .gcm > .wrap { max-width: 72rem; }
+  .gcm > figure.wrap { margin-inline: auto; }
   .gcm { display: grid; gap: clamp(3rem, 7vw, 7rem); padding-bottom: clamp(3rem, 6vw, 6rem); --gc: #5db98a; }
   .gcm img { width: 100%; height: auto; display: block; }
   .gcm figure { margin: 0; }

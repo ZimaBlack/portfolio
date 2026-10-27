@@ -191,6 +191,8 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   @keyframes glass-turn { from { transform: rotateY(0deg); opacity: 1; } 70% { opacity: .6; } to { transform: rotateY(90deg); opacity: 0; } }
   @keyframes logo-turn { from { opacity: 0; transform: rotateY(-90deg) scale(.94); } 40% { opacity: .5; } to { opacity: 1; transform: none; } }
   /* ── Dibujar (CDXX): contorno del árbol → relleno → letras; el fondo entra desde el desenfoque cuando el árbol se llena */
+  /* Degradado a negro hacia abajo: el hero se funde con el resto de la página */
+  .pjh[data-draw] .pjh__scene::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, transparent 55%, var(--bg) 100%); }
   .pjh__drawwrap { position: relative; width: min(84vw, 38rem); }
   :global(.pjh__draw) { width: 100%; height: auto; overflow: visible; }
   :global(.dr-line) { fill: none; stroke: #998e59; stroke-width: 2.4; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: dr-trace 2.8s .4s cubic-bezier(.45, .05, .25, 1) forwards, dr-line-out 1s 2.7s ease forwards; }

@@ -136,6 +136,9 @@ const t = es ? {
 </section>
 
 <style>
+  /* Contenedor común: el contenido vive en un ancho centrado (72 rem), alineado con el encabezado */
+  .om > .wrap { max-width: 72rem; }
+  .om > figure.wrap { margin-inline: auto; }
   .om { --gold: #e3d0a6; display: grid; gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(4rem, 8vw, 8rem); }
   .om figure { margin: 0; }
   .om img { width: 100%; height: auto; display: block; }
