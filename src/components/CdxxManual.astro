@@ -138,6 +138,10 @@ const colors = [
   .cx__end { display: grid; place-items: center; }
   .cx__end img { width: clamp(6rem, 12vw, 9rem); }
   .cx__fig { position: relative; }
+  /* Escritorio: los sellos de variantes crecen (se recorta el margen vacío del SVG) */
+  .cx__label .cx__rv { overflow: hidden; }
+  .cx__label .cx__svg--var { width: 150%; max-width: none; margin-inline: -25%; }
+  .cx__label .cx__shine { display: none; }
   /* Brillo (el de la marquesina de logos): una banda diagonal que cruza el SVG cuando ya apareció */
   .cx__shine { position: absolute; inset: 0; pointer-events: none; opacity: 0; mix-blend-mode: overlay;
     -webkit-mask: var(--logo) center / 100% 100% no-repeat; mask: var(--logo) center / 100% 100% no-repeat;
