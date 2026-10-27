@@ -96,7 +96,7 @@ const colors = [
     <p class="cx__txt">{t.resA}</p>
   </div>
 
-  <figure class="wrap cx__full" data-reveal><img src={img('trio')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
+  <figure class="wrap cx__trio" data-reveal><img src={img('trio')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
 
   <figure class="wrap cx__full" data-reveal><img src={img('barra')} alt="Barra Gold" loading="lazy" decoding="async" /></figure>
 
@@ -124,7 +124,12 @@ const colors = [
   .cx__pal em { font-style: normal; color: var(--muted); }
   .cx__roots { display: grid; gap: 1.25rem; justify-items: center; text-align: center; max-width: 50rem; }
   .cx__label { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: center; }
-  .cx__full img { border-radius: 2px; }
+  /* Imágenes al ancho máximo: de borde a borde de la pantalla, centradas */
+  .cx__full { width: 100vw; max-width: none; margin-inline: calc(50% - 50vw); padding: 0; }
+  .cx__full img { border-radius: 0; }
+  .cx__full figcaption { text-align: center; }
+  .cx__trio { display: grid; justify-items: center; }
+  .cx__trio img { width: 100%; max-width: var(--max); }
   .cx__end { display: grid; place-items: center; }
   .cx__end img { width: clamp(6rem, 12vw, 9rem); }
   .cx__fig { position: relative; }
