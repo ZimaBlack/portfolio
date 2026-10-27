@@ -76,7 +76,7 @@ const alt = lang === 'es' ? 'en' : 'es';
 <Base lang={lang} section="works" title={d.title} description={loc(d.summary, lang)}
   altHref={paths.work(alt, work.id)} esHref={paths.work('es', work.id)} enHref={paths.work('en', work.id)}>
   <article data-pw-scope={d.widget === 'palette' ? '' : undefined} class:list={{ 'is-pal': d.widget === 'palette' }} style={d.widget === 'palette' ? `--ga:${d.tones[1]};--gb:${d.tones[0]};--ax:36%;--ay:42%;--bx:64%;--by:58%;` : undefined}>
-    {(d.logo || d.heroPattern || d.heroImage || d.heroLights !== 'soft') && <ProjectHero logo={d.logo ?? ''} mark={d.mark} title={d.title} tones={d.tones} reactive={d.widget === 'palette' ? d.reactiveColors : []} halftone={d.heroLights === 'halftone'} liquid={d.heroLights === 'liquid'} assemble={d.heroAnimation === 'assemble'} ornament={d.ornament} pattern={d.heroPattern} photo={d.heroImage} glass={d.heroAnimation === 'glass'} />}
+    {(d.logo || d.heroPattern || d.heroImage || d.heroLights !== 'soft') && <ProjectHero logo={d.logo ?? ''} mark={d.mark} title={d.title} tones={d.tones} reactive={d.widget === 'palette' ? d.reactiveColors : []} halftone={d.heroLights === 'halftone'} liquid={d.heroLights === 'liquid'} assemble={d.heroAnimation === 'assemble'} ornament={d.ornament} pattern={d.heroPattern} photo={d.heroImage} glass={d.heroAnimation === 'glass'} draw={d.heroAnimation === 'draw'} />}
     <header class="wrap intro">
       <p class="eyebrow" data-hero><a class="link" href={paths.works(lang)}>{c.works.back}</a> · {loc(d.discipline, lang)}</p>
       {d.headerMarquee && marqueeItems.length > 0 && <div class="mq-bleed" data-hero><Marquee items={marqueeItems} /></div>}

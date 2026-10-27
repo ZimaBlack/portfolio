@@ -15,7 +15,7 @@ const t = es ? {
   roots: 'Raíces, hifas y circuitos',
   rootsA: 'El símbolo central es un árbol que representa crecimiento orgánico. Sus raíces se transforman en conexiones micelares y se extienden hacia patrones geométricos que evocan circuitos neuronales, simbolizando la expansión del pensamiento.',
   sketch: 'Boceto del isotipo',
-  variants: 'Variantes',
+  variants: 'Variantes de aplicación',
   reduce: 'Reducciones',
   palette: 'Paleta cromática: profundidad y sofisticación',
   paletteA: 'Los colores son funcionales al concepto.',
@@ -23,7 +23,7 @@ const t = es ? {
   paletteC: 'Wine Cream aporta serenidad y equilibra la intensidad gráfica de la marca.',
   type: 'Tipografía',
   typeA: 'La tipografía refleja la dualidad del concepto. Lexend aporta claridad formal, accesibilidad y espacios abiertos. Como contrapeso, Krona One irrumpe con una geometría audaz y futurista, e inyecta dinamismo sin perder elegancia.',
-  res: 'Recursos gráficos',
+  res: 'Recursos y aplicaciones',
   resA: 'Lo fluido y lo irrepetible: la textura del papel marmolado es el recurso principal porque imita la sedosidad del chocolate derretido. Es orgánico, efímero y, al igual que cada pieza de chocolate artesanal, visualmente irrepetible.',
   studio: 'Fotografías reales de estudio',
   social: 'Redes',
@@ -34,7 +34,7 @@ const t = es ? {
   roots: 'Roots, hyphae and circuits',
   rootsA: 'The central symbol is a tree that stands for organic growth. Its roots turn into mycelial connections and extend into geometric patterns that evoke neural circuits, symbolizing the expansion of thought.',
   sketch: 'Isotype sketch',
-  variants: 'Variants',
+  variants: 'Application variants',
   reduce: 'Reductions',
   palette: 'Color palette: depth and sophistication',
   paletteA: 'The colors serve the concept.',
@@ -42,7 +42,7 @@ const t = es ? {
   paletteC: 'Wine Cream brings serenity and balances the brand’s graphic intensity.',
   type: 'Typography',
   typeA: 'The typography reflects the duality of the concept. Lexend brings formal clarity, accessibility and open spaces. As a counterweight, Krona One bursts in with a bold, futuristic geometry and injects dynamism without losing elegance.',
-  res: 'Graphic resources',
+  res: 'Resources and applications',
   resA: 'The fluid and the unrepeatable: the texture of marbled paper is the main resource because it imitates the silkiness of melted chocolate. It is organic, ephemeral and, like every piece of artisanal chocolate, visually unrepeatable.',
   studio: 'Real studio photography',
   social: 'Social',
@@ -54,125 +54,95 @@ const colors = [
 ];
 ---
 <section class="cx" aria-label={es ? 'Identidad' : 'Identity'}>
-  <div class="wrap cx__intro" data-reveal>
+  <div class="wrap cx__sec" data-reveal>
     <h2 class="h2">{t.title}</h2>
     <div class="cx__cols"><p class="cx__txt">{t.introA}</p><p class="cx__txt">{t.introB}</p></div>
   </div>
 
-  <figure class="wrap cx__sketch" data-reveal>
-    <img src={img('boceto')} alt={t.sketch} loading="lazy" decoding="async" />
-    <figcaption class="muted">{t.sketch}</figcaption>
-  </figure>
+  <figure class="wrap cx__full" data-reveal><img src={img('grilla')} alt={t.roots} loading="lazy" decoding="async" /></figure>
 
-  <div class="wrap cx__text" data-reveal>
+  <div class="wrap cx__roots" data-reveal>
     <h2 class="h2">{t.roots}</h2>
     <p class="cx__txt">{t.rootsA}</p>
   </div>
 
-  <div class="wrap cx__trio" data-reveal>
-    <figure class="cx__t cx__t--l"><img src={img('pistacho')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
-    <figure class="cx__t cx__t--c"><img src={img('badge')} alt={t.roots} loading="lazy" decoding="async" /></figure>
-    <figure class="cx__t cx__t--r"><img src={img('oreo')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
+  <div class="wrap cx__label" data-reveal>
+    <h2 class="h2">{t.variants}</h2>
+    <figure class="cx__rv" data-rv>
+      <div class="cx__fig"><img class="cx__svg" src={svg('variantes')} alt={t.variants} loading="lazy" decoding="async" /><span class="cx__shine" aria-hidden="true" style={`--logo:url(${svg('variantes')})`}></span></div>
+    </figure>
   </div>
 
-  <div class="wrap cx__row" data-reveal>
-    <div class="cx__side">
-      <h2 class="h2">{t.palette}</h2>
-      <p class="cx__txt">{t.paletteA}</p>
-      <p class="cx__txt">{t.paletteB}</p>
-      <p class="cx__txt">{t.paletteC}</p>
-    </div>
-    <ul class="cx__pal">
-      {colors.map((c) => <li><span class="cx__dot" style={`background:${c.hex}`}></span><span><strong>{c.n}</strong><em>{c.hex}</em></span></li>)}
-    </ul>
-  </div>
-
-  <figure class="wrap cx__center cx__rv" data-rv>
-    <img class="cx__svg cx__svg--var" src={svg('variantes')} alt={t.variants} loading="lazy" decoding="async" />
-    <figcaption class="muted">{t.variants}</figcaption>
-  </figure>
-
-  <div class="cx__res" data-reveal style={`--m:url(${marble})`}>
-    <div class="wrap cx__row cx__row--res">
-      <div class="cx__side">
-        <h2 class="h2">{t.res}</h2>
-        <p class="cx__txt">{t.resA}</p>
-      </div>
-      <figure class="cx__box"><img src={img('caja')} alt={t.res} loading="lazy" decoding="async" /></figure>
+  <div class="wrap cx__sec" data-reveal>
+    <h2 class="h2">{t.palette}</h2>
+    <div class="cx__paltxt">
+      <div class="cx__side"><p class="cx__txt">{t.paletteA}</p><p class="cx__txt">{t.paletteB}</p><p class="cx__txt">{t.paletteC}</p></div>
+      <ul class="cx__pal">{colors.map((c) => <li><strong>{c.n}</strong> <em>{c.hex}</em></li>)}</ul>
     </div>
   </div>
+  <figure class="wrap cx__full" data-reveal><img src={img('paleta')} alt={t.palette} loading="lazy" decoding="async" /></figure>
 
-  <figure class="wrap cx__photo" data-reveal><img src={img('pack')} alt={t.res} loading="lazy" decoding="async" /></figure>
+  <div class="wrap cx__label" data-reveal>
+    <h2 class="h2">{t.reduce}</h2>
+    <figure class="cx__rv" data-rv>
+      <div class="cx__fig"><img class="cx__svg" src={svg('reducciones')} alt={t.reduce} loading="lazy" decoding="async" /><span class="cx__shine" aria-hidden="true" style={`--logo:url(${svg('reducciones')})`}></span></div>
+    </figure>
+  </div>
 
-  <figure class="wrap cx__photo" data-reveal>
-    <img src={img('fotos')} alt={t.studio} loading="lazy" decoding="async" />
+  <figure class="wrap cx__full" data-reveal><img src={img('recursos')} alt={t.res} loading="lazy" decoding="async" /></figure>
+
+  <div class="wrap cx__sec" data-reveal>
+    <h2 class="h2">{t.res}</h2>
+    <p class="cx__txt">{t.resA}</p>
+  </div>
+
+  <figure class="wrap cx__full" data-reveal><img src={img('trio')} alt="Conexión CDXX" loading="lazy" decoding="async" /></figure>
+
+  <figure class="wrap cx__full" data-reveal><img src={img('barra')} alt="Barra Gold" loading="lazy" decoding="async" /></figure>
+
+  <figure class="wrap cx__full" data-reveal>
+    <img src={img('estudio')} alt={t.studio} loading="lazy" decoding="async" />
     <figcaption class="muted">{t.studio}</figcaption>
   </figure>
 
-  <figure class="wrap cx__center cx__rv" data-rv>
-    <img class="cx__svg cx__svg--red" src={svg('reducciones')} alt={t.reduce} loading="lazy" decoding="async" />
-    <figcaption class="muted">{t.reduce}</figcaption>
-  </figure>
-
-  <div class="wrap cx__row cx__row--rev cx__row--ig" data-reveal>
-    <div class="cx__phone" role="img" aria-label="Instagram">
-      <i class="cx__notch"></i>
-      <img src={img('ig')} alt="" loading="lazy" decoding="async" />
-    </div>
-    <div class="cx__side"><h2 class="h2">{t.social}</h2></div>
-  </div>
+  <div class="wrap cx__end" data-reveal><img src={withBase('/works/cdxx/tree.svg')} alt="" loading="lazy" decoding="async" /></div>
 </section>
 
 <style>
-  .cx { --gold: #d6b56e; display: grid; gap: clamp(5rem, 11vw, 11rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(5rem, 10vw, 10rem); }
+  .cx { --gold: #d6b56e; display: grid; gap: clamp(4rem, 8vw, 8rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(5rem, 9vw, 9rem); }
   .cx figure { margin: 0; }
   .cx img { width: 100%; height: auto; display: block; }
   .cx figcaption { font-size: .8rem; padding-top: .75rem; }
-  .cx__txt { margin: 0; color: var(--muted); max-width: 36rem; }
-  .cx .h2 { margin-bottom: 1.25rem; }
-  .cx__intro { display: grid; gap: 1.5rem; max-width: 62rem; }
+  .cx__txt { margin: 0; color: var(--muted); max-width: 44rem; }
+  .cx .h2 { margin: 0; }
+  /* Sección: filete superior, título y texto, como en la maqueta */
+  .cx__sec { display: grid; gap: 1.5rem; padding-top: clamp(1.5rem, 3vw, 2.5rem); border-top: 1px solid var(--line); }
   .cx__cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); }
-  .cx__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(3rem, 8vw, 9rem); align-items: center; }
-  .cx__row--rev { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .cx__side { display: grid; gap: 1.25rem; align-content: start; }
-  .cx__sketch img, .cx__svg, .cx__photo img, .cx__pack img, .cx__box img { border-radius: 2px; }
-  .cx__text { display: grid; gap: 1.25rem; max-width: 46rem; }
-  .cx__center { display: grid; justify-items: center; text-align: center; }
-  .cx__sketch { display: grid; justify-items: center; }
-  .cx__sketch img { width: min(100%, 26rem); }
-  .cx__svg--var { width: min(100%, 26rem); }
-  .cx__svg--red { width: min(100%, 38rem); }
-  /* Trío: foto · isotipo · foto, con el isotipo montado entre las dos */
-  .cx__trio { display: flex; align-items: center; justify-content: center; }
-  .cx__t { flex: 1 1 0; min-width: 0; }
-  .cx__t img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 2px; }
-  .cx__t--c { flex: 0 0 38%; margin-inline: -9%; z-index: 2; }
-  .cx__t--c img { aspect-ratio: 1; object-fit: contain; border-radius: 50%; }
+  .cx__side { display: grid; gap: 1rem; align-content: start; }
+  .cx__paltxt { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 2rem; align-items: start; }
+  .cx__pal { list-style: none; margin: 0; padding: 0; display: grid; gap: .3rem; justify-self: end; text-align: right; font-size: .85rem; }
+  .cx__pal em { font-style: normal; color: var(--muted); }
+  .cx__roots { display: grid; gap: 1.25rem; justify-items: center; text-align: center; max-width: 50rem; }
+  .cx__label { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: center; }
+  .cx__full img { border-radius: 2px; }
+  .cx__end { display: grid; place-items: center; }
+  .cx__end img { width: clamp(6rem, 12vw, 9rem); }
+  .cx__fig { position: relative; }
+  /* Brillo (el de la marquesina de logos): una banda diagonal que cruza el SVG cuando ya apareció */
+  .cx__shine { position: absolute; inset: 0; pointer-events: none; opacity: 0; mix-blend-mode: overlay;
+    -webkit-mask: var(--logo) center / 100% 100% no-repeat; mask: var(--logo) center / 100% 100% no-repeat;
+    background: linear-gradient(115deg, transparent 38%, rgb(255 255 255 / .95) 50%, transparent 62%) 130% 0 / 260% 100% no-repeat; }
+  .cx__rv.is-in .cx__shine { animation: cx-shine 1.8s 2.2s ease-out 1 both; }
+  @keyframes cx-shine { 0% { opacity: 0; background-position: 130% 0; } 15% { opacity: .9; } 85% { opacity: .9; } 100% { opacity: 0; background-position: -30% 0; } }
   /* Aparición fluida de los SVG: un velo de máscara que barre de izquierda a derecha, con desenfoque y leve escala */
   @property --rv { syntax: '<number>'; inherits: false; initial-value: 0; }
   .cx__rv .cx__svg { --rv: 0; opacity: 0; filter: blur(8px); transform: scale(.96); transform-origin: 50% 50%;
     -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--rv) * 1% - 30%), transparent calc(var(--rv) * 1%)); mask-image: linear-gradient(90deg, #000 calc(var(--rv) * 1% - 30%), transparent calc(var(--rv) * 1%)); }
   .cx__rv.is-in .cx__svg { opacity: 1; filter: blur(0); transform: none; --rv: 130; transition: --rv 2.6s cubic-bezier(.22, .8, .3, 1), opacity 1.2s ease, filter 1.6s ease, transform 2s var(--ease); }
-  .cx__rv figcaption { opacity: 0; transition: opacity 1s 1.6s ease; }
-  .cx__rv.is-in figcaption { opacity: 1; }
-  .cx__pal { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; justify-self: start; }
-  .cx__pal li { display: flex; align-items: center; gap: 1.1rem; }
-  .cx__pal span:last-child { display: grid; line-height: 1.35; }
-  .cx__pal em { font-style: normal; font-size: .82rem; color: var(--muted); }
-  .cx__dot { width: 3.2rem; aspect-ratio: 1; border-radius: 50%; flex: none; box-shadow: 0 0 0 1px var(--line); }
-  /* Recursos gráficos sobre el marmolado (el fondo fluido) */
-  .cx__res { padding-block: clamp(5rem, 10vw, 10rem); background: linear-gradient(90deg, var(--bg) 18%, color-mix(in srgb, var(--bg) 35%, transparent)), var(--m) center / cover; }
-  .cx__row--res { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .cx__box { width: 100%; filter: drop-shadow(0 30px 50px rgb(0 0 0 / .5)); }
-  /* Redes: la captura montada en un celular */
-  .cx__phone { position: relative; width: min(100%, 15rem); aspect-ratio: 9 / 18.5; justify-self: center; padding: .55rem; border-radius: 2.4rem; background: #0b0b0a; border: 1px solid color-mix(in srgb, var(--fg) 24%, transparent);
-    box-shadow: 0 30px 70px rgb(0 0 0 / .55), inset 0 0 0 2px #1d1d1b; overflow: hidden; }
-  .cx__phone img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 1.9rem; }
-  .cx__notch { position: absolute; top: 1rem; left: 50%; width: 28%; height: 1.05rem; margin-left: -14%; border-radius: 999px; background: #0b0b0a; z-index: 2; }
-  @media (prefers-reduced-motion: reduce) { .cx__rv .cx__svg { opacity: 1; filter: none; transform: none; -webkit-mask-image: none; mask-image: none; } .cx__rv figcaption { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .cx__rv .cx__svg { opacity: 1; filter: none; transform: none; -webkit-mask-image: none; mask-image: none; } .cx__shine { display: none; } }
   @media (max-width: 860px) {
-    .cx__row, .cx__row--rev, .cx__row--res, .cx__cols { grid-template-columns: 1fr; }
-      .cx__row--ig .cx__phone { order: -1; }
+    .cx__cols, .cx__paltxt, .cx__label { grid-template-columns: 1fr; }
+    .cx__pal { justify-self: start; text-align: left; }
   }
 </style>
 
