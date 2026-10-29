@@ -7,7 +7,11 @@ import { withBase, type Lang } from '../lib/i18n';
 import { site } from '../data/site';
 const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
-const shot = (n: string) => withBase(`/works/novapsi/shots/${n}.webp`);
+import boxes from '../data/novapsi-boxes.json';
+// Las capturas existen en los dos idiomas (la interfaz del sistema es en español: las de inglés son la misma pantalla con los textos traducidos)
+const shot = (n: string) => withBase(`/works/novapsi/shots/${n}${lang === 'en' ? '-en' : ''}.webp`);
+// Zona clave de cada captura (la que marca el Tour del sistema), en fracción de la imagen
+const hl = (n: string) => { const b = (boxes as Record<string, number[]>)[n]; if (!b) return ''; const x = Math.max(0, b[0]), y = Math.max(0, b[1]); const w = Math.min(1 - x, b[2]), h = Math.min(1 - y, b[3]); return `left:${(x * 100).toFixed(2)}%;top:${(y * 100).toFixed(2)}%;width:${(w * 100).toFixed(2)}%;height:${(h * 100).toFixed(2)}%`; };
 const mk = (n: string) => withBase(`/works/novapsi/marca/${n}.svg`);
 const brand = (n: string) => withBase(`/works/novapsi/brands/${n}.svg`);
 
@@ -154,7 +158,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
       <div class="np__dev">
         <div class="np__scr">
           <div class="np__boot"><i></i><i></i><img src={mk('favicon-light')} alt="" /></div>
-          <img class="np__shotimg" src={shot('m1')} alt={t.recep} loading="lazy" decoding="async" />
+          <div class="np__shotimg"><img src={shot('m1')} alt={t.recep} loading="lazy" decoding="async" /><i class="np__hl" style={hl('m1')} aria-hidden="true"></i></div>
         </div>
         <span class="np__notch"></span>
       </div>
@@ -176,7 +180,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
     <ol class="np__phones" data-rv>
       {t.ps.map(([h, p], i) => (
         <li style={`--i:${i}`}>
-          <div class="np__phone"><img src={shot(phoneShots[i])} alt={h} loading="lazy" decoding="async" /></div>
+          <div class="np__phone"><div class="np__hlwrap"><img src={shot(phoneShots[i])} alt={h} loading="lazy" decoding="async" /><i class="np__hl" style={hl(phoneShots[i])} aria-hidden="true"></i></div></div>
           <div class="np__cap"><b>{i + 1}</b><div><strong>{h}</strong><span>{p}</span></div></div>
         </li>
       ))}
@@ -189,7 +193,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
     <p class="np__txt">{t.proA}</p>
     <div class="np__wide">
       {t.pcap.map(([k, h, p]) => (
-        <figure class="np__shot"><div class="np__scroll"><img src={shot(k)} alt={h} loading="lazy" decoding="async" /></div><figcaption><strong>{h}</strong><span>{p}</span></figcaption></figure>
+        <figure class="np__shot"><div class="np__scroll"><div class="np__hlwrap"><img src={shot(k)} alt={h} loading="lazy" decoding="async" /><i class="np__hl" style={hl(k)} aria-hidden="true"></i></div></div><figcaption><strong>{h}</strong><span>{p}</span></figcaption></figure>
       ))}
     </div>
   </div>
@@ -198,7 +202,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   <div class="wrap np__sec" data-reveal>
     <div class="np__head"><span class="np__n">03</span><h2 class="h2">{t.tech}</h2></div>
     <p class="np__txt">{t.techA}</p>
-    <figure class="np__shot"><div class="np__scroll"><img src={shot('tecnico')} alt={t.tcap} loading="lazy" decoding="async" /></div><figcaption><span>{t.tcap}</span></figcaption></figure>
+    <figure class="np__shot"><div class="np__scroll"><div class="np__hlwrap"><img src={shot('tecnico')} alt={t.tcap} loading="lazy" decoding="async" /><i class="np__hl" style={hl('tecnico')} aria-hidden="true"></i></div></div><figcaption><span>{t.tcap}</span></figcaption></figure>
   </div>
 
   <!-- Conexiones -->
@@ -317,12 +321,21 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__cap b { display: grid; place-items: center; width: 1.5rem; aspect-ratio: 1; border-radius: 50%; background: color-mix(in srgb, var(--sky) 18%, transparent); color: var(--sky); font-size: .75rem; font-weight: 500; flex: none; }
   .np__cap div { display: grid; gap: .2rem; }
   .np__cap span { color: var(--muted); font-size: .85rem; line-height: 1.5; }
+  /* Resaltado muy sutil de la zona clave de cada captura: un marco de luz que respira, sin tapar nada */
+  .np__hlwrap { position: relative; }
+  .np__hl { position: absolute; border-radius: 12px; pointer-events: none; opacity: 0; z-index: 2; }
+  .np__stage .np__hl { z-index: 3; }
+  .np__hlwrap.is-in .np__hl { animation: np-hl 8s 1.4s ease-in-out infinite; }
+  .np__stage.is-in .np__hl { animation: np-hl 8s 6.4s ease-in-out infinite; }
+  .np__shotimg { overflow: hidden; }
+  @keyframes np-hl { 0%, 100% { opacity: 0; box-shadow: 0 0 0 0 transparent; } 18%, 42% { opacity: 1; box-shadow: 0 0 0 1px rgb(56 189 248 / .5), 0 0 24px 1px rgb(56 189 248 / .18), inset 0 0 20px rgb(56 189 248 / .06); } 64% { opacity: 0; box-shadow: 0 0 0 0 transparent; } }
+  @media (prefers-reduced-motion: reduce) { .np__hl { display: none; } }
   /* Paneles: uno por fila a ancho completo, con la explicación debajo */
   .np__wide { display: grid; gap: clamp(2.5rem, 5vw, 4rem); }
   /* En el celular los paneles se deslizan en horizontal, a un tamaño donde el texto se lee */
   .np__wide { grid-template-columns: minmax(0, 1fr); } .np__shot { min-width: 0; }
   .np__scroll { border-radius: 8px; max-width: 100%; }
-  @media (max-width: 720px) { .np__scroll { overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; padding-bottom: .4rem; } .np__scroll img { min-width: 46rem; } }
+  @media (max-width: 720px) { .np__scroll { overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; padding-bottom: .4rem; } .np__scroll .np__hlwrap { min-width: 46rem; } }
   .np__shot img { border-radius: 8px; box-shadow: 0 30px 70px rgb(0 0 0 / .45), 0 0 0 1px color-mix(in srgb, var(--ac) 22%, transparent); }
   .np figcaption { display: grid; gap: .25rem; padding-top: .9rem; max-width: 46rem; }
   .np figcaption span { color: var(--muted); font-size: .9rem; line-height: 1.55; }
@@ -388,7 +401,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__scr { position: relative; width: 100%; height: 100%; border-radius: 2.05rem; overflow: hidden; background: #040408; }
   .np__notch { position: absolute; top: 1.15rem; left: 50%; width: 22%; height: .8rem; margin-left: -11%; border-radius: 999px; background: #000; box-shadow: inset 0 0 0 1px #15131b; z-index: 3; }
   /* La cámara frontal vive en una franja negra superior: la captura empieza debajo y no queda tapada */
-  .np__shotimg { position: absolute; left: 0; right: 0; bottom: 0; top: 2.1rem; width: 100%; height: calc(100% - 2.1rem); object-fit: cover; object-position: top; opacity: 0; }
+  .np__shotimg { position: absolute; left: 0; right: 0; bottom: 0; top: 2.1rem; opacity: 0; } .np__shotimg img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
   .np__boot { position: absolute; inset: 2.1rem 0 0 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 50%, #1d1b2e 0, #07070c 70%); opacity: 0; z-index: 2; }
   .np__boot img { position: relative; width: 38%; border-radius: 22%; opacity: 0; transform: scale(.6); filter: blur(8px); }
   .np__boot i { position: absolute; width: 38%; aspect-ratio: 1; border-radius: 28%; border: 1px solid var(--sky); opacity: 0; }
@@ -512,7 +525,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
         ad.querySelectorAll('.np__combo').forEach((x) => x.classList.toggle('is-on', x === b));
       }));
     });
-    document.querySelectorAll<HTMLElement>('[data-rv]:not([data-rv-ready]), .np__nums:not([data-rv-ready]), [data-end]:not([data-rv-ready]), [data-stage]:not([data-rv-ready])').forEach((el) => { el.dataset.rvReady = '1'; io.observe(el); });
+    document.querySelectorAll<HTMLElement>('[data-rv]:not([data-rv-ready]), .np__nums:not([data-rv-ready]), [data-end]:not([data-rv-ready]), [data-stage]:not([data-rv-ready]), .np__hlwrap:not([data-rv-ready])').forEach((el) => { el.dataset.rvReady = '1'; io.observe(el); });
   };
   document.addEventListener('astro:page-load', wire);
 </script>
