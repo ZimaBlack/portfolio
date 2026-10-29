@@ -4,6 +4,7 @@
 // Paciente: celular (390 px a 3x). Paneles: 1100 px a 2x, a ancho completo para que el texto se lea.
 import '@fontsource/germania-one/latin-400.css';
 import { withBase, type Lang } from '../lib/i18n';
+import { site } from '../data/site';
 const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
 const shot = (n: string) => withBase(`/works/novapsi/shots/${n}.webp`);
@@ -62,7 +63,7 @@ const t = es ? {
   techA: 'Ve de un vistazo si cada conexión funciona y lo deja andando sin tocar el código.',
   tcap: 'Conexiones: base de datos, cobros, correo e ingreso con Google, comprobados en vivo.',
   links: 'Cómo se conecta',
-  flow: [['user', 'Paciente', 'reserva desde el celular'], ['app', 'NovaPsi', 'registra turno y seña'], ['mp', 'Mercado Pago', 'cobra la seña y avisa'], ['mail', 'Correo · n8n', 'confirma y recuerda'], ['userCheck', 'Profesional', 'atiende']],
+  net: { pac: ['Paciente', 'reserva desde el celular'], app: ['NovaPsi', 'registra turno y seña'], mp: ['Mercado Pago', 'cobra la seña'], gm: ['Gmail', 'confirma y recuerda'], pro: ['Profesional', 'atiende'], n8n: ['n8n', 'automatiza los avisos'], wa: ['WhatsApp', 'aviso por chat'], push: ['Notificaciones push', 'avisos en el dispositivo'] }, dev: 'En desarrollo',
   data: 'Dónde se guardan los datos',
   dataA: [['sqlite', 'SQLite', 'Por defecto: un archivo en el propio servidor, con copias diarias.'], ['airtable', 'Airtable', 'Opcional: como base de datos para quien ya lo usa.']],
   models: 'Cuatro modelos, un código',
@@ -75,6 +76,7 @@ const t = es ? {
   bPal: 'Paleta', bPalA: 'Tres neutros del sistema: el negro tinta, el gris pálido y una pervinca apagada.',
   bAdapt: 'Se adapta a cada consultorio', bAdaptA: 'El profesional elige dos colores —o una combinación lista— y el sitio completo los usa. Probalo:',
   cta: 'Mirá cómo funciona', ctaA: 'La demostración en línea, con datos de ejemplo.', ctaBtn: 'Abrir la demo',
+  want: '¿Necesitás algo como esto?', wantA: 'Un sistema de turnos, una marca o un producto a medida: contame qué tenés en mente.', wantBtn: 'Quiero un producto similar', wantMsg: 'Hola Pablo, vi NovaPsi en tu portfolio y quiero un producto similar.',
 } : {
   what: 'What it is',
   whatA: 'An appointment system for mental-health practices: patients book and pay a deposit, the professional sees patients and technical support keeps everything connected.',
@@ -106,7 +108,7 @@ const t = es ? {
   techA: 'Sees at a glance whether each connection works and keeps it running without touching code.',
   tcap: 'Connections: database, payments, email and Google sign-in, checked live.',
   links: 'How it connects',
-  flow: [['user', 'Patient', 'books from the phone'], ['app', 'NovaPsi', 'records appointment and deposit'], ['mp', 'Mercado Pago', 'charges the deposit and notifies'], ['mail', 'Email · n8n', 'confirms and reminds'], ['userCheck', 'Professional', 'sees the patient']],
+  net: { pac: ['Patient', 'books from the phone'], app: ['NovaPsi', 'records appointment and deposit'], mp: ['Mercado Pago', 'charges the deposit'], gm: ['Gmail', 'confirms and reminds'], pro: ['Professional', 'sees the patient'], n8n: ['n8n', 'automates the notices'], wa: ['WhatsApp', 'chat notice'], push: ['Push notifications', 'notices on the device'] }, dev: 'In development',
   data: 'Where the data lives',
   dataA: [['sqlite', 'SQLite', 'By default: a file on the server itself, with daily copies.'], ['airtable', 'Airtable', 'Optional: as the database for those who already use it.']],
   models: 'Four models, one codebase',
@@ -119,9 +121,22 @@ const t = es ? {
   bPal: 'Palette', bPalA: 'Three neutrals of the system: ink black, pale gray and a muted periwinkle.',
   bAdapt: 'Adapts to each practice', bAdaptA: 'The professional picks two colors —or a ready combination— and the whole site uses them. Try it:',
   cta: 'See how it works', ctaA: 'The online demo, with sample data.', ctaBtn: 'Open the demo',
+  want: 'Need something like this?', wantA: 'An appointment system, a brand or a custom product: tell me what you have in mind.', wantBtn: 'I want a similar product', wantMsg: 'Hi Pablo, I saw NovaPsi in your portfolio and I want a similar product.',
 };
 const combos = [['Grafito y celeste', '#334155', '#38bdf8'], ['Violeta y verde agua', '#6d28d9', '#0d9488'], ['Azul y coral', '#2563eb', '#f97316'], ['Verde salvia y arena', '#4d7c5f', '#c8a96a'], ['Índigo y rosa', '#4338ca', '#db2777'], ['Petróleo y durazno', '#0f766e', '#f59e0b']];
 const demo = 'https://psi-turnos-app.netlify.app/';
+const waHref = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(t.wantMsg)}`;
+type Node = { id: string; r: number; c: number; kind: 'icon' | 'img' | 'logo'; ref: string; color: string; up?: boolean; dev?: boolean };
+const nodes: Node[] = [
+  { id: 'pac', r: 1, c: 1, kind: 'icon', ref: 'user', color: '#e9e3d6' },
+  { id: 'app', r: 1, c: 2, kind: 'img', ref: mk('favicon-light'), color: '#a9aedb' },
+  { id: 'mp', r: 1, c: 3, kind: 'logo', ref: brand('mercadopago'), color: '#2fb5f0' },
+  { id: 'gm', r: 1, c: 4, kind: 'logo', ref: brand('gmail'), color: '#ea4335' },
+  { id: 'n8n', r: 2, c: 4, kind: 'logo', ref: brand('n8n'), color: '#ea4b71', up: true },
+  { id: 'wa', r: 3, c: 4, kind: 'logo', ref: brand('whatsapp'), color: '#25d366', up: true, dev: true },
+  { id: 'pro', r: 1, c: 5, kind: 'icon', ref: 'userCheck', color: '#e9e3d6' },
+  { id: 'push', r: 2, c: 5, kind: 'icon', ref: 'bell', color: '#38bdf8', up: true, dev: true },
+];
 const phoneShots = ['m2', 'm3', 'm4', 'm5'];
 const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail' ? brand('n8n') : '';
 ---
@@ -189,15 +204,17 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   <!-- Conexiones -->
   <div class="wrap np__sec" data-reveal>
     <h2 class="h2">{t.links}</h2>
-    <ol class="np__flow" data-rv>
-      {t.flow.map(([k, a, b], i) => (
-        <li style={`--i:${i}`}>
-          <span class="np__node">{k === 'mp' || k === 'mail'
-            ? <span class="np__logo" style={`--m:url(${brandIcon(k)});--c:${k === 'mp' ? '#2fb5f0' : '#ea4b71'}`}></span>
-            : k === 'app'
-              ? <span class="np__app">Ψ</span>
-              : <span class="np__ico np__ico--lg" set:html={ic(k)} />}</span>
-          <strong>{a}</strong><span>{b}</span>
+    <ol class="np__net" data-rv>
+      {nodes.map((n, i) => (
+        <li class:list={['np__nd', { 'np__nd--up': n.up, 'np__nd--dev': n.dev }]} style={`--i:${i};--g:${n.color};grid-row:${n.r};grid-column:${n.c}`}>
+          <span class="np__sq">
+            {n.kind === 'logo' && <span class="np__logo" style={`--m:url(${n.ref});--c:${n.color}`}></span>}
+            {n.kind === 'img' && <img src={n.ref} alt="" />}
+            {n.kind === 'icon' && <span class="np__ico np__ico--bare" style={`color:${n.color}`} set:html={ic(n.ref)} />}
+          </span>
+          <strong>{t.net[n.id][0]}</strong>
+          <span class="np__sub2">{t.net[n.id][1]}</span>
+          {n.dev && <em class="np__tag">{t.dev}</em>}
         </li>
       ))}
       <i class="np__pulse" aria-hidden="true"></i>
@@ -252,6 +269,14 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
     <p class="np__txt np__endp">{t.ctaA}</p>
     <a class="np__btn" href={demo} target="_blank" rel="noopener noreferrer">{t.ctaBtn} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"/></svg></a>
   </div>
+
+  <!-- ¿Querés algo así? -->
+  <div class="wrap np__want" data-reveal>
+    <div class="np__wantbox">
+      <div><h2 class="h2">{t.want}</h2><p class="np__txt">{t.wantA}</p></div>
+      <a class="np__big" href={waHref} target="_blank" rel="noopener noreferrer"><span>{t.wantBtn}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+  </div>
 </section>
 
 <style>
@@ -298,19 +323,36 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__shot img { border-radius: 8px; box-shadow: 0 30px 70px rgb(0 0 0 / .45), 0 0 0 1px color-mix(in srgb, var(--ac) 22%, transparent); }
   .np figcaption { display: grid; gap: .25rem; padding-top: .9rem; max-width: 46rem; }
   .np figcaption span { color: var(--muted); font-size: .9rem; line-height: 1.55; }
-  /* Flujo con íconos y logos */
-  .np__flow { position: relative; list-style: none; margin: .5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; }
-  .np__flow::before { content: ''; position: absolute; left: 10%; right: 10%; top: 2.2rem; height: 1px; background: linear-gradient(90deg, var(--ac), var(--sky)); transform-origin: left; transform: scaleX(0); transition: transform 1.6s var(--ease) .2s; }
-  .np__flow.is-in::before { transform: scaleX(1); }
-  .np__flow li { position: relative; display: grid; justify-items: center; gap: .35rem; text-align: center; padding: 0 .5rem; }
-  .np__flow li > span:last-child { font-size: .8rem; color: var(--muted); line-height: 1.4; }
-  .np__node { display: grid; place-items: center; width: 4.4rem; aspect-ratio: 1; border-radius: 50%; background: var(--bg); border: 1px solid color-mix(in srgb, var(--ac) 40%, transparent); margin-bottom: .5rem; position: relative; z-index: 1; }
-  .np__app { font-size: 1.7rem; color: var(--cream); font-family: var(--serif); line-height: 1; }
-  .np__logo { display: inline-block; width: 2.1rem; aspect-ratio: 1; background: var(--c); -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
-  .np__logo--lg { width: 2.8rem; }
-  .np__pulse { position: absolute; top: calc(2.2rem - 4px); left: 10%; width: 9px; height: 9px; border-radius: 50%; background: var(--sky); box-shadow: 0 0 16px 4px color-mix(in srgb, var(--sky) 60%, transparent); opacity: 0; z-index: 2; }
-  .np__flow.is-in .np__pulse { animation: np-pulse 4.2s 2s ease-in-out infinite; }
+  /* Red de conexiones */
+  .np__net { --sq: 5.2rem; position: relative; list-style: none; margin: 1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); row-gap: 2.8rem; }
+  .np__net::before { content: ''; position: absolute; left: 10%; right: 10%; top: calc(var(--sq) / 2); height: 1px; background: linear-gradient(90deg, #a9aedb, #38bdf8); transform-origin: left; transform: scaleX(0); transition: transform 1.8s var(--ease) .2s; }
+  .np__net.is-in::before { transform: scaleX(1); }
+  .np__nd { position: relative; display: grid; justify-items: center; align-content: start; gap: .35rem; text-align: center; padding: 0 .4rem; }
+  .np__nd strong { font-size: .95rem; }
+  .np__sub2 { font-size: .78rem; color: var(--muted); line-height: 1.4; }
+  .np__tag { margin-top: .15rem; font-style: normal; font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; padding: .15rem .55rem; border: 1px dashed color-mix(in srgb, var(--g) 70%, transparent); border-radius: 999px; color: var(--g); }
+  .np__nd--up::before { content: ''; position: absolute; left: 50%; top: -2.8rem; height: 2.8rem; width: 1px; background: linear-gradient(to bottom, color-mix(in srgb, var(--g) 15%, transparent), var(--g)); }
+  .np__nd--dev .np__sq { border-style: dashed; }
+  /* El cuadrado negro: el ícono o logo va dentro, y una luz de su color se enciende por detrás */
+  .np__sq { position: relative; isolation: isolate; display: grid; place-items: center; width: var(--sq); aspect-ratio: 1; border-radius: 1.3rem; background: #09090c; border: 1px solid color-mix(in srgb, var(--g) 38%, #2a2833); margin-bottom: .55rem; z-index: 1; }
+  .np__sq::before { content: ''; position: absolute; inset: -45%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--g) 70%, transparent), transparent 72%); filter: blur(10px); opacity: 0; }
+  .np__sq::after { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: #09090c; }
+  .np__net.is-in .np__sq::before { animation: np-glow 4.6s calc(.3s + var(--i) * .45s) ease-in-out infinite both; }
+  @keyframes np-glow { 0% { opacity: 0; transform: scale(.7); } 14% { opacity: .85; transform: scale(1); } 55% { opacity: .42; } 100% { opacity: .85; transform: scale(1.04); } }
+  .np__sq img { width: 46%; border-radius: 22%; display: block; }
+  .np__sq .np__logo { width: 2.7rem; }
+  .np__ico--bare { width: 2.6rem; aspect-ratio: 1; background: none; border: 0; border-radius: 0; }
+  .np__logo { display: inline-block; aspect-ratio: 1; background: var(--c); -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
+  .np__pulse { position: absolute; top: calc(var(--sq) / 2 - 4px); left: 10%; width: 9px; height: 9px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 16px 4px rgb(56 189 248 / .55); opacity: 0; z-index: 2; }
+  .np__net.is-in .np__pulse { animation: np-pulse 4.2s 2.4s ease-in-out infinite; }
   @keyframes np-pulse { 0% { left: 10%; opacity: 0; } 8% { opacity: 1; } 92% { opacity: 1; } 100% { left: 90%; opacity: 0; } }
+  /* Pedido de contacto */
+  .np__want { padding-bottom: clamp(2rem, 5vw, 5rem); }
+  .np__wantbox { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: clamp(1.5rem, 4vw, 4rem); align-items: center; padding: clamp(1.8rem, 4vw, 3.2rem); border-radius: 22px; background: radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--ac) 20%, transparent), transparent 60%), #0c0b12; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ac) 35%, transparent); }
+  .np__wantbox .np__txt { margin-top: .6rem; }
+  .np__big { display: inline-flex; align-items: center; gap: .9rem; padding: 1.35rem 2.2rem; border-radius: 999px; font-size: 1.1rem; font-weight: 500; color: #14121f; background: linear-gradient(120deg, #f1e9dc, var(--ac) 55%, var(--sky)); box-shadow: 0 14px 50px color-mix(in srgb, var(--sky) 40%, transparent); transition: transform .5s var(--ease), box-shadow .5s; white-space: nowrap; }
+  .np__big svg { width: 1.3rem; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: transform .5s var(--ease); }
+  .np__big:hover { transform: translateY(-3px); box-shadow: 0 20px 64px color-mix(in srgb, var(--sky) 60%, transparent); } .np__big:hover svg { transform: translateX(5px); }
   .np__data { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .np__data li { display: flex; gap: 1rem; align-items: center; padding: 1.1rem; border: 1px solid var(--line); border-radius: 12px; }
   .np__data div { display: grid; gap: .25rem; }
@@ -418,12 +460,12 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   @keyframes np-float { 50% { transform: translateY(-7px); } }
   @media (prefers-reduced-motion: reduce) {
     [data-rv] > li { opacity: 1; transform: none; transition: none; }
-    .np__flow::before { transform: none; transition: none; } .np__pulse { display: none; } .np__phones .np__phone { animation: none !important; }
+    .np__net::before { transform: none; transition: none; } .np__sq::before { animation: none !important; opacity: .5; } .np__pulse { display: none; } .np__phones .np__phone { animation: none !important; }
     .np__iso, .np__endh, .np__endp, .np__btn { opacity: 1; transform: none; filter: none; transition: none; animation: none !important; } .np__iso i { display: none; }
   }
   @media (max-width: 860px) {
     .np__feat { grid-template-columns: 1fr 1fr; }
-    .np__flow { grid-template-columns: 1fr; gap: 1.5rem; } .np__flow::before, .np__pulse { display: none; }
+    .np__net { grid-template-columns: 1fr; row-gap: 2.4rem; --sq: 4.6rem; } .np__net::before, .np__pulse { display: none; } .np__nd { grid-row: auto !important; grid-column: auto !important; } .np__nd--up::before { top: -2.4rem; height: 2.4rem; } .np__wantbox { grid-template-columns: 1fr; }
     .np__data, .np__models { grid-template-columns: 1fr 1fr; }
     .np__bgrid { grid-template-columns: 1fr 1fr; } .np__adapt, .np__pal, .np__type { grid-template-columns: 1fr; }
   }
