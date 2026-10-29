@@ -11,6 +11,7 @@ text:
   es: "Tres accesos —paciente, profesional y servicio técnico— sobre un mismo código."
   en: "Three accesses —patient, professional and technical support— on one codebase."
 heroAnimation: iso
+cover: /works/novapsi/cover.webp
 logo: /works/novapsi/logo.svg
 links:
   - { label: "Ver el sistema en línea", url: "https://psi-turnos-app.netlify.app/" }
