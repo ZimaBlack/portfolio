@@ -1,0 +1,41 @@
+---
+// Deconstruimos (manual de marca): el isotipo separado en sus módulos. Dos columnas, cada una con su eje; los medios anillos se
+// reflejan, se apilan y uno de ellos se completa en el isotipo. Un resalte verde recorre los módulos hasta llegar a él.
+import { halfDouble, halfMid, halfOut, fullMid } from '../lib/gcmods';
+const { label = 'Deconstrucción' } = Astro.props as { label?: string };
+const MID = `M116.914 79.1455V47.0698C85.0753 47.0698 58.2192 68.3743 49.7735 97.5089C47.971 103.677 47.0215 110.225 47.0215 116.963C47.0215 136.274 54.8523 153.736 67.5213 166.358C80.1406 179.027 97.6035 186.856 116.914 186.856C155.539 186.856 186.809 155.539 186.809 116.963H154.733C154.733 137.841 137.794 154.78 116.914 154.78C106.478 154.78 97.0348 150.557 90.2011 143.677C83.3694 136.844 79.1442 127.401 79.1442 116.963C79.1442 109.845 81.0928 103.203 84.5067 97.5089C91.1037 86.5003 103.154 79.1455 116.914 79.1455Z`;
+const OUT = `M232.265 97.5086C228.186 73.025 216.463 51.1029 199.621 34.2583L176.891 56.9871L166.359 67.5203L136.37 97.5086H199.43C200.949 103.725 201.708 110.273 201.708 116.963C201.708 163.795 163.748 201.755 116.914 201.755C93.5215 201.755 72.3599 192.265 56.9885 176.939V176.891C41.6615 161.517 32.1723 140.355 32.1723 116.963C32.1723 110.273 32.9314 103.725 34.4496 97.5086C43.2266 60.0234 76.8205 32.1702 116.914 32.1702V-0.00012207C58.9788 -0.00012207 10.8672 42.1824 1.61471 97.5086C0.568631 103.819 0 110.32 0 116.963C0 149.275 13.0968 178.505 34.2591 199.619C55.3738 220.782 84.6037 233.878 116.914 233.878C181.496 233.878 233.88 181.542 233.88 116.963C233.88 110.32 233.309 103.819 232.265 97.5086Z`;
+const R = 77.5, A = 138, B = 317;
+const ys = [95, 277, 453, 629, 803];
+type M = { x: number; y: number; d?: string; iso?: boolean; hero?: boolean; from: 'l' | 'r' | 't' | 'b' };
+const mods: M[] = [
+  { x: A, y: ys[0], d: halfMid(R, 'r'), from: 'l' }, { x: B, y: ys[0], d: halfDouble(R, 'l'), from: 'r' },
+  { x: A, y: ys[1], d: halfDouble(R, 'r'), from: 'l' }, { x: B, y: ys[1], iso: true, from: 'r' },
+  { x: A, y: ys[2], d: halfOut(R, 'r') + fullMid(R), from: 'l' }, { x: B, y: ys[2], iso: true, hero: true, from: 'r' },
+  { x: A, y: ys[3], d: halfDouble(R, 'r'), from: 'l' }, { x: B, y: ys[3], d: halfDouble(R, 'l'), from: 'r' },
+  { x: A, y: ys[4], d: halfMid(R, 'r'), from: 'l' },
+];
+---
+<svg class="gcd" data-gc viewBox="40 -10 380 920" role="img" aria-label={label} focusable="false">
+  {mods.map((m, i) => (
+    <g transform={`translate(${m.x} ${m.y})`}>
+      <g class={`gcd__m gcd__m--${m.from}${m.hero ? ' is-hero' : ''}`} style={`--n:${i}`}>
+        {m.iso
+          ? <g transform={`scale(${(2 * R / 234).toFixed(4)}) translate(-117 -117)`}><path d={MID} /><path d={OUT} /></g>
+          : <path d={m.d} />}
+      </g>
+    </g>
+  ))}
+</svg>
+
+<style is:global>
+  .gcd { width: 100%; max-height: 80vh; height: auto; overflow: visible; }
+  .gcd__m { opacity: 0; fill: #dfefe5; fill-opacity: .55; }
+  .gcd__m--l { --fx: -90px; --fr: -90deg; } .gcd__m--r { --fx: 90px; --fr: 90deg; }
+  .gcd.is-in .gcd__m { animation: gcd-in 1.1s calc(var(--n) * .2s) cubic-bezier(.22, 1, .36, 1) forwards, gcd-hop 14s calc(3.4s + var(--n) * .55s) ease-in-out infinite; }
+  .gcd.is-in .gcd__m.is-hero { animation: gcd-in 1.1s calc(var(--n) * .2s) cubic-bezier(.22, 1, .36, 1) forwards, gcd-hero 1.2s 3s ease forwards; }
+  @keyframes gcd-in { from { opacity: 0; transform: translateX(var(--fx)) rotate(var(--fr)); } to { opacity: 1; transform: none; } }
+  @keyframes gcd-hop { 0%, 9%, 100% { fill: #dfefe5; fill-opacity: .55; } 3%, 6% { fill: #5db98a; fill-opacity: 1; } }
+  @keyframes gcd-hero { to { fill: #5db98a; fill-opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .gcd__m { opacity: 1; animation: none !important; } .gcd__m.is-hero { fill: #5db98a; fill-opacity: 1; } }
+</style>

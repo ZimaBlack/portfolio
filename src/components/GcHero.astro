@@ -4,6 +4,7 @@
 // Todo es geometría en SVG: nada es una imagen.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { halfDouble, fullDouble } from '../lib/gcmods';
 
 const { part = 'stage', title = 'Global Citizen' } = Astro.props as { part?: 'field' | 'stage'; title?: string };
 const pub = (f: string) => readFileSync(join(process.cwd(), 'public/works/global-citizen', f), 'utf8');
@@ -11,35 +12,39 @@ const ds = (raw: string) => [...raw.matchAll(/\bd="([^"]+)"/g)].map((m) => m[1])
 const [midRing, outRing] = ds(pub('mark.svg'));
 const logoPaths = ds(pub('logo.svg')).slice(0, 13); // GLOBAL (0-5) y CITIZEN (6-12)
 
-// ── Campo de módulos: medios anillos, en columnas modulares, con rotaciones de 90° (como en el manual)
-let seed = 7;
-const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-const half = (r2: number) => { const r1 = r2 * 0.54; return `M0 ${-r2}A${r2} ${r2} 0 0 1 0 ${r2}L0 ${r1}A${r1} ${r1} 0 0 0 0 ${-r1}Z`; };
-type Mod = { x: number; y: number; r: number; rot: number; d: number; t: number; both: boolean; delay: number };
-const mods: Mod[] = [];
-const W = 1600, H = 900;
-for (let cx = 90; cx < W; cx += 130) {
-  for (let cy = 80; cy < H; cy += 120) {
-    if (rnd() > 0.36) continue;
-    const x = cx + (rnd() - 0.5) * 20, y = cy + (rnd() - 0.5) * 20;
-    // zona del logotipo libre
-    if (x > 330 && x < 1270 && y > 290 && y < 610) continue;
-    const r = [22, 30, 40, 52][Math.floor(rnd() * 4)];
-    const dist = Math.hypot(x - W / 2, y - H / 2);
-    mods.push({ x, y, r, rot: [0, 90, 180, 270][Math.floor(rnd() * 4)], d: half(r), t: 8 + rnd() * 8, both: rnd() > 0.7, delay: 0.2 + dist / 700 + rnd() * 0.4 });
+// ── Campo de módulos: la trama del manual. Filas de medios anillos dobles ("C") con un anillo completo cada siete módulos;
+// un resalte verde recorre la trama en diagonal.
+const W = 1600, H = 900, R = 68; // R: radio del módulo (ancho de un módulo = R, alto = 2R)
+const PERIOD = ['L', 'L', 'L', 'F', 'F', 'L', 'L'] as const; // 'F' ocupa dos posiciones: forma el anillo completo
+type Cell = { x: number; y: number; kind: 'L' | 'F'; d: string; k: number; row: number };
+const cells: Cell[] = [];
+const rows = Math.ceil(H / (2 * R)) + 1;
+const slots = Math.ceil(W / R) + 8;
+for (let row = 0; row < rows; row++) {
+  const y = row * 2 * R + R - 20;
+  let slot = -((row * 3) % 7); // cada fila desplaza la trama, como en el manual
+  let guard = 0;
+  while (slot * R < W + 2 * R && guard++ < 200) {
+    const kind = PERIOD[((slot % 7) + 7) % 7];
+    if (kind === 'F') {
+      if ((((slot % 7) + 7) % 7) === 3) { cells.push({ x: slot * R + R, y, kind: 'F', d: fullDouble(R), k: slot, row }); slot += 2; continue; }
+      slot += 1; continue;
+    }
+    cells.push({ x: slot * R + R, y, kind: 'L', d: halfDouble(R, 'l'), k: slot, row });
+    slot += 1;
   }
 }
+// La zona del logotipo queda libre
+const free = (c: Cell) => { const w = c.kind === 'F' ? R : 0; return c.x + w > 340 && c.x - R < 1260 && c.y + R > 290 && c.y - R < 610; };
+const field = cells.filter((c) => !free(c) && c.x > -R && c.x < W + R);
 const clipL = 'gch-l', clipR = 'gch-r';
 ---
 {part === 'field' ? (
   <svg class="gch__field" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-    {mods.map((m) => (
-      <g transform={`translate(${m.x.toFixed(1)} ${m.y.toFixed(1)}) rotate(${m.rot})`}>
-        <g class="gch__a" style={`--dl:${m.delay.toFixed(2)}s`}>
-          <g class="gch__t" style={`--tt:${m.t.toFixed(1)}s;--td:${(m.delay + 3.5).toFixed(2)}s`}>
-            <path d={m.d} />
-            {m.both && <path d={m.d} transform="rotate(180)" />}
-          </g>
+    {field.map((c) => (
+      <g transform={`translate(${c.x} ${c.y})`}>
+        <g class="gch__a" style={`--dl:${(0.1 + c.row * 0.12 + (c.k % 9) * 0.03).toFixed(2)}s`}>
+          <path class="gch__c" style={`--hd:${(3.2 + ((c.k + c.row * 2) * 0.28)).toFixed(2)}s`} d={c.d} />
         </g>
       </g>
     ))}
@@ -65,12 +70,12 @@ const clipL = 'gch-l', clipR = 'gch-r';
 )}
 
 <style is:global>
-  .gch__field { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .gch__field { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 50%, transparent 30%, #000 85%); mask-image: radial-gradient(ellipse 62% 58% at 50% 50%, transparent 30%, #000 85%); }
   .gch__field path { fill: #dfefe5; }
-  .gch__a { opacity: 0; transform: scale(.4); animation: gch-in 1.4s var(--dl) cubic-bezier(.22, 1, .36, 1) forwards; }
-  .gch__t { animation: gch-turn var(--tt) var(--td) ease-in-out infinite; }
-  @keyframes gch-in { to { opacity: .17; transform: scale(1); } }
-  @keyframes gch-turn { 0%, 12% { transform: rotate(0); } 28%, 62% { transform: rotate(180deg); } 78%, 100% { transform: rotate(360deg); } }
+  .gch__a { opacity: 0; transform: scale(.5); animation: gch-in 1.2s var(--dl) cubic-bezier(.22, 1, .36, 1) forwards; }
+  .gch__c { fill: #dfefe5; fill-opacity: .09; animation: gch-hop 16s var(--hd) ease-in-out infinite; }
+  @keyframes gch-in { to { opacity: 1; transform: scale(1); } }
+  @keyframes gch-hop { 0%, 8%, 100% { fill: #dfefe5; fill-opacity: .09; } 2.5%, 5% { fill: #5db98a; fill-opacity: .6; } }
 
   .gch { position: relative; z-index: 1; display: block; width: min(86vw, 50rem); height: auto; overflow: visible; }
   .gch__p { transform-origin: 116.9px 116.9px; opacity: 0; fill: #dfefe5; animation: gch-build 1.5s var(--pd) cubic-bezier(.22, 1, .36, 1) forwards, gch-tint .9s 2.9s ease forwards; }
@@ -85,7 +90,7 @@ const clipL = 'gch-l', clipR = 'gch-r';
   .gch__l { opacity: 0; animation: gch-letter .9s calc(3.9s + var(--i) * .06s) cubic-bezier(.22, 1, .36, 1) forwards; }
   @keyframes gch-letter { from { opacity: 0; transform: translateX(-34px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) {
-    .gch__a { animation: none; opacity: .17; transform: none; } .gch__t { animation: none; }
+    .gch__a { animation: none; opacity: 1; transform: none; } .gch__c { animation: none; }
     .gch__p { animation: none; opacity: 1; fill: #5db98a; } .gch__move { animation: none; } .gch__l { animation: none; opacity: 1; }
   }
 </style>
