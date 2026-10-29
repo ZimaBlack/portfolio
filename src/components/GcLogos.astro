@@ -8,7 +8,7 @@ const { label = 'Global Citizen' } = Astro.props as { label?: string };
     <clipPath id="gcl-l"><rect x="-60" y="-60" width="177.2" height="360" /></clipPath>
     <clipPath id="gcl-r"><rect x="116.6" y="-60" width="180" height="360" /></clipPath>
   </defs>
-  <rect class="gcl__bg" width="1800" height="1110" fill="#000" />
+  <rect class="gcl__bg" width="1800" height="1110" style="fill:var(--gc-bg)" />
   <path class="gcl__ln" pathLength="1" style="--d:0s" d="M828 185V555" />
   <path class="gcl__ln" pathLength="1" style="--d:.25s" d="M445 555H1596" />
 
@@ -93,15 +93,13 @@ const { label = 'Global Citizen' } = Astro.props as { label?: string };
   @keyframes gcl-draw { to { stroke-dashoffset: 0; } }
   /* Módulos: cada medio anillo llega girando desde su lado y encaja */
   .gcl__pc { opacity: 0; transform-origin: 116.9px 116.9px; }
-  .gcl__pc--a { --fx: -230px; --fy: -60px; --fr: 150deg; --n: 0; }
-  .gcl__pc--b { --fx: 230px; --fy: 90px; --fr: -150deg; --n: 1; }
-  .gcl__pc--c { --fx: -330px; --fy: 20px; --fr: -190deg; --n: 2; }
-  .gcl__pc--d { --fx: 330px; --fy: -20px; --fr: 190deg; --n: 3; }
-  .gcl.is-in .gcl__pc { animation: gcl-pc 1.3s calc(var(--b) + var(--n) * .16s) cubic-bezier(.22, 1, .36, 1) forwards; }
-  @keyframes gcl-pc { from { opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(.7); } 35% { opacity: 1; } to { opacity: 1; transform: none; } }
-  .gcl__l { opacity: 0; }
-  .gcl.is-in .gcl__l { animation: gcl-l .8s calc(var(--b) + .9s + var(--i) * .05s) cubic-bezier(.22, 1, .36, 1) forwards; }
-  @keyframes gcl-l { from { opacity: 0; transform: translateX(-26px); } to { opacity: 1; transform: none; } }
+  .gcl__pc--a { --fr: -200deg; --n: 0; }
+  .gcl__pc--b { --fr: 200deg; --n: 1; }
+  .gcl__pc--c { --fr: -270deg; --n: 2; }
+  .gcl__pc--d { --fr: 270deg; --n: 3; }
+  .gcl.is-in .gcl__pc { animation: gc-radial 1.5s calc(var(--b) + var(--n) * .4s) var(--gc-ease) forwards; }
+  .gcl__l { opacity: 0; transform-box: fill-box; transform-origin: center; --fr: -100deg; }
+  .gcl.is-in .gcl__l { animation: gc-radial .9s calc(var(--b) + 1.9s + var(--i) * .06s) var(--gc-ease) forwards; }
   .gcl__g--vert .gcl__l { --b: 1s; } .gcl__g--hor .gcl__l { --b: 1.6s; }
   .gcl__tag { opacity: 0; }
   .gcl.is-in .gcl__tag { animation: gcl-tag 1s 3.2s ease forwards; }

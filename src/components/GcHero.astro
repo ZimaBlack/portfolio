@@ -1,10 +1,10 @@
 ---
-// Portada modular de Global Citizen (ver el manual de marca): un campo de módulos geométricos (medios anillos) se repite y se acomoda;
-// al centro, cuatro medios anillos se ensamblan en el isotipo y éste se desplaza para dar lugar al logotipo.
-// Todo es geometría en SVG: nada es una imagen.
+// Portada modular de Global Citizen (manual de marca): a los lados, columnas de medios anillos que se arman por secciones y giran;
+// al centro, cuatro medios anillos giran sobre el centro del isotipo hasta encajar y las letras entran girando una a una.
+// Todo es geometría vectorial en SVG y siempre se arma con giros (animación radial compartida: --gc-radial en global.css).
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { halfDouble, fullDouble } from '../lib/gcmods';
+import { halfDouble, halfMid, halfOut, fullMid } from '../lib/gcmods';
 
 const { part = 'stage', title = 'Global Citizen' } = Astro.props as { part?: 'field' | 'stage'; title?: string };
 const pub = (f: string) => readFileSync(join(process.cwd(), 'public/works/global-citizen', f), 'utf8');
@@ -12,40 +12,40 @@ const ds = (raw: string) => [...raw.matchAll(/\bd="([^"]+)"/g)].map((m) => m[1])
 const [midRing, outRing] = ds(pub('mark.svg'));
 const logoPaths = ds(pub('logo.svg')).slice(0, 13); // GLOBAL (0-5) y CITIZEN (6-12)
 
-// ── Campo de módulos: la trama del manual. Filas de medios anillos dobles ("C") con un anillo completo cada siete módulos;
-// un resalte verde recorre la trama en diagonal.
-const W = 1600, H = 900, R = 68; // R: radio del módulo (ancho de un módulo = R, alto = 2R)
-const PERIOD = ['L', 'L', 'L', 'F', 'F', 'L', 'L'] as const; // 'F' ocupa dos posiciones: forma el anillo completo
-type Cell = { x: number; y: number; kind: 'L' | 'F'; d: string; k: number; row: number };
-const cells: Cell[] = [];
-const rows = Math.ceil(H / (2 * R)) + 1;
-const slots = Math.ceil(W / R) + 8;
-for (let row = 0; row < rows; row++) {
-  const y = row * 2 * R + R - 20;
-  let slot = -((row * 3) % 7); // cada fila desplaza la trama, como en el manual
-  let guard = 0;
-  while (slot * R < W + 2 * R && guard++ < 200) {
-    const kind = PERIOD[((slot % 7) + 7) % 7];
-    if (kind === 'F') {
-      if ((((slot % 7) + 7) % 7) === 3) { cells.push({ x: slot * R + R, y, kind: 'F', d: fullDouble(R), k: slot, row }); slot += 2; continue; }
-      slot += 1; continue;
-    }
-    cells.push({ x: slot * R + R, y, kind: 'L', d: halfDouble(R, 'l'), k: slot, row });
-    slot += 1;
-  }
-}
-// La zona del logotipo queda libre
-const free = (c: Cell) => { const w = c.kind === 'F' ? R : 0; return c.x + w > 340 && c.x - R < 1260 && c.y + R > 290 && c.y - R < 610; };
-const field = cells.filter((c) => !free(c) && c.x > -R && c.x < W + R);
+// ── Columna modular (la de "Deconstruimos"): eje A (mitades derechas) y eje B (mitades izquierdas), cinco secciones
+const W = 1600, H = 900, R = 77.5;
+const DX = 179; // distancia entre ejes
+const ys = [95, 277, 453, 629, 803].map((y) => y - 453 + H / 2);
+type Mod = { x: number; y: number; d?: string; iso?: boolean; row: number };
+const strip: Mod[] = [
+  { x: 0, y: ys[0], d: halfMid(R, 'r'), row: 0 }, { x: DX, y: ys[0], d: halfDouble(R, 'l'), row: 0 },
+  { x: 0, y: ys[1], d: halfDouble(R, 'r'), row: 1 }, { x: DX, y: ys[1], iso: true, row: 1 },
+  { x: 0, y: ys[2], d: halfOut(R, 'r') + fullMid(R), row: 2 }, { x: DX, y: ys[2], iso: true, row: 2 },
+  { x: 0, y: ys[3], d: halfDouble(R, 'r'), row: 3 }, { x: DX, y: ys[3], d: halfDouble(R, 'l'), row: 3 },
+  { x: 0, y: ys[4], d: halfMid(R, 'r'), row: 4 },
+];
+// Dos columnas, una a cada lado y reflejadas: la de la derecha se arma primero, la de la izquierda la sigue
+const strips = [{ ax: 70, flip: false, lag: 0 }, { ax: W - 70, flip: true, lag: 0.45 }];
+const isoK = (2 * R / 234).toFixed(4);
 const clipL = 'gch-l', clipR = 'gch-r';
 ---
 {part === 'field' ? (
   <svg class="gch__field" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-    {field.map((c) => (
-      <g transform={`translate(${c.x} ${c.y})`}>
-        <g class="gch__a" style={`--dl:${(0.1 + c.row * 0.12 + (c.k % 9) * 0.03).toFixed(2)}s`}>
-          <path class="gch__c" style={`--hd:${(3.2 + ((c.k + c.row * 2) * 0.28)).toFixed(2)}s`} d={c.d} />
-        </g>
+    {strips.map((st) => (
+      <g transform={`translate(${st.ax} 0) ${st.flip ? 'scale(-1 1)' : ''}`}>
+        {strip.map((m, i) => (
+          <g transform={`translate(${m.x} ${m.y})`}>
+            <g class="gch__a" style={`--dl:${(0.2 + st.lag + m.row * 0.4 + (m.x ? 0.15 : 0)).toFixed(2)}s;--fr:${m.x ? 120 : -120}deg`}>
+              <g class={i % 3 === 0 ? 'gch__t' : ''} style={`--td:${(4 + i * 1.3 + st.lag * 3).toFixed(1)}s`}>
+                <g class="gch__c" style={`--hd:${(3.4 + i * 0.7 + st.lag * 2).toFixed(2)}s`}>
+                  {m.iso
+                    ? <g transform={`scale(${isoK}) translate(-117 -117)`}><path d={midRing} /><path d={outRing} /></g>
+                    : <path d={m.d} />}
+                </g>
+              </g>
+            </g>
+          </g>
+        ))}
       </g>
     ))}
   </svg>
@@ -54,43 +54,36 @@ const clipL = 'gch-l', clipR = 'gch-r';
     <g class="gch__letters">
       {logoPaths.map((d, i) => <path class="gch__l" style={`--i:${i}`} d={d} fill="#fff" />)}
     </g>
-    <g class="gch__move">
-      <svg x="0" y="3.5" width="181" height="181" viewBox="0 0 234 234" overflow="visible">
-        <defs>
-          <clipPath id={clipL}><rect x="-60" y="-60" width="177.2" height="360" /></clipPath>
-          <clipPath id={clipR}><rect x="116.6" y="-60" width="180" height="360" /></clipPath>
-        </defs>
-        <g class="gch__p gch__p--mid-l"><path d={midRing} clip-path={`url(#${clipL})`} /></g>
-        <g class="gch__p gch__p--mid-r"><path d={midRing} clip-path={`url(#${clipR})`} /></g>
-        <g class="gch__p gch__p--out-l"><path d={outRing} clip-path={`url(#${clipL})`} /></g>
-        <g class="gch__p gch__p--out-r"><path d={outRing} clip-path={`url(#${clipR})`} /></g>
-      </svg>
-    </g>
+    <svg x="0" y="3.5" width="181" height="181" viewBox="0 0 234 234" overflow="visible">
+      <defs>
+        <clipPath id={clipL}><rect x="-60" y="-60" width="177.2" height="360" /></clipPath>
+        <clipPath id={clipR}><rect x="116.6" y="-60" width="180" height="360" /></clipPath>
+      </defs>
+      <g class="gch__p gch__p--mid-l"><path d={midRing} clip-path={`url(#${clipL})`} /></g>
+      <g class="gch__p gch__p--mid-r"><path d={midRing} clip-path={`url(#${clipR})`} /></g>
+      <g class="gch__p gch__p--out-l"><path d={outRing} clip-path={`url(#${clipL})`} /></g>
+      <g class="gch__p gch__p--out-r"><path d={outRing} clip-path={`url(#${clipR})`} /></g>
+    </svg>
   </svg>
 )}
 
 <style is:global>
-  .gch__field { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 50%, transparent 30%, #000 85%); mask-image: radial-gradient(ellipse 62% 58% at 50% 50%, transparent 30%, #000 85%); }
-  .gch__field path { fill: #dfefe5; }
-  .gch__a { opacity: 0; transform: scale(.5); animation: gch-in 1.2s var(--dl) cubic-bezier(.22, 1, .36, 1) forwards; }
-  .gch__c { fill: #dfefe5; fill-opacity: .09; animation: gch-hop 16s var(--hd) ease-in-out infinite; }
-  @keyframes gch-in { to { opacity: 1; transform: scale(1); } }
-  @keyframes gch-hop { 0%, 8%, 100% { fill: #dfefe5; fill-opacity: .09; } 2.5%, 5% { fill: #5db98a; fill-opacity: .6; } }
+  .gch__field { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .gch__a { opacity: 0; animation: gc-radial 1.5s var(--dl) var(--gc-ease) forwards; }
+  .gch__t { animation: gch-turn 14s var(--td) ease-in-out infinite; }
+  .gch__c { fill: #dfefe5; fill-opacity: .1; animation: gch-hop 18s var(--hd) ease-in-out infinite; }
+  .gch__c path { fill: inherit; fill-opacity: inherit; }
+  @keyframes gch-turn { 0%, 10% { transform: rotate(0); } 22%, 60% { transform: rotate(180deg); } 72%, 100% { transform: rotate(360deg); } }
+  @keyframes gch-hop { 0%, 9%, 100% { fill: #dfefe5; fill-opacity: .1; } 3%, 6% { fill: #5db98a; fill-opacity: .7; } }
 
   .gch { position: relative; z-index: 1; display: block; width: min(86vw, 50rem); height: auto; overflow: visible; }
-  .gch__p { transform-origin: 116.9px 116.9px; opacity: 0; fill: #dfefe5; animation: gch-build 1.5s var(--pd) cubic-bezier(.22, 1, .36, 1) forwards, gch-tint .9s 2.9s ease forwards; }
-  .gch__p--mid-l { --pd: .5s; --fx: -150px; --fy: -60px; --fr: 140deg; }
-  .gch__p--mid-r { --pd: .95s; --fx: 150px; --fy: 90px; --fr: -140deg; }
-  .gch__p--out-l { --pd: 1.4s; --fx: -300px; --fy: 20px; --fr: -190deg; }
-  .gch__p--out-r { --pd: 1.85s; --fx: 300px; --fy: -20px; --fr: 190deg; }
-  @keyframes gch-build { from { opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(.7); } 35% { opacity: 1; } to { opacity: 1; transform: none; } }
+  .gch__p { transform-origin: 116.9px 116.9px; opacity: 0; fill: #dfefe5; animation: gc-radial 1.5s var(--pd) var(--gc-ease) forwards, gch-tint .9s 3.1s ease forwards; }
+  .gch__p--mid-l { --pd: .5s; --fr: -200deg; } .gch__p--mid-r { --pd: .9s; --fr: 200deg; }
+  .gch__p--out-l { --pd: 1.3s; --fr: -270deg; } .gch__p--out-r { --pd: 1.7s; --fr: 270deg; }
   @keyframes gch-tint { to { fill: #5db98a; } }
-  .gch__move { transform-origin: 90.5px 94px; animation: gch-move 1.3s 3.3s cubic-bezier(.65, 0, .2, 1) backwards; }
-  @keyframes gch-move { from { transform: translate(242px, 0) scale(2.1); } }
-  .gch__l { opacity: 0; animation: gch-letter .9s calc(3.9s + var(--i) * .06s) cubic-bezier(.22, 1, .36, 1) forwards; }
-  @keyframes gch-letter { from { opacity: 0; transform: translateX(-34px); } to { opacity: 1; transform: none; } }
+  .gch__l { opacity: 0; transform-box: fill-box; transform-origin: center; --fr: -100deg; animation: gc-radial .9s calc(2.9s + var(--i) * .07s) var(--gc-ease) forwards; }
   @media (prefers-reduced-motion: reduce) {
-    .gch__a { animation: none; opacity: 1; transform: none; } .gch__c { animation: none; }
-    .gch__p { animation: none; opacity: 1; fill: #5db98a; } .gch__move { animation: none; } .gch__l { animation: none; opacity: 1; }
+    .gch__a { animation: none; opacity: 1; } .gch__t, .gch__c { animation: none; }
+    .gch__p { animation: none; opacity: 1; fill: #5db98a; } .gch__l { animation: none; opacity: 1; }
   }
 </style>

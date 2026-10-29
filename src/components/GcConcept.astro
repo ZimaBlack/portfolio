@@ -42,11 +42,10 @@ const OUT = `M232.265 97.5086C228.186 73.025 216.463 51.1029 199.621 34.2583L176
   .gcc li { display: grid; place-items: center; }
   .gcc svg { width: 100%; height: auto; overflow: visible; }
   .gcc__p { fill: #dfefe5; opacity: 0; transform-origin: 178px 178px; }
-  .gcc.is-in .gcc__p { animation: gcc-in 1s calc(var(--s) * .55s + var(--k) * .22s) cubic-bezier(.22, 1, .36, 1) forwards; }
-  .gcc__p--ml, .gcc__p--ol { --fx: -60px; --fr: -120deg; } .gcc__p--mr, .gcc__p--or { --fx: 60px; --fr: 120deg; }
-  @keyframes gcc-in { from { opacity: 0; transform: translateX(var(--fx)) rotate(var(--fr)) scale(.6); } to { opacity: 1; transform: none; } }
+  .gcc.is-in .gcc__p { animation: gc-radial 1.3s calc(var(--s) * .55s + var(--k) * .22s) var(--gc-ease) forwards; }
+  .gcc__p--ml, .gcc__p--ol { --fr: -200deg; } .gcc__p--mr, .gcc__p--or { --fr: 200deg; }
   .gcc__f { fill: #dfefe5; opacity: 0; transform-origin: 178px 178px; }
-  .gcc.is-in .gcc__f { animation: gcc-in 1s calc(2.9s + var(--k, 0) * .22s) cubic-bezier(.22, 1, .36, 1) forwards, gcc-green .9s 4.3s ease forwards; --fx: 0px; --fr: -90deg; }
+  .gcc.is-in .gcc__f { animation: gc-radial 1.3s calc(2.9s + var(--k, 0) * .22s) var(--gc-ease) forwards, gcc-green .9s 4.3s ease forwards; --fr: -270deg; }
   @keyframes gcc-green { to { fill: #5db98a; } }
   @media (max-width: 640px) { .gcc { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 1.2rem; } }
   @media (prefers-reduced-motion: reduce) { .gcc__p, .gcc__f { opacity: 1; animation: none !important; } .gcc__f { fill: #5db98a; } }

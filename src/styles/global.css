@@ -80,3 +80,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* Cursor personalizado */
 .cursor { position: fixed; left: 0; top: 0; z-index: 90; pointer-events: none; width: 92px; height: 92px; margin: -46px 0 0 -46px; border-radius: 50%; background: var(--fg); color: var(--bg); display: grid; place-items: center; font-size: 0.78rem; letter-spacing: 0.04em; transform: scale(0); transition: transform 0.5s var(--ease); mix-blend-mode: normal; }
 .cursor.is-on { transform: scale(1); }
+
+/* Global Citizen: una sola animación radial para todos los módulos (giran sobre su propio centro y encajan) */
+:root { --gc-bg: #1c1c1c; --gc-ease: cubic-bezier(.22, 1, .36, 1); }
+@keyframes gc-radial { from { opacity: 0; transform: rotate(var(--fr, -180deg)) scale(.3); } 40% { opacity: 1; } to { opacity: 1; transform: none; } }

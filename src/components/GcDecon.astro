@@ -31,10 +31,9 @@ const mods: M[] = [
 <style is:global>
   .gcd { width: 100%; max-height: 80vh; height: auto; overflow: visible; }
   .gcd__m { opacity: 0; fill: #dfefe5; fill-opacity: .55; }
-  .gcd__m--l { --fx: -90px; --fr: -90deg; } .gcd__m--r { --fx: 90px; --fr: 90deg; }
-  .gcd.is-in .gcd__m { animation: gcd-in 1.1s calc(var(--n) * .2s) cubic-bezier(.22, 1, .36, 1) forwards, gcd-hop 14s calc(3.4s + var(--n) * .55s) ease-in-out infinite; }
-  .gcd.is-in .gcd__m.is-hero { animation: gcd-in 1.1s calc(var(--n) * .2s) cubic-bezier(.22, 1, .36, 1) forwards, gcd-hero 1.2s 3s ease forwards; }
-  @keyframes gcd-in { from { opacity: 0; transform: translateX(var(--fx)) rotate(var(--fr)); } to { opacity: 1; transform: none; } }
+  .gcd__m--l { --fr: -200deg; } .gcd__m--r { --fr: 200deg; }
+  .gcd.is-in .gcd__m { animation: gc-radial 1.4s calc(var(--n) * .2s) var(--gc-ease) forwards, gcd-hop 14s calc(3.4s + var(--n) * .55s) ease-in-out infinite; }
+  .gcd.is-in .gcd__m.is-hero { animation: gc-radial 1.4s calc(var(--n) * .2s) var(--gc-ease) forwards, gcd-hero 1.2s 3s ease forwards; }
   @keyframes gcd-hop { 0%, 9%, 100% { fill: #dfefe5; fill-opacity: .55; } 3%, 6% { fill: #5db98a; fill-opacity: 1; } }
   @keyframes gcd-hero { to { fill: #5db98a; fill-opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { .gcd__m { opacity: 1; animation: none !important; } .gcd__m.is-hero { fill: #5db98a; fill-opacity: 1; } }
