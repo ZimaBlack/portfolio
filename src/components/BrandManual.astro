@@ -276,7 +276,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   /* Contenedor común: el contenido vive en un ancho centrado (72 rem), alineado con el encabezado */
   .gcm > .wrap { max-width: 72rem; }
   .gcm > figure.wrap { margin-inline: auto; }
-  .gcm { display: grid; gap: clamp(3rem, 7vw, 7rem); padding-bottom: clamp(3rem, 6vw, 6rem); --gc: #5db98a; }
+  .gcm { display: grid; gap: clamp(5rem, 11vw, 11rem); padding-bottom: clamp(3rem, 6vw, 6rem); --gc: #5db98a; }
   .gcm img { width: 100%; height: auto; display: block; }
   .gcm figure { margin: 0; }
   .gcm figcaption { font-size: .8rem; padding-top: .75rem; }
@@ -304,15 +304,15 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   .gcm__pair img { height: 100%; object-fit: cover; }
   .gcm__avatars { max-width: 70rem; }
   /* Concepto, grillas, paleta y tipografía */
-  .gcm__block--concept, .gcm__block--grid { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); align-items: center; }
-  .gcm__block--grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); color: var(--fg); }
+  /* Estas secciones: el texto arriba, en una sola columna, y la pieza gráfica debajo ocupando todo el ancho */
+  .gcm__block--concept, .gcm__block--grid, .gcm__block--res, .gcm__type { grid-template-columns: minmax(0, 1fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+  .gcm__block--concept .gcm__text, .gcm__block--grid .gcm__text, .gcm__block--res .gcm__text, .gcm__type .gcm__text { max-width: 46rem; }
   .gcm__synth { display: grid; gap: clamp(2rem, 4vw, 3.5rem); }
   .gcm__synth-t { display: grid; gap: 1.1rem; max-width: 62rem; }
   .gcm__synth-t .h2 { margin-bottom: .3rem; } .gcm__synth-t p { margin: 0; }
-  .gcm__cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 4vw, 3rem); color: var(--muted); }
+  .gcm__cols { display: grid; gap: 1.1rem; color: var(--muted); max-width: 46rem; }
   .gcm__res { display: grid; gap: clamp(2rem, 5vw, 4rem); }
-  .gcm__block--res { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); align-items: start; }
-  .gcm__restxt { margin: 0; color: var(--muted); max-width: 52rem; line-height: 1.65; }
+    .gcm__restxt { margin: 0; color: var(--muted); max-width: 52rem; line-height: 1.65; }
   .gcm__hint { font-size: .8rem; letter-spacing: .08em; }
   .gcm__pal { display: grid; gap: 1.6rem; }
   .gcm__sub { margin: 1.2rem 0 0; font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
@@ -326,7 +326,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   .gcm__nb { font-weight: 800; font-size: .85rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
   .gcm__nb--l { font-size: clamp(1.8rem, 4.4vw, 3.4rem); line-height: 1; color: var(--gc); letter-spacing: -.01em; text-transform: none; }
   .gcm__nr { font-weight: 400; font-size: 1.1rem; } .gcm__nl { font-weight: 300; font-size: 1.1rem; }
-  @media (max-width: 860px) { .gcm__block--concept, .gcm__block--grid, .gcm__block--res { grid-template-columns: 1fr; } .gcm__cols { grid-template-columns: 1fr; } .gcm__sw { grid-template-columns: repeat(2, minmax(0, 1fr)); } .gcm__sw--x { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 860px) { .gcm__sw { grid-template-columns: repeat(2, minmax(0, 1fr)); } .gcm__sw--x { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   /* Modo oscuro "blueprint" */
   .gcm__dark { background: #2c2c2c; padding-block: clamp(4rem, 9vw, 9rem); color: #5db98a; }
   .gcm__dark-in { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 6rem); align-items: center; }
@@ -358,4 +358,23 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   };
   document.addEventListener('astro:page-load', run);
   run();
+  // Trama de módulos: al pasar el cursor, una onda sutil se propaga hacia los vecinos según su distancia
+  const ripple = () => {
+    document.querySelectorAll<SVGGElement>('.gcr__tapiz:not([data-rip])').forEach((svg) => {
+      svg.setAttribute('data-rip', '');
+      const tiles = [...svg.querySelectorAll<SVGGElement>('.gcr__tile')];
+      svg.addEventListener('pointerover', (e) => {
+        const t = (e.target as Element).closest<SVGGElement>('.gcr__tile'); if (!t) return;
+        const x = +t.dataset.gx!, y = +t.dataset.gy!;
+        tiles.forEach((o) => {
+          if (o === t) return;
+          const d = Math.hypot(+o.dataset.gx! - x, +o.dataset.gy! - y);
+          o.style.setProperty('--rd', String(Math.round(d * 7)));
+          o.classList.remove('is-rip'); void (o as unknown as HTMLElement).getBoundingClientRect(); o.classList.add('is-rip');
+        });
+      });
+    });
+  };
+  document.addEventListener('astro:page-load', ripple);
+  ripple();
 </script>
