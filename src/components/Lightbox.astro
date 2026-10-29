@@ -28,7 +28,15 @@ const label = lang === 'es'
 
 <script>
   const SEL = 'img';
-  const SKIP = 'a, button, header, nav, .pn, .pjh, [data-nozoom], .lb, .pc, footer';
+  const SKIP = 'a, button, header, nav, .pn, .pjh, .mq, [class*="mq__"], [data-parallax], [data-nozoom], .lb, .pc, footer';
+  // Solo imágenes ráster (PNG, WebP, JPG…), nunca SVG, ni las que hacen de fondo ocupando todo el ancho.
+  const ok = (i: HTMLImageElement) => {
+    const u = (i.currentSrc || i.src || '').split(/[?#]/)[0];
+    if (!u || /\.svg$/i.test(u) || u.startsWith('data:image/svg')) return false;
+    if (i.closest(SKIP)) return false;
+    const w = i.getBoundingClientRect().width;
+    return !(w > 0 && w >= document.documentElement.clientWidth * 0.97);
+  };
   const ico = {
     x: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
     l: '<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
@@ -41,8 +49,8 @@ const label = lang === 'es'
   let idx = 0, scale = 1, tx = 0, ty = 0;
   const L = () => { try { return JSON.parse(document.querySelector('[data-lb-labels]')?.getAttribute('data-lb-labels') || '{}'); } catch { return {}; } };
 
-  const zoomable = () => [...document.querySelectorAll<HTMLImageElement>('main img, article img')].filter((i) => !i.closest(SKIP) && (i.currentSrc || i.src));
-  const mark = () => { zoomable().forEach((i) => i.setAttribute('data-zoom', '')); };
+  const zoomable = () => [...document.querySelectorAll<HTMLImageElement>('main img, article img')].filter(ok);
+  const mark = () => { document.querySelectorAll<HTMLImageElement>('main img, article img').forEach((i) => (ok(i) ? i.setAttribute('data-zoom', '') : i.removeAttribute('data-zoom'))); };
 
   const apply = () => {
     const im = lb?.querySelector<HTMLElement>('.lb__img');
@@ -126,11 +134,13 @@ const label = lang === 'es'
     w.__lb = true;
     document.addEventListener('click', (e) => {
       const img = (e.target as HTMLElement).closest?.(SEL) as HTMLImageElement | null;
-      if (!img || lb || img.closest(SKIP) || !(img.currentSrc || img.src) || !img.closest('main, article')) return;
+      if (!img || lb || !ok(img) || !img.closest('main, article')) return;
       open(img);
     });
     document.addEventListener('astro:before-swap', () => { lb?.remove(); lb = null; document.documentElement.style.overflow = ''; });
   }
+  document.addEventListener('load', mark, true);
+  addEventListener('resize', mark);
   document.addEventListener('astro:page-load', mark);
   mark();
   new MutationObserver(() => mark()).observe(document.documentElement, { childList: true, subtree: true });
