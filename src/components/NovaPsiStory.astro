@@ -58,11 +58,11 @@ const t = es ? {
     ['shield', 'Legales con versión', 'Cada turno guarda qué versión de los términos aceptó el paciente.'],
   ],
   patient: 'Paciente',
-  patientA: 'Reserva desde el celular en tres pasos y gestiona sus turnos desde un link. Datos de ejemplo.',
-  ps: [['Servicio', 'Primera sesión, recurrente o evaluación, cada una con duración, valor y seña.'], ['Fecha', 'Solo se ven los días que atiende el profesional.'], ['Horario', 'Todos los horarios que aparecen están libres; elegir uno habilita continuar.'], ['Confirmar', 'Resume el turno y la seña: se paga online y llega un mail y un recordatorio.']],
+  patientA: 'Reserva desde el celular en pocos pasos y gestiona sus turnos desde un link. Datos de ejemplo.',
+  ps: [['Servicio', 'Primera sesión, recurrente o evaluación, cada una con duración, valor y seña.'], ['Fecha', 'Solo se ven los días que atiende el profesional.'], ['Horario', 'Todos los horarios que aparecen están libres; elegir uno habilita continuar.'], ['Tu motivo', 'Solo en la primera sesión con ese profesional: pide una breve reseña de por qué consulta, que le llega por mail y queda en la ficha. Quien ya se atendió no ve este paso.'], ['Confirmar', 'Resume el turno y la seña: se paga online y llega un mail y un recordatorio.']],
   pro: 'Profesional',
   proA: 'Su día, sus pacientes y su marca en un panel que se usa igual en el celular.',
-  pcap: [['pro-inicio', 'Inicio', 'Lo de hoy, lo que necesita atención (como un paciente bloqueado por saldo pendiente) y accesos rápidos.'], ['pro-agenda', 'Agenda', 'Los puntos del calendario marcan turnos por atender, atendidos y ausentes; cada turno permite marcar asistencia.'], ['pro-servicios', 'Servicios', 'Precio, duración y seña de cada servicio, y qué pasa cuando un paciente con seña no viene.'], ['pro-horarios', 'Horarios', 'La semana de atención, con atajos y franjas partidas, y las reglas de reserva.'], ['pro-pacientes', 'Pacientes', 'Listado con búsqueda y filtros; cada ficha trae contacto y notas privadas.'], ['pro-marca', 'Marca', 'Dos colores a elegir, o una combinación hecha: el sitio y sus efectos se adaptan solos.']],
+  pcap: [['pro-inicio', 'Inicio', 'Lo de hoy, lo que necesita atención (como un paciente bloqueado por saldo pendiente) y accesos rápidos.'], ['pro-agenda', 'Agenda', 'Los puntos del calendario marcan turnos por atender, atendidos y ausentes; cada turno permite marcar asistencia.'], ['pro-servicios', 'Servicios', 'Precio, duración y seña de cada servicio, y qué pasa cuando un paciente con seña no viene.'], ['pro-horarios', 'Horarios', 'La semana de atención, con atajos y franjas partidas, y las reglas de reserva.'], ['pro-reglas', 'El profesional decide cómo se reserva', 'Si apaga “Los pacientes reservan solos”, las visitas las agenda el profesional y el paciente solo gestiona su primera sesión o las que quedan fuera de agenda. También se puede pedir, o no, el motivo en la primera reserva.'], ['pro-pacientes', 'Pacientes', 'Listado con búsqueda y filtros; cada ficha trae contacto y notas privadas.'], ['pro-marca', 'Marca', 'Dos colores a elegir, o una combinación hecha: el sitio y sus efectos se adaptan solos.']],
   tech: 'Servicio técnico',
   techA: 'Ve de un vistazo si cada conexión funciona y lo deja andando sin tocar el código.',
   tcap: 'Conexiones: base de datos, cobros, correo e ingreso con Google, comprobados en vivo.',
@@ -103,11 +103,11 @@ const t = es ? {
     ['shield', 'Versioned legal terms', 'Each appointment records which version of the terms the patient accepted.'],
   ],
   patient: 'Patient',
-  patientA: 'Books from the phone in three steps and manages appointments from a link. Sample data.',
-  ps: [['Service', 'First session, recurring or evaluation, each with duration, price and deposit.'], ['Date', 'Only the days the professional works are shown.'], ['Time slot', 'Every slot shown is free; choosing one enables continuing.'], ['Confirm', 'Summarizes the appointment and deposit: paid online, followed by an email and a reminder.']],
+  patientA: 'Books from the phone in a few steps and manages appointments from a link. Sample data.',
+  ps: [['Service', 'First session, recurring or evaluation, each with duration, price and deposit.'], ['Date', 'Only the days the professional works are shown.'], ['Time slot', 'Every slot shown is free; choosing one enables continuing.'], ['Your reason', 'Only on the first session with that professional: it asks for a short note on why they consult, which reaches them by email and stays in the patient file. Returning patients don’t see this step.'], ['Confirm', 'Summarizes the appointment and deposit: paid online, followed by an email and a reminder.']],
   pro: 'Professional',
   proA: 'Their day, patients and brand in one panel that works the same on a phone.',
-  pcap: [['pro-inicio', 'Home', 'Today, what needs attention (such as a patient blocked by an outstanding balance) and quick links.'], ['pro-agenda', 'Agenda', 'Calendar dots mark appointments to attend, attended and no-shows; each appointment can be marked.'], ['pro-servicios', 'Services', 'Price, duration and deposit for each service, and what happens when a patient with a deposit doesn’t show.'], ['pro-horarios', 'Hours', 'The weekly schedule, with shortcuts and split shifts, and the booking rules.'], ['pro-pacientes', 'Patients', 'A list with search and filters; each record holds contact details and private notes.'], ['pro-marca', 'Brand', 'Pick two colors or a ready combination: the site and its effects adapt on their own.']],
+  pcap: [['pro-inicio', 'Home', 'Today, what needs attention (such as a patient blocked by an outstanding balance) and quick links.'], ['pro-agenda', 'Agenda', 'Calendar dots mark appointments to attend, attended and no-shows; each appointment can be marked.'], ['pro-servicios', 'Services', 'Price, duration and deposit for each service, and what happens when a patient with a deposit doesn’t show.'], ['pro-horarios', 'Hours', 'The weekly schedule, with shortcuts and split shifts, and the booking rules.'], ['pro-reglas', 'The professional decides how booking works', 'If “Patients book on their own” is turned off, the professional schedules the visits and the patient only manages their first session or sessions outside the agenda. The reason on the first booking can also be required or not.'], ['pro-pacientes', 'Patients', 'A list with search and filters; each record holds contact details and private notes.'], ['pro-marca', 'Brand', 'Pick two colors or a ready combination: the site and its effects adapt on their own.']],
   tech: 'Technical support',
   techA: 'Sees at a glance whether each connection works and keeps it running without touching code.',
   tcap: 'Connections: database, payments, email and Google sign-in, checked live.',
@@ -141,7 +141,7 @@ const nodes: Node[] = [
   { id: 'pro', r: 1, c: 5, kind: 'icon', ref: 'userCheck', color: '#e9e3d6' },
   { id: 'push', r: 2, c: 5, kind: 'icon', ref: 'bell', color: '#38bdf8', up: true, dev: true },
 ];
-const phoneShots = ['m2', 'm3', 'm4', 'm5'];
+const phoneShots = ['m2', 'm3', 'm4', 'm4b', 'm5'];
 const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail' ? brand('n8n') : '';
 ---
 <section class="np" aria-label={es ? 'Recorrido' : 'Walkthrough'} data-np>
@@ -314,6 +314,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__feat span:not(.np__ico) { color: var(--muted); font-size: .88rem; line-height: 1.5; }
   /* Celulares: tres por fila, a un tamaño donde el texto de la captura se lee */
   .np__phones { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 4vw, 3rem) clamp(1rem, 3vw, 2.5rem); justify-items: center; }
+  .np__phones li:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .np__phones li { display: grid; gap: 1rem; width: min(100%, 23rem); align-content: start; }
   .np__phone { padding: .45rem; border-radius: 2rem; background: #0b0b0a; box-shadow: 0 0 0 1px color-mix(in srgb, var(--ac) 35%, transparent), 0 30px 60px rgb(0 0 0 / .5); }
   .np__phone img { border-radius: 1.6rem; }
