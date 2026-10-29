@@ -1,6 +1,6 @@
 ---
-// Recorrido de NovaPsi: qué es, los tres accesos (paciente, profesional, servicio técnico), cómo se conecta todo y cómo se fue armando.
-// Capturas reales en /works/novapsi/shots/ (sitio en línea: las del paciente; demostración local: las de los paneles)
+// NovaPsi: qué es, los tres accesos y cómo se conecta. Capturas del sistema local (modo-unico, puerto 3000) en /works/novapsi/shots/
+// Paciente: capturas de celular (390 px a 3x). Paneles: 1100 px a 2x; se muestran a ancho completo para que el texto se lea.
 import { withBase, type Lang } from '../lib/i18n';
 const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
@@ -8,41 +8,46 @@ const shot = (n: string) => withBase(`/works/novapsi/shots/${n}.webp`);
 
 const t = es ? {
   what: 'Qué es',
-  whatA: 'Un sistema de turnos para consultorios de salud mental. El paciente reserva y paga una seña; el consultorio atiende, el servicio técnico lo mantiene conectado.',
-  roles: 'Tres accesos',
-  patient: 'Paciente', patientA: 'Reserva en cuatro pasos —servicio, fecha, motivo y datos—, paga la seña con Mercado Pago y gestiona sus turnos desde un link.',
-  pro: 'Profesional', proA: 'Su día, sus pacientes y su marca en un panel: agenda con asistencia, fichas con notas, servicios, horarios y notificaciones.',
-  tech: 'Servicio técnico', techA: 'Ve el estado en vivo de cada conexión —base, cobros, correo, ingreso con Google— y configura sin tocar el código.',
+  whatA: 'Un sistema de turnos para consultorios de salud mental: el paciente reserva y paga una seña, el profesional atiende y el servicio técnico mantiene todo conectado.',
+  nums: [['3', 'accesos'], ['4', 'modelos'], ['125', 'commits'], ['2,5', 'meses']],
+  patient: 'Paciente',
+  patientA: 'Reserva desde el celular en cuatro pasos y gestiona sus turnos desde un link.',
+  ps: ['Servicio', 'Fecha y hora', 'Horario', 'Motivo', 'Mis turnos'],
+  pro: 'Profesional',
+  proA: 'Su día, sus pacientes y su marca en un panel.',
+  pcap: ['Inicio: lo de hoy y lo que necesita atención', 'Agenda con asistencia', 'Servicios y señas', 'Notificaciones por correo y n8n'],
+  tech: 'Servicio técnico',
+  techA: 'Ve el estado de cada conexión —base, cobros, correo, ingreso con Google— y lo deja andando sin tocar el código.',
+  tcap: 'Estado de las conexiones, en vivo',
   links: 'Cómo se conecta',
-  flow: [['Paciente', 'reserva'], ['NovaPsi', 'turno y seña'], ['Mercado Pago', 'cobra y avisa'], ['Correo · n8n', 'confirma y recuerda'], ['Profesional', 'atiende']],
-  flowA: 'La base vive en el propio servidor (SQLite) y Airtable es opcional. Si una conexión falla, el turno se toma igual.',
+  flow: [['Paciente', 'reserva'], ['NovaPsi', 'turno y seña'], ['Mercado Pago', 'cobra'], ['Correo · n8n', 'confirma y recuerda'], ['Profesional', 'atiende']],
+  flowA: 'La base vive en el propio servidor (SQLite); Airtable es opcional. Si una conexión falla, el turno se toma igual.',
   models: 'Cuatro modelos, un código',
   modelsA: [['Clínica', 'Equipo y administración, una cuenta de cobro.'], ['Clínica multi-cobro', 'Cada profesional conecta su Mercado Pago.'], ['Profesional', 'Una persona atiende y administra.'], ['Profesional + Airtable', 'Igual, con Airtable como base.']],
-  how: 'Cómo lo fuimos armando',
-  steps: [['Ago', 'Base y flujo', 'Reserva, panel, autogestión, Mercado Pago y n8n con entorno de pruebas.'], ['Sep', 'Pacientes y notas', 'Fichas, notas clínicas y diagnóstico de conexiones.'], ['Oct', 'Producto', 'Celular primero, asistente de configuración, marca propia, correo y SQLite en el servidor.'], ['Oct', 'Cuatro modelos', 'Un código que se instala como clínica o como profesional.']],
   care: 'Cuidados',
   careA: ['Ninguna integración caída impide reservar.', 'Cobros de prueba y reales separados, con chequeo previo.', 'La seña se devuelve sola al cancelar a tiempo.', 'Claves fuera del código; un control frena cualquier commit con credenciales.'],
-  nums: [['125', 'commits'], ['11', 'pasos auditados'], ['4', 'modelos'], ['2,5', 'meses']],
-  cap: { servicio: '1 · Servicio', fecha: '2 · Fecha y hora', motivo: '3 · Motivo', paciente: 'Mis turnos', profesional: 'Inicio del profesional', agenda: 'Agenda', pacientes: 'Pacientes', servicios: 'Servicios y señas', horarios: 'Horarios', marca: 'Marca', notificaciones: 'Notificaciones', tecnico: 'Estado de las conexiones', movil: 'Pensado primero para el celular' },
 } : {
   what: 'What it is',
-  whatA: 'An appointment system for mental-health practices. Patients book and pay a deposit; the practice sees patients; technical support keeps everything connected.',
-  roles: 'Three accesses',
-  patient: 'Patient', patientA: 'Books in four steps —service, date, reason and details—, pays the deposit with Mercado Pago and manages appointments from a link.',
-  pro: 'Professional', proA: 'Their day, patients and brand in one panel: agenda with attendance, records with notes, services, hours and notifications.',
-  tech: 'Technical support', techA: 'Sees the live status of every connection —database, payments, email, Google sign-in— and configures without touching code.',
+  whatA: 'An appointment system for mental-health practices: patients book and pay a deposit, the professional sees patients and technical support keeps everything connected.',
+  nums: [['3', 'accesses'], ['4', 'models'], ['125', 'commits'], ['2.5', 'months']],
+  patient: 'Patient',
+  patientA: 'Books from the phone in four steps and manages appointments from a link.',
+  ps: ['Service', 'Date and time', 'Time slot', 'Reason', 'My appointments'],
+  pro: 'Professional',
+  proA: 'Their day, patients and brand in one panel.',
+  pcap: ['Home: today and what needs attention', 'Agenda with attendance', 'Services and deposits', 'Email and n8n notifications'],
+  tech: 'Technical support',
+  techA: 'Sees the status of every connection —database, payments, email, Google sign-in— and keeps it running without touching code.',
+  tcap: 'Live connection status',
   links: 'How it connects',
-  flow: [['Patient', 'books'], ['NovaPsi', 'appointment and deposit'], ['Mercado Pago', 'charges and notifies'], ['Email · n8n', 'confirms and reminds'], ['Professional', 'sees the patient']],
-  flowA: 'The database lives on the server itself (SQLite) and Airtable is optional. If a connection fails, the appointment is taken anyway.',
+  flow: [['Patient', 'books'], ['NovaPsi', 'appointment and deposit'], ['Mercado Pago', 'charges'], ['Email · n8n', 'confirms and reminds'], ['Professional', 'sees the patient']],
+  flowA: 'The database lives on the server itself (SQLite); Airtable is optional. If a connection fails, the appointment is taken anyway.',
   models: 'Four models, one codebase',
   modelsA: [['Clinic', 'Team and administration, one payment account.'], ['Multi-payment clinic', 'Each professional connects their Mercado Pago.'], ['Solo practitioner', 'One person sees patients and administers.'], ['Solo + Airtable', 'The same, with Airtable as the database.']],
-  how: 'How we built it',
-  steps: [['Aug', 'Base and flow', 'Booking, panel, self-service, Mercado Pago and n8n with a test environment.'], ['Sep', 'Patients and notes', 'Records, clinical notes and connection diagnostics.'], ['Oct', 'Product', 'Mobile first, setup assistant, own branding, email and SQLite on the server.'], ['Oct', 'Four models', 'One codebase installed as a clinic or as a solo practitioner.']],
   care: 'Safeguards',
   careA: ['A failed integration never blocks booking.', 'Test and real payments kept apart, with a pre-check.', 'Deposits are refunded automatically on timely cancellation.', 'Keys stay out of the code; a check blocks any commit with credentials.'],
-  nums: [['125', 'commits'], ['11', 'audited steps'], ['4', 'models'], ['2.5', 'months']],
-  cap: { servicio: '1 · Service', fecha: '2 · Date and time', motivo: '3 · Reason', paciente: 'My appointments', profesional: 'Professional home', agenda: 'Agenda', pacientes: 'Patients', servicios: 'Services and deposits', horarios: 'Hours', marca: 'Brand', notificaciones: 'Notifications', tecnico: 'Connection status', movil: 'Designed mobile-first' },
 };
+const pro = ['pro-inicio', 'pro-agenda', 'pro-servicios', 'pro-notificaciones'];
 ---
 <section class="np" aria-label={es ? 'Recorrido' : 'Walkthrough'}>
   <div class="wrap np__sec" data-reveal>
@@ -51,62 +56,44 @@ const t = es ? {
     <ul class="np__nums">{t.nums.map(([n, l]) => <li><strong>{n}</strong><span>{l}</span></li>)}</ul>
   </div>
 
+  <!-- 01 Paciente (celular) -->
   <div class="wrap np__sec" data-reveal>
-    <h2 class="h2">{t.roles}</h2>
+    <div class="np__head"><span class="np__n">01</span><h2 class="h2">{t.patient}</h2></div>
+    <p class="np__txt">{t.patientA}</p>
+    <ol class="np__phones">
+      {t.ps.map((p, i) => (
+        <li><div class="np__phone"><img src={shot(`m${i + 1}`)} alt={p} loading="lazy" decoding="async" /></div><span class="np__step"><b>{i + 1}</b> {p}</span></li>
+      ))}
+    </ol>
   </div>
 
-  <!-- Paciente -->
-  <div class="wrap np__role" data-reveal>
-    <div class="np__who"><span class="np__n">01</span><h3>{t.patient}</h3><p class="np__txt">{t.patientA}</p></div>
-    <div class="np__steps">
-      <figure class="np__shot"><img src={shot('web-servicio')} alt={t.cap.servicio} loading="lazy" decoding="async" /><figcaption class="muted">{t.cap.servicio}</figcaption></figure>
-      <figure class="np__shot"><img src={shot('web-fecha')} alt={t.cap.fecha} loading="lazy" decoding="async" /><figcaption class="muted">{t.cap.fecha}</figcaption></figure>
-      <figure class="np__shot"><img src={shot('web-motivo')} alt={t.cap.motivo} loading="lazy" decoding="async" /><figcaption class="muted">{t.cap.motivo}</figcaption></figure>
+  <!-- 02 Profesional -->
+  <div class="wrap np__sec" data-reveal>
+    <div class="np__head"><span class="np__n">02</span><h2 class="h2">{t.pro}</h2></div>
+    <p class="np__txt">{t.proA}</p>
+    <div class="np__wide">
+      {pro.map((k, i) => (
+        <figure class="np__shot"><img src={shot(k)} alt={t.pcap[i]} loading="lazy" decoding="async" /><figcaption class="muted">{t.pcap[i]}</figcaption></figure>
+      ))}
     </div>
   </div>
-  <div class="wrap np__pair" data-reveal>
-    <div class="np__phones">
-      <figure class="np__phone"><img src={shot('movil-fecha')} alt={t.cap.movil} loading="lazy" decoding="async" /></figure>
-      <figure class="np__phone"><img src={shot('movil-motivo')} alt={t.cap.movil} loading="lazy" decoding="async" /></figure>
-      <figcaption class="muted">{t.cap.movil}</figcaption>
-    </div>
-    <figure class="np__shot"><img src={shot('paciente')} alt={t.cap.paciente} loading="lazy" decoding="async" /><figcaption class="muted">{t.cap.paciente}</figcaption></figure>
+
+  <!-- 03 Servicio técnico -->
+  <div class="wrap np__sec" data-reveal>
+    <div class="np__head"><span class="np__n">03</span><h2 class="h2">{t.tech}</h2></div>
+    <p class="np__txt">{t.techA}</p>
+    <figure class="np__shot"><img src={shot('tecnico')} alt={t.tcap} loading="lazy" decoding="async" /><figcaption class="muted">{t.tcap}</figcaption></figure>
   </div>
 
-  <!-- Profesional -->
-  <div class="wrap np__role np__role--solo" data-reveal>
-    <div class="np__who"><span class="np__n">02</span><h3>{t.pro}</h3><p class="np__txt">{t.proA}</p></div>
-    <figure class="np__shot np__shot--big"><img src={shot('profesional')} alt={t.cap.profesional} loading="lazy" decoding="async" /><figcaption class="muted">{t.cap.profesional}</figcaption></figure>
-  </div>
-  <div class="wrap np__grid" data-reveal>
-    {['agenda', 'pacientes', 'servicios', 'horarios', 'marca', 'notificaciones'].map((k) => (
-      <figure class="np__shot"><img src={shot(k)} alt={t.cap[k]} loading="lazy" decoding="async" /><figcaption class="muted">{t.cap[k]}</figcaption></figure>
-    ))}
-  </div>
-
-  <!-- Servicio técnico -->
-  <div class="wrap np__role np__role--solo" data-reveal>
-    <div class="np__who"><span class="np__n">03</span><h3>{t.tech}</h3><p class="np__txt">{t.techA}</p></div>
-    <figure class="np__shot np__shot--big"><img src={shot('tecnico')} alt={t.cap.tecnico} loading="lazy" decoding="async" /><figcaption class="muted">{t.cap.tecnico}</figcaption></figure>
-  </div>
-
-  <!-- Conexiones -->
   <div class="wrap np__sec" data-reveal>
     <h2 class="h2">{t.links}</h2>
-    <ol class="np__flow">
-      {t.flow.map(([a, b], i) => <li><strong>{a}</strong><span>{b}</span></li>)}
-    </ol>
+    <ol class="np__flow">{t.flow.map(([a, b]) => <li><strong>{a}</strong><span>{b}</span></li>)}</ol>
     <p class="np__txt">{t.flowA}</p>
   </div>
 
   <div class="wrap np__sec" data-reveal>
     <h2 class="h2">{t.models}</h2>
     <ul class="np__models">{t.modelsA.map(([n, d]) => <li><strong>{n}</strong><span>{d}</span></li>)}</ul>
-  </div>
-
-  <div class="wrap np__sec" data-reveal>
-    <h2 class="h2">{t.how}</h2>
-    <ol class="np__tl">{t.steps.map(([m, h, p]) => <li><span class="np__m">{m}</span><div><h3>{h}</h3><p class="np__txt">{p}</p></div></li>)}</ol>
   </div>
 
   <div class="wrap np__sec" data-reveal>
@@ -122,25 +109,25 @@ const t = es ? {
   .np img { width: 100%; height: auto; display: block; }
   .np figcaption { font-size: .8rem; padding-top: .75rem; }
   .np .h2 { margin: 0; }
-  .np h3 { margin: 0; font-size: 1.15rem; font-weight: 500; }
   .np__sec { display: grid; gap: 1.5rem; padding-top: clamp(1.5rem, 3vw, 2.5rem); border-top: 1px solid var(--line); }
+  .np__head { display: flex; align-items: baseline; gap: 1rem; }
+  .np__n { font-size: .75rem; letter-spacing: .2em; color: var(--ac); }
   .np__txt { margin: 0; color: var(--muted); max-width: 46rem; line-height: 1.7; }
-  .np__shot img { border-radius: 8px; box-shadow: 0 30px 70px rgb(0 0 0 / .45), 0 0 0 1px var(--line); }
   .np__nums { list-style: none; margin: .5rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: clamp(1.5rem, 5vw, 4rem); }
   .np__nums li { display: grid; gap: .1rem; }
   .np__nums strong { font-size: clamp(2rem, 4vw, 3rem); font-weight: 300; line-height: 1; color: var(--ac); }
   .np__nums span { font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-  /* Cada acceso: texto a la izquierda, capturas a la derecha */
-  .np__role { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.6fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: start; }
-  .np__who { display: grid; gap: .8rem; position: sticky; top: 7rem; }
-  .np__n { font-size: .75rem; letter-spacing: .2em; color: var(--ac); }
-  .np__steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.75rem, 2vw, 1.5rem); }
-  .np__pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.6fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: center; }
-  .np__phones { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
-  .np__phones figcaption { grid-column: 1 / -1; }
-  .np__phone img { border-radius: 16px; box-shadow: 0 20px 50px rgb(0 0 0 / .45), 0 0 0 1px var(--line); }
-  .np__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2.5vw, 2rem); }
-  .np__flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; counter-reset: f; }
+  /* Celulares: tres por fila, a un tamaño donde el texto de la captura se lee */
+  .np__phones { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2.5rem); justify-items: center; }
+  .np__phones li { display: grid; gap: .8rem; width: min(100%, 22rem); }
+  .np__phone { padding: .45rem; border-radius: 2rem; background: #0b0b0a; box-shadow: 0 0 0 1px color-mix(in srgb, var(--fg) 22%, transparent), 0 30px 60px rgb(0 0 0 / .5); }
+  .np__phone img { border-radius: 1.6rem; }
+  .np__step { font-size: .85rem; color: var(--muted); text-align: center; }
+  .np__step b { color: var(--ac); font-weight: 500; margin-right: .3rem; }
+  /* Paneles: uno por fila a ancho completo, para que se lea */
+  .np__wide { display: grid; gap: clamp(2rem, 4vw, 3.5rem); }
+  .np__shot img { border-radius: 8px; box-shadow: 0 30px 70px rgb(0 0 0 / .45), 0 0 0 1px var(--line); }
+  .np__flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .np__flow li { position: relative; display: grid; gap: .3rem; padding: 1.1rem 1rem; border: 1px solid var(--line); border-left-width: 0; text-align: center; }
   .np__flow li:first-child { border-left-width: 1px; border-radius: 10px 0 0 10px; }
   .np__flow li:last-child { border-radius: 0 10px 10px 0; }
@@ -151,21 +138,15 @@ const t = es ? {
   .np__models li { display: grid; gap: .4rem; padding: 1.1rem; border: 1px solid var(--line); border-radius: 10px; align-content: start; }
   .np__models strong { font-weight: 500; }
   .np__models span { color: var(--muted); font-size: .9rem; line-height: 1.5; }
-  .np__tl { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem; }
-  .np__tl li { display: grid; grid-template-columns: 6rem minmax(0, 1fr); gap: 1.5rem; }
-  .np__m { font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ac); padding-top: .3rem; }
   .np__care { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
   .np__care li::before { content: '— '; color: var(--ac); }
   @media (max-width: 860px) {
-    .np__role, .np__pair { grid-template-columns: 1fr; }
-    .np__who { position: static; }
-    .np__steps { grid-template-columns: 1fr; }
-    .np__grid { grid-template-columns: 1fr 1fr; }
+    .np__phones { grid-template-columns: 1fr 1fr; }
     .np__flow { grid-template-columns: 1fr; }
     .np__flow li, .np__flow li:first-child, .np__flow li:last-child { border-width: 1px 1px 0; border-radius: 0; }
     .np__flow li:first-child { border-radius: 10px 10px 0 0; } .np__flow li:last-child { border-width: 1px; border-radius: 0 0 10px 10px; }
     .np__flow li:not(:last-child)::after { content: '↓'; right: 50%; top: auto; bottom: -.6rem; transform: translateX(50%); }
     .np__models { grid-template-columns: 1fr 1fr; }
-    .np__tl li { grid-template-columns: 1fr; gap: .25rem; }
   }
+  @media (max-width: 520px) { .np__phones { grid-template-columns: 1fr; } }
 </style>
