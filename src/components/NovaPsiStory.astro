@@ -1,68 +1,134 @@
 ---
-// NovaPsi: qué es, los tres accesos y cómo se conecta. Capturas del sistema local (modo-unico, puerto 3000) en /works/novapsi/shots/
-// Paciente: capturas de celular (390 px a 3x). Paneles: 1100 px a 2x; se muestran a ancho completo para que el texto se lea.
+// NovaPsi: qué es, funcionalidades, los tres accesos con capturas explicadas y cómo se conecta.
+// Capturas del sistema local en modo de demostración (Tour del Servicio): datos de ejemplo, ninguna persona ni cuenta real.
+// Paciente: celular (390 px a 3x). Paneles: 1100 px a 2x, a ancho completo para que el texto se lea.
 import { withBase, type Lang } from '../lib/i18n';
 const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
 const shot = (n: string) => withBase(`/works/novapsi/shots/${n}.webp`);
+const brand = (n: string) => withBase(`/works/novapsi/brands/${n}.svg`);
+
+const I: Record<string, string> = {
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  card: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+  swap: '<path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/>',
+  bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M22 21a7 7 0 0 0-4-6.3"/>',
+  file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
+  ban: '<circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/>',
+  palette: '<circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 22a10 10 0 1 1 10-10c0 3-2 4-4 4h-2a2 2 0 0 0-1.5 3.3A2 2 0 0 1 12 22z"/>',
+  shield: '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+  layers: '<path d="m12 2 10 5-10 5L2 7z"/><path d="m2 12 10 5 10-5M2 17l10 5 10-5"/>',
+  phone: '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  userCheck: '<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="m16 11 2 2 4-4"/>',
+  pulse: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+  database: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+};
+const ic = (k: string) => `<svg viewBox="0 0 24 24" aria-hidden="true">${I[k]}</svg>`;
 
 const t = es ? {
   what: 'Qué es',
   whatA: 'Un sistema de turnos para consultorios de salud mental: el paciente reserva y paga una seña, el profesional atiende y el servicio técnico mantiene todo conectado.',
-  nums: [['3', 'accesos'], ['4', 'modelos'], ['125', 'commits'], ['2,5', 'meses']],
+  nums: [[3, 'accesos'], [4, 'modelos'], [125, 'commits'], [11, 'pasos auditados']],
+  feat: 'Qué hace',
+  features: [
+    ['calendar', 'Reserva en pasos', 'Servicio, fecha, motivo y datos, pensado primero para el celular.'],
+    ['clock', 'Disponibilidad real', 'Solo se ofrecen horarios libres, calculados en el servidor.'],
+    ['card', 'Seña online', 'Cobro con Mercado Pago, con la comisión incluida en un solo importe.'],
+    ['undo', 'Devolución automática', 'La seña vuelve sola si se cancela a tiempo, con respaldo de cada paso.'],
+    ['swap', 'Autogestión', 'El paciente cambia o cancela su turno desde un link, dentro del plazo.'],
+    ['bell', 'Avisos y recordatorios', 'Confirmaciones y recordatorio 24 h antes, por correo o n8n.'],
+    ['userCheck', 'Agenda y asistencia', 'El día del profesional, con turnos atendidos y ausentes.'],
+    ['file', 'Fichas y notas', 'Datos de contacto y notas privadas que solo lee el profesional.'],
+    ['ban', 'Bloqueo por inasistencia', 'Si falta con seña pagada, no reserva más hasta abonar el saldo.'],
+    ['palette', 'Marca propia', 'Dos colores y el sitio entero se adapta, en modo claro y oscuro.'],
+    ['pulse', 'Estado de conexiones', 'Se ve en vivo si la base, los cobros y el correo funcionan.'],
+    ['shield', 'Legales con versión', 'Cada turno guarda qué versión de los términos aceptó el paciente.'],
+  ],
   patient: 'Paciente',
-  patientA: 'Reserva desde el celular en cuatro pasos y gestiona sus turnos desde un link.',
-  ps: ['Servicio', 'Fecha y hora', 'Horario', 'Motivo', 'Mis turnos'],
+  patientA: 'Reserva desde el celular en tres pasos y gestiona sus turnos desde un link. Datos de ejemplo.',
+  ps: [['Punto de partida', 'Elige el tipo de sesión deslizando; ve duración, valor y seña antes de reservar.'], ['Servicio', 'Primera sesión, recurrente o evaluación, cada una con duración, valor y seña.'], ['Fecha', 'Solo se ven los días que atiende el profesional.'], ['Horario', 'Todos los horarios que aparecen están libres; elegir uno habilita continuar.'], ['Confirmar', 'Resume el turno y la seña: se paga online y llega un mail y un recordatorio.']],
   pro: 'Profesional',
-  proA: 'Su día, sus pacientes y su marca en un panel.',
-  pcap: ['Inicio: lo de hoy y lo que necesita atención', 'Agenda con asistencia', 'Servicios y señas', 'Notificaciones por correo y n8n'],
+  proA: 'Su día, sus pacientes y su marca en un panel que se usa igual en el celular.',
+  pcap: [['pro-inicio', 'Inicio', 'Lo de hoy, lo que necesita atención (como un paciente bloqueado por saldo pendiente) y accesos rápidos.'], ['pro-agenda', 'Agenda', 'Los puntos del calendario marcan turnos por atender, atendidos y ausentes; cada turno permite marcar asistencia.'], ['pro-servicios', 'Servicios', 'Precio, duración y seña de cada servicio, y qué pasa cuando un paciente con seña no viene.'], ['pro-horarios', 'Horarios', 'La semana de atención, con atajos y franjas partidas, y las reglas de reserva.'], ['pro-pacientes', 'Pacientes', 'Listado con búsqueda y filtros; cada ficha trae contacto y notas privadas.'], ['pro-marca', 'Marca', 'Dos colores a elegir, o una combinación hecha: el sitio y sus efectos se adaptan solos.']],
   tech: 'Servicio técnico',
-  techA: 'Ve el estado de cada conexión —base, cobros, correo, ingreso con Google— y lo deja andando sin tocar el código.',
-  tcap: 'Estado de las conexiones, en vivo',
+  techA: 'Ve de un vistazo si cada conexión funciona y lo deja andando sin tocar el código.',
+  tcap: 'Conexiones: base de datos, cobros, correo e ingreso con Google, comprobados en vivo.',
   links: 'Cómo se conecta',
-  flow: [['Paciente', 'reserva'], ['NovaPsi', 'turno y seña'], ['Mercado Pago', 'cobra'], ['Correo · n8n', 'confirma y recuerda'], ['Profesional', 'atiende']],
-  flowA: 'La base vive en el propio servidor (SQLite); Airtable es opcional. Si una conexión falla, el turno se toma igual.',
+  flow: [['user', 'Paciente', 'reserva desde el celular'], ['app', 'NovaPsi', 'registra turno y seña'], ['mp', 'Mercado Pago', 'cobra la seña y avisa'], ['mail', 'Correo · n8n', 'confirma y recuerda'], ['userCheck', 'Profesional', 'atiende']],
+  data: 'Dónde se guardan los datos',
+  dataA: [['sqlite', 'SQLite', 'Por defecto: un archivo en el propio servidor, con copias diarias.'], ['airtable', 'Airtable', 'Opcional: como base de datos para quien ya lo usa.']],
   models: 'Cuatro modelos, un código',
-  modelsA: [['Clínica', 'Equipo y administración, una cuenta de cobro.'], ['Clínica multi-cobro', 'Cada profesional conecta su Mercado Pago.'], ['Profesional', 'Una persona atiende y administra.'], ['Profesional + Airtable', 'Igual, con Airtable como base.']],
+  modelsA: [['users', 'Clínica', 'Equipo y administración, una cuenta de cobro.'], ['card', 'Clínica multi-cobro', 'Cada profesional conecta su propio Mercado Pago.'], ['user', 'Profesional', 'Una persona atiende y administra.'], ['database', 'Profesional + Airtable', 'Igual, con Airtable como base.']],
   care: 'Cuidados',
-  careA: ['Ninguna integración caída impide reservar.', 'Cobros de prueba y reales separados, con chequeo previo.', 'La seña se devuelve sola al cancelar a tiempo.', 'Claves fuera del código; un control frena cualquier commit con credenciales.'],
+  careA: ['Ninguna integración caída impide reservar.', 'Cobros de prueba y reales separados, con chequeo previo.', 'Claves fuera del código; un control frena cualquier commit con credenciales.'],
 } : {
   what: 'What it is',
   whatA: 'An appointment system for mental-health practices: patients book and pay a deposit, the professional sees patients and technical support keeps everything connected.',
-  nums: [['3', 'accesses'], ['4', 'models'], ['125', 'commits'], ['2.5', 'months']],
+  nums: [[3, 'accesses'], [4, 'models'], [125, 'commits'], [11, 'audited steps']],
+  feat: 'What it does',
+  features: [
+    ['calendar', 'Step-by-step booking', 'Service, date, reason and details, designed mobile-first.'],
+    ['clock', 'Real availability', 'Only free slots are offered, computed on the server.'],
+    ['card', 'Online deposit', 'Paid with Mercado Pago, with the fee included in a single amount.'],
+    ['undo', 'Automatic refund', 'The deposit comes back on its own if canceled in time, with a record of each step.'],
+    ['swap', 'Self-service', 'Patients change or cancel from a link, within the allowed window.'],
+    ['bell', 'Notices and reminders', 'Confirmations and a 24-hour reminder, by email or n8n.'],
+    ['userCheck', 'Agenda and attendance', 'The professional’s day, with attended and no-show appointments.'],
+    ['file', 'Records and notes', 'Contact details and private notes that only the professional reads.'],
+    ['ban', 'No-show blocking', 'If they miss with a paid deposit, no new bookings until the balance is paid.'],
+    ['palette', 'Own branding', 'Two colors and the whole site adapts, in light and dark mode.'],
+    ['pulse', 'Connection status', 'Shows live whether database, payments and email work.'],
+    ['shield', 'Versioned legal terms', 'Each appointment records which version of the terms the patient accepted.'],
+  ],
   patient: 'Patient',
-  patientA: 'Books from the phone in four steps and manages appointments from a link.',
-  ps: ['Service', 'Date and time', 'Time slot', 'Reason', 'My appointments'],
+  patientA: 'Books from the phone in three steps and manages appointments from a link. Sample data.',
+  ps: [['Starting point', 'Slide to pick the session type; see duration, price and deposit before booking.'], ['Service', 'First session, recurring or evaluation, each with duration, price and deposit.'], ['Date', 'Only the days the professional works are shown.'], ['Time slot', 'Every slot shown is free; choosing one enables continuing.'], ['Confirm', 'Summarizes the appointment and deposit: paid online, followed by an email and a reminder.']],
   pro: 'Professional',
-  proA: 'Their day, patients and brand in one panel.',
-  pcap: ['Home: today and what needs attention', 'Agenda with attendance', 'Services and deposits', 'Email and n8n notifications'],
+  proA: 'Their day, patients and brand in one panel that works the same on a phone.',
+  pcap: [['pro-inicio', 'Home', 'Today, what needs attention (such as a patient blocked by an outstanding balance) and quick links.'], ['pro-agenda', 'Agenda', 'Calendar dots mark appointments to attend, attended and no-shows; each appointment can be marked.'], ['pro-servicios', 'Services', 'Price, duration and deposit for each service, and what happens when a patient with a deposit doesn’t show.'], ['pro-horarios', 'Hours', 'The weekly schedule, with shortcuts and split shifts, and the booking rules.'], ['pro-pacientes', 'Patients', 'A list with search and filters; each record holds contact details and private notes.'], ['pro-marca', 'Brand', 'Pick two colors or a ready combination: the site and its effects adapt on their own.']],
   tech: 'Technical support',
-  techA: 'Sees the status of every connection —database, payments, email, Google sign-in— and keeps it running without touching code.',
-  tcap: 'Live connection status',
+  techA: 'Sees at a glance whether each connection works and keeps it running without touching code.',
+  tcap: 'Connections: database, payments, email and Google sign-in, checked live.',
   links: 'How it connects',
-  flow: [['Patient', 'books'], ['NovaPsi', 'appointment and deposit'], ['Mercado Pago', 'charges'], ['Email · n8n', 'confirms and reminds'], ['Professional', 'sees the patient']],
-  flowA: 'The database lives on the server itself (SQLite); Airtable is optional. If a connection fails, the appointment is taken anyway.',
+  flow: [['user', 'Patient', 'books from the phone'], ['app', 'NovaPsi', 'records appointment and deposit'], ['mp', 'Mercado Pago', 'charges the deposit and notifies'], ['mail', 'Email · n8n', 'confirms and reminds'], ['userCheck', 'Professional', 'sees the patient']],
+  data: 'Where the data lives',
+  dataA: [['sqlite', 'SQLite', 'By default: a file on the server itself, with daily copies.'], ['airtable', 'Airtable', 'Optional: as the database for those who already use it.']],
   models: 'Four models, one codebase',
-  modelsA: [['Clinic', 'Team and administration, one payment account.'], ['Multi-payment clinic', 'Each professional connects their Mercado Pago.'], ['Solo practitioner', 'One person sees patients and administers.'], ['Solo + Airtable', 'The same, with Airtable as the database.']],
+  modelsA: [['users', 'Clinic', 'Team and administration, one payment account.'], ['card', 'Multi-payment clinic', 'Each professional connects their own Mercado Pago.'], ['user', 'Solo practitioner', 'One person sees patients and administers.'], ['database', 'Solo + Airtable', 'The same, with Airtable as the database.']],
   care: 'Safeguards',
-  careA: ['A failed integration never blocks booking.', 'Test and real payments kept apart, with a pre-check.', 'Deposits are refunded automatically on timely cancellation.', 'Keys stay out of the code; a check blocks any commit with credentials.'],
+  careA: ['A failed integration never blocks booking.', 'Test and real payments kept apart, with a pre-check.', 'Keys stay out of the code; a check blocks any commit with credentials.'],
 };
-const pro = ['pro-inicio', 'pro-agenda', 'pro-servicios', 'pro-notificaciones'];
+const phoneShots = ['m1', 'm2', 'm3', 'm4', 'm5'];
+const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail' ? brand('n8n') : '';
 ---
-<section class="np" aria-label={es ? 'Recorrido' : 'Walkthrough'}>
+<section class="np" aria-label={es ? 'Recorrido' : 'Walkthrough'} data-np>
   <div class="wrap np__sec" data-reveal>
     <h2 class="h2">{t.what}</h2>
     <p class="np__txt">{t.whatA}</p>
-    <ul class="np__nums">{t.nums.map(([n, l]) => <li><strong>{n}</strong><span>{l}</span></li>)}</ul>
+    <ul class="np__nums">{t.nums.map(([n, l]) => <li><strong data-to={n}>{n}</strong><span>{l}</span></li>)}</ul>
+  </div>
+
+  <div class="wrap np__sec" data-reveal>
+    <h2 class="h2">{t.feat}</h2>
+    <ul class="np__feat" data-rv>
+      {t.features.map(([k, h, p], i) => <li style={`--i:${i}`}><span class="np__ico" set:html={ic(k)} /><div><strong>{h}</strong><span>{p}</span></div></li>)}
+    </ul>
   </div>
 
   <!-- 01 Paciente (celular) -->
   <div class="wrap np__sec" data-reveal>
     <div class="np__head"><span class="np__n">01</span><h2 class="h2">{t.patient}</h2></div>
     <p class="np__txt">{t.patientA}</p>
-    <ol class="np__phones">
-      {t.ps.map((p, i) => (
-        <li><div class="np__phone"><img src={shot(`m${i + 1}`)} alt={p} loading="lazy" decoding="async" /></div><span class="np__step"><b>{i + 1}</b> {p}</span></li>
+    <ol class="np__phones" data-rv>
+      {t.ps.map(([h, p], i) => (
+        <li style={`--i:${i}`}>
+          <div class="np__phone"><img src={shot(phoneShots[i])} alt={h} loading="lazy" decoding="async" /></div>
+          <div class="np__cap"><b>{i + 1}</b><div><strong>{h}</strong><span>{p}</span></div></div>
+        </li>
       ))}
     </ol>
   </div>
@@ -72,8 +138,8 @@ const pro = ['pro-inicio', 'pro-agenda', 'pro-servicios', 'pro-notificaciones'];
     <div class="np__head"><span class="np__n">02</span><h2 class="h2">{t.pro}</h2></div>
     <p class="np__txt">{t.proA}</p>
     <div class="np__wide">
-      {pro.map((k, i) => (
-        <figure class="np__shot"><img src={shot(k)} alt={t.pcap[i]} loading="lazy" decoding="async" /><figcaption class="muted">{t.pcap[i]}</figcaption></figure>
+      {t.pcap.map(([k, h, p]) => (
+        <figure class="np__shot"><img src={shot(k)} alt={h} loading="lazy" decoding="async" /><figcaption><strong>{h}</strong><span>{p}</span></figcaption></figure>
       ))}
     </div>
   </div>
@@ -82,18 +148,34 @@ const pro = ['pro-inicio', 'pro-agenda', 'pro-servicios', 'pro-notificaciones'];
   <div class="wrap np__sec" data-reveal>
     <div class="np__head"><span class="np__n">03</span><h2 class="h2">{t.tech}</h2></div>
     <p class="np__txt">{t.techA}</p>
-    <figure class="np__shot"><img src={shot('tecnico')} alt={t.tcap} loading="lazy" decoding="async" /><figcaption class="muted">{t.tcap}</figcaption></figure>
+    <figure class="np__shot"><img src={shot('tecnico')} alt={t.tcap} loading="lazy" decoding="async" /><figcaption><span>{t.tcap}</span></figcaption></figure>
   </div>
 
+  <!-- Conexiones -->
   <div class="wrap np__sec" data-reveal>
     <h2 class="h2">{t.links}</h2>
-    <ol class="np__flow">{t.flow.map(([a, b]) => <li><strong>{a}</strong><span>{b}</span></li>)}</ol>
-    <p class="np__txt">{t.flowA}</p>
+    <ol class="np__flow" data-rv>
+      {t.flow.map(([k, a, b], i) => (
+        <li style={`--i:${i}`}>
+          <span class="np__node">{k === 'mp' || k === 'mail'
+            ? <span class="np__logo" style={`--m:url(${brandIcon(k)});--c:${k === 'mp' ? '#2fb5f0' : '#ea4b71'}`}></span>
+            : k === 'app'
+              ? <span class="np__app">Ψ</span>
+              : <span class="np__ico np__ico--lg" set:html={ic(k)} />}</span>
+          <strong>{a}</strong><span>{b}</span>
+        </li>
+      ))}
+      <i class="np__pulse" aria-hidden="true"></i>
+    </ol>
+    <h3 class="np__sub">{t.data}</h3>
+    <ul class="np__data" data-rv>
+      {t.dataA.map(([k, a, b], i) => <li style={`--i:${i}`}><span class="np__logo np__logo--lg" style={`--m:url(${brand(k)});--c:${k === 'airtable' ? '#fcb400' : '#6fb2e0'}`}></span><div><strong>{a}</strong><span>{b}</span></div></li>)}
+    </ul>
   </div>
 
   <div class="wrap np__sec" data-reveal>
     <h2 class="h2">{t.models}</h2>
-    <ul class="np__models">{t.modelsA.map(([n, d]) => <li><strong>{n}</strong><span>{d}</span></li>)}</ul>
+    <ul class="np__models" data-rv>{t.modelsA.map(([k, n, d], i) => <li style={`--i:${i}`}><span class="np__ico" set:html={ic(k)} /><strong>{n}</strong><span>{d}</span></li>)}</ul>
   </div>
 
   <div class="wrap np__sec" data-reveal>
@@ -103,50 +185,100 @@ const pro = ['pro-inicio', 'pro-agenda', 'pro-servicios', 'pro-notificaciones'];
 </section>
 
 <style>
-  .np { --ac: #a9aedb; display: grid; gap: clamp(3.5rem, 7vw, 7rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(5rem, 9vw, 9rem); }
+  /* Armonía: una paleta de cuatro tonos sacada del isotipo y de la marca del sistema — ciruela-azulado (base), pervinca (acento), cielo (flujo) y crema (texto cálido) */
+  .np { --ac: #a9aedb; --sky: #38bdf8; --cream: #f1e9dc; --ink: #14121f; display: grid; gap: clamp(3.5rem, 7vw, 7rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(5rem, 9vw, 9rem); }
   .np > .wrap { max-width: 72rem; }
   .np figure { margin: 0; }
   .np img { width: 100%; height: auto; display: block; }
-  .np figcaption { font-size: .8rem; padding-top: .75rem; }
   .np .h2 { margin: 0; }
-  .np__sec { display: grid; gap: 1.5rem; padding-top: clamp(1.5rem, 3vw, 2.5rem); border-top: 1px solid var(--line); }
+  .np__sec { display: grid; gap: 1.5rem; padding-top: clamp(1.5rem, 3vw, 2.5rem); border-top: 1px solid color-mix(in srgb, var(--ac) 28%, var(--line)); }
   .np__head { display: flex; align-items: baseline; gap: 1rem; }
-  .np__n { font-size: .75rem; letter-spacing: .2em; color: var(--ac); }
+  .np__n { font-size: .75rem; letter-spacing: .2em; color: var(--sky); }
   .np__txt { margin: 0; color: var(--muted); max-width: 46rem; line-height: 1.7; }
+  .np__sub { margin: 1.5rem 0 0; font-size: .8rem; letter-spacing: .16em; text-transform: uppercase; font-weight: 500; color: var(--cream); }
+  .np strong { font-weight: 500; }
   .np__nums { list-style: none; margin: .5rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: clamp(1.5rem, 5vw, 4rem); }
   .np__nums li { display: grid; gap: .1rem; }
-  .np__nums strong { font-size: clamp(2rem, 4vw, 3rem); font-weight: 300; line-height: 1; color: var(--ac); }
+  .np__nums strong { font-size: clamp(2rem, 4vw, 3rem); font-weight: 300; line-height: 1; color: var(--ac); font-variant-numeric: tabular-nums; }
   .np__nums span { font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  /* Íconos */
+  .np__ico { color: var(--ac); display: inline-grid; place-items: center; width: 2.4rem; aspect-ratio: 1; border-radius: 10px; color: var(--ac); background: color-mix(in srgb, var(--ac) 12%, transparent); border: 1px solid color-mix(in srgb, var(--ac) 30%, transparent); flex: none; }
+  .np__ico :global(svg) { width: 55%; height: 55%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .np__ico--lg { width: 3.4rem; border-radius: 14px; color: var(--cream); }
+  /* Funcionalidades */
+  .np__feat { list-style: none; margin: .5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .np__feat li { display: flex; gap: .9rem; padding: 1.1rem; border: 1px solid var(--line); border-radius: 12px; }
+  .np__feat div { display: grid; gap: .25rem; align-content: start; }
+  .np__feat span:not(.np__ico) { color: var(--muted); font-size: .88rem; line-height: 1.5; }
   /* Celulares: tres por fila, a un tamaño donde el texto de la captura se lee */
-  .np__phones { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2.5rem); justify-items: center; }
-  .np__phones li { display: grid; gap: .8rem; width: min(100%, 22rem); }
-  .np__phone { padding: .45rem; border-radius: 2rem; background: #0b0b0a; box-shadow: 0 0 0 1px color-mix(in srgb, var(--fg) 22%, transparent), 0 30px 60px rgb(0 0 0 / .5); }
+  .np__phones { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(2rem, 4vw, 3rem) clamp(1rem, 3vw, 2.5rem); justify-items: center; }
+  .np__phones li { display: grid; gap: 1rem; width: min(100%, 22rem); align-content: start; }
+  .np__phone { padding: .45rem; border-radius: 2rem; background: #0b0b0a; box-shadow: 0 0 0 1px color-mix(in srgb, var(--ac) 35%, transparent), 0 30px 60px rgb(0 0 0 / .5); }
   .np__phone img { border-radius: 1.6rem; }
-  .np__step { font-size: .85rem; color: var(--muted); text-align: center; }
-  .np__step b { color: var(--ac); font-weight: 500; margin-right: .3rem; }
-  /* Paneles: uno por fila a ancho completo, para que se lea */
-  .np__wide { display: grid; gap: clamp(2rem, 4vw, 3.5rem); }
-  .np__shot img { border-radius: 8px; box-shadow: 0 30px 70px rgb(0 0 0 / .45), 0 0 0 1px var(--line); }
-  .np__flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .np__flow li { position: relative; display: grid; gap: .3rem; padding: 1.1rem 1rem; border: 1px solid var(--line); border-left-width: 0; text-align: center; }
-  .np__flow li:first-child { border-left-width: 1px; border-radius: 10px 0 0 10px; }
-  .np__flow li:last-child { border-radius: 0 10px 10px 0; }
-  .np__flow li:not(:last-child)::after { content: '→'; position: absolute; right: -.55rem; top: 50%; transform: translateY(-50%); background: var(--bg); color: var(--ac); font-size: .9rem; z-index: 1; line-height: 1; }
-  .np__flow strong { font-weight: 500; }
-  .np__flow span { font-size: .8rem; color: var(--muted); }
+  .np__cap { display: flex; gap: .7rem; }
+  .np__cap b { display: grid; place-items: center; width: 1.5rem; aspect-ratio: 1; border-radius: 50%; background: color-mix(in srgb, var(--sky) 18%, transparent); color: var(--sky); font-size: .75rem; font-weight: 500; flex: none; }
+  .np__cap div { display: grid; gap: .2rem; }
+  .np__cap span { color: var(--muted); font-size: .85rem; line-height: 1.5; }
+  /* Paneles: uno por fila a ancho completo, con la explicación debajo */
+  .np__wide { display: grid; gap: clamp(2.5rem, 5vw, 4rem); }
+  .np__shot img { border-radius: 8px; box-shadow: 0 30px 70px rgb(0 0 0 / .45), 0 0 0 1px color-mix(in srgb, var(--ac) 22%, transparent); }
+  .np figcaption { display: grid; gap: .25rem; padding-top: .9rem; max-width: 46rem; }
+  .np figcaption span { color: var(--muted); font-size: .9rem; line-height: 1.55; }
+  /* Flujo con íconos y logos */
+  .np__flow { position: relative; list-style: none; margin: .5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; }
+  .np__flow::before { content: ''; position: absolute; left: 10%; right: 10%; top: 2.2rem; height: 1px; background: linear-gradient(90deg, var(--ac), var(--sky)); transform-origin: left; transform: scaleX(0); transition: transform 1.6s var(--ease) .2s; }
+  .np__flow.is-in::before { transform: scaleX(1); }
+  .np__flow li { position: relative; display: grid; justify-items: center; gap: .35rem; text-align: center; padding: 0 .5rem; }
+  .np__flow li > span:last-child { font-size: .8rem; color: var(--muted); line-height: 1.4; }
+  .np__node { display: grid; place-items: center; width: 4.4rem; aspect-ratio: 1; border-radius: 50%; background: var(--bg); border: 1px solid color-mix(in srgb, var(--ac) 40%, transparent); margin-bottom: .5rem; position: relative; z-index: 1; }
+  .np__app { font-size: 1.7rem; color: var(--cream); font-family: var(--serif); line-height: 1; }
+  .np__logo { display: inline-block; width: 2.1rem; aspect-ratio: 1; background: var(--c); -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
+  .np__logo--lg { width: 2.8rem; }
+  .np__pulse { position: absolute; top: calc(2.2rem - 4px); left: 10%; width: 9px; height: 9px; border-radius: 50%; background: var(--sky); box-shadow: 0 0 16px 4px color-mix(in srgb, var(--sky) 60%, transparent); opacity: 0; z-index: 2; }
+  .np__flow.is-in .np__pulse { animation: np-pulse 4.2s 2s ease-in-out infinite; }
+  @keyframes np-pulse { 0% { left: 10%; opacity: 0; } 8% { opacity: 1; } 92% { opacity: 1; } 100% { left: 90%; opacity: 0; } }
+  .np__data { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .np__data li { display: flex; gap: 1rem; align-items: center; padding: 1.1rem; border: 1px solid var(--line); border-radius: 12px; }
+  .np__data div { display: grid; gap: .25rem; }
+  .np__data span:not(.np__logo) { color: var(--muted); font-size: .88rem; line-height: 1.5; }
   .np__models { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
-  .np__models li { display: grid; gap: .4rem; padding: 1.1rem; border: 1px solid var(--line); border-radius: 10px; align-content: start; }
-  .np__models strong { font-weight: 500; }
-  .np__models span { color: var(--muted); font-size: .9rem; line-height: 1.5; }
+  .np__models li { display: grid; gap: .5rem; padding: 1.1rem; border: 1px solid var(--line); border-radius: 12px; align-content: start; justify-items: start; }
+  .np__models span:not(.np__ico) { color: var(--muted); font-size: .88rem; line-height: 1.5; }
   .np__care { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
-  .np__care li::before { content: '— '; color: var(--ac); }
-  @media (max-width: 860px) {
-    .np__phones { grid-template-columns: 1fr 1fr; }
-    .np__flow { grid-template-columns: 1fr; }
-    .np__flow li, .np__flow li:first-child, .np__flow li:last-child { border-width: 1px 1px 0; border-radius: 0; }
-    .np__flow li:first-child { border-radius: 10px 10px 0 0; } .np__flow li:last-child { border-width: 1px; border-radius: 0 0 10px 10px; }
-    .np__flow li:not(:last-child)::after { content: '↓'; right: 50%; top: auto; bottom: -.6rem; transform: translateX(50%); }
-    .np__models { grid-template-columns: 1fr 1fr; }
+  .np__care li::before { content: '— '; color: var(--sky); }
+  /* Animación de aparición: los elementos [data-rv] entran en escalera al verse (clase is-in desde el script) */
+  [data-rv] > li { opacity: 0; transform: translateY(18px); transition: opacity .9s var(--ease) calc(var(--i, 0) * .09s), transform .9s var(--ease) calc(var(--i, 0) * .09s); }
+  [data-rv].is-in > li { opacity: 1; transform: none; }
+  .np__phones.is-in .np__phone { animation: np-float 7s ease-in-out infinite; animation-delay: calc(var(--i, 0) * -1.3s); }
+  .np__phones li:nth-child(even) .np__phone { animation-direction: reverse; }
+  @keyframes np-float { 50% { transform: translateY(-7px); } }
+  @media (prefers-reduced-motion: reduce) {
+    [data-rv] > li { opacity: 1; transform: none; transition: none; }
+    .np__flow::before { transform: none; transition: none; } .np__pulse { display: none; } .np__phones .np__phone { animation: none !important; }
   }
-  @media (max-width: 520px) { .np__phones { grid-template-columns: 1fr; } }
+  @media (max-width: 860px) {
+    .np__feat { grid-template-columns: 1fr 1fr; }
+    .np__phones { grid-template-columns: 1fr 1fr; }
+    .np__flow { grid-template-columns: 1fr; gap: 1.5rem; } .np__flow::before, .np__pulse { display: none; }
+    .np__data, .np__models { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 520px) { .np__feat, .np__phones, .np__data, .np__models { grid-template-columns: 1fr; } }
 </style>
+
+<script>
+  // Escalera de aparición, y cuentas que suben al mostrarse
+  const wire = () => {
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const el = e.target as HTMLElement; el.classList.add('is-in'); io.unobserve(el);
+      el.querySelectorAll<HTMLElement>('[data-to]').forEach((n) => {
+        const to = Number(n.dataset.to); if (!to || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const t0 = performance.now(); const dur = 1400;
+        const tick = (now: number) => { const k = Math.min(1, (now - t0) / dur); n.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(tick); };
+        requestAnimationFrame(tick);
+      });
+    }), { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll<HTMLElement>('[data-rv]:not([data-rv-ready]), .np__nums:not([data-rv-ready])').forEach((el) => { el.dataset.rvReady = '1'; io.observe(el); });
+  };
+  document.addEventListener('astro:page-load', wire);
+</script>

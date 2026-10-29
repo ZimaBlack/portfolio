@@ -16,7 +16,7 @@ links:
 manual: novapsi
 featured: false
 order: 6
-tones: ["#14121f", "#6b6f9c"]
+tones: ["#14121f", "#5d5f93"]
 stack: ["Next.js 14", "TypeScript", "Tailwind", "SQLite", "Mercado Pago", "n8n"]
 gallery: []
 ---
