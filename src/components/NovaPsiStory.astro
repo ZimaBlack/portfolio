@@ -11,7 +11,7 @@ import boxes from '../data/novapsi-boxes.json';
 // Las capturas existen en los dos idiomas (la interfaz del sistema es en español: las de inglés son la misma pantalla con los textos traducidos)
 const shot = (n: string) => withBase(`/works/novapsi/shots/${n}${lang === 'en' ? '-en' : ''}.webp`);
 // Zona clave de cada captura (la que marca el Tour del sistema), en fracción de la imagen
-const hl = (n: string) => { const b = (boxes as Record<string, number[]>)[n]; if (!b) return ''; const x = Math.max(0, b[0]), y = Math.max(0, b[1]); const w = Math.min(1 - x, b[2]), h = Math.min(1 - y, b[3]); return `left:${(x * 100).toFixed(2)}%;top:${(y * 100).toFixed(2)}%;width:${(w * 100).toFixed(2)}%;height:${(h * 100).toFixed(2)}%`; };
+const hl = (n: string) => { const b = (boxes as Record<string, number[]>)[n]; if (!b) return ''; const x = Math.max(0, b[0]), y = Math.max(0, b[1]); const w = Math.min(1 - x, b[2]), h = Math.min(1 - y, b[3]); return `left:calc(${(x * 100).toFixed(2)}% - var(--gap));top:calc(${(y * 100).toFixed(2)}% - var(--gap));width:calc(${(w * 100).toFixed(2)}% + var(--gap) * 2);height:calc(${(h * 100).toFixed(2)}% + var(--gap) * 2)`; };
 const mk = (n: string) => withBase(`/works/novapsi/marca/${n}.svg`);
 const brand = (n: string) => withBase(`/works/novapsi/brands/${n}.svg`);
 
@@ -323,7 +323,10 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__cap span { color: var(--muted); font-size: .85rem; line-height: 1.5; }
   /* Resaltado muy sutil de la zona clave de cada captura: un marco de luz que respira, sin tapar nada */
   .np__hlwrap { position: relative; }
-  .np__hl { position: absolute; border-radius: 12px; pointer-events: none; opacity: 0; z-index: 2; }
+  /* El marco se separa de la zona marcada: --gap es la distancia entre la zona y la línea de luz */
+  .np__hl { --gap: .9rem; position: absolute; border-radius: 18px; pointer-events: none; opacity: 0; z-index: 2; }
+  .np__phone .np__hl { --gap: .6rem; border-radius: 16px; }
+  .np__stage .np__hl { --gap: .45rem; border-radius: 14px; }
   .np__stage .np__hl { z-index: 3; }
   .np__hlwrap.is-in .np__hl { animation: np-hl 8s 1.4s ease-in-out infinite; }
   .np__stage.is-in .np__hl { animation: np-hl 8s 6.4s ease-in-out infinite; }
