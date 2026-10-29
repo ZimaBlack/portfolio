@@ -4,7 +4,7 @@ import { withBase, type Lang } from '../lib/i18n';
 import GcLogos from './GcLogos.astro';
 import GcConcept from './GcConcept.astro';
 import GcGrid from './GcGrid.astro';
-import GcDecon from './GcDecon.astro';
+import GcSynth from './GcSynth.astro';
 import markRaw from '../../public/works/global-citizen/mark.svg?raw';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -14,11 +14,13 @@ const img = (n: string) => withBase(`/works/global-citizen/manual/${n}.webp`);
 const iso = [...markRaw.matchAll(/\bd="([^"]+)"/g)].map((m) => m[1]).join(' ');
 
 const t = es ? {
-  deconH: 'Deconstruimos',
-  deconL: 'Del isotipo al sistema: separar la marca en sus piezas para ver cómo funciona.',
-  deconP: 'Al abrir el isotipo aparece su lógica: medios anillos que se repiten, se reflejan sobre un eje y se desplazan hasta que uno de ellos se completa en la marca. De esos módulos nacen las tramas, las grillas y las composiciones; el resto de la identidad es variación sobre el mismo sistema.',
-  deconI: 'Influencias',
-  deconIs: ['Estilo Internacional suizo', 'Josef Müller-Brockmann', 'Armin Hofmann', 'Constructivismo', 'Minimalismo', 'Ecobrutalismo'],
+  deconH: 'Síntesis: dos corrientes, una marca',
+  deconL: 'Estilo suizo moderno y constructivismo gráfico: estructura, claridad y función.',
+  deconP: 'El estilo suizo moderno (mediados del siglo XX) es minimalista, limpio y funcional, y marcó el diseño gráfico global. Se vincula con el constructivismo gráfico (inicios del siglo XX), con el que comparte la estructura, la claridad y la legibilidad: ambos rompen con la ornamentación innecesaria y se centran en la función y la información.',
+  deconQ: 'Global Citizen se tiñe de estos principios: una marca donde la simplicidad, la coherencia y la legibilidad son fundamentales; donde toda acción tiene un fundamento y una función, y donde las dinámicas con el entorno se construyen desde una perspectiva amplia, duradera y siempre vigente.',
+  deconI: 'Principios compartidos',
+  deconIs: ['Estructura', 'Claridad', 'Legibilidad', 'Función', 'Sin ornamentación'],
+  deconG: [['Estilo suizo', 'mediados del siglo XX'], ['Constructivismo gráfico', 'inicios del siglo XX'], ['Principios compartidos', 'estructura · claridad · legibilidad · función'], ['Global Citizen', 'simplicidad · coherencia · legibilidad']],
   conceptH: 'El concepto principal',
   conceptL: 'Armonía y constancia: un módulo que se repite, se refleja y se acopla.',
   conceptP: 'La marca aplica estos valores con módulos geométricos individuales de repetición y asimetría, que generan estructuras armónicas. Una buena idea que funciona se optimiza y se replica según su medio: un sistema bien ajustado y medido.',
@@ -56,11 +58,13 @@ const t = es ? {
   endA: 'Minimalismo, funcionalidad e innovación.',
   endB: 'Mensajes simples, jerarquía armónica y uso intencional del espacio negativo.',
 } : {
-  deconH: 'Deconstructing it',
-  deconL: 'From isotype to system: splitting the brand into its pieces to see how it works.',
-  deconP: 'Opening the isotype reveals its logic: half rings that repeat, mirror across an axis and shift until one of them completes into the mark. Patterns, grids and compositions are born from those modules; the rest of the identity is a variation on the same system.',
-  deconI: 'Influences',
-  deconIs: ['Swiss International Style', 'Josef Müller-Brockmann', 'Armin Hofmann', 'Constructivism', 'Minimalism', 'Ecobrutalism'],
+  deconH: 'Synthesis: two currents, one brand',
+  deconL: 'Modern Swiss style and graphic constructivism: structure, clarity and function.',
+  deconP: 'Modern Swiss style (mid-20th century) is minimalist, clean and functional, and shaped graphic design worldwide. It is tied to graphic constructivism (early 20th century), with which it shares structure, clarity and legibility: both break with unnecessary ornament and focus on function and information.',
+  deconQ: 'Global Citizen takes on these principles: a brand where simplicity, coherence and legibility are fundamental; where every action has a rationale and a function, and where the dynamics with the environment are built from a broad, lasting and always current perspective.',
+  deconI: 'Shared principles',
+  deconIs: ['Structure', 'Clarity', 'Legibility', 'Function', 'No ornament'],
+  deconG: [['Swiss style', 'mid-20th century'], ['Graphic constructivism', 'early 20th century'], ['Shared principles', 'structure · clarity · legibility · function'], ['Global Citizen', 'simplicity · coherence · legibility']],
   conceptH: 'The main concept',
   conceptL: 'Harmony and constancy: a module that repeats, mirrors and couples.',
   conceptP: 'The brand applies these values through individual geometric modules of repetition and asymmetry, creating harmonious structures. A good idea that works gets optimized and replicated across its medium: a well-tuned, measured system.',
@@ -137,15 +141,14 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     <GcGrid label={t.gridH} />
   </div>
 
-  <div class="wrap gcm__block gcm__block--decon" data-reveal>
-    <div class="gcm__text">
+  <div class="wrap gcm__synth" data-reveal>
+    <div class="gcm__synth-t">
       <h2 class="h2">{t.deconH}</h2>
       <p class="gcm__strong">{t.deconL}</p>
-      <p>{t.deconP}</p>
-      <h3 class="gcm__sub">{t.deconI}</h3>
-      <ul class="chips">{t.deconIs.map((c, i) => <li class:list={{ 'is-green': i === 0 }}>{c}</li>)}</ul>
+      <div class="gcm__cols"><p>{t.deconP}</p><p>{t.deconQ}</p></div>
+      <ul class="chips">{t.deconIs.map((c) => <li>{c}</li>)}</ul>
     </div>
-    <div class="gcm__decon"><GcDecon label={t.deconH} /></div>
+    <GcSynth labels={t.deconG} label={t.deconH} />
   </div>
 
   <div class="wrap gcm__block">
@@ -288,8 +291,10 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   /* Concepto, grillas, paleta y tipografía */
   .gcm__block--concept, .gcm__block--grid { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); align-items: center; }
   .gcm__block--grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); color: var(--fg); }
-  .gcm__block--decon { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); align-items: center; }
-  .gcm__decon { max-width: 26rem; justify-self: center; width: 100%; }
+  .gcm__synth { display: grid; gap: clamp(2rem, 4vw, 3.5rem); }
+  .gcm__synth-t { display: grid; gap: 1.1rem; max-width: 62rem; }
+  .gcm__synth-t .h2 { margin-bottom: .3rem; } .gcm__synth-t p { margin: 0; }
+  .gcm__cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 4vw, 3rem); color: var(--muted); }
   .gcm__pal { display: grid; gap: 1.6rem; }
   .gcm__sub { margin: 1.2rem 0 0; font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
   .gcm__sw { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .6rem; }
@@ -302,7 +307,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   .gcm__nb { font-weight: 800; font-size: .85rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
   .gcm__nb--l { font-size: clamp(1.8rem, 4.4vw, 3.4rem); line-height: 1; color: var(--gc); letter-spacing: -.01em; text-transform: none; }
   .gcm__nr { font-weight: 400; font-size: 1.1rem; } .gcm__nl { font-weight: 300; font-size: 1.1rem; }
-  @media (max-width: 860px) { .gcm__block--concept, .gcm__block--grid, .gcm__block--decon { grid-template-columns: 1fr; } .gcm__sw { grid-template-columns: repeat(2, minmax(0, 1fr)); } .gcm__sw--x { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 860px) { .gcm__block--concept, .gcm__block--grid { grid-template-columns: 1fr; } .gcm__cols { grid-template-columns: 1fr; } .gcm__sw { grid-template-columns: repeat(2, minmax(0, 1fr)); } .gcm__sw--x { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   /* Modo oscuro "blueprint" */
   .gcm__dark { background: #2c2c2c; padding-block: clamp(4rem, 9vw, 9rem); color: #5db98a; }
   .gcm__dark-in { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 6rem); align-items: center; }
