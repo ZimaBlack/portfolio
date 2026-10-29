@@ -7,6 +7,7 @@ import { withBase, type Lang } from '../lib/i18n';
 const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
 const shot = (n: string) => withBase(`/works/novapsi/shots/${n}.webp`);
+const mk = (n: string) => withBase(`/works/novapsi/marca/${n}.svg`);
 const brand = (n: string) => withBase(`/works/novapsi/brands/${n}.svg`);
 
 const I: Record<string, string> = {
@@ -34,6 +35,8 @@ const t = es ? {
   what: 'Qué es',
   whatA: 'Un sistema de turnos para consultorios de salud mental: el paciente reserva y paga una seña, el profesional atiende y el servicio técnico mantiene todo conectado.',
   nums: [[3, 'accesos'], [4, 'modelos'], [125, 'commits'], [11, 'pasos auditados']],
+  recep: 'La recepción',
+  recepA: 'Lo primero que ve el paciente: elige el tipo de sesión deslizando, y ve duración, valor y seña antes de reservar.',
   feat: 'Qué hace',
   features: [
     ['calendar', 'Reserva en pasos', 'Servicio, fecha, motivo y datos, pensado primero para el celular.'],
@@ -51,7 +54,7 @@ const t = es ? {
   ],
   patient: 'Paciente',
   patientA: 'Reserva desde el celular en tres pasos y gestiona sus turnos desde un link. Datos de ejemplo.',
-  ps: [['Punto de partida', 'Elige el tipo de sesión deslizando; ve duración, valor y seña antes de reservar.'], ['Servicio', 'Primera sesión, recurrente o evaluación, cada una con duración, valor y seña.'], ['Fecha', 'Solo se ven los días que atiende el profesional.'], ['Horario', 'Todos los horarios que aparecen están libres; elegir uno habilita continuar.'], ['Confirmar', 'Resume el turno y la seña: se paga online y llega un mail y un recordatorio.']],
+  ps: [['Servicio', 'Primera sesión, recurrente o evaluación, cada una con duración, valor y seña.'], ['Fecha', 'Solo se ven los días que atiende el profesional.'], ['Horario', 'Todos los horarios que aparecen están libres; elegir uno habilita continuar.'], ['Confirmar', 'Resume el turno y la seña: se paga online y llega un mail y un recordatorio.']],
   pro: 'Profesional',
   proA: 'Su día, sus pacientes y su marca en un panel que se usa igual en el celular.',
   pcap: [['pro-inicio', 'Inicio', 'Lo de hoy, lo que necesita atención (como un paciente bloqueado por saldo pendiente) y accesos rápidos.'], ['pro-agenda', 'Agenda', 'Los puntos del calendario marcan turnos por atender, atendidos y ausentes; cada turno permite marcar asistencia.'], ['pro-servicios', 'Servicios', 'Precio, duración y seña de cada servicio, y qué pasa cuando un paciente con seña no viene.'], ['pro-horarios', 'Horarios', 'La semana de atención, con atajos y franjas partidas, y las reglas de reserva.'], ['pro-pacientes', 'Pacientes', 'Listado con búsqueda y filtros; cada ficha trae contacto y notas privadas.'], ['pro-marca', 'Marca', 'Dos colores a elegir, o una combinación hecha: el sitio y sus efectos se adaptan solos.']],
@@ -76,6 +79,8 @@ const t = es ? {
   what: 'What it is',
   whatA: 'An appointment system for mental-health practices: patients book and pay a deposit, the professional sees patients and technical support keeps everything connected.',
   nums: [[3, 'accesses'], [4, 'models'], [125, 'commits'], [11, 'audited steps']],
+  recep: 'The welcome screen',
+  recepA: 'The first thing patients see: they slide to pick the session type and see duration, price and deposit before booking.',
   feat: 'What it does',
   features: [
     ['calendar', 'Step-by-step booking', 'Service, date, reason and details, designed mobile-first.'],
@@ -93,7 +98,7 @@ const t = es ? {
   ],
   patient: 'Patient',
   patientA: 'Books from the phone in three steps and manages appointments from a link. Sample data.',
-  ps: [['Starting point', 'Slide to pick the session type; see duration, price and deposit before booking.'], ['Service', 'First session, recurring or evaluation, each with duration, price and deposit.'], ['Date', 'Only the days the professional works are shown.'], ['Time slot', 'Every slot shown is free; choosing one enables continuing.'], ['Confirm', 'Summarizes the appointment and deposit: paid online, followed by an email and a reminder.']],
+  ps: [['Service', 'First session, recurring or evaluation, each with duration, price and deposit.'], ['Date', 'Only the days the professional works are shown.'], ['Time slot', 'Every slot shown is free; choosing one enables continuing.'], ['Confirm', 'Summarizes the appointment and deposit: paid online, followed by an email and a reminder.']],
   pro: 'Professional',
   proA: 'Their day, patients and brand in one panel that works the same on a phone.',
   pcap: [['pro-inicio', 'Home', 'Today, what needs attention (such as a patient blocked by an outstanding balance) and quick links.'], ['pro-agenda', 'Agenda', 'Calendar dots mark appointments to attend, attended and no-shows; each appointment can be marked.'], ['pro-servicios', 'Services', 'Price, duration and deposit for each service, and what happens when a patient with a deposit doesn’t show.'], ['pro-horarios', 'Hours', 'The weekly schedule, with shortcuts and split shifts, and the booking rules.'], ['pro-pacientes', 'Patients', 'A list with search and filters; each record holds contact details and private notes.'], ['pro-marca', 'Brand', 'Pick two colors or a ready combination: the site and its effects adapt on their own.']],
@@ -115,10 +120,9 @@ const t = es ? {
   bAdapt: 'Adapts to each practice', bAdaptA: 'The professional picks two colors —or a ready combination— and the whole site uses them. Try it:',
   cta: 'See how it works', ctaA: 'The online demo, with sample data.', ctaBtn: 'Open the demo',
 };
-const mk = (n: string) => withBase(`/works/novapsi/marca/${n}.svg`);
 const combos = [['Grafito y celeste', '#334155', '#38bdf8'], ['Violeta y verde agua', '#6d28d9', '#0d9488'], ['Azul y coral', '#2563eb', '#f97316'], ['Verde salvia y arena', '#4d7c5f', '#c8a96a'], ['Índigo y rosa', '#4338ca', '#db2777'], ['Petróleo y durazno', '#0f766e', '#f59e0b']];
 const demo = 'https://psi-turnos-app.netlify.app/';
-const phoneShots = ['m1', 'm2', 'm3', 'm4', 'm5'];
+const phoneShots = ['m2', 'm3', 'm4', 'm5'];
 const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail' ? brand('n8n') : '';
 ---
 <section class="np" aria-label={es ? 'Recorrido' : 'Walkthrough'} data-np>
@@ -126,6 +130,20 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
     <h2 class="h2">{t.what}</h2>
     <p class="np__txt">{t.whatA}</p>
     <ul class="np__nums">{t.nums.map(([n, l]) => <li><strong data-to={n}>{n}</strong><span>{l}</span></li>)}</ul>
+  </div>
+
+  <div class="wrap np__recep" data-reveal>
+    <div class="np__rtxt"><span class="np__n">00</span><h2 class="h2">{t.recep}</h2><p class="np__txt">{t.recepA}</p></div>
+    <div class="np__stage" data-stage>
+      <div class="np__dev">
+        <div class="np__scr">
+          <div class="np__boot"><i></i><i></i><img src={mk('favicon-light')} alt="" /></div>
+          <img class="np__shotimg" src={shot('m1')} alt={t.recep} loading="lazy" decoding="async" />
+        </div>
+        <span class="np__notch"></span>
+      </div>
+      <span class="np__floor"></span>
+    </div>
   </div>
 
   <div class="wrap np__sec" data-reveal>
@@ -262,8 +280,8 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__feat div { display: grid; gap: .25rem; align-content: start; }
   .np__feat span:not(.np__ico) { color: var(--muted); font-size: .88rem; line-height: 1.5; }
   /* Celulares: tres por fila, a un tamaño donde el texto de la captura se lee */
-  .np__phones { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(2rem, 4vw, 3rem) clamp(1rem, 3vw, 2.5rem); justify-items: center; }
-  .np__phones li { display: grid; gap: 1rem; width: min(100%, 22rem); align-content: start; }
+  .np__phones { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 4vw, 3rem) clamp(1rem, 3vw, 2.5rem); justify-items: center; }
+  .np__phones li { display: grid; gap: 1rem; width: min(100%, 23rem); align-content: start; }
   .np__phone { padding: .45rem; border-radius: 2rem; background: #0b0b0a; box-shadow: 0 0 0 1px color-mix(in srgb, var(--ac) 35%, transparent), 0 30px 60px rgb(0 0 0 / .5); }
   .np__phone img { border-radius: 1.6rem; }
   .np__cap { display: flex; gap: .7rem; }
@@ -295,6 +313,35 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__models { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
   .np__models li { display: grid; gap: .5rem; padding: 1.1rem; border: 1px solid var(--line); border-radius: 12px; align-content: start; justify-items: start; }
   .np__models span:not(.np__ico) { color: var(--muted); font-size: .88rem; line-height: 1.5; }
+  /* Recepción: celular en 3D plano que se enciende — primero el isotipo, después la captura */
+  .np__recep { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 5rem); align-items: center; }
+  .np__rtxt { display: grid; gap: 1rem; }
+  .np__stage { position: relative; display: grid; place-items: center; perspective: 1500px; padding-block: 2rem 3rem; }
+  .np__dev { position: relative; width: min(74vw, 17.5rem); aspect-ratio: 9 / 19.2; padding: .6rem; border-radius: 2.6rem; background: linear-gradient(145deg, #2a2833, #0d0c11); transform-style: preserve-3d; transform: translateY(70px) rotateY(-46deg) rotateX(14deg) rotateZ(5deg) scale(.82); opacity: 0;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--ac) 32%, transparent), 1px 1px 0 #1c1a24, 2px 2px 0 #1a1822, 3px 3px 0 #18161f, 4px 4px 0 #15131b, 5px 5px 0 #121018, 6px 6px 0 #100e15, 7px 7px 0 #0d0c11, 22px 36px 60px rgb(0 0 0 / .55); }
+  .np__scr { position: relative; width: 100%; height: 100%; border-radius: 2.05rem; overflow: hidden; background: #040408; }
+  .np__notch { position: absolute; top: 1.15rem; left: 50%; width: 22%; height: .8rem; margin-left: -11%; border-radius: 999px; background: #040408; z-index: 3; }
+  .np__shotimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; opacity: 0; }
+  .np__boot { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 50%, #1d1b2e 0, #07070c 70%); opacity: 0; z-index: 2; }
+  .np__boot img { position: relative; width: 38%; border-radius: 22%; opacity: 0; transform: scale(.6); filter: blur(8px); }
+  .np__boot i { position: absolute; width: 38%; aspect-ratio: 1; border-radius: 28%; border: 1px solid var(--sky); opacity: 0; }
+  .np__floor { position: absolute; bottom: .6rem; width: 62%; height: 1.4rem; border-radius: 50%; background: radial-gradient(closest-side, rgb(0 0 0 / .55), transparent); opacity: 0; transition: opacity 1.4s 1s; filter: blur(4px); }
+  .np__stage.is-in .np__floor { opacity: 1; }
+  .np__stage.is-in .np__dev { animation: np-dev-in 1.7s cubic-bezier(.2, .8, .25, 1) forwards, np-dev-idle 9s 1.8s ease-in-out infinite; }
+  .np__stage.is-in .np__boot { animation: np-boot 5.2s 1.3s ease both; }
+  .np__stage.is-in .np__boot img { animation: np-iso 2.6s 1.7s cubic-bezier(.2, .8, .25, 1) both, np-iso-out .9s 4.2s ease forwards; }
+  .np__stage.is-in .np__boot i { animation: np-ring2 1.7s 2s ease-out 2; }
+  .np__stage.is-in .np__boot i:nth-child(2) { animation-delay: 2.7s; }
+  .np__stage.is-in .np__shotimg { animation: np-fade 1.4s 4.4s ease forwards; }
+  @keyframes np-dev-in { to { opacity: 1; transform: translateY(0) rotateY(-18deg) rotateX(7deg) rotateZ(2deg) scale(1); } }
+  @keyframes np-dev-idle { 0%, 100% { opacity: 1; transform: translateY(0) rotateY(-18deg) rotateX(7deg) rotateZ(2deg); } 50% { opacity: 1; transform: translateY(-10px) rotateY(-12deg) rotateX(5deg) rotateZ(1deg); } }
+  @keyframes np-boot { 0% { opacity: 0; } 18% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes np-iso { 0% { opacity: 0; transform: scale(.6); filter: blur(8px); } 100% { opacity: 1; transform: none; filter: none; } }
+  @keyframes np-iso-out { to { opacity: 0; transform: scale(1.25); filter: blur(6px); } }
+  @keyframes np-ring2 { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(2.4); opacity: 0; } }
+  @keyframes np-fade { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .np__dev { opacity: 1 !important; transform: rotateY(-14deg) rotateX(6deg) !important; animation: none !important; } .np__shotimg { opacity: 1 !important; animation: none !important; } .np__boot { display: none; } .np__floor { opacity: 1; } }
+  @media (max-width: 860px) { .np__recep { grid-template-columns: 1fr; } }
   /* Marca */
   .np__bgrid { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr; gap: 1rem; margin-top: .5rem; }
   .np__tile { display: grid; gap: .8rem; align-content: space-between; padding: 1.4rem; border-radius: 14px; min-height: 11rem; }
@@ -365,7 +412,6 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   }
   @media (max-width: 860px) {
     .np__feat { grid-template-columns: 1fr 1fr; }
-    .np__phones { grid-template-columns: 1fr 1fr; }
     .np__flow { grid-template-columns: 1fr; gap: 1.5rem; } .np__flow::before, .np__pulse { display: none; }
     .np__data, .np__models { grid-template-columns: 1fr 1fr; }
     .np__bgrid { grid-template-columns: 1fr 1fr; } .np__adapt, .np__pal, .np__type { grid-template-columns: 1fr; }
@@ -393,7 +439,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
         ad.querySelectorAll('.np__combo').forEach((x) => x.classList.toggle('is-on', x === b));
       }));
     });
-    document.querySelectorAll<HTMLElement>('[data-rv]:not([data-rv-ready]), .np__nums:not([data-rv-ready]), [data-end]:not([data-rv-ready])').forEach((el) => { el.dataset.rvReady = '1'; io.observe(el); });
+    document.querySelectorAll<HTMLElement>('[data-rv]:not([data-rv-ready]), .np__nums:not([data-rv-ready]), [data-end]:not([data-rv-ready]), [data-stage]:not([data-rv-ready])').forEach((el) => { el.dataset.rvReady = '1'; io.observe(el); });
   };
   document.addEventListener('astro:page-load', wire);
 </script>
