@@ -73,6 +73,10 @@ const slides: Slide[] = entries.map((e) => {
 // La marquesina de la cabecera usa los logos "b" en el orden de las láminas
 const marqueeItems = slides.map((s, i) => ({ src: s.b as string, label: s.subtitle, slide: i, light: !!s.lightB })).filter((m, i) => !slides[i].intro && m.src);
 const alt = lang === 'es' ? 'en' : 'es';
+// Navegación entre proyectos: anterior y siguiente, en el orden del índice (el último vuelve al primero)
+const at = all.findIndex((w) => w.id === work.id);
+const prev = all.length > 1 && at >= 0 ? all[(at - 1 + all.length) % all.length] : undefined;
+const next = all.length > 1 && at >= 0 ? all[(at + 1) % all.length] : undefined;
 ---
 <Base lang={lang} section="works" title={d.title} description={loc(d.summary, lang)}
   altHref={paths.work(alt, work.id)} esHref={paths.work('es', work.id)} enHref={paths.work('en', work.id)}>
@@ -142,11 +146,27 @@ const alt = lang === 'es' ? 'en' : 'es';
       </section>
     )}
 
+    {(prev || next) && (
+      <nav class="wrap pn" aria-label={lang === 'es' ? 'Más proyectos' : 'More projects'} data-reveal>
+        {prev && <a class="pn__a pn__a--prev" href={paths.work(lang, prev.id)}><span class="pn__k">{lang === 'es' ? 'Proyecto anterior' : 'Previous project'}</span><strong>{prev.data.title}</strong><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>}
+        {next && <a class="pn__a pn__a--next" href={paths.work(lang, next.id)}><span class="pn__k">{lang === 'es' ? 'Siguiente proyecto' : 'Next project'}</span><strong>{next.data.title}</strong><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>}
+      </nav>
+    )}
   </article>
   {d.widget === 'palette' && d.paletteColors.length > 0 && <PaletteWidget colors={d.paletteColors} lang={lang} />}
 </Base>
 
 <style>
+  /* Continuar al proyecto anterior o al siguiente, antes del pie */
+  .pn { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding-block: clamp(3rem, 7vw, 6rem) clamp(2rem, 5vw, 4rem); }
+  .pn__a { position: relative; display: grid; gap: .35rem; padding: clamp(1.2rem, 3vw, 2rem) clamp(1.4rem, 3vw, 2.2rem); border: 1px solid var(--line); border-radius: 18px; transition: border-color .5s var(--ease), background .5s var(--ease), transform .5s var(--ease); }
+  .pn__a:hover { border-color: var(--fg); background: color-mix(in srgb, var(--fg) 5%, transparent); transform: translateY(-2px); }
+  .pn__k { font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .pn__a strong { font-weight: 500; font-size: clamp(1.15rem, 2.2vw, 1.7rem); letter-spacing: -.01em; padding-right: 2.6rem; }
+  .pn__a svg { position: absolute; right: clamp(1.2rem, 3vw, 2rem); top: 50%; width: 1.5rem; margin-top: -.75rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: transform .5s var(--ease); }
+  .pn__a--next:hover svg { transform: translateX(5px); } .pn__a--prev:hover svg { transform: translateX(-5px); }
+  .pn__a--prev { padding-right: clamp(1.4rem, 3vw, 2.2rem); } .pn__a--prev strong { padding-right: 0; padding-left: 2.6rem; } .pn__a--prev svg { right: auto; left: clamp(1.2rem, 3vw, 2rem); } .pn__a--prev { text-align: right; } .pn__a--prev .pn__k { text-align: right; }
+  @media (max-width: 640px) { .pn { grid-template-columns: 1fr; } }
   /* Proyecto con widget de color: toda la página toma los colores elegidos (--pw-0/--pw-1 y las luces --ga/--gb) */
   @property --pw-0 { syntax: '<color>'; inherits: true; initial-value: #e03b7a; }
   @property --pw-1 { syntax: '<color>'; inherits: true; initial-value: #6ce829; }

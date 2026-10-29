@@ -102,7 +102,7 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
     {photo && draw && (
       <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
         <filter id="pjh-flow" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-          <feTurbulence type="fractalNoise" baseFrequency="0.007 0.011" numOctaves="2" seed="4" result="n" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.0032 0.005" numOctaves="2" seed="4" result="n" />
           <feDisplacementMap in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G" />
         </filter>
       </svg>
@@ -238,7 +238,7 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   :global(.dr-tx) { opacity: 0; transform: translateY(12px); filter: blur(6px); animation: dr-tx .7s calc(2.1s + var(--i) * .06s) cubic-bezier(.22, .9, .28, 1) forwards; }
   .pjh__sheen--draw { animation: pjh-sheen 1.5s 3.5s ease-out 1 both; }
   .pjh[data-draw] .pjh__photo img { filter: url(#pjh-flow); } /* mientras entra, el mármol fluye: un desplazamiento que se asienta (ver el script) */
-  .pjh[data-draw] .pjh__photo { animation: photo-in 2s 2.1s cubic-bezier(.3, .6, .3, 1) both; }
+  .pjh[data-draw] .pjh__photo { animation: photo-in 4.5s 2.1s cubic-bezier(.3, .6, .3, 1) both; }
   @media (max-width: 760px) { .pjh__drawwrap { width: min(68vw, 24rem); } }
   @keyframes dr-trace { to { stroke-dashoffset: 0; } }
   @keyframes dr-line-out { to { opacity: 0; } }
@@ -371,13 +371,13 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
       const turb = hero.querySelector<SVGFETurbulenceElement>('#pjh-flow feTurbulence');
       if (!img) return;
       if (!disp || !turb || matchMedia('(prefers-reduced-motion: reduce)').matches) { img.style.filter = 'none'; return; }
-      const start = performance.now() + 2100, dur = 3400;
-      disp.setAttribute('scale', '150');
+      const start = performance.now() + 2100, dur = 8500;
+      disp.setAttribute('scale', '300');
       const tick = (now: number) => {
         const k = Math.min(1, Math.max(0, (now - start) / dur));
-        const e = 1 - Math.pow(1 - k, 3);
-        disp.setAttribute('scale', String(150 * (1 - e)));
-        turb.setAttribute('baseFrequency', `${0.004 + 0.004 * (1 - e)} ${0.007 + 0.006 * (1 - e)}`);
+        const e = 1 - Math.pow(1 - k, 2.4);
+        disp.setAttribute('scale', String(300 * (1 - e)));
+        turb.setAttribute('baseFrequency', `${0.0018 + 0.0016 * (1 - e)} ${0.003 + 0.0025 * (1 - e)}`);
         if (k < 1) requestAnimationFrame(tick); else img.style.filter = 'none';
       };
       requestAnimationFrame(tick);
