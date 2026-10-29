@@ -2,6 +2,8 @@
 // Manual de marca de Global Citizen adaptado al sitio: texto nativo (bilingüe) + piezas recortadas del manual original en /works/global-citizen/manual/
 import { withBase, type Lang } from '../lib/i18n';
 import GcLogos from './GcLogos.astro';
+import GcConcept from './GcConcept.astro';
+import GcGrid from './GcGrid.astro';
 import markRaw from '../../public/works/global-citizen/mark.svg?raw';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -11,6 +13,18 @@ const img = (n: string) => withBase(`/works/global-citizen/manual/${n}.webp`);
 const iso = [...markRaw.matchAll(/\bd="([^"]+)"/g)].map((m) => m[1]).join(' ');
 
 const t = es ? {
+  conceptH: 'El concepto principal',
+  conceptL: 'Armonía y constancia: un módulo que se repite, se refleja y se acopla.',
+  conceptP: 'La marca aplica estos valores con módulos geométricos individuales de repetición y asimetría, que generan estructuras armónicas. Una buena idea que funciona se optimiza y se replica según su medio: un sistema bien ajustado y medido.',
+  gridH: 'Grillas constructivas',
+  gridL: 'Ángulos puros y formas definidas por una geometría precisa.',
+  gridP: 'El isotipo está casi definido por la sensación de simetría, con un cambio dinámico en peso y forma. Le da movimiento sin quitarle equilibrio: solo cuenta con un ajuste óptico en la dirección del quiebre para mantener un eje equilibrado y generar estructura y cuerpo.',
+  palH: 'Paleta institucional',
+  palP: 'La gama de verdes evoca la naturaleza y la armonía, en relación con el entorno; los tonos puros en blanco y negro transmiten equilibrio. Una paleta simple y funcional, con una estética atemporal.',
+  palX: 'Paleta extendida',
+  typH: 'Tipografía',
+  typP: 'El logotipo parte de Candle, de trazos de geometría pura y cuerpo pesado. Nunito Sans acompaña como fuente de uso: clara y sencilla, de diseño limpio y sin adornos, esencial para una comunicación efectiva.',
+  typS: 'Marca y texto',
   intro: 'Identidad para una marca de bienes raíces e inversión, de inspiración suiza: grilla, geometría y espacio negativo.',
   logos: 'Isotipo, versión vertical y horizontal.',
   insp: 'Estilo Internacional',
@@ -36,6 +50,18 @@ const t = es ? {
   endA: 'Minimalismo, funcionalidad e innovación.',
   endB: 'Mensajes simples, jerarquía armónica y uso intencional del espacio negativo.',
 } : {
+  conceptH: 'The main concept',
+  conceptL: 'Harmony and constancy: a module that repeats, mirrors and couples.',
+  conceptP: 'The brand applies these values through individual geometric modules of repetition and asymmetry, creating harmonious structures. A good idea that works gets optimized and replicated across its medium: a well-tuned, measured system.',
+  gridH: 'Construction grids',
+  gridL: 'Pure angles and shapes defined by precise geometry.',
+  gridP: 'The isotype is almost defined by a sense of symmetry, with a dynamic shift in weight and shape. It adds movement without losing balance: a single optical adjustment in the direction of the break keeps a balanced axis and builds structure and body.',
+  palH: 'Institutional palette',
+  palP: 'The range of greens evokes nature and harmony in relation to the environment; pure white and black convey balance. A simple, functional palette with a timeless look.',
+  palX: 'Extended palette',
+  typH: 'Typography',
+  typP: 'The logotype starts from Candle, with pure-geometry strokes and a heavy body. Nunito Sans supports it as the working font: clear and simple, with a clean design and no ornament, essential for effective communication.',
+  typS: 'Brand and text',
   intro: 'Identity for a real estate and investment brand, Swiss-inspired: grid, geometry and negative space.',
   logos: 'Isotype, stacked and horizontal versions.',
   insp: 'International Style',
@@ -62,6 +88,9 @@ const t = es ? {
   endB: 'Simple messages, harmonious hierarchy and intentional use of negative space.',
 };
 
+const pal: [string, string, string][] = [['Ocean Green', '#5DB88A', '#0e1f1a'], ['Minty Fresh', '#74C096', '#0e1f1a'], ['Teal Breeze', '#92CDB6', '#0e1f1a'], ['Whispering White', '#DFEFE5', '#0e1f1a'], ['Pure Snow', '#FAFAFA', '#0e1f1a']];
+const palx: [string, string, string][] = [['Tranquil Teal', '#1D4B3C', '#fff'], ['Verdant Glow', '#5EA85A', '#0e1f1a'], ['Deep Onyx', '#1C1C1C', '#fff'], ['Serene Sand', '#E2D4BF', '#0e1f1a']];
+
 // Mapa conceptual: cada fila es una tanda de conceptos (v = verde de marca; b = negrita)
 type Chip = [string, boolean?];
 const rows: { b: boolean; chips: Chip[] }[] = [
@@ -78,6 +107,24 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     <GcLogos label={t.logos} />
     <figcaption class="wrap muted">{t.logos}</figcaption>
   </figure>
+
+  <div class="wrap gcm__block gcm__block--concept" data-reveal>
+    <div class="gcm__text">
+      <h2 class="h2">{t.conceptH}</h2>
+      <p class="gcm__strong">{t.conceptL}</p>
+      <p>{t.conceptP}</p>
+    </div>
+    <GcConcept label={t.conceptH} />
+  </div>
+
+  <div class="wrap gcm__block gcm__block--grid" data-reveal>
+    <div class="gcm__text">
+      <h2 class="h2">{t.gridH}</h2>
+      <p class="gcm__strong">{t.gridL}</p>
+      <p>{t.gridP}</p>
+    </div>
+    <GcGrid label={t.gridH} />
+  </div>
 
   <div class="wrap gcm__block">
     <div class="gcm__text" data-reveal>
@@ -104,6 +151,34 @@ const rows: { b: boolean; chips: Chip[] }[] = [
           {r.chips.map(([label, green]) => <li class:list={{ 'is-green': green }}>{label}</li>)}
         </ul>
       ))}
+    </div>
+  </div>
+
+
+  <div class="wrap gcm__pal" data-reveal>
+    <div class="gcm__text">
+      <h2 class="h2">{t.palH}</h2>
+      <p>{t.palP}</p>
+    </div>
+    <ul class="gcm__sw" data-gc>
+      {pal.map(([n, h, f], i) => <li style={`--c:${h};--f:${f};--i:${i}`}><b>{n}</b><span>{h}</span></li>)}
+    </ul>
+    <h3 class="gcm__sub">{t.palX}</h3>
+    <ul class="gcm__sw gcm__sw--x" data-gc>
+      {palx.map(([n, h, f], i) => <li style={`--c:${h};--f:${f};--i:${i}`}><b>{n}</b><span>{h}</span></li>)}
+    </ul>
+  </div>
+
+  <div class="wrap gcm__block gcm__type" data-reveal>
+    <div class="gcm__text">
+      <h2 class="h2">{t.typH}</h2>
+      <p>{t.typP}</p>
+    </div>
+    <div class="gcm__spec" aria-label={t.typS}>
+      <p class="gcm__nb">Nunito Sans Bold</p>
+      <p class="gcm__nb gcm__nb--l">ABCDEFGHIJKLM<br />NOPQRSTUVWXYZ</p>
+      <p class="gcm__nr">Nunito Sans Regular · abcdefghijklmnopqrstuvwxyz 1234567890</p>
+      <p class="gcm__nl">Nunito Sans Light · abcdefghijklmnopqrstuvwxyz 1234567890</p>
     </div>
   </div>
 
@@ -188,6 +263,22 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   .gcm__pair { display: grid; grid-template-columns: 1.55fr 1fr; gap: var(--gutter); }
   .gcm__pair img { height: 100%; object-fit: cover; }
   .gcm__avatars { max-width: 70rem; }
+  /* Concepto, grillas, paleta y tipografía */
+  .gcm__block--concept, .gcm__block--grid { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); align-items: center; }
+  .gcm__block--grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); color: var(--fg); }
+  .gcm__pal { display: grid; gap: 1.6rem; }
+  .gcm__sub { margin: 1.2rem 0 0; font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  .gcm__sw { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .6rem; }
+  .gcm__sw--x { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .gcm__sw li { display: grid; align-content: end; gap: .15rem; min-height: clamp(7rem, 13vw, 11rem); padding: 1rem; border-radius: 4px; background: var(--c); color: var(--f); transform: translateY(18px); opacity: 0; transition: transform .8s calc(var(--i) * .1s) var(--ease, ease), opacity .8s calc(var(--i) * .1s) ease; }
+  .gcm__sw.is-in li { transform: none; opacity: 1; }
+  .gcm__sw b { font-weight: 700; font-size: .9rem; } .gcm__sw span { font-size: .78rem; opacity: .8; letter-spacing: .06em; }
+  .gcm__spec { display: grid; gap: .9rem; font-family: 'Nunito Sans', var(--sans); }
+  .gcm__spec p { margin: 0; }
+  .gcm__nb { font-weight: 800; font-size: .85rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .gcm__nb--l { font-size: clamp(1.8rem, 4.4vw, 3.4rem); line-height: 1; color: var(--gc); letter-spacing: -.01em; text-transform: none; }
+  .gcm__nr { font-weight: 400; font-size: 1.1rem; } .gcm__nl { font-weight: 300; font-size: 1.1rem; }
+  @media (max-width: 860px) { .gcm__block--concept, .gcm__block--grid { grid-template-columns: 1fr; } .gcm__sw { grid-template-columns: repeat(2, minmax(0, 1fr)); } .gcm__sw--x { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   /* Modo oscuro "blueprint" */
   .gcm__dark { background: #2c2c2c; padding-block: clamp(4rem, 9vw, 9rem); color: #5db98a; }
   .gcm__dark-in { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 6rem); align-items: center; }
@@ -205,3 +296,18 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     .gcm__pair { grid-template-columns: 1fr; }
   }
 </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;800&display=swap" />
+
+<script>
+  // Las piezas geométricas del manual (logos, módulos, grillas y paleta) se animan al entrar en pantalla
+  const run = () => {
+    const els = document.querySelectorAll<HTMLElement>('[data-gc]:not([data-gc-on])');
+    if (!els.length) return;
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }), { threshold: 0.3 });
+    els.forEach((el) => { el.setAttribute('data-gc-on', ''); io.observe(el); });
+  };
+  document.addEventListener('astro:page-load', run);
+  run();
+</script>

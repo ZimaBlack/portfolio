@@ -1,0 +1,53 @@
+---
+// El concepto principal (manual de marca): un módulo de medio anillo que se repite, se refleja y se acopla hasta formar el isotipo.
+// Cada paso se arma con geometría (medios anillos calculados), y el último es el isotipo real.
+const { label = 'Módulos' } = Astro.props as { label?: string };
+const C = 178;
+const half = (r2: number, r1: number, side: 'r' | 'l') => {
+  const sw = side === 'r' ? 1 : 0;
+  return `M${C} ${C - r2}A${r2} ${r2} 0 0 ${sw} ${C} ${C + r2}L${C} ${C + r1}A${r1} ${r1} 0 0 ${1 - sw} ${C} ${C - r1}Z`;
+};
+const M = { mr: half(106.2, 57.4, 'r'), ml: half(106.2, 57.4, 'l'), or: half(177.7, 128.85, 'r'), ol: half(177.7, 128.85, 'l') };
+// Cada paso: qué módulos lo componen (kind: m = anillo medio, o = anillo exterior; side: r/l)
+const steps: { k: keyof typeof M }[][] = [
+  [{ k: 'mr' }],
+  [{ k: 'ml' }, { k: 'mr' }],
+  [{ k: 'ml' }, { k: 'or' }],
+  [{ k: 'ml' }, { k: 'mr' }, { k: 'or' }],
+  [{ k: 'ml' }, { k: 'mr' }, { k: 'ol' }, { k: 'or' }],
+];
+const MID = `M116.914 79.1455V47.0698C85.0753 47.0698 58.2192 68.3743 49.7735 97.5089C47.971 103.677 47.0215 110.225 47.0215 116.963C47.0215 136.274 54.8523 153.736 67.5213 166.358C80.1406 179.027 97.6035 186.856 116.914 186.856C155.539 186.856 186.809 155.539 186.809 116.963H154.733C154.733 137.841 137.794 154.78 116.914 154.78C106.478 154.78 97.0348 150.557 90.2011 143.677C83.3694 136.844 79.1442 127.401 79.1442 116.963C79.1442 109.845 81.0928 103.203 84.5067 97.5089C91.1037 86.5003 103.154 79.1455 116.914 79.1455Z`;
+const OUT = `M232.265 97.5086C228.186 73.025 216.463 51.1029 199.621 34.2583L176.891 56.9871L166.359 67.5203L136.37 97.5086H199.43C200.949 103.725 201.708 110.273 201.708 116.963C201.708 163.795 163.748 201.755 116.914 201.755C93.5215 201.755 72.3599 192.265 56.9885 176.939V176.891C41.6615 161.517 32.1723 140.355 32.1723 116.963C32.1723 110.273 32.9314 103.725 34.4496 97.5086C43.2266 60.0234 76.8205 32.1702 116.914 32.1702V-0.00012207C58.9788 -0.00012207 10.8672 42.1824 1.61471 97.5086C0.568631 103.819 0 110.32 0 116.963C0 149.275 13.0968 178.505 34.2591 199.619C55.3738 220.782 84.6037 233.878 116.914 233.878C181.496 233.878 233.88 181.542 233.88 116.963C233.88 110.32 233.309 103.819 232.265 97.5086Z`;
+---
+<ol class="gcc" data-gc aria-label={label}>
+  {steps.map((s, i) => (
+    <li style={`--s:${i}`}>
+      <svg viewBox="0 0 356 356" aria-hidden="true" focusable="false">
+        {s.map((p, j) => <path class={`gcc__p gcc__p--${p.k}`} style={`--k:${j}`} d={M[p.k]} />)}
+      </svg>
+    </li>
+  ))}
+  <li style="--s:5">
+    <svg viewBox="0 0 356 356" aria-hidden="true" focusable="false">
+      <g transform="scale(1.5205)">
+        <path class="gcc__f" d={MID} />
+        <path class="gcc__f" style="--k:1" d={OUT} />
+      </g>
+    </svg>
+  </li>
+</ol>
+
+<style is:global>
+  .gcc { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(.4rem, 1.6vw, 1.4rem); align-items: center; }
+  .gcc li { display: grid; place-items: center; }
+  .gcc svg { width: 100%; height: auto; overflow: visible; }
+  .gcc__p { fill: #dfefe5; opacity: 0; transform-origin: 178px 178px; }
+  .gcc.is-in .gcc__p { animation: gcc-in 1s calc(var(--s) * .55s + var(--k) * .22s) cubic-bezier(.22, 1, .36, 1) forwards; }
+  .gcc__p--ml, .gcc__p--ol { --fx: -60px; --fr: -120deg; } .gcc__p--mr, .gcc__p--or { --fx: 60px; --fr: 120deg; }
+  @keyframes gcc-in { from { opacity: 0; transform: translateX(var(--fx)) rotate(var(--fr)) scale(.6); } to { opacity: 1; transform: none; } }
+  .gcc__f { fill: #dfefe5; opacity: 0; transform-origin: 178px 178px; }
+  .gcc.is-in .gcc__f { animation: gcc-in 1s calc(2.9s + var(--k, 0) * .22s) cubic-bezier(.22, 1, .36, 1) forwards, gcc-green .9s 4.3s ease forwards; --fx: 0px; --fr: -90deg; }
+  @keyframes gcc-green { to { fill: #5db98a; } }
+  @media (max-width: 640px) { .gcc { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 1.2rem; } }
+  @media (prefers-reduced-motion: reduce) { .gcc__p, .gcc__f { opacity: 1; animation: none !important; } .gcc__f { fill: #5db98a; } }
+</style>

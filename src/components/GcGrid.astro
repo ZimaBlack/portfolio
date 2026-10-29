@@ -1,0 +1,49 @@
+---
+// Grillas constructivas (manual de marca): la circunferencia mayor, los ejes, la diagonal de 45° y los círculos que miden cada anillo se dibujan sobre el isotipo.
+const { label = 'Grilla' } = Astro.props as { label?: string };
+const MID = `M116.914 79.1455V47.0698C85.0753 47.0698 58.2192 68.3743 49.7735 97.5089C47.971 103.677 47.0215 110.225 47.0215 116.963C47.0215 136.274 54.8523 153.736 67.5213 166.358C80.1406 179.027 97.6035 186.856 116.914 186.856C155.539 186.856 186.809 155.539 186.809 116.963H154.733C154.733 137.841 137.794 154.78 116.914 154.78C106.478 154.78 97.0348 150.557 90.2011 143.677C83.3694 136.844 79.1442 127.401 79.1442 116.963C79.1442 109.845 81.0928 103.203 84.5067 97.5089C91.1037 86.5003 103.154 79.1455 116.914 79.1455Z`;
+const OUT = `M232.265 97.5086C228.186 73.025 216.463 51.1029 199.621 34.2583L176.891 56.9871L166.359 67.5203L136.37 97.5086H199.43C200.949 103.725 201.708 110.273 201.708 116.963C201.708 163.795 163.748 201.755 116.914 201.755C93.5215 201.755 72.3599 192.265 56.9885 176.939V176.891C41.6615 161.517 32.1723 140.355 32.1723 116.963C32.1723 110.273 32.9314 103.725 34.4496 97.5086C43.2266 60.0234 76.8205 32.1702 116.914 32.1702V-0.00012207C58.9788 -0.00012207 10.8672 42.1824 1.61471 97.5086C0.568631 103.819 0 110.32 0 116.963C0 149.275 13.0968 178.505 34.2591 199.619C55.3738 220.782 84.6037 233.878 116.914 233.878C181.496 233.878 233.88 181.542 233.88 116.963C233.88 110.32 233.309 103.819 232.265 97.5086Z`;
+const c = 117;
+// Círculos del módulo: el diámetro de cada anillo, centrados sobre su espesor
+const ringMid = 53.8, ringOut = 100.9;
+const dots: [number, number][] = [[0, -ringOut], [0, -ringMid], [0, ringMid], [0, ringOut], [-ringOut, 0], [-ringMid, 0], [ringMid, 0], [ringOut, 0]];
+---
+<div class="gcg" data-gc role="img" aria-label={label}>
+  <svg viewBox="-96 -96 426 426" aria-hidden="true" focusable="false">
+    <g class="gcg__iso"><path d={MID} /><path d={OUT} /></g>
+    <g class="gcg__ln" transform={`translate(${c} ${c})`}>
+      <circle r="194" pathLength="1" style="--i:0" />
+      <path d="M0 -194V194" pathLength="1" style="--i:1" />
+      <path d="M-194 0H194" pathLength="1" style="--i:1" />
+      <path d="M-137 137L137 -137" pathLength="1" style="--i:2" />
+      <path d="M-194 -19.5H194" pathLength="1" style="--i:3" />
+      {dots.map(([x, y], i) => <circle cx={x} cy={y} r="16" pathLength="1" style={`--i:${4 + i * .3}`} />)}
+    </g>
+  </svg>
+  <svg viewBox="-96 -96 426 426" aria-hidden="true" focusable="false">
+    <g class="gcg__iso"><path d={MID} /><path d={OUT} /></g>
+    <g class="gcg__ln" transform={`translate(${c} ${c})`}>
+      <circle r="194" pathLength="1" style="--i:1" />
+      <path d="M0 -194V194" pathLength="1" style="--i:2" />
+      <path d="M-194 0H194" pathLength="1" style="--i:2" />
+      <circle r="37.8" pathLength="1" style="--i:3" />
+      <circle cx="0" cy="-155" r="38.7" pathLength="1" style="--i:4" />
+      <circle cx="0" cy="155" r="38.7" pathLength="1" style="--i:4.3" />
+      <circle cx="-155" cy="0" r="38.7" pathLength="1" style="--i:4.6" />
+      <circle cx="155" cy="0" r="38.7" pathLength="1" style="--i:4.9" />
+    </g>
+  </svg>
+</div>
+
+<style is:global>
+  .gcg { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 4vw, 4rem); }
+  .gcg svg { width: 100%; height: auto; overflow: visible; }
+  .gcg__iso path { fill: #5db98a; opacity: 0; }
+  .gcg.is-in .gcg__iso path { animation: gcg-fill 1.4s 3.2s ease forwards; }
+  @keyframes gcg-fill { to { opacity: .42; } }
+  .gcg__ln * { fill: none; stroke: currentColor; stroke-opacity: .55; stroke-width: .9; stroke-dasharray: 1; stroke-dashoffset: 1; vector-effect: non-scaling-stroke; }
+  .gcg.is-in .gcg__ln * { animation: gcg-draw 1.5s calc(var(--i) * .5s) cubic-bezier(.4, 0, .2, 1) forwards; }
+  @keyframes gcg-draw { to { stroke-dashoffset: 0; } }
+  @media (max-width: 640px) { .gcg { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .gcg__ln * { stroke-dashoffset: 0; animation: none !important; } .gcg__iso path { opacity: .42; animation: none !important; } }
+</style>

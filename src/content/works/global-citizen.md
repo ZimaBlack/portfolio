@@ -10,7 +10,7 @@ text:
   es: "Isotipo geométrico, grilla y espacio negativo, con un verde de marca y un modo oscuro «blueprint»."
   en: "A geometric isotype, grid and negative space, with a brand green and a “blueprint” dark mode."
 heroImage: /works/global-citizen/bg
-heroAnimation: glass
+heroAnimation: modular
 logo: /works/global-citizen/logo.svg
 mark: /works/global-citizen/mark.svg
 manual: global-citizen

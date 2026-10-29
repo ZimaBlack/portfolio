@@ -1,0 +1,91 @@
+---
+// Portada modular de Global Citizen (ver el manual de marca): un campo de módulos geométricos (medios anillos) se repite y se acomoda;
+// al centro, cuatro medios anillos se ensamblan en el isotipo y éste se desplaza para dar lugar al logotipo.
+// Todo es geometría en SVG: nada es una imagen.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+const { part = 'stage', title = 'Global Citizen' } = Astro.props as { part?: 'field' | 'stage'; title?: string };
+const pub = (f: string) => readFileSync(join(process.cwd(), 'public/works/global-citizen', f), 'utf8');
+const ds = (raw: string) => [...raw.matchAll(/\bd="([^"]+)"/g)].map((m) => m[1]);
+const [midRing, outRing] = ds(pub('mark.svg'));
+const logoPaths = ds(pub('logo.svg')).slice(0, 13); // GLOBAL (0-5) y CITIZEN (6-12)
+
+// ── Campo de módulos: medios anillos, en columnas modulares, con rotaciones de 90° (como en el manual)
+let seed = 7;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const half = (r2: number) => { const r1 = r2 * 0.54; return `M0 ${-r2}A${r2} ${r2} 0 0 1 0 ${r2}L0 ${r1}A${r1} ${r1} 0 0 0 0 ${-r1}Z`; };
+type Mod = { x: number; y: number; r: number; rot: number; d: number; t: number; both: boolean; delay: number };
+const mods: Mod[] = [];
+const W = 1600, H = 900;
+for (let cx = 90; cx < W; cx += 130) {
+  for (let cy = 80; cy < H; cy += 120) {
+    if (rnd() > 0.36) continue;
+    const x = cx + (rnd() - 0.5) * 20, y = cy + (rnd() - 0.5) * 20;
+    // zona del logotipo libre
+    if (x > 330 && x < 1270 && y > 290 && y < 610) continue;
+    const r = [22, 30, 40, 52][Math.floor(rnd() * 4)];
+    const dist = Math.hypot(x - W / 2, y - H / 2);
+    mods.push({ x, y, r, rot: [0, 90, 180, 270][Math.floor(rnd() * 4)], d: half(r), t: 8 + rnd() * 8, both: rnd() > 0.7, delay: 0.2 + dist / 700 + rnd() * 0.4 });
+  }
+}
+const clipL = 'gch-l', clipR = 'gch-r';
+---
+{part === 'field' ? (
+  <svg class="gch__field" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    {mods.map((m) => (
+      <g transform={`translate(${m.x.toFixed(1)} ${m.y.toFixed(1)}) rotate(${m.rot})`}>
+        <g class="gch__a" style={`--dl:${m.delay.toFixed(2)}s`}>
+          <g class="gch__t" style={`--tt:${m.t.toFixed(1)}s;--td:${(m.delay + 3.5).toFixed(2)}s`}>
+            <path d={m.d} />
+            {m.both && <path d={m.d} transform="rotate(180)" />}
+          </g>
+        </g>
+      </g>
+    ))}
+  </svg>
+) : (
+  <svg class="gch" viewBox="0 0 665 189" role="img" aria-label={title} xmlns="http://www.w3.org/2000/svg">
+    <g class="gch__letters">
+      {logoPaths.map((d, i) => <path class="gch__l" style={`--i:${i}`} d={d} fill="#fff" />)}
+    </g>
+    <g class="gch__move">
+      <svg x="0" y="3.5" width="181" height="181" viewBox="0 0 234 234" overflow="visible">
+        <defs>
+          <clipPath id={clipL}><rect x="-60" y="-60" width="177.2" height="360" /></clipPath>
+          <clipPath id={clipR}><rect x="116.6" y="-60" width="180" height="360" /></clipPath>
+        </defs>
+        <g class="gch__p gch__p--mid-l"><path d={midRing} clip-path={`url(#${clipL})`} /></g>
+        <g class="gch__p gch__p--mid-r"><path d={midRing} clip-path={`url(#${clipR})`} /></g>
+        <g class="gch__p gch__p--out-l"><path d={outRing} clip-path={`url(#${clipL})`} /></g>
+        <g class="gch__p gch__p--out-r"><path d={outRing} clip-path={`url(#${clipR})`} /></g>
+      </svg>
+    </g>
+  </svg>
+)}
+
+<style is:global>
+  .gch__field { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .gch__field path { fill: #dfefe5; }
+  .gch__a { opacity: 0; transform: scale(.4); animation: gch-in 1.4s var(--dl) cubic-bezier(.22, 1, .36, 1) forwards; }
+  .gch__t { animation: gch-turn var(--tt) var(--td) ease-in-out infinite; }
+  @keyframes gch-in { to { opacity: .17; transform: scale(1); } }
+  @keyframes gch-turn { 0%, 12% { transform: rotate(0); } 28%, 62% { transform: rotate(180deg); } 78%, 100% { transform: rotate(360deg); } }
+
+  .gch { position: relative; z-index: 1; display: block; width: min(86vw, 50rem); height: auto; overflow: visible; }
+  .gch__p { transform-origin: 116.9px 116.9px; opacity: 0; fill: #dfefe5; animation: gch-build 1.5s var(--pd) cubic-bezier(.22, 1, .36, 1) forwards, gch-tint .9s 2.9s ease forwards; }
+  .gch__p--mid-l { --pd: .5s; --fx: -150px; --fy: -60px; --fr: 140deg; }
+  .gch__p--mid-r { --pd: .95s; --fx: 150px; --fy: 90px; --fr: -140deg; }
+  .gch__p--out-l { --pd: 1.4s; --fx: -300px; --fy: 20px; --fr: -190deg; }
+  .gch__p--out-r { --pd: 1.85s; --fx: 300px; --fy: -20px; --fr: 190deg; }
+  @keyframes gch-build { from { opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(.7); } 35% { opacity: 1; } to { opacity: 1; transform: none; } }
+  @keyframes gch-tint { to { fill: #5db98a; } }
+  .gch__move { transform-origin: 90.5px 94px; animation: gch-move 1.3s 3.3s cubic-bezier(.65, 0, .2, 1) backwards; }
+  @keyframes gch-move { from { transform: translate(242px, 0) scale(2.1); } }
+  .gch__l { opacity: 0; animation: gch-letter .9s calc(3.9s + var(--i) * .06s) cubic-bezier(.22, 1, .36, 1) forwards; }
+  @keyframes gch-letter { from { opacity: 0; transform: translateX(-34px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .gch__a { animation: none; opacity: .17; transform: none; } .gch__t { animation: none; }
+    .gch__p { animation: none; opacity: 1; fill: #5db98a; } .gch__move { animation: none; } .gch__l { animation: none; opacity: 1; }
+  }
+</style>

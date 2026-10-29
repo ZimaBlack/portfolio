@@ -9,9 +9,10 @@ import { join } from 'node:path';
 import { withBase } from '../lib/i18n';
 import { forge, loadArt, shapeDefs, timingVars, type Gradient } from '../lib/forge';
 import { wavesSvg } from '../lib/waves';
+import GcHero from './GcHero.astro';
 
-const { logo = '', mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, liquid = false, assemble = false, ornament = '', pattern = '', photo = '', glass = false, draw = false, isoAnim = false } = Astro.props as {
-  logo?: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; liquid?: boolean; assemble?: boolean; ornament?: string; pattern?: string; photo?: string; glass?: boolean; draw?: boolean; isoAnim?: boolean;
+const { logo = '', mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, liquid = false, assemble = false, ornament = '', pattern = '', photo = '', glass = false, modular = false, draw = false, isoAnim = false } = Astro.props as {
+  logo?: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; liquid?: boolean; assemble?: boolean; ornament?: string; pattern?: string; photo?: string; glass?: boolean; modular?: boolean; draw?: boolean; isoAnim?: boolean;
 };
 const src = (p: string) => (p.startsWith('/') ? withBase(p) : p);
 const isSvg = (p?: string) => !!p && p.toLowerCase().endsWith('.svg');
@@ -114,8 +115,11 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
     {liquid && <canvas class="pjh__liquid" data-pj-liquid aria-hidden="true"></canvas>}
     {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
     {orn.map((s) => <Fragment set:html={s} />)}
+    {modular && <GcHero part="field" />}
     <div class="pjh__stage" data-pj-stage>
-      {isoSvg ? (
+      {modular ? (
+        <GcHero part="stage" title={title} />
+      ) : isoSvg ? (
         <Fragment set:html={isoSvg} />
       ) : drawSvg ? (
         <div class="pjh__drawwrap">
