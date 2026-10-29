@@ -58,8 +58,11 @@ const t = es ? {
     ['shield', 'Legales con versión', 'Cada turno guarda qué versión de los términos aceptó el paciente.'],
   ],
   patient: 'Paciente',
+  mailH: 'El mail que llega al confirmar',
+  mailA: 'Apenas se acredita el pago, el paciente recibe el resumen de su turno y un botón para verlo o cambiarlo. Los textos los edita el profesional desde Notificaciones.',
+  mail: { from: 'Lic. Ana Torres', to: 'para Sofía', subject: 'Pago recibido: tu turno está confirmado', biz: 'Lic. Ana Torres · Psicología clínica', title: 'Recibimos tu pago', intro: 'Hola Sofía, tu turno quedó confirmado.', rows: [['Cuándo', 'viernes, 30 de octubre, 09:00 hs'], ['Servicio', 'Primera sesión'], ['Profesional', 'Lic. Ana Torres']], btn: 'Ver o cambiar mi turno', foot: 'Podés cancelar o cambiar tu turno hasta 24 horas antes.' },
   patientA: 'Reserva desde el celular en pocos pasos y gestiona sus turnos desde un link. Datos de ejemplo.',
-  ps: [['Servicio', 'Primera sesión, recurrente o evaluación, cada una con duración, valor y seña.'], ['Fecha', 'Solo se ven los días que atiende el profesional.'], ['Horario', 'Todos los horarios que aparecen están libres; elegir uno habilita continuar.'], ['Tu motivo', 'Solo en la primera sesión con ese profesional: pide una breve reseña de por qué consulta, que le llega por mail y queda en la ficha. Quien ya se atendió no ve este paso.'], ['Confirmar', 'Resume el turno y la seña: se paga online y llega un mail y un recordatorio.']],
+  ps: [['Servicio', 'Primera sesión, recurrente o evaluación, cada una con duración, valor y seña.'], ['Fecha', 'Solo se ven los días que atiende el profesional.'], ['Horario', 'Todos los horarios que aparecen están libres; elegir uno habilita continuar.'], ['Tu motivo', 'Solo en la primera sesión con ese profesional: pide una breve reseña de por qué consulta, que le llega por mail y queda en la ficha. Quien ya se atendió no ve este paso.'], ['Confirmar', 'Resume el turno y la seña: se paga online y llega un mail y un recordatorio.'], ['Pago', 'La seña se abona en Mercado Pago, sin salir del flujo; al acreditarse, el turno queda confirmado.']],
   pro: 'Profesional',
   proA: 'Su día, sus pacientes y su marca en un panel que se usa igual en el celular.',
   pcap: [['pro-inicio', 'Inicio', 'Lo de hoy, lo que necesita atención (como un paciente bloqueado por saldo pendiente) y accesos rápidos.'], ['pro-agenda', 'Agenda', 'Los puntos del calendario marcan turnos por atender, atendidos y ausentes; cada turno permite marcar asistencia.'], ['pro-servicios', 'Servicios', 'Precio, duración y seña de cada servicio, y qué pasa cuando un paciente con seña no viene.'], ['pro-horarios', 'Horarios', 'La semana de atención, con atajos y franjas partidas, y las reglas de reserva.'], ['pro-reglas', 'El profesional decide cómo se reserva', 'Si apaga “Los pacientes reservan solos”, las visitas las agenda el profesional y el paciente solo gestiona su primera sesión o las que quedan fuera de agenda. También se puede pedir, o no, el motivo en la primera reserva.'], ['pro-pacientes', 'Pacientes', 'Listado con búsqueda y filtros; cada ficha trae contacto y notas privadas.'], ['pro-marca', 'Marca', 'Dos colores a elegir, o una combinación hecha: el sitio y sus efectos se adaptan solos.']],
@@ -103,8 +106,11 @@ const t = es ? {
     ['shield', 'Versioned legal terms', 'Each appointment records which version of the terms the patient accepted.'],
   ],
   patient: 'Patient',
+  mailH: 'The email that arrives on confirmation',
+  mailA: 'As soon as the payment is credited, the patient receives a summary of the appointment and a button to view or change it. The professional edits the texts from Notifications.',
+  mail: { from: 'Lic. Ana Torres', to: 'to Sofía', subject: 'Payment received: your appointment is confirmed', biz: 'Lic. Ana Torres · Clinical psychology', title: 'We received your payment', intro: 'Hi Sofía, your appointment is confirmed.', rows: [['When', 'Friday, October 30, 09:00'], ['Service', 'First session'], ['Professional', 'Lic. Ana Torres']], btn: 'View or change my appointment', foot: 'You can cancel or change your appointment up to 24 hours before.' },
   patientA: 'Books from the phone in a few steps and manages appointments from a link. Sample data.',
-  ps: [['Service', 'First session, recurring or evaluation, each with duration, price and deposit.'], ['Date', 'Only the days the professional works are shown.'], ['Time slot', 'Every slot shown is free; choosing one enables continuing.'], ['Your reason', 'Only on the first session with that professional: it asks for a short note on why they consult, which reaches them by email and stays in the patient file. Returning patients don’t see this step.'], ['Confirm', 'Summarizes the appointment and deposit: paid online, followed by an email and a reminder.']],
+  ps: [['Service', 'First session, recurring or evaluation, each with duration, price and deposit.'], ['Date', 'Only the days the professional works are shown.'], ['Time slot', 'Every slot shown is free; choosing one enables continuing.'], ['Your reason', 'Only on the first session with that professional: it asks for a short note on why they consult, which reaches them by email and stays in the patient file. Returning patients don’t see this step.'], ['Confirm', 'Summarizes the appointment and deposit: paid online, followed by an email and a reminder.'], ['Payment', 'The deposit is paid on Mercado Pago, without leaving the flow; once credited, the appointment is confirmed.']],
   pro: 'Professional',
   proA: 'Their day, patients and brand in one panel that works the same on a phone.',
   pcap: [['pro-inicio', 'Home', 'Today, what needs attention (such as a patient blocked by an outstanding balance) and quick links.'], ['pro-agenda', 'Agenda', 'Calendar dots mark appointments to attend, attended and no-shows; each appointment can be marked.'], ['pro-servicios', 'Services', 'Price, duration and deposit for each service, and what happens when a patient with a deposit doesn’t show.'], ['pro-horarios', 'Hours', 'The weekly schedule, with shortcuts and split shifts, and the booking rules.'], ['pro-reglas', 'The professional decides how booking works', 'If “Patients book on their own” is turned off, the professional schedules the visits and the patient only manages their first session or sessions outside the agenda. The reason on the first booking can also be required or not.'], ['pro-pacientes', 'Patients', 'A list with search and filters; each record holds contact details and private notes.'], ['pro-marca', 'Brand', 'Pick two colors or a ready combination: the site and its effects adapt on their own.']],
@@ -141,7 +147,7 @@ const nodes: Node[] = [
   { id: 'pro', r: 1, c: 5, kind: 'icon', ref: 'userCheck', color: '#e9e3d6' },
   { id: 'push', r: 2, c: 5, kind: 'icon', ref: 'bell', color: '#38bdf8', up: true, dev: true },
 ];
-const phoneShots = ['m2', 'm3', 'm4', 'm4b', 'm5'];
+const phoneShots = ['m2', 'm3', 'm4', 'm4b', 'm5', ''];
 const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail' ? brand('n8n') : '';
 ---
 <section class="np" aria-label={es ? 'Recorrido' : 'Walkthrough'} data-np>
@@ -180,11 +186,40 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
     <ol class="np__phones" data-rv>
       {t.ps.map(([h, p], i) => (
         <li style={`--i:${i}`}>
-          <div class="np__phone"><div class="np__hlwrap"><img src={shot(phoneShots[i])} alt={h} loading="lazy" decoding="async" /><i class="np__hl" style={hl(phoneShots[i])} aria-hidden="true"></i></div></div>
+          {phoneShots[i] ? (
+            <div class="np__phone"><div class="np__hlwrap"><img src={shot(phoneShots[i])} alt={h} loading="lazy" decoding="async" /><i class="np__hl" style={hl(phoneShots[i])} aria-hidden="true"></i></div></div>
+          ) : (
+            <div class="np__phone"><div class="np__mp" role="img" aria-label="Mercado Pago"><i style={`--m:url(${brand('mercadopago')})`}></i></div></div>
+          )}
           <div class="np__cap"><b>{i + 1}</b><div><strong>{h}</strong><span>{p}</span></div></div>
         </li>
       ))}
     </ol>
+  </div>
+
+  <!-- Mail de confirmación -->
+  <div class="wrap np__sec" data-reveal>
+    <h2 class="h2">{t.mailH}</h2>
+    <p class="np__txt">{t.mailA}</p>
+    <div class="np__mailwrap" data-rv>
+      <div class="np__mail">
+        <div class="np__mailbar"><span class="np__mailav">{t.mail.from.slice(5, 6)}</span><div><b>{t.mail.from}</b><small>{t.mail.to}</small></div></div>
+        <div class="np__mailsub">{t.mail.subject}</div>
+        <div class="np__mailbody">
+          <div class="np__mailcard">
+            <i class="np__mailtop"></i>
+            <div class="np__mailin">
+              <p class="np__mailbiz">{t.mail.biz}</p>
+              <h3>{t.mail.title}</h3>
+              <p class="np__mailp">{t.mail.intro}</p>
+              <dl>{t.mail.rows.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+              <span class="np__mailbtn">{t.mail.btn}</span>
+            </div>
+          </div>
+          <p class="np__mailfoot">{t.mail.foot}</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- 02 Profesional -->
@@ -326,7 +361,29 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__hlwrap { position: relative; }
   /* El marco se separa de la zona marcada: --gap es la distancia entre la zona y la línea de luz */
   .np__hl { --gap: .9rem; position: absolute; border-radius: 18px; pointer-events: none; opacity: 0; z-index: 2; }
-  .np__phone .np__hl { --gap: .6rem; border-radius: 16px; }
+  .np__phone .np__hl { --gap: .6rem; border-radius: 10px; }
+  .np__phone .np__hlwrap.is-in .np__hl { animation: np-hlp 6s 1s ease-in-out infinite; }
+  @keyframes np-hlp { 0%, 100% { opacity: 0; box-shadow: 0 0 0 0 transparent; } 14%, 50% { opacity: 1; box-shadow: 0 0 0 2px rgb(56 189 248 / .9), 0 0 34px 4px rgb(56 189 248 / .38), inset 0 0 26px rgb(56 189 248 / .14); } 72% { opacity: 0; box-shadow: 0 0 0 0 transparent; } }
+  .np__mp { aspect-ratio: 780 / 1688; border-radius: 1.6rem; background: #009ee3; display: grid; place-items: center; }
+  .np__mp i { width: 46%; aspect-ratio: 1; background: #fff; -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
+  .np__mailwrap { margin-top: 1.5rem; display: grid; justify-items: center; }
+  .np__mail { width: min(100%, 36rem); border-radius: 14px; background: #fff; color: #0f172a; box-shadow: 0 30px 70px rgb(0 0 0 / .5), 0 0 0 1px color-mix(in srgb, var(--ac) 22%, transparent); overflow: hidden; font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; }
+  .np__mailbar { display: flex; align-items: center; gap: .7rem; padding: .9rem 1.1rem; border-bottom: 1px solid #e2e8f0; }
+  .np__mailav { display: grid; place-items: center; width: 2.2rem; aspect-ratio: 1; border-radius: 50%; background: #334155; color: #fff; font-weight: 600; font-size: .9rem; }
+  .np__mailbar div { display: grid; line-height: 1.3; } .np__mailbar b { font-size: .9rem; } .np__mailbar small { color: #64748b; font-size: .78rem; }
+  .np__mailsub { padding: .8rem 1.1rem 0; font-size: 1.05rem; font-weight: 600; }
+  .np__mailbody { margin: .8rem; padding: 1rem .6rem 1rem; background: #f1f5f9; border-radius: 10px; }
+  .np__mailcard { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; max-width: 30rem; margin: 0 auto; }
+  .np__mailtop { display: block; height: 4px; background: #334155; }
+  .np__mailin { padding: 1.5rem 1.5rem 1.6rem; }
+  .np__mailbiz { margin: 0 0 .25rem; font-size: .8rem; color: #64748b; }
+  .np__mailin h3 { margin: 0 0 .7rem; font-size: 1.35rem; line-height: 1.3; }
+  .np__mailp { margin: 0 0 1.2rem; font-size: .95rem; color: #334155; }
+  .np__mailin dl { margin: 0 0 1.2rem; border-block: 1px solid #e2e8f0; padding: .3rem 0; }
+  .np__mailin dl div { display: flex; gap: 1rem; padding: .35rem 0; font-size: .88rem; }
+  .np__mailin dt { width: 6.5rem; flex: none; color: #64748b; } .np__mailin dd { margin: 0; }
+  .np__mailbtn { display: inline-block; background: #334155; color: #fff; font-weight: 600; font-size: .92rem; padding: .75rem 1.3rem; border-radius: 10px; }
+  .np__mailfoot { margin: 1rem .5rem 0; text-align: center; font-size: .75rem; color: #94a3b8; }
   .np__stage .np__hl { --gap: .45rem; border-radius: 14px; }
   .np__stage .np__hl { z-index: 3; }
   .np__hlwrap.is-in .np__hl { animation: np-hl 8s 1.4s ease-in-out infinite; }
