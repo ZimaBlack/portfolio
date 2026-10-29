@@ -135,6 +135,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   <div class="wrap np__recep" data-reveal>
     <div class="np__rtxt"><span class="np__n">00</span><h2 class="h2">{t.recep}</h2><p class="np__txt">{t.recepA}</p></div>
     <div class="np__stage" data-stage>
+      <i class="np__halo" aria-hidden="true"></i><i class="np__halo" aria-hidden="true"></i><i class="np__halo" aria-hidden="true"></i>
       <div class="np__dev">
         <div class="np__scr">
           <div class="np__boot"><i></i><i></i><img src={mk('favicon-light')} alt="" /></div>
@@ -173,7 +174,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
     <p class="np__txt">{t.proA}</p>
     <div class="np__wide">
       {t.pcap.map(([k, h, p]) => (
-        <figure class="np__shot"><img src={shot(k)} alt={h} loading="lazy" decoding="async" /><figcaption><strong>{h}</strong><span>{p}</span></figcaption></figure>
+        <figure class="np__shot"><div class="np__scroll"><img src={shot(k)} alt={h} loading="lazy" decoding="async" /></div><figcaption><strong>{h}</strong><span>{p}</span></figcaption></figure>
       ))}
     </div>
   </div>
@@ -182,7 +183,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   <div class="wrap np__sec" data-reveal>
     <div class="np__head"><span class="np__n">03</span><h2 class="h2">{t.tech}</h2></div>
     <p class="np__txt">{t.techA}</p>
-    <figure class="np__shot"><img src={shot('tecnico')} alt={t.tcap} loading="lazy" decoding="async" /><figcaption><span>{t.tcap}</span></figcaption></figure>
+    <figure class="np__shot"><div class="np__scroll"><img src={shot('tecnico')} alt={t.tcap} loading="lazy" decoding="async" /></div><figcaption><span>{t.tcap}</span></figcaption></figure>
   </div>
 
   <!-- Conexiones -->
@@ -290,6 +291,10 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__cap span { color: var(--muted); font-size: .85rem; line-height: 1.5; }
   /* Paneles: uno por fila a ancho completo, con la explicación debajo */
   .np__wide { display: grid; gap: clamp(2.5rem, 5vw, 4rem); }
+  /* En el celular los paneles se deslizan en horizontal, a un tamaño donde el texto se lee */
+  .np__wide { grid-template-columns: minmax(0, 1fr); } .np__shot { min-width: 0; }
+  .np__scroll { border-radius: 8px; max-width: 100%; }
+  @media (max-width: 720px) { .np__scroll { overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; padding-bottom: .4rem; } .np__scroll img { min-width: 46rem; } }
   .np__shot img { border-radius: 8px; box-shadow: 0 30px 70px rgb(0 0 0 / .45), 0 0 0 1px color-mix(in srgb, var(--ac) 22%, transparent); }
   .np figcaption { display: grid; gap: .25rem; padding-top: .9rem; max-width: 46rem; }
   .np figcaption span { color: var(--muted); font-size: .9rem; line-height: 1.55; }
@@ -320,11 +325,17 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__dev { position: relative; width: min(74vw, 17.5rem); aspect-ratio: 9 / 19.2; padding: .6rem; border-radius: 2.6rem; background: linear-gradient(145deg, #2a2833, #0d0c11); transform-style: preserve-3d; transform: translateY(70px) rotateY(-46deg) rotateX(14deg) rotateZ(5deg) scale(.82); opacity: 0;
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--ac) 32%, transparent), 1px 1px 0 #1c1a24, 2px 2px 0 #1a1822, 3px 3px 0 #18161f, 4px 4px 0 #15131b, 5px 5px 0 #121018, 6px 6px 0 #100e15, 7px 7px 0 #0d0c11, 22px 36px 60px rgb(0 0 0 / .55); }
   .np__scr { position: relative; width: 100%; height: 100%; border-radius: 2.05rem; overflow: hidden; background: #040408; }
-  .np__notch { position: absolute; top: 1.15rem; left: 50%; width: 22%; height: .8rem; margin-left: -11%; border-radius: 999px; background: #040408; z-index: 3; }
-  .np__shotimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; opacity: 0; }
-  .np__boot { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 50%, #1d1b2e 0, #07070c 70%); opacity: 0; z-index: 2; }
+  .np__notch { position: absolute; top: 1.15rem; left: 50%; width: 22%; height: .8rem; margin-left: -11%; border-radius: 999px; background: #000; box-shadow: inset 0 0 0 1px #15131b; z-index: 3; }
+  /* La cámara frontal vive en una franja negra superior: la captura empieza debajo y no queda tapada */
+  .np__shotimg { position: absolute; left: 0; right: 0; bottom: 0; top: 2.1rem; width: 100%; height: calc(100% - 2.1rem); object-fit: cover; object-position: top; opacity: 0; }
+  .np__boot { position: absolute; inset: 2.1rem 0 0 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 50%, #1d1b2e 0, #07070c 70%); opacity: 0; z-index: 2; }
   .np__boot img { position: relative; width: 38%; border-radius: 22%; opacity: 0; transform: scale(.6); filter: blur(8px); }
   .np__boot i { position: absolute; width: 38%; aspect-ratio: 1; border-radius: 28%; border: 1px solid var(--sky); opacity: 0; }
+  /* Halo: el mismo pulso de anillos del isotipo final, detrás del celular y con muy poca opacidad */
+  .np__halo { position: absolute; left: 50%; top: 46%; width: min(74vw, 17.5rem); aspect-ratio: 9 / 19.2; margin: calc(min(74vw, 17.5rem) * -.5 * 19.2 / 9) 0 0 calc(min(74vw, 17.5rem) * -.5); border-radius: 2.8rem; border: 1px solid var(--sky); opacity: 0; pointer-events: none; }
+  .np__stage.is-in .np__halo { animation: np-halo 5.4s 1.6s ease-out infinite; }
+  .np__stage.is-in .np__halo:nth-of-type(2) { animation-delay: 3.4s; } .np__stage.is-in .np__halo:nth-of-type(3) { animation-delay: 5.2s; }
+  @keyframes np-halo { 0% { transform: scale(1); opacity: .16; } 100% { transform: scale(1.9); opacity: 0; } }
   .np__floor { position: absolute; bottom: .6rem; width: 62%; height: 1.4rem; border-radius: 50%; background: radial-gradient(closest-side, rgb(0 0 0 / .55), transparent); opacity: 0; transition: opacity 1.4s 1s; filter: blur(4px); }
   .np__stage.is-in .np__floor { opacity: 1; }
   .np__stage.is-in .np__dev { animation: np-dev-in 1.7s cubic-bezier(.2, .8, .25, 1) forwards, np-dev-idle 9s 1.8s ease-in-out infinite; }
@@ -340,7 +351,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   @keyframes np-iso-out { to { opacity: 0; transform: scale(1.25); filter: blur(6px); } }
   @keyframes np-ring2 { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(2.4); opacity: 0; } }
   @keyframes np-fade { to { opacity: 1; } }
-  @media (prefers-reduced-motion: reduce) { .np__dev { opacity: 1 !important; transform: rotateY(-14deg) rotateX(6deg) !important; animation: none !important; } .np__shotimg { opacity: 1 !important; animation: none !important; } .np__boot { display: none; } .np__floor { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .np__dev { opacity: 1 !important; transform: rotateY(-14deg) rotateX(6deg) !important; animation: none !important; } .np__shotimg { opacity: 1 !important; animation: none !important; } .np__boot, .np__halo { display: none; } .np__floor { opacity: 1; } }
   @media (max-width: 860px) { .np__recep { grid-template-columns: 1fr; } }
   /* Marca */
   .np__bgrid { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr; gap: 1rem; margin-top: .5rem; }
