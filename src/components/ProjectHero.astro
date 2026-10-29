@@ -10,8 +10,8 @@ import { withBase } from '../lib/i18n';
 import { forge, loadArt, shapeDefs, timingVars, type Gradient } from '../lib/forge';
 import { wavesSvg } from '../lib/waves';
 
-const { logo = '', mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, liquid = false, assemble = false, ornament = '', pattern = '', photo = '', glass = false, draw = false } = Astro.props as {
-  logo?: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; liquid?: boolean; assemble?: boolean; ornament?: string; pattern?: string; photo?: string; glass?: boolean; draw?: boolean;
+const { logo = '', mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, liquid = false, assemble = false, ornament = '', pattern = '', photo = '', glass = false, draw = false, isoAnim = false } = Astro.props as {
+  logo?: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; liquid?: boolean; assemble?: boolean; ornament?: string; pattern?: string; photo?: string; glass?: boolean; draw?: boolean; isoAnim?: boolean;
 };
 const src = (p: string) => (p.startsWith('/') ? withBase(p) : p);
 const isSvg = (p?: string) => !!p && p.toLowerCase().endsWith('.svg');
@@ -70,6 +70,19 @@ if (draw && isSvg(logo)) {
     + order.map((l, i) => `<path class="dr-tx" style="--i:${i}" d="${l.d}" fill="${l.fill}"/>`).join('')
     + `</svg>`;
 }
+// ── Modo isotipo: el logotipo trae letras (trazos claros) y el isotipo (trazo de otro color, el último). El isotipo nace en el centro,
+// los anillos se cierran sobre él y se desplaza a su lugar mientras aparecen las letras (las medidas se toman en el navegador).
+let isoSvg = '';
+if (isoAnim && isSvg(logo)) {
+  const raw = readFileSync(join(process.cwd(), 'public', logo), 'utf8');
+  const vb = /viewBox="([^"]+)"/.exec(raw)?.[1] ?? '0 0 100 100';
+  const paths = [...raw.matchAll(/<path d="([^"]+)"[^>]*fill="([^"]+)"/g)].map((m) => ({ d: m[1], fill: m[2] }));
+  const iso = paths[paths.length - 1];
+  const letters = paths.slice(0, -1);
+  isoSvg = `<div class="pjh__iw" data-pj-iso><svg class="pjh__isosvg" viewBox="${vb}" role="img" aria-label="${title.replace(/"/g, '&quot;')}">`
+    + letters.map((l) => `<path class="in-l" d="${l.d}" fill="${l.fill}"/>`).join('')
+    + `<path class="in-iso" d="${iso.d}" fill="${iso.fill}"/></svg><i class="in-ring"></i><i class="in-ring"></i><i class="in-ring"></i></div>`;
+}
 const wavesMarkup = pattern === 'waves' ? wavesSvg([tones[0], tones[1]]) : '';
 const stageSvg = assemble ? logoSvg : reactiveSvg;
 ---
@@ -102,7 +115,9 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
     {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
     {orn.map((s) => <Fragment set:html={s} />)}
     <div class="pjh__stage" data-pj-stage>
-      {drawSvg ? (
+      {isoSvg ? (
+        <Fragment set:html={isoSvg} />
+      ) : drawSvg ? (
         <div class="pjh__drawwrap">
           <Fragment set:html={drawSvg} />
           <span class="pjh__sheen pjh__sheen--draw" aria-hidden="true" style={`--logo:url(${src(logo)})`}></span>
@@ -201,6 +216,21 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   /* ── Dibujar (CDXX): contorno del árbol → relleno → letras; el fondo entra desde el desenfoque cuando el árbol se llena */
   /* Degradado a negro hacia abajo: el hero se funde con el resto de la página */
   .pjh[data-draw] .pjh__scene::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, transparent 55%, var(--bg) 100%); }
+  /* ── Isotipo (NovaPsi): nace al centro, los anillos se cierran sobre él, se desplaza a su lugar y aparecen las letras */
+  :global(.pjh__iw) { position: relative; width: min(84vw, 40rem); }
+  :global(.pjh__isosvg) { width: 100%; height: auto; overflow: visible; display: block; }
+  :global(.js .pjh__iw .in-l), :global(.js .pjh__iw .in-iso), :global(.js .pjh__iw .in-ring) { opacity: 0; }
+  :global(.pjh__iw .in-iso) { transform-box: fill-box; transform-origin: center; }
+  :global(.pjh__iw .in-ring) { position: absolute; left: 50%; top: var(--ry, 50%); width: var(--rw, 30%); aspect-ratio: 1; margin: calc(var(--rw, 30%) * -.5) 0 0 calc(var(--rw, 30%) * -.5); border: 1px solid #8fd3ff; border-radius: 26%; pointer-events: none; }
+  :global(.pjh__iw.is-ready .in-iso) { animation: in-iso 4.4s cubic-bezier(.22, .9, .28, 1) both; }
+  :global(.pjh__iw.is-ready .in-l) { animation: in-letter .9s calc(3.1s + var(--i, 0) * .07s) cubic-bezier(.22, .9, .28, 1) both; }
+  :global(.pjh__iw.is-ready .in-ring) { animation: in-ring 2s ease-in both; }
+  :global(.pjh__iw.is-ready .in-ring:nth-of-type(2)) { animation-delay: .35s; } :global(.pjh__iw.is-ready .in-ring:nth-of-type(3)) { animation-delay: .7s; }
+  @keyframes in-iso { 0% { opacity: 0; transform: translate(var(--itx, 0px), 0) scale(1.4); filter: blur(10px); } 18% { opacity: 1; transform: translate(var(--itx, 0px), 0) scale(2.2); filter: blur(0); } 62% { opacity: 1; transform: translate(var(--itx, 0px), 0) scale(2.2); } 100% { opacity: 1; transform: none; } }
+  @keyframes in-letter { from { opacity: 0; transform: translateX(var(--lx, 24px)); filter: blur(8px); } to { opacity: 1; transform: none; filter: blur(0); } }
+  @keyframes in-ring { 0% { opacity: 0; transform: scale(1.9); } 25% { opacity: .5; } 100% { opacity: 0; transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { :global(.js .pjh__iw .in-l), :global(.js .pjh__iw .in-iso) { opacity: 1; animation: none !important; } :global(.pjh__iw .in-ring) { display: none; } }
+  @media (max-width: 760px) { :global(.pjh__iw) { width: min(74vw, 24rem); } }
   .pjh__drawwrap { position: relative; width: min(84vw, 38rem); }
   :global(.pjh__draw) { width: 100%; height: auto; overflow: visible; }
   :global(.dr-line) { fill: none; stroke: #998e59; stroke-width: 2.4; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: dr-trace 1.7s .2s cubic-bezier(.45, .05, .25, 1) forwards, dr-line-out .7s 1.7s ease forwards; }
@@ -309,8 +339,28 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
     document.querySelectorAll<HTMLElement>('[data-halftone]:not([data-ready])').forEach(initHalftone);
     document.querySelectorAll<HTMLElement>('[data-liquid-on]:not([data-liquid])').forEach(initLiquid);
     flow();
+    isoHero();
     update();
   });
+
+  // NovaPsi: mide el isotipo y las letras del logotipo y arranca la secuencia
+  const isoHero = () => {
+    document.querySelectorAll<HTMLElement>('[data-pj-iso]:not([data-measured])').forEach((w) => {
+      w.dataset.measured = '1';
+      const svg = w.querySelector<SVGSVGElement>('svg')!;
+      const iso = svg.querySelector<SVGGraphicsElement>('.in-iso')!;
+      const vb = svg.viewBox.baseVal;
+      const b = iso.getBBox();
+      const cx = b.x + b.width / 2, cy = b.y + b.height / 2;
+      w.style.setProperty('--itx', `${vb.x + vb.width / 2 - cx}px`);
+      w.style.setProperty('--rw', `${((b.width * 2.2) / vb.width) * 100}%`);
+      w.style.setProperty('--ry', `${((cy - vb.y) / vb.height) * 100}%`);
+      // las letras salen del isotipo: la más cercana a él, primero
+      const ls = Array.from(svg.querySelectorAll<SVGGraphicsElement>('.in-l')).map((l) => ({ l, x: l.getBBox().x })).sort((a, c) => c.x - a.x);
+      ls.forEach(({ l }, i) => { l.style.setProperty('--i', String(i)); l.style.setProperty('--lx', `${Math.max(12, b.x - l.getBBox().x) * -0.15}px`); });
+      setTimeout(() => w.classList.add('is-ready'), 60);
+    });
+  };
 
   // CDXX: el fondo marmolado entra fluyendo: un mapa de desplazamiento que se calma hasta quedar quieto (empieza cuando el árbol se rellena)
   const flow = () => {
