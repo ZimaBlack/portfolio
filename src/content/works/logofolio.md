@@ -12,12 +12,16 @@ order: 1
 cover: /works/logofolio/portada.png
 tones: ["#17130f", "#3a2f25"]
 slides:
-  - subtitle: { es: "Una selección de 15 proyectos", en: "A selection of 15 projects" }
+  - subtitle: { es: "Una selección de 16 proyectos", en: "A selection of 16 projects" }
     intro: true
   - subtitle: { es: "Conexión CDXX · Chocolatería sibarita", en: "Conexión CDXX · Epicurean chocolate shop" }
     file: 2
     size: { a: 1.5, b: 0.85 }
     project: cdxx
+  - subtitle: { es: "NovaPsi · Plataforma de turnos para salud mental", en: "NovaPsi · Appointment platform for mental health" }
+    file: 16
+    size: { a: 1.6, b: 0.7 }
+    project: novapsi
   - subtitle: { es: "Omega Shields · Productos y accesorios de TCG", en: "Omega Shields · TCG products and accessories" }
     file: 7
     project: omega-shields
