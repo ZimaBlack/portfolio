@@ -2,6 +2,7 @@
 // NovaPsi: qué es, funcionalidades, los tres accesos con capturas explicadas y cómo se conecta.
 // Capturas del sistema local en modo de demostración (Tour del Servicio): datos de ejemplo, ninguna persona ni cuenta real.
 // Paciente: celular (390 px a 3x). Paneles: 1100 px a 2x, a ancho completo para que el texto se lea.
+import '@fontsource/germania-one/latin-400.css';
 import { withBase, type Lang } from '../lib/i18n';
 const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
@@ -64,14 +65,13 @@ const t = es ? {
   models: 'Cuatro modelos, un código',
   modelsA: [['users', 'Clínica', 'Equipo y administración, una cuenta de cobro.'], ['card', 'Clínica multi-cobro', 'Cada profesional conecta su propio Mercado Pago.'], ['user', 'Profesional', 'Una persona atiende y administra.'], ['database', 'Profesional + Airtable', 'Igual, con Airtable como base.']],
   brand: 'Marca',
-  brandA: 'Un lettering propio, de trazo gótico, y un isotipo —la Ψ dentro de un cuadrado redondeado— que funcionan en claro y en oscuro.',
+  brandA: 'El logotipo está compuesto en Germania One, una tipografía display de trazo gótico, y se acompaña de un isotipo —la Ψ dentro de un cuadrado redondeado— que funciona en claro y en oscuro.',
+  bType: 'Tipografía del logotipo', bTypeA: 'Germania One', bTypeMeta: [['Categoría', 'Display'], ['Diseño', 'John Vargas Beltrán'], ['Pesos', 'Uno: Regular 400'], ['En Google Fonts', 'Desde enero de 2012'], ['Licencia', 'Código abierto']], bGlyph: 'Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj 0123456789',
   bLogo: 'Logotipo', bLogoA: 'Versión sobre claro y sobre oscuro.',
   bIso: 'Isotipo', bIsoA: 'También es el ícono de la pestaña y de la app.',
   bPal: 'Paleta', bPalA: 'Tres neutros del sistema: el negro tinta, el gris pálido y una pervinca apagada.',
   bAdapt: 'Se adapta a cada consultorio', bAdaptA: 'El profesional elige dos colores —o una combinación lista— y el sitio completo los usa. Probalo:',
   cta: 'Mirá cómo funciona', ctaA: 'La demostración en línea, con datos de ejemplo.', ctaBtn: 'Abrir la demo',
-  care: 'Cuidados',
-  careA: ['Ninguna integración caída impide reservar.', 'Cobros de prueba y reales separados, con chequeo previo.', 'Claves fuera del código; un control frena cualquier commit con credenciales.'],
 } : {
   what: 'What it is',
   whatA: 'An appointment system for mental-health practices: patients book and pay a deposit, the professional sees patients and technical support keeps everything connected.',
@@ -107,14 +107,13 @@ const t = es ? {
   models: 'Four models, one codebase',
   modelsA: [['users', 'Clinic', 'Team and administration, one payment account.'], ['card', 'Multi-payment clinic', 'Each professional connects their own Mercado Pago.'], ['user', 'Solo practitioner', 'One person sees patients and administers.'], ['database', 'Solo + Airtable', 'The same, with Airtable as the database.']],
   brand: 'Brand',
-  brandA: 'Custom blackletter-style lettering and an isotype —the Ψ inside a rounded square— that work in light and dark.',
+  brandA: 'The logotype is set in Germania One, a blackletter-style display typeface, accompanied by an isotype —the Ψ inside a rounded square— that works in light and dark.',
+  bType: 'Logotype typeface', bTypeA: 'Germania One', bTypeMeta: [['Category', 'Display'], ['Designer', 'John Vargas Beltrán'], ['Weights', 'One: Regular 400'], ['On Google Fonts', 'Since January 2012'], ['License', 'Open source']], bGlyph: 'Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj 0123456789',
   bLogo: 'Logotype', bLogoA: 'On light and on dark.',
   bIso: 'Isotype', bIsoA: 'Also the tab and app icon.',
   bPal: 'Palette', bPalA: 'Three neutrals of the system: ink black, pale gray and a muted periwinkle.',
   bAdapt: 'Adapts to each practice', bAdaptA: 'The professional picks two colors —or a ready combination— and the whole site uses them. Try it:',
   cta: 'See how it works', ctaA: 'The online demo, with sample data.', ctaBtn: 'Open the demo',
-  care: 'Safeguards',
-  careA: ['A failed integration never blocks booking.', 'Test and real payments kept apart, with a pre-check.', 'Keys stay out of the code; a check blocks any commit with credentials.'],
 };
 const mk = (n: string) => withBase(`/works/novapsi/marca/${n}.svg`);
 const combos = [['Grafito y celeste', '#334155', '#38bdf8'], ['Violeta y verde agua', '#6d28d9', '#0d9488'], ['Azul y coral', '#2563eb', '#f97316'], ['Verde salvia y arena', '#4d7c5f', '#c8a96a'], ['Índigo y rosa', '#4338ca', '#db2777'], ['Petróleo y durazno', '#0f766e', '#f59e0b']];
@@ -205,6 +204,11 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
       <figure class="np__tile np__tile--dark np__tile--iso" style="--i:2"><img src={mk('favicon-light')} alt="Isotipo" loading="lazy" /><figcaption>{t.bIso} · <span>{t.bIsoA}</span></figcaption></figure>
       <figure class="np__tile np__tile--light np__tile--iso" style="--i:3"><img src={mk('favicon-dark')} alt="Isotipo" loading="lazy" /><figcaption>{t.bIso} · <span>{t.bIsoA}</span></figcaption></figure>
     </div>
+    <div class="np__type">
+      <div class="np__spec" aria-hidden="true"><span>NovaPsi</span><small>{t.bGlyph}</small></div>
+      <div class="np__tmeta"><h3 class="np__sub">{t.bType}</h3><strong>{t.bTypeA}</strong>
+        <dl>{t.bTypeMeta.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl></div>
+    </div>
     <div class="np__pal">
       <div><h3 class="np__sub">{t.bPal}</h3><p class="np__txt">{t.bPalA}</p></div>
       <ul><li><i style="background:#0f0f0f"></i>#0F0F0F</li><li><i style="background:#c9c9c9"></i>#C9C9C9</li><li><i style="background:#666b8b"></i>#666B8B</li></ul>
@@ -220,11 +224,6 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
         <div class="np__mtag">{es ? 'Confirmado' : 'Confirmed'}</div>
       </div>
     </div>
-  </div>
-
-  <div class="wrap np__sec" data-reveal>
-    <h2 class="h2">{t.care}</h2>
-    <ul class="np__care">{t.careA.map((x) => <li class="np__txt">{x}</li>)}</ul>
   </div>
 
   <!-- Cierre: el isotipo y la demo -->
@@ -296,8 +295,6 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__models { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
   .np__models li { display: grid; gap: .5rem; padding: 1.1rem; border: 1px solid var(--line); border-radius: 12px; align-content: start; justify-items: start; }
   .np__models span:not(.np__ico) { color: var(--muted); font-size: .88rem; line-height: 1.5; }
-  .np__care { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
-  .np__care li::before { content: '— '; color: var(--sky); }
   /* Marca */
   .np__bgrid { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr; gap: 1rem; margin-top: .5rem; }
   .np__tile { display: grid; gap: .8rem; align-content: space-between; padding: 1.4rem; border-radius: 14px; min-height: 11rem; }
@@ -307,6 +304,15 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__tile figcaption { padding: 0; font-size: .75rem; letter-spacing: .06em; opacity: .85; }
   .np__tile figcaption span { opacity: .7; }
   .np__tile--iso figcaption span { display: none; } .np__tile--iso { align-content: center; justify-items: center; text-align: center; }
+  .np__type { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: center; margin-top: 1rem; padding: clamp(1.2rem, 3vw, 2.2rem); border: 1px solid var(--line); border-radius: 16px; }
+  .np__spec { display: grid; gap: 1rem; font-family: 'Germania One', var(--sans); }
+  .np__spec span { font-size: clamp(3.4rem, 9vw, 7rem); line-height: 1; color: var(--cream); letter-spacing: .01em; }
+  .np__spec small { font-size: clamp(.9rem, 1.6vw, 1.2rem); color: var(--ac); letter-spacing: .08em; word-break: break-word; }
+  .np__tmeta { display: grid; gap: .5rem; }
+  .np__tmeta > strong { font-size: 1.4rem; font-weight: 400; }
+  .np__tmeta dl { margin: .4rem 0 0; display: grid; gap: .55rem; }
+  .np__tmeta dl div { display: flex; justify-content: space-between; gap: 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--line); font-size: .85rem; }
+  .np__tmeta dt { color: var(--muted); } .np__tmeta dd { margin: 0; text-align: right; }
   .np__pal { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.5rem; align-items: center; margin-top: 1rem; }
   .np__pal ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 1.2rem; font-size: .8rem; color: var(--muted); }
   .np__pal li { display: grid; gap: .5rem; justify-items: center; }
@@ -328,8 +334,8 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__mbtn { padding: .8rem; border-radius: 12px; text-align: center; color: #fff; background: var(--pa); font-size: .9rem; transition: background .6s; }
   .np__mtag { justify-self: start; padding: .25rem .7rem; border-radius: 999px; font-size: .75rem; color: var(--pa); background: color-mix(in srgb, var(--pb) 22%, #fff); transition: color .6s, background .6s; }
   /* Cierre: el isotipo con anillos que laten y la demo */
-  .np__end { display: grid; justify-items: center; text-align: center; gap: 1rem; padding-block: clamp(2rem, 5vw, 4rem); border-top: 1px solid color-mix(in srgb, var(--ac) 28%, var(--line)); }
-  .np__iso { position: relative; width: 7rem; aspect-ratio: 1; margin-bottom: 2.4rem; opacity: 0; transform: scale(.7); filter: blur(10px); transition: opacity 1s var(--ease), transform 1.2s var(--ease), filter 1.2s var(--ease); }
+  .np__end { display: grid; align-content: center; justify-items: center; text-align: center; gap: 1.4rem; min-height: min(88vh, 52rem); padding-block: clamp(5rem, 12vw, 10rem); border-top: 1px solid color-mix(in srgb, var(--ac) 28%, var(--line)); }
+  .np__iso { position: relative; width: clamp(8rem, 14vw, 11rem); aspect-ratio: 1; margin-bottom: clamp(3rem, 6vw, 5rem); opacity: 0; transform: scale(.7); filter: blur(10px); transition: opacity 1s var(--ease), transform 1.2s var(--ease), filter 1.2s var(--ease); }
   .np__iso img { position: relative; width: 100%; border-radius: 22%; z-index: 1; }
   .np__iso i { position: absolute; inset: 0; border-radius: 28%; border: 1px solid var(--sky); opacity: 0; }
   .np__end.is-in .np__iso { opacity: 1; transform: none; filter: none; animation: np-iso-float 6s 1.4s ease-in-out infinite; }
@@ -341,7 +347,9 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__end.is-in .np__endh { opacity: 1; transform: none; transition-delay: .9s; }
   .np__end.is-in .np__endp { opacity: 1; transform: none; transition-delay: 1.1s; }
   .np__end.is-in .np__btn { opacity: 1; transform: none; transition-delay: 1.5s; }
-  .np__btn { display: inline-flex; align-items: center; gap: .6rem; margin-top: .6rem; padding: .95rem 1.6rem; border-radius: 999px; color: #14121f; background: linear-gradient(120deg, var(--ac), var(--sky)); font-weight: 500; box-shadow: 0 10px 40px color-mix(in srgb, var(--sky) 35%, transparent); transition: opacity .9s var(--ease), transform .9s var(--ease), box-shadow .4s; }
+  .np__endh { font-size: clamp(1.3rem, 2.6vw, 2.2rem); }
+  .np__endp { font-size: 1.05rem; }
+  .np__btn { display: inline-flex; align-items: center; gap: .6rem; margin-top: 1.2rem; padding: 1.1rem 2rem; font-size: 1.05rem; border-radius: 999px; color: #14121f; background: linear-gradient(120deg, var(--ac), var(--sky)); font-weight: 500; box-shadow: 0 10px 40px color-mix(in srgb, var(--sky) 35%, transparent); transition: opacity .9s var(--ease), transform .9s var(--ease), box-shadow .4s; }
   .np__btn svg { width: 1.05rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform .4s var(--ease); }
   .np__btn:hover { box-shadow: 0 14px 50px color-mix(in srgb, var(--sky) 55%, transparent); } .np__btn:hover svg { transform: translate(2px, -2px); }
   /* Animación de aparición: los elementos [data-rv] entran en escalera al verse (clase is-in desde el script) */
@@ -360,7 +368,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
     .np__phones { grid-template-columns: 1fr 1fr; }
     .np__flow { grid-template-columns: 1fr; gap: 1.5rem; } .np__flow::before, .np__pulse { display: none; }
     .np__data, .np__models { grid-template-columns: 1fr 1fr; }
-    .np__bgrid { grid-template-columns: 1fr 1fr; } .np__adapt, .np__pal { grid-template-columns: 1fr; }
+    .np__bgrid { grid-template-columns: 1fr 1fr; } .np__adapt, .np__pal, .np__type { grid-template-columns: 1fr; }
   }
   @media (max-width: 520px) { .np__feat, .np__phones, .np__data, .np__models, .np__bgrid { grid-template-columns: 1fr; } }
 </style>
