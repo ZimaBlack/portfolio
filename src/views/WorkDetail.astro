@@ -12,6 +12,7 @@ import BrandManual from '../components/BrandManual.astro';
 import CdxxManual from '../components/CdxxManual.astro';
 import ColoradaManual from '../components/ColoradaManual.astro';
 import PiruloManual from '../components/PiruloManual.astro';
+import Lightbox from '../components/Lightbox.astro';
 import NovaPsiStory from '../components/NovaPsiStory.astro';
 import OmegaManual from '../components/OmegaManual.astro';
 import { ambientOf, isLight, toneOfHex, type Tone } from '../lib/palette';
@@ -153,6 +154,7 @@ const next = all.length > 1 && at >= 0 ? all[(at + 1) % all.length] : undefined;
       </nav>
     )}
   </article>
+  <Lightbox lang={lang} />
   {d.widget === 'palette' && d.paletteColors.length > 0 && <PaletteWidget colors={d.paletteColors} lang={lang} />}
 </Base>
 

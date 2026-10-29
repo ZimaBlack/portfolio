@@ -1,0 +1,137 @@
+---
+// Zoom de imágenes de los proyectos: clic para ampliar, rueda o pellizco para acercar, arrastrar para mover.
+const { lang = 'es' } = Astro.props as { lang?: 'es' | 'en' };
+const label = lang === 'es'
+  ? { close: 'Cerrar', prev: 'Anterior', next: 'Siguiente', zin: 'Acercar', zout: 'Alejar', open: 'Ampliar imagen' }
+  : { close: 'Close', prev: 'Previous', next: 'Next', zin: 'Zoom in', zout: 'Zoom out', open: 'Enlarge image' };
+---
+<div data-lb-labels={JSON.stringify(label)} hidden></div>
+
+<style is:global>
+  [data-zoom] { cursor: zoom-in; }
+  .lb { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; background: rgb(6 6 6 / .93); backdrop-filter: blur(6px); opacity: 0; transition: opacity .25s ease; touch-action: none; overscroll-behavior: contain; }
+  .lb.is-on { opacity: 1; }
+  .lb__stage { position: absolute; inset: 0; overflow: hidden; display: grid; place-items: center; cursor: zoom-in; }
+  .lb.is-zoomed .lb__stage { cursor: grab; } .lb.is-drag .lb__stage { cursor: grabbing; }
+  .lb__img { max-width: 92vw; max-height: 88vh; width: auto; height: auto; user-select: none; -webkit-user-drag: none; transform-origin: center; will-change: transform; border-radius: 6px; box-shadow: 0 30px 80px rgb(0 0 0 / .6); background: #fff0; }
+  .lb:not(.is-drag) .lb__img { transition: transform .22s ease; }
+  .lb__bar { position: absolute; top: max(.8rem, env(safe-area-inset-top)); right: .8rem; display: flex; gap: .5rem; z-index: 2; }
+  .lb__btn { width: 2.6rem; height: 2.6rem; border-radius: 50%; border: 1px solid rgb(255 255 255 / .22); background: rgb(20 20 20 / .7); color: #fff; display: grid; place-items: center; cursor: pointer; font: inherit; transition: background .2s, border-color .2s; }
+  .lb__btn:hover { background: rgb(255 255 255 / .16); border-color: rgb(255 255 255 / .5); }
+  .lb__btn svg { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .lb__nav { position: absolute; top: 50%; margin-top: -1.3rem; z-index: 2; }
+  .lb__nav--prev { left: .8rem; } .lb__nav--next { right: .8rem; }
+  .lb__cnt { position: absolute; left: 50%; bottom: max(1rem, env(safe-area-inset-bottom)); transform: translateX(-50%); font-size: .8rem; letter-spacing: .12em; color: rgb(255 255 255 / .7); z-index: 2; }
+  @media (max-width: 640px) { .lb__nav { display: none; } .lb__img { max-width: 100vw; border-radius: 0; } }
+  @media (prefers-reduced-motion: reduce) { .lb, .lb__img { transition: none !important; } }
+</style>
+
+<script>
+  const SEL = 'img';
+  const SKIP = 'a, button, header, nav, .pn, .pjh, [data-nozoom], .lb, .pc, footer';
+  const ico = {
+    x: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    l: '<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+    r: '<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>',
+    p: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+    m: '<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',
+  };
+  let lb: HTMLElement | null = null;
+  let list: HTMLImageElement[] = [];
+  let idx = 0, scale = 1, tx = 0, ty = 0;
+  const L = () => { try { return JSON.parse(document.querySelector('[data-lb-labels]')?.getAttribute('data-lb-labels') || '{}'); } catch { return {}; } };
+
+  const zoomable = () => [...document.querySelectorAll<HTMLImageElement>('main img, article img')].filter((i) => !i.closest(SKIP) && (i.currentSrc || i.src));
+  const mark = () => { zoomable().forEach((i) => i.setAttribute('data-zoom', '')); };
+
+  const apply = () => {
+    const im = lb?.querySelector<HTMLElement>('.lb__img');
+    if (!im) return;
+    im.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    lb!.classList.toggle('is-zoomed', scale > 1.01);
+  };
+  const clamp = () => {
+    const im = lb?.querySelector<HTMLElement>('.lb__img'); if (!im) return;
+    const mx = Math.max(0, (im.offsetWidth * scale - innerWidth) / 2), my = Math.max(0, (im.offsetHeight * scale - innerHeight) / 2);
+    tx = Math.min(mx, Math.max(-mx, tx)); ty = Math.min(my, Math.max(-my, ty));
+  };
+  const setScale = (s: number, cx = innerWidth / 2, cy = innerHeight / 2) => {
+    const n = Math.min(6, Math.max(1, s)), k = n / scale;
+    tx = (tx - (cx - innerWidth / 2)) * k + (cx - innerWidth / 2); ty = (ty - (cy - innerHeight / 2)) * k + (cy - innerHeight / 2);
+    scale = n; if (n === 1) { tx = 0; ty = 0; } clamp(); apply();
+  };
+  const show = (i: number) => {
+    idx = (i + list.length) % list.length; scale = 1; tx = 0; ty = 0;
+    const src = list[idx], im = lb!.querySelector<HTMLImageElement>('.lb__img')!;
+    im.src = src.currentSrc || src.src; im.alt = src.alt || '';
+    const c = lb!.querySelector('.lb__cnt'); if (c) c.textContent = list.length > 1 ? `${idx + 1} / ${list.length}` : '';
+    lb!.querySelectorAll('.lb__nav').forEach((b) => ((b as HTMLElement).hidden = list.length < 2));
+    apply();
+  };
+  const close = () => {
+    if (!lb) return; const el = lb; lb = null; el.classList.remove('is-on');
+    document.documentElement.style.overflow = ''; document.removeEventListener('keydown', onKey);
+    setTimeout(() => el.remove(), 260);
+  };
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowRight') show(idx + 1); else if (e.key === 'ArrowLeft') show(idx - 1);
+    else if (e.key === '+' || e.key === '=') setScale(scale * 1.4); else if (e.key === '-') setScale(scale / 1.4);
+  };
+  const open = (img: HTMLImageElement) => {
+    list = zoomable(); const i = list.indexOf(img); if (i < 0) return;
+    const t = L(); lb?.remove();
+    lb = document.createElement('div'); lb.className = 'lb'; lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-modal', 'true');
+    lb.innerHTML = `<div class="lb__stage"><img class="lb__img" draggable="false" alt=""></div>
+      <div class="lb__bar"><button class="lb__btn" data-a="out" aria-label="${t.zout || ''}">${ico.m}</button><button class="lb__btn" data-a="in" aria-label="${t.zin || ''}">${ico.p}</button><button class="lb__btn" data-a="x" aria-label="${t.close || ''}">${ico.x}</button></div>
+      <button class="lb__btn lb__nav lb__nav--prev" data-a="prev" aria-label="${t.prev || ''}">${ico.l}</button><button class="lb__btn lb__nav lb__nav--next" data-a="next" aria-label="${t.next || ''}">${ico.r}</button><div class="lb__cnt"></div>`;
+    document.body.appendChild(lb); document.documentElement.style.overflow = 'hidden';
+    show(i); requestAnimationFrame(() => lb?.classList.add('is-on'));
+    document.addEventListener('keydown', onKey);
+
+    const stage = lb.querySelector<HTMLElement>('.lb__stage')!;
+    let moved = false, sx = 0, sy = 0, ox = 0, oy = 0, down = false;
+    const pts = new Map<number, { x: number; y: number }>(); let d0 = 0, s0 = 1;
+    stage.addEventListener('pointerdown', (e) => {
+      stage.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.size === 2) { const [a, b] = [...pts.values()]; d0 = Math.hypot(a.x - b.x, a.y - b.y); s0 = scale; }
+      down = true; moved = false; sx = e.clientX; sy = e.clientY; ox = tx; oy = ty;
+    });
+    stage.addEventListener('pointermove', (e) => {
+      if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.size === 2) { const [a, b] = [...pts.values()]; moved = true; setScale(s0 * Math.hypot(a.x - b.x, a.y - b.y) / d0, (a.x + b.x) / 2, (a.y + b.y) / 2); return; }
+      if (!down) return; const dx = e.clientX - sx, dy = e.clientY - sy;
+      if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+      if (scale > 1.01 && moved) { lb!.classList.add('is-drag'); tx = ox + dx; ty = oy + dy; clamp(); apply(); }
+    });
+    const up = (e: PointerEvent) => {
+      pts.delete(e.pointerId); if (pts.size) return; down = false; lb?.classList.remove('is-drag');
+      if (moved) return;
+      const r = lb!.querySelector('.lb__img')!.getBoundingClientRect();
+      const onImg = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      if (!onImg) { close(); return; }
+      if (scale > 1.01) setScale(1); else setScale(2.6, e.clientX, e.clientY);
+    };
+    stage.addEventListener('pointerup', up); stage.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); down = false; });
+    stage.addEventListener('wheel', (e) => { e.preventDefault(); setScale(scale * (e.deltaY < 0 ? 1.18 : 1 / 1.18), e.clientX, e.clientY); }, { passive: false });
+    lb.addEventListener('click', (e) => {
+      const a = (e.target as HTMLElement).closest<HTMLElement>('[data-a]')?.dataset.a; if (!a) return;
+      if (a === 'x') close(); else if (a === 'in') setScale(scale * 1.5); else if (a === 'out') setScale(scale / 1.5);
+      else if (a === 'prev') show(idx - 1); else if (a === 'next') show(idx + 1);
+    });
+  };
+
+  const w = window as unknown as { __lb?: boolean };
+  if (!w.__lb) {
+    w.__lb = true;
+    document.addEventListener('click', (e) => {
+      const img = (e.target as HTMLElement).closest?.(SEL) as HTMLImageElement | null;
+      if (!img || lb || img.closest(SKIP) || !(img.currentSrc || img.src) || !img.closest('main, article')) return;
+      open(img);
+    });
+    document.addEventListener('astro:before-swap', () => { lb?.remove(); lb = null; document.documentElement.style.overflow = ''; });
+  }
+  document.addEventListener('astro:page-load', mark);
+  mark();
+  new MutationObserver(() => mark()).observe(document.documentElement, { childList: true, subtree: true });
+</script>
