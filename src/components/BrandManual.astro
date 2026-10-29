@@ -5,6 +5,7 @@ import GcLogos from './GcLogos.astro';
 import GcConcept from './GcConcept.astro';
 import GcGrid from './GcGrid.astro';
 import GcSynth from './GcSynth.astro';
+import GcResources from './GcResources.astro';
 import markRaw from '../../public/works/global-citizen/mark.svg?raw';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -21,6 +22,9 @@ const t = es ? {
   deconI: 'Principios compartidos',
   deconIs: ['Estructura', 'Claridad', 'Legibilidad', 'Función', 'Sin ornamentación'],
   deconG: [['Estilo suizo', 'mediados del siglo XX'], ['Constructivismo gráfico', 'inicios del siglo XX'], ['Principios compartidos', 'estructura · claridad · legibilidad · función'], ['Global Citizen', 'simplicidad · coherencia · legibilidad']],
+  resH: 'Recursos gráficos',
+  resP: 'MÓDULOS: para el desarrollo de aplicaciones gráficas utilizamos elementos modulares individuales, composiciones elementales que hacen a las formas de la marca, en los cuales podemos denotar una tendencia de desarrollo y construcción. Representan procesos de ensamble dinámico que sugieren la implementación de las ideas, la interacción de las buenas prácticas y el resultado consecuente, donde siempre el elemento completo y resultante es Global Citizen.',
+  resT: 'Pasá el cursor sobre los módulos: giran y se encienden.',
   conceptH: 'El concepto principal',
   conceptL: 'Armonía y constancia: un módulo que se repite, se refleja y se acopla.',
   conceptP: 'La marca aplica estos valores con módulos geométricos individuales de repetición y asimetría, que generan estructuras armónicas. Una buena idea que funciona se optimiza y se replica según su medio: un sistema bien ajustado y medido.',
@@ -65,6 +69,9 @@ const t = es ? {
   deconI: 'Shared principles',
   deconIs: ['Structure', 'Clarity', 'Legibility', 'Function', 'No ornament'],
   deconG: [['Swiss style', 'mid-20th century'], ['Graphic constructivism', 'early 20th century'], ['Shared principles', 'structure · clarity · legibility · function'], ['Global Citizen', 'simplicity · coherence · legibility']],
+  resH: 'Graphic resources',
+  resP: 'MODULES: for graphic applications we use individual modular elements, elementary compositions that make up the shapes of the brand, in which we can see a tendency of development and construction. They represent dynamic assembly processes that suggest putting ideas into practice, the interaction of good practices and the resulting outcome, where the complete, resulting element is always Global Citizen.',
+  resT: 'Hover over the modules: they turn and light up.',
   conceptH: 'The main concept',
   conceptL: 'Harmony and constancy: a module that repeats, mirrors and couples.',
   conceptP: 'The brand applies these values through individual geometric modules of repetition and asymmetry, creating harmonious structures. A good idea that works gets optimized and replicated across its medium: a well-tuned, measured system.',
@@ -207,6 +214,14 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     </div>
   </div>
 
+  <div class="wrap gcm__res" data-reveal>
+    <GcResources label={t.resH} />
+    <div class="gcm__block gcm__block--res">
+      <div class="gcm__text"><h2 class="h2">{t.resH}</h2><p class="gcm__hint">{t.resT}</p></div>
+      <p class="gcm__restxt">{t.resP}</p>
+    </div>
+  </div>
+
   <div class="wrap gcm__title" data-reveal><h2 class="h2">{t.mock}</h2></div>
 
   <div class="wrap gcm__pair" data-reveal>
@@ -295,6 +310,10 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   .gcm__synth-t { display: grid; gap: 1.1rem; max-width: 62rem; }
   .gcm__synth-t .h2 { margin-bottom: .3rem; } .gcm__synth-t p { margin: 0; }
   .gcm__cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 4vw, 3rem); color: var(--muted); }
+  .gcm__res { display: grid; gap: clamp(2rem, 5vw, 4rem); }
+  .gcm__block--res { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); align-items: start; }
+  .gcm__restxt { margin: 0; color: var(--muted); max-width: 52rem; line-height: 1.65; }
+  .gcm__hint { font-size: .8rem; letter-spacing: .08em; }
   .gcm__pal { display: grid; gap: 1.6rem; }
   .gcm__sub { margin: 1.2rem 0 0; font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
   .gcm__sw { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .6rem; }
@@ -307,7 +326,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   .gcm__nb { font-weight: 800; font-size: .85rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
   .gcm__nb--l { font-size: clamp(1.8rem, 4.4vw, 3.4rem); line-height: 1; color: var(--gc); letter-spacing: -.01em; text-transform: none; }
   .gcm__nr { font-weight: 400; font-size: 1.1rem; } .gcm__nl { font-weight: 300; font-size: 1.1rem; }
-  @media (max-width: 860px) { .gcm__block--concept, .gcm__block--grid { grid-template-columns: 1fr; } .gcm__cols { grid-template-columns: 1fr; } .gcm__sw { grid-template-columns: repeat(2, minmax(0, 1fr)); } .gcm__sw--x { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 860px) { .gcm__block--concept, .gcm__block--grid, .gcm__block--res { grid-template-columns: 1fr; } .gcm__cols { grid-template-columns: 1fr; } .gcm__sw { grid-template-columns: repeat(2, minmax(0, 1fr)); } .gcm__sw--x { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   /* Modo oscuro "blueprint" */
   .gcm__dark { background: #2c2c2c; padding-block: clamp(4rem, 9vw, 9rem); color: #5db98a; }
   .gcm__dark-in { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 6rem); align-items: center; }
