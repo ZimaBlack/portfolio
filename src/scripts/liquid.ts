@@ -64,7 +64,7 @@ export function initLiquid(hero: HTMLElement) {
   const canvas = hero.querySelector<HTMLCanvasElement>('[data-pj-liquid]');
   const gl = canvas?.getContext('webgl2', { premultipliedAlpha: true, antialias: false });
   if (!canvas || !gl) return;
-  hero.dataset.liquid = '1';
+  hero.dataset.liquid = '0'; // ya iniciado (el '1' llega con el fundido de entrada)
 
   const compile = (type: number, src: string) => { const s = gl.createShader(type)!; gl.shaderSource(s, src); gl.compileShader(s); return s; };
   const prog = gl.createProgram()!;
@@ -98,10 +98,17 @@ export function initLiquid(hero: HTMLElement) {
   new MutationObserver(() => { from = cur; to = read(); tweenStart = performance.now(); }).observe(hero, { attributes: true, attributeFilter: ['style'] }); // el widget escribe las variables en el style
 
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Entrada suave: el canvas nace invisible (la compilación del shader y el primer cuadro pasan sin que se vean) y aparece con un fundido lento tras una breve demora
+  canvas.style.animation = 'none'; canvas.style.opacity = '0'; canvas.style.transition = 'opacity 2.2s ease';
+  let lastW = 0, lastH = 0;
   const resize = () => {
     const r = hero.getBoundingClientRect();
     const sc = mobile.matches ? 0.55 : SCALE;
-    canvas.width = Math.max(2, Math.round(r.width * sc)); canvas.height = Math.max(2, Math.round(r.height * sc));
+    const w = Math.max(2, Math.round(r.width * sc)), h = Math.max(2, Math.round(r.height * sc));
+    // Cambios chicos de alto (la barra del navegador que sube y baja en el celular) no reinician el dibujo
+    if (lastW && Math.abs(w - lastW) < 2 && Math.abs(h - lastH) < lastH * 0.22) { draw(performance.now()); return; }
+    lastW = w; lastH = h;
+    canvas.width = w; canvas.height = h;
     gl.viewport(0, 0, canvas.width, canvas.height);
     draw(performance.now());
   };
@@ -130,4 +137,5 @@ export function initLiquid(hero: HTMLElement) {
   new ResizeObserver(resize).observe(hero);
   t0 = performance.now();
   resize(); kick();
+  setTimeout(() => { canvas.style.opacity = '1'; hero.dataset.liquid = '1'; }, mobile.matches ? 900 : 350);
 }
