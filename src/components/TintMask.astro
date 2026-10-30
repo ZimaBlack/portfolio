@@ -45,9 +45,9 @@ const STEP = ['Capa 1', 'Capa 2', 'Capa 3'];
   .tp__ctl input[type=range] { width: 100%; accent-color: var(--fg); }
   .tm { position: relative; margin: 0; aspect-ratio: var(--r); container-type: inline-size; border-radius: 3.5rem; overflow: hidden; isolation: isolate; }
   .tm img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-  .tm__l { position: absolute; inset: 0; pointer-events: none; background: var(--c); -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat; mix-blend-mode: var(--bm); opacity: var(--bo); filter: blur(calc(var(--blur, 0.5) * 1cqw)); transition: background-color .8s linear, opacity 1.4s ease; }
+  .tm__l { position: absolute; inset: 0; pointer-events: none; background: var(--c); -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat; mix-blend-mode: var(--bm); opacity: var(--bo); filter: blur(calc(var(--blur, 0.5) * 1cqw)) saturate(.74) brightness(.9); transition: background-color .8s linear, opacity 1.4s ease; }
   /* El «screen» es el resplandor: más desenfocado que el resto, para que la luz se derrame sobre las hebras */
-  .tm__l[data-bm='screen'] { filter: blur(calc(var(--blur, 0.5) * 3.2cqw)); }
+  .tm__l[data-bm='screen'] { filter: blur(calc(var(--blur, 0.5) * 3.2cqw)) saturate(.74); }
   /* Modo blanco y negro: noir vintage, con grano, desgaste y viñeteo */
   .tm__bw { filter: grayscale(1) contrast(1.28) brightness(.95); border-radius: 8cqw; opacity: 0; transition: opacity 1.4s ease; }
   .tm__noir { position: absolute; inset: 0; border-radius: 8cqw; pointer-events: none; opacity: 0; transition: opacity 1.4s ease; mix-blend-mode: overlay;
