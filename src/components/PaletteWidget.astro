@@ -26,33 +26,35 @@ const t = {
 
 <style>
   /* Vertical, centrado en la altura de la pantalla y pegado al borde derecho */
-  .pw { position: fixed; right: .6rem; top: 50%; transform: translateY(-50%); z-index: 55; display: flex; align-items: center; gap: .5rem; }
-  .pw__panel { order: 2; display: flex; flex-direction: column; align-items: center; gap: .7rem; padding: .6rem .7rem; border: 1px solid var(--line); border-radius: 999px;
+  .pw { position: fixed; right: 1rem; transition: opacity .5s ease, transform .6s var(--ease); top: 50%; transform: translateY(-50%); z-index: 55; display: flex; align-items: center; gap: .5rem; }
+  .pw__panel { order: 2; display: flex; flex-direction: column; align-items: center; gap: .7rem; padding: .9rem 1rem; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 50px rgb(0 0 0 / .4);
     background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
     transition: transform .6s var(--ease), opacity .4s ease; }
   .pw.is-closed .pw__panel { transform: translateX(calc(100% + 1.2rem)); opacity: 0; pointer-events: none; position: absolute; right: 0; }
 
-  .pw__rails { display: flex; align-items: stretch; gap: .9rem; height: min(40vh, 19rem); }
-  .pw__random { all: unset; box-sizing: border-box; cursor: pointer; width: 2rem; height: 2rem; flex: none; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; color: var(--fg); transition: background .35s var(--ease), color .35s var(--ease), transform .5s var(--ease); }
+  .pw__rails { display: flex; align-items: stretch; gap: 1rem; height: min(52vh, 25rem); }
+  .pw__random { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; height: 2.4rem; flex: none; border-radius: 8px; border: 1px solid var(--line); display: grid; place-items: center; color: var(--fg); transition: background .35s var(--ease), color .35s var(--ease), transform .5s var(--ease); }
   .pw__random:hover, .pw__random:focus-visible { background: var(--fg); color: var(--bg); transform: rotate(180deg); }
   .pw__random:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
   .pw__random:disabled { opacity: .4; cursor: default; pointer-events: none; }
   .pw__random svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
   .pw__knob.is-slide { transition: top .7s var(--ease), transform .3s var(--ease); }
   /* Cada barra: el arco iris, con una perilla que toma el color que aplica */
-  .pw__rail { position: relative; width: 1.15rem; border-radius: 999px; cursor: grab; touch-action: none;
+  .pw__rail { position: relative; width: 2.1rem; border-radius: 8px; cursor: grab; touch-action: none;
     background: linear-gradient(to bottom, #e8452a, #f1e63a 17%, #6df13a 33%, #3af1f1 50%, #1a1aff 67%, #c43af1 83%, #e8452a); } /* respaldo: el script la redibuja con los colores reales */
   .pw__rail:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
   .pw__rail.is-drag { cursor: grabbing; }
-  .pw__knob { position: absolute; left: 50%; top: 0; width: 1.7rem; height: 1.7rem; margin: -.85rem 0 0 -.85rem; border-radius: 50%; background: var(--k, #f5282c);
+  .pw__knob { position: absolute; left: 50%; top: 0; width: 2.9rem; height: 1.5rem; margin: -.75rem 0 0 -1.45rem; border-radius: 6px; background: var(--k, #f5282c);
     border: 2px solid #fff; box-shadow: 0 2px 8px rgb(0 0 0 / .45); transition: transform .3s var(--ease); }
   .pw__rail:hover .pw__knob, .pw__rail.is-drag .pw__knob { transform: scale(1.12); }
 
   /* La pestaña que queda al plegar */
-  .pw__tab { all: unset; box-sizing: border-box; cursor: pointer; order: 1; display: grid; gap: 2px; padding: .3rem; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--bg) 82%, transparent); }
+  .pw__tab { all: unset; box-sizing: border-box; cursor: pointer; order: 1; display: grid; gap: 3px; padding: .45rem; border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--bg) 82%, transparent); }
   .pw__tab:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
-  .pw__tab i { width: .8rem; height: .8rem; border-radius: 50%; }
-  @media (max-width: 760px) { .pw { right: .35rem; } .pw__rails { height: min(34vh, 15rem); gap: .7rem; } }
+  .pw__tab i { width: 1.1rem; height: .7rem; border-radius: 3px; }
+  /* En el pie de la web el widget se oculta */
+  .pw.is-away { opacity: 0; pointer-events: none; transform: translateY(-50%) translateX(1.5rem); }
+  @media (max-width: 760px) { .pw { right: .5rem; } .pw__rails { height: min(40vh, 18rem); gap: .6rem; } .pw__rail { width: 1.7rem; } .pw__knob { width: 2.4rem; margin-left: -1.2rem; } }
   @media (prefers-reduced-motion: reduce) { .pw__panel, .pw__knob { transition: none; } }
 </style>
 
@@ -92,6 +94,8 @@ const t = {
   const init = () => {
     document.querySelectorAll<HTMLElement>('[data-pw]:not([data-ready])').forEach((pw) => {
       pw.dataset.ready = '1';
+      const foot = document.querySelector('#contacto, footer');
+      if (foot) new IntersectionObserver((es) => es.forEach((e) => pw.classList.toggle('is-away', e.isIntersecting)), { threshold: 0.05 }).observe(foot);
       const rails = Array.from(pw.querySelectorAll<HTMLElement>('[data-pw-rail]'));
       const dots = Array.from(pw.querySelectorAll<HTMLElement>('[data-pw-dot]'));
       const toggle = pw.querySelector<HTMLButtonElement>('[data-pw-toggle]')!;
