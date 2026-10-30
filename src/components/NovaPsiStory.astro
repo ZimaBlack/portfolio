@@ -58,7 +58,7 @@ const t = es ? {
     ['shield', 'Legales con versión', 'Cada turno guarda qué versión de los términos aceptó el paciente.'],
   ],
   patient: 'Paciente',
-  screens: 'Las pantallas', prev: 'Pantalla anterior', next: 'Pantalla siguiente', goTo: 'Ir a', region: 'Carrusel de pantallas por sección',
+  screens: 'Panel de administración', prev: 'Pantalla anterior', next: 'Pantalla siguiente', goTo: 'Ir a', region: 'Carrusel de pantallas por sección',
   mailH: 'El mail que llega al confirmar',
   mailA: 'Apenas se acredita el pago, el paciente recibe el resumen de su turno y un botón para verlo o cambiarlo. Los textos los edita el profesional desde Notificaciones.',
   mail: { from: 'Lic. Ana Torres', to: 'para Sofía', subject: 'Pago recibido: tu turno está confirmado', biz: 'Lic. Ana Torres · Psicología clínica', title: 'Recibimos tu pago', intro: 'Hola Sofía, tu turno quedó confirmado.', rows: [['Cuándo', 'viernes, 30 de octubre, 09:00 hs'], ['Servicio', 'Primera sesión'], ['Profesional', 'Lic. Ana Torres']], btn: 'Ver o cambiar mi turno', foot: 'Podés cancelar o cambiar tu turno hasta 24 horas antes.' },
@@ -107,7 +107,7 @@ const t = es ? {
     ['shield', 'Versioned legal terms', 'Each appointment records which version of the terms the patient accepted.'],
   ],
   patient: 'Patient',
-  screens: 'The screens', prev: 'Previous screen', next: 'Next screen', goTo: 'Go to', region: 'Screens carousel by section',
+  screens: 'Administration panels', prev: 'Previous screen', next: 'Next screen', goTo: 'Go to', region: 'Screens carousel by section',
   mailH: 'The email that arrives on confirmation',
   mailA: 'As soon as the payment is credited, the patient receives a summary of the appointment and a button to view or change it. The professional edits the texts from Notifications.',
   mail: { from: 'Lic. Ana Torres', to: 'to Sofía', subject: 'Payment received: your appointment is confirmed', biz: 'Lic. Ana Torres · Clinical psychology', title: 'We received your payment', intro: 'Hi Sofía, your appointment is confirmed.', rows: [['When', 'Friday, October 30, 09:00'], ['Service', 'First session'], ['Professional', 'Lic. Ana Torres']], btn: 'View or change my appointment', foot: 'You can cancel or change your appointment up to 24 hours before.' },
@@ -150,15 +150,13 @@ const nodes: Node[] = [
   { id: 'push', r: 2, c: 5, kind: 'icon', ref: 'bell', color: '#38bdf8', up: true, dev: true },
 ];
 const phoneShots = ['m2', 'm3', 'm4', 'm4b', 'm5', ''];
-// Carrusel: todas las pantallas de los tres accesos, con la sección a la que pertenece cada una
-type Slide = { sec: 'patient' | 'pro' | 'tech'; kind: 'phone' | 'wide'; key: string; h: string; p: string; n?: number };
+// Carrusel: solo las capturas de administración (panel del profesional y servicio técnico), con la sección de cada una
+type Slide = { sec: 'pro' | 'tech'; kind: 'wide'; key: string; h: string; p: string };
 const slides: Slide[] = [
-  ...t.ps.map(([h, p], i): Slide => ({ sec: 'patient', kind: 'phone', key: phoneShots[i], h, p, n: i + 1 })),
   ...t.pcap.map(([k, h, p]): Slide => ({ sec: 'pro', kind: 'wide', key: k, h, p })),
   { sec: 'tech', kind: 'wide', key: 'tecnico', h: t.tech, p: t.tcap },
 ];
 const tags = [
-  { id: 'patient', n: '01', label: t.patient, desc: t.patientA },
   { id: 'pro', n: '02', label: t.pro, desc: t.proA },
   { id: 'tech', n: '03', label: t.tech, desc: t.techA },
 ].map((g) => ({ ...g, first: slides.findIndex((x) => x.sec === g.id), count: slides.filter((x) => x.sec === g.id).length }));
@@ -193,39 +191,21 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
     </ul>
   </div>
 
-  <!-- Pantallas: un carrusel con las capturas de los tres accesos y etiquetas navegables por sección -->
-  <div class="wrap np__sec np__car" data-reveal data-npcar>
-    <h2 class="h2">{t.screens}</h2>
-    <div class="np__tags" role="tablist" aria-label={t.region}>
-      {tags.map((g, k) => (
-        <button type="button" class="np__tag" role="tab" data-tag={g.id} data-first={g.first} data-desc={g.desc} aria-selected={k === 0 ? 'true' : 'false'}><span>{g.n}</span>{g.label}<small>{g.count}</small></button>
+  <!-- 01 Paciente (celular) -->
+  <div class="wrap np__sec" data-reveal>
+    <div class="np__head"><span class="np__n">01</span><h2 class="h2">{t.patient}</h2></div>
+    <p class="np__txt">{t.patientA}</p>
+    <ol class="np__phones" data-rv>
+      {t.ps.map(([h, p], i) => (
+        <li style={`--i:${i}`}>
+          {phoneShots[i] ? (
+            <div class="np__phone"><div class="np__hlwrap"><img src={shot(phoneShots[i])} alt={h} loading="lazy" decoding="async" /><i class="np__hl" style={hl(phoneShots[i])} aria-hidden="true"></i></div></div>
+          ) : (
+            <div class="np__phone"><div class="np__mp" role="img" aria-label="Mercado Pago"><i style={`--m:url(${brand('mercadopago')})`}></i></div></div>
+          )}
+          <div class="np__cap"><b>{i + 1}</b><div><strong>{h}</strong><span>{p}</span></div></div>
+        </li>
       ))}
-    </div>
-    <p class="np__txt np__cdesc" data-cdesc aria-live="polite">{tags[0].desc}</p>
-    <div class="np__cwrap">
-      <button type="button" class="np__arrow np__arrow--prev" data-prev aria-label={t.prev}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg></button>
-      <div class="np__track" data-track tabindex="0" role="region" aria-roledescription="carousel" aria-label={t.region}>
-        {slides.map((x, i) => (
-          <article class:list={['np__slide', `np__slide--${x.kind}`]} data-sec={x.sec} data-i={i} aria-label={`${i + 1} / ${slides.length}`}>
-            {x.kind === 'phone' ? (
-              <>
-                {x.key ? (
-                  <div class="np__phone"><div class="np__hlwrap"><img src={shot(x.key)} alt={x.h} loading="lazy" decoding="async" /><i class="np__hl" style={hl(x.key)} aria-hidden="true"></i></div></div>
-                ) : (
-                  <div class="np__phone"><div class="np__mp" role="img" aria-label="Mercado Pago"><i style={`--m:url(${brand('mercadopago')})`}></i></div></div>
-                )}
-                <div class="np__cap np__cap--big"><b>{x.n}</b><div><strong>{x.h}</strong><span>{x.p}</span></div></div>
-              </>
-            ) : (
-              <figure class="np__shot"><div class="np__scroll"><div class="np__hlwrap"><img src={shot(x.key)} alt={x.h} loading="lazy" decoding="async" /><i class="np__hl" style={hl(x.key)} aria-hidden="true"></i></div></div><figcaption><strong>{x.h}</strong><span>{x.p}</span></figcaption></figure>
-            )}
-          </article>
-        ))}
-      </div>
-      <button type="button" class="np__arrow np__arrow--next" data-next aria-label={t.next}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></button>
-    </div>
-    <ol class="np__dots" aria-label={t.region}>
-      {slides.map((x, i) => <li><button type="button" class="np__dot" data-dot={i} data-sec={x.sec} aria-label={`${t.goTo} ${i + 1}: ${x.h}`} aria-current={i === 0 ? 'true' : undefined}></button></li>)}
     </ol>
   </div>
 
@@ -252,6 +232,31 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Pantallas: un carrusel con las capturas de los tres accesos y etiquetas navegables por sección -->
+  <div class="wrap np__sec np__car" data-reveal data-npcar>
+    <h2 class="h2">{t.screens}</h2>
+    <div class="np__tags" role="tablist" aria-label={t.region}>
+      {tags.map((g, k) => (
+        <button type="button" class="np__tag" role="tab" data-tag={g.id} data-first={g.first} data-desc={g.desc} aria-selected={k === 0 ? 'true' : 'false'}><span>{g.n}</span>{g.label}<small>{g.count}</small></button>
+      ))}
+    </div>
+    <p class="np__txt np__cdesc" data-cdesc aria-live="polite">{tags[0].desc}</p>
+    <div class="np__cwrap">
+      <button type="button" class="np__arrow np__arrow--prev" data-prev aria-label={t.prev}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg></button>
+      <div class="np__track" data-track tabindex="0" role="region" aria-roledescription="carousel" aria-label={t.region}>
+        {slides.map((x, i) => (
+          <article class:list={['np__slide', `np__slide--${x.kind}`]} data-sec={x.sec} data-i={i} aria-label={`${i + 1} / ${slides.length}`}>
+            <figure class="np__shot"><div class="np__scroll"><div class="np__hlwrap"><img src={shot(x.key)} alt={x.h} loading="lazy" decoding="async" /><i class="np__hl" style={hl(x.key)} aria-hidden="true"></i></div></div><figcaption><strong>{x.h}</strong><span>{x.p}</span></figcaption></figure>
+          </article>
+        ))}
+      </div>
+      <button type="button" class="np__arrow np__arrow--next" data-next aria-label={t.next}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></button>
+    </div>
+    <ol class="np__dots" aria-label={t.region}>
+      {slides.map((x, i) => <li><button type="button" class="np__dot" data-dot={i} data-sec={x.sec} aria-label={`${t.goTo} ${i + 1}: ${x.h}`} aria-current={i === 0 ? 'true' : undefined}></button></li>)}
+    </ol>
   </div>
 
   <!-- Conexiones -->
@@ -376,11 +381,6 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__track { display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; align-items: flex-start; transition: height .45s var(--ease); border-radius: 12px; }
   .np__track::-webkit-scrollbar { display: none; }
   .np__slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; padding: 1.4rem 1.4rem 2.2rem; box-sizing: border-box; }
-  .np__slide--phone { display: grid; grid-template-columns: minmax(0, 19rem) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 4rem); align-items: center; justify-content: center; }
-  .np__cap--big { align-self: center; gap: 1rem; }
-  .np__cap--big b { width: 2.4rem; font-size: 1rem; }
-  .np__cap--big strong { font-size: clamp(1.2rem, 2vw, 1.6rem); }
-  .np__cap--big span { font-size: 1rem; max-width: 34rem; }
   .np__arrow { position: absolute; top: 50%; z-index: 3; width: 3rem; aspect-ratio: 1; margin-top: -1.5rem; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(8px); color: var(--fg); cursor: pointer; transition: border-color .3s, opacity .3s; }
   .np__arrow:hover { border-color: var(--sky); }
   .np__arrow[disabled] { opacity: .25; cursor: default; }
@@ -388,10 +388,10 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
   .np__arrow--prev { left: -.4rem; } .np__arrow--next { right: -.4rem; }
   .np__dots { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: .55rem; }
   .np__dot { all: unset; box-sizing: border-box; width: .62rem; height: .62rem; border-radius: 50%; cursor: pointer; background: color-mix(in srgb, var(--fg) 25%, transparent); transition: transform .3s, background .3s; }
-  .np__dot[data-sec='pro'] { border-radius: 2px; } .np__dot[data-sec='tech'] { border-radius: 2px; transform: rotate(45deg); }
+  .np__dot[data-sec='tech'] { border-radius: 2px; transform: rotate(45deg); }
   .np__dot[aria-current='true'] { background: var(--sky); transform: scale(1.5); } .np__dot[data-sec='tech'][aria-current='true'] { transform: rotate(45deg) scale(1.5); }
   .np__dot:hover { background: var(--ac); }
-  @media (max-width: 760px) { .np__slide--phone { grid-template-columns: 1fr; justify-items: center; } .np__slide--phone .np__phone { width: min(100%, 17rem); } .np__slide { padding-inline: .6rem; } .np__arrow { width: 2.5rem; margin-top: -1.25rem; } .np__arrow--prev { left: 0; } .np__arrow--next { right: 0; } }
+  @media (max-width: 760px) { .np__slide { padding-inline: .6rem; } .np__arrow { width: 2.5rem; margin-top: -1.25rem; } .np__arrow--prev { left: 0; } .np__arrow--next { right: 0; } }
   /* Celulares: tres por fila, a un tamaño donde el texto de la captura se lee */
   .np__phones { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 4vw, 3rem) clamp(1rem, 3vw, 2.5rem); justify-items: center; }
   .np__phones li:last-child:nth-child(odd) { grid-column: 1 / -1; }
