@@ -3,11 +3,11 @@
 //   capa 1 (color acento, --c1): «hard-light» al 50 %  ·  capa 2 (color principal, --c0): «overlay» al 75 %.
 // Los colores salen del widget y se animan suavemente al cambiar.
 import { withBase } from '../lib/i18n';
-const { photo, bw = '', masks, alt = '', ratio = '872 / 1330' } = Astro.props as { photo: string; bw?: string; masks: string[]; alt?: string; ratio?: string };
+const { photo, bw = '', masks, alt = '', ratio = '872 / 1330', blur = 0.5 } = Astro.props as { photo: string; bw?: string; masks: string[]; alt?: string; ratio?: string; blur?: number };
 // [variable de color, modo, opacidad] por máscara, en el orden de `masks`
 const layers: [string, string, number][] = [['--c1', 'hard-light', 0.5], ['--c0', 'overlay', 0.75]];
 ---
-<figure class="tm" style={`--r:${ratio}`}>
+<figure class="tm" style={`--r:${ratio};--blur:${blur}`}>
   <img class="tm__base" src={withBase(photo)} alt={alt} loading="lazy" decoding="async" />
   {masks.map((m, i) => <i class="tm__l" aria-hidden="true" style={`--m:url(${withBase(m)});--c:var(${layers[i][0]});--bm:${layers[i][1]};--bo:${layers[i][2]}`}></i>)}
   {bw && <img class="tm__bw" src={withBase(bw)} alt="" loading="lazy" decoding="async" />}
@@ -16,7 +16,7 @@ const layers: [string, string, number][] = [['--c1', 'hard-light', 0.5], ['--c0'
 <style>
   .tm { position: relative; margin: 0; aspect-ratio: var(--r); container-type: inline-size; isolation: isolate; }
   .tm img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-  .tm__l { position: absolute; inset: 0; pointer-events: none; background: var(--c); -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat; mix-blend-mode: var(--bm); opacity: var(--bo); transition: background-color .8s linear, opacity 1.4s ease; }
+  .tm__l { position: absolute; inset: 0; pointer-events: none; background: var(--c); -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat; mix-blend-mode: var(--bm); opacity: var(--bo); filter: blur(calc(var(--blur, 0.5) * 1cqw)); transition: background-color .8s linear, opacity 1.4s ease; }
   .tm__bw { border-radius: 8cqw; opacity: 0; transition: opacity 1.4s ease; }
   :global(html[data-pw-bw]) .tm__bw { opacity: 1; }
   :global(html[data-pw-bw]) .tm__l { opacity: 0; }
