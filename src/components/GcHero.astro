@@ -1,91 +1,72 @@
 ---
-// Portada modular de Global Citizen (manual de marca): a los lados, columnas de medios anillos que se arman por secciones y giran;
-// al centro, cuatro medios anillos giran sobre el centro del isotipo hasta encajar y las letras entran girando una a una.
-// Todo es geometría vectorial en SVG y siempre se arma con giros (animación radial compartida: --gc-radial en global.css).
+// Portada de Global Citizen (manual de marca): sobre blanco, la trama modular a pantalla completa. Medios anillos dobles ("C") en filas,
+// con el anillo completo en la cuarta posición; el isotipo ocupa ese lugar en la fila central. Se arma sobre el centro del anillo y la trama
+// aparece en ondas concéntricas desde él. Todo es geometría vectorial en SVG.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { halfDouble, halfMid, halfOut, fullMid } from '../lib/gcmods';
+import { halfDouble, fullDouble } from '../lib/gcmods';
 
 const { part = 'stage', title = 'Global Citizen' } = Astro.props as { part?: 'field' | 'stage'; title?: string };
 const pub = (f: string) => readFileSync(join(process.cwd(), 'public/works/global-citizen', f), 'utf8');
 const ds = (raw: string) => [...raw.matchAll(/\bd="([^"]+)"/g)].map((m) => m[1]);
 const [midRing, outRing] = ds(pub('mark.svg'));
-const logoPaths = ds(pub('logo.svg')).slice(0, 13); // GLOBAL (0-5) y CITIZEN (6-12)
 
-// ── Columna modular (la de "Deconstruimos"): eje A (mitades derechas) y eje B (mitades izquierdas), cinco secciones
-const R = 77.5; // radio del módulo = radio exterior del isotipo del logotipo (mismo tamaño, ver --gc-u)
-const DX = 179; // distancia entre ejes
-const SH = 900; // alto de la columna
-const ys = [95, 277, 453, 629, 803].map((y) => y - 453 + SH / 2);
-type Mod = { x: number; y: number; d: string; row: number };
-// El logotipo completo no aparece en el fondo: solo los módulos
-const strip: Mod[] = [
-  { x: 0, y: ys[0], d: halfMid(R, 'r'), row: 0 }, { x: DX, y: ys[0], d: halfDouble(R, 'l'), row: 0 },
-  { x: 0, y: ys[1], d: halfDouble(R, 'r'), row: 1 }, { x: DX, y: ys[1], d: halfMid(R, 'l') + halfOut(R, 'l'), row: 1 },
-  { x: 0, y: ys[2], d: halfOut(R, 'r') + fullMid(R), row: 2 }, { x: DX, y: ys[2], d: halfDouble(R, 'l'), row: 2 },
-  { x: 0, y: ys[3], d: halfDouble(R, 'r'), row: 3 }, { x: DX, y: ys[3], d: halfDouble(R, 'l'), row: 3 },
-  { x: 0, y: ys[4], d: halfMid(R, 'r'), row: 4 },
-];
-// Dos columnas, una a cada lado y reflejadas: la de la derecha se arma primero, la de la izquierda la sigue
-const strips = [{ side: 'l', lag: 0 }, { side: 'r', lag: 0.45 }];
-const clipL = 'gch-l', clipR = 'gch-r';
+const R = 100;                 // radio del módulo: un módulo mide R de ancho y 2R de alto
+const PITCH = 2 * R + 20;      // paso entre filas
+const ROWS = 5, W = 7 * R, H = (ROWS - 1) * PITCH + 2 * R;
+const SLOTS = ['L', 'L', 'L', 'F', 'F', 'L', 'L'] as const;
+const gx = 4 * R, gy = Math.floor(ROWS / 2) * PITCH + R; // el isotipo ocupa el anillo completo de la fila central
+type Cell = { x: number; y: number; d: string; delay: number };
+const cells: Cell[] = [];
+for (let r = 0; r < ROWS; r++) {
+  const y = r * PITCH + R;
+  for (let s = 0; s < SLOTS.length; s++) {
+    if (SLOTS[s] === 'F' && s === 4) continue;
+    const full = SLOTS[s] === 'F';
+    const x = full ? (s + 1) * R : (s + 1) * R;
+    if (full && r === Math.floor(ROWS / 2)) continue; // lo ocupa el isotipo
+    const d = Math.hypot(x - gx, y - gy);
+    cells.push({ x, y, d: full ? fullDouble(R) : halfDouble(R, 'l'), delay: 1.2 + d / 520 });
+  }
+}
+const k = (2 * R / 234).toFixed(4);
 ---
 {part === 'field' ? (
-  <div class="gch__field" aria-hidden="true">
-    {strips.map((st) => (
-      <svg class={`gch__strip gch__strip--${st.side}`} viewBox={`-60 0 280 ${SH}`} focusable="false">
-        {strip.map((m, i) => (
-          <g transform={`translate(${m.x} ${m.y})`}>
-            <g class="gch__a" style={`--dl:${(0.2 + st.lag + m.row * 0.4 + (m.x ? 0.15 : 0)).toFixed(2)}s;--fr:${m.x ? 120 : -120}deg`}>
-              <g class={i % 3 === 0 ? 'gch__t' : ''} style={`--td:${(4 + i * 1.3 + st.lag * 3).toFixed(1)}s`}>
-                <g class="gch__c" style={`--hd:${(3.4 + i * 0.7 + st.lag * 2).toFixed(2)}s`}><path d={m.d} /></g>
-              </g>
-            </g>
-          </g>
-        ))}
-      </svg>
+  <svg class="gch__pat" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    <defs>
+      <clipPath id="gch-l"><rect x="-60" y="-60" width="176.914" height="360" /></clipPath>
+      <clipPath id="gch-r"><rect x="116.914" y="-60" width="180" height="360" /></clipPath>
+    </defs>
+    {cells.map((c) => (
+      <g transform={`translate(${c.x} ${c.y})`}>
+        <path class="gch__c" style={`--dl:${c.delay.toFixed(2)}s`} d={c.d} />
+      </g>
     ))}
-  </div>
-) : (
-  <svg class="gch" viewBox="0 0 665 189" role="img" aria-label={title} xmlns="http://www.w3.org/2000/svg">
-    <g class="gch__letters">
-      {logoPaths.map((d, i) => <path class="gch__l" style={`--i:${i}`} d={d} fill="#fff" />)}
+    <g transform={`translate(${gx} ${gy})`}>
+      <g transform={`scale(${k}) translate(-117 -117)`}>
+        <g class="gch__p gch__p--mid-l"><path d={midRing} clip-path="url(#gch-l)" /></g>
+        <g class="gch__p gch__p--mid-r"><path d={midRing} clip-path="url(#gch-r)" /></g>
+        <g class="gch__p gch__p--out-l"><path d={outRing} clip-path="url(#gch-l)" /></g>
+        <g class="gch__p gch__p--out-r"><path d={outRing} clip-path="url(#gch-r)" /></g>
+      </g>
     </g>
-    <svg x="0" y="3.5" width="181" height="181" viewBox="0 0 234 234" overflow="visible">
-      <defs>
-        <clipPath id={clipL}><rect x="-60" y="-60" width="177.2" height="360" /></clipPath>
-        <clipPath id={clipR}><rect x="116.6" y="-60" width="180" height="360" /></clipPath>
-      </defs>
-      <g class="gch__p gch__p--mid-l"><path d={midRing} clip-path={`url(#${clipL})`} /></g>
-      <g class="gch__p gch__p--mid-r"><path d={midRing} clip-path={`url(#${clipR})`} /></g>
-      <g class="gch__p gch__p--out-l"><path d={outRing} clip-path={`url(#${clipL})`} /></g>
-      <g class="gch__p gch__p--out-r"><path d={outRing} clip-path={`url(#${clipR})`} /></g>
-    </svg>
   </svg>
+) : (
+  <span class="gch__sr">{title}</span>
 )}
 
 <style is:global>
-  .pjh { --gc-u: calc(min(76vw, 42rem) / 665); } /* 1 unidad del logotipo en píxeles: el fondo usa la misma medida, así módulos e isotipo tienen el mismo tamaño */
-  .gch__field { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-  .gch__strip { position: absolute; top: 50%; width: calc(var(--gc-u) * 280 * 1.168); height: calc(var(--gc-u) * 900 * 1.168); overflow: visible; transform: translateY(-50%); }
-  .gch__strip--l { left: calc(1vw - var(--gc-u) * 14 * 1.168); }
-  .gch__strip--r { right: calc(1vw - var(--gc-u) * 14 * 1.168); transform: translateY(-50%) scaleX(-1); }
-  @media (max-width: 1180px) { .gch__strip { opacity: .55; } .gch__strip--l { left: calc(var(--gc-u) * 60 * 1.168 - 10vw); } .gch__strip--r { right: calc(var(--gc-u) * 60 * 1.168 - 10vw); } }
-  .gch__a { opacity: 0; animation: gc-radial 1.5s var(--dl) var(--gc-ease) forwards; }
-  .gch__t { animation: gch-turn 14s var(--td) ease-in-out infinite; }
-  .gch__c { fill: #dfefe5; fill-opacity: .1; animation: gch-hop 18s var(--hd) ease-in-out infinite; }
-  .gch__c path { fill: inherit; fill-opacity: inherit; }
-  @keyframes gch-turn { 0%, 10% { transform: rotate(0); } 22%, 60% { transform: rotate(180deg); } 72%, 100% { transform: rotate(360deg); } }
-  @keyframes gch-hop { 0%, 9%, 100% { fill: #dfefe5; fill-opacity: .1; } 3%, 6% { fill: #5db98a; fill-opacity: .7; } }
-
-  .gch { position: relative; z-index: 1; display: block; width: min(76vw, 42rem); height: auto; overflow: visible; }
-  .gch__p { transform-origin: 116.9px 116.9px; opacity: 0; fill: #dfefe5; animation: gc-radial 1.5s var(--pd) var(--gc-ease) forwards, gch-tint .9s 3.1s ease forwards; }
-  .gch__p--mid-l { --pd: .5s; --fr: -200deg; } .gch__p--mid-r { --pd: .9s; --fr: 200deg; }
-  .gch__p--out-l { --pd: 1.3s; --fr: -270deg; } .gch__p--out-r { --pd: 1.7s; --fr: 270deg; }
-  @keyframes gch-tint { to { fill: #5db98a; } }
-  .gch__l { opacity: 0; animation: gc-fade 1.1s calc(3.1s + var(--i) * .06s) ease forwards; }
-  @media (prefers-reduced-motion: reduce) {
-    .gch__a { animation: none; opacity: 1; } .gch__t, .gch__c { animation: none; }
-    .gch__p { animation: none; opacity: 1; fill: #5db98a; } .gch__l { animation: none; opacity: 1; }
-  }
+  /* Portada sobre blanco, sin foto */
+  .pjh[data-modular] { background: #fafafa; }
+  .pjh[data-modular] :is(.pjh__bg, .pjh__photo, .pjh__blur, .pjh__tint, .pjh__vig) { display: none; }
+  .gch__pat { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .gch__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  /* Los módulos aparecen en ondas concéntricas desde el isotipo, con un giro mínimo sobre el centro de su anillo */
+  .gch__c { fill: #dfece4; opacity: 0; animation: gc-radial 1.8s var(--dl) var(--gc-ease) forwards; --fr: -60deg; }
+  /* El isotipo se arma sobre su centro: cuatro medios anillos que giran y encajan */
+  .gch__p { transform-origin: 116.9px 116.9px; opacity: 0; fill: #dfece4; animation: gc-radial 1.8s var(--pd) var(--gc-ease) forwards, gch-tint 1.2s 2.6s ease forwards; }
+  .gch__p--mid-l { --pd: .2s; --fr: -200deg; } .gch__p--mid-r { --pd: .45s; --fr: 200deg; }
+  .gch__p--out-l { --pd: .7s; --fr: -270deg; } .gch__p--out-r { --pd: .95s; --fr: 270deg; }
+  @keyframes gch-tint { to { fill: #74b992; } }
+  @media (prefers-reduced-motion: reduce) { .gch__c { animation: none; opacity: 1; } .gch__p { animation: none; opacity: 1; fill: #74b992; } }
 </style>
