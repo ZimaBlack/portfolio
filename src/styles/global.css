@@ -94,8 +94,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   --gc-mod: #dfefe5; --gc-card: #020504; --gc-ink: #5db98a; --gc-grid: rgb(93 185 138 / .07); }
 /* la retícula y el cristal viven en GcBg y en las reglas siguientes: la retícula solo en modo oscuro; el cristal y el desenfoque solo en modo claro */
 :root[data-gc-theme] body { transition: background-color .6s ease, color .6s ease; }
-/* La portada de Global Citizen es blanca: sobre ella el encabezado usa tinta oscura, en cualquiera de los dos modos */
-:root[data-gc-theme] .header:not(.is-solid) { color: #1c1c1c; --fg: #1c1c1c; --muted: #56605a; --bg: #fafafa; --line: rgb(28 28 28 / .16); }
+/* Sobre la portada (foto oscura) el encabezado conserva los colores claros, también en modo claro */
+:root[data-gc-theme='light'] .header:not(.is-solid) { color: #ecebe6; --fg: #ecebe6; --muted: #c9ccc8; --bg: #0b0b0a; --line: rgb(236 235 230 / .18); }
 
 /* Modo claro: sin recuadros blancos; el cristal queda solo en los controles flotantes y el desenfoque en el borde del mood board */
 :root[data-gc-theme='light'] :is(.gcw__btn) { -webkit-backdrop-filter: blur(22px) saturate(1.35); backdrop-filter: blur(22px) saturate(1.35); background-color: rgb(255 255 255 / .55); border-color: rgb(255 255 255 / .85); box-shadow: 0 10px 34px rgb(44 138 91 / .1); }
