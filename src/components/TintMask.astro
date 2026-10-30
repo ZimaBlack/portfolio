@@ -134,14 +134,27 @@ const STEP = ['Capa 1', 'Capa 2', 'Capa 3'];
     };
     // Vaivén sutil que se amortigua solo, como un péndulo que se detiene (los tintes siguen alineados)
     const sway = () => {
-      v.pause(); const base = +(v.dataset.t2 || 0), t0 = performance.now(), dur = 3100, amp = 0.2;
+      v.pause(); const base = +(v.dataset.t2 || 0), t0 = performance.now(), dur = 1500, amp = 0.2;
       const step = (now: number) => { const k = Math.min(1, (now - t0) / dur); v.currentTime = base + amp * Math.sin(k * Math.PI * 3) * Math.pow(1 - k, 1.6); if (k < 1) raf = requestAnimationFrame(step); else v.currentTime = base; };
       raf = requestAnimationFrame(step);
     };
-    const reset = () => { timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(raf); fig.classList.remove('is-static', 'is-back', 'is-glitch', 'is-cut', 'is-end'); root.removeAttribute('data-pw-back'); v.pause(); };
+    const reset = () => { timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(raf); v.playbackRate = 1; fig.classList.remove('is-static', 'is-back', 'is-glitch', 'is-cut', 'is-end'); root.removeAttribute('data-pw-back'); v.pause(); };
     // Línea de tiempo (15 s): cada glitch se adelanta un instante al cambio que anuncia, como un fallo que se contagia
     // Corte seco: el video salta a otro momento con un tirón breve (se repite o se adelanta un instante, para confundir apenas)
     const cut = (to: number) => { fig.classList.remove('is-cut'); void fig.offsetWidth; fig.classList.add('is-cut'); v.currentTime = to; if (v.paused) v.play().catch(() => {}); };
+    // Vuelta a casa: el mismo cuadro de la pose elegida existe en la mitad en reversa del boomerang (6 − t), así que se salta ahí sin que se note
+    // y se reproduce hasta el final, cada vez más despacio, hasta quedar en la postura inicial
+    const easeHome = () => {
+      cancelAnimationFrame(raf); v.pause(); const END = 5.95;
+      v.currentTime = 6 - +(v.dataset.t2 || 0); v.playbackRate = 1.4; v.play().catch(() => {});
+      const step = () => {
+        const left = END - v.currentTime;
+        if (left <= 0.03 || v.ended) { v.pause(); v.playbackRate = 1; fig.classList.add('is-end'); return; }
+        v.playbackRate = Math.max(0.3, Math.min(1.4, 0.3 + left * 0.55));
+        raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    };
     const start = () => {
       // El video es un «boomerang» de 6 s (0→3 s hacia delante y 3→0 s en reversa). La secuencia entera abre y cierra en la misma pose:
       // la foto quieta empieza a moverse y, al final, vuelve a su postura inicial y se queda quieta, igual que la foto de partida.
@@ -156,7 +169,7 @@ const STEP = ['Capa 1', 'Capa 2', 'Capa 3'];
       at(7150, () => fig.classList.add('is-static'));                     // 7,15 s: estática
       at(10200, () => glitch());                                          // 10,2 s: fallo
       at(10450, () => { fig.classList.add('is-back'); sway(); }); // 10,45 s: la estática cede y aparece la pose elegida, todavía en grises, con vaivén
-      at(13700, () => { cut(0); v.pause(); fig.classList.add('is-end'); }); // 13,7 s: cierre: corte a la postura inicial (sigue en grises; el color llega recién con el fin del temporizador)
+      at(11950, () => easeHome());                                        // 11,95 s: retorno suave a la postura inicial, en reversa y frenando al llegar (sin corte; el color llega con el fin del temporizador)
     };
     new MutationObserver(() => (root.hasAttribute('data-pw-bw') ? start() : reset())).observe(root, { attributes: true, attributeFilter: ['data-pw-bw'] });
   });
