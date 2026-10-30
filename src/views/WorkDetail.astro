@@ -83,7 +83,7 @@ const next = all.length > 1 && at >= 0 ? all[(at + 1) % all.length] : undefined;
 ---
 <Base lang={lang} section="works" title={d.title} description={loc(d.summary, lang)}
   altHref={paths.work(alt, work.id)} esHref={paths.work('es', work.id)} enHref={paths.work('en', work.id)}>
-  <article data-pw-scope={d.widget === 'palette' ? '' : undefined} class:list={{ 'is-pal': d.widget === 'palette', 'is-gc': d.manual === 'global-citizen' }} style={d.widget === 'palette' ? `--ga:${d.tones[1]};--gb:${d.tones[0]};--ax:36%;--ay:42%;--bx:64%;--by:58%;` : undefined}>
+  <article data-pw-scope={d.widget === 'palette' ? '' : undefined} class:list={{ 'is-pal': d.widget === 'palette', 'is-gc': d.manual === 'global-citizen', 'is-locked': d.locked }} style={d.widget === 'palette' ? `--ga:${d.tones[1]};--gb:${d.tones[0]};--ax:36%;--ay:42%;--bx:64%;--by:58%;` : undefined}>
     {d.manual === 'global-citizen' && <GcBg />}
     {(d.logo || d.heroPattern || d.heroImage || d.heroLights !== 'soft') && <ProjectHero logo={d.logo ?? ''} mark={d.mark} title={d.title} tones={d.tones} reactive={d.widget === 'palette' ? d.reactiveColors : []} halftone={d.heroLights === 'halftone'} liquid={d.heroLights === 'liquid'} assemble={d.heroAnimation === 'assemble'} ornament={d.ornament} pattern={d.heroPattern} photo={d.heroImage} glass={d.heroAnimation === 'glass' || d.heroAnimation === 'modular'} modular={d.heroAnimation === 'modular'} omega={d.heroAnimation === 'omega'} draw={d.heroAnimation === 'draw'} isoAnim={d.heroAnimation === 'iso'} />}
     <header class="wrap intro">
@@ -170,8 +170,9 @@ const next = all.length > 1 && at >= 0 ? all[(at + 1) % all.length] : undefined;
 <style>
   /* Proyecto bloqueado: el contenido se ve apagado y desenfocado bajo una cubierta «Coming soon» */
   .lock { position: relative; overflow: hidden; max-height: 78vh; }
-  .lock__in { filter: blur(7px) brightness(.55) saturate(.8); pointer-events: none; user-select: none; }
-  .lock__cover { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: .8rem; text-align: center; background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--bg) 85%, transparent) 78%, var(--bg)); }
+  :global(body:has(.lock) .pjh__stage) { filter: blur(9px); opacity: .8; }
+  .lock__in { filter: blur(11px) brightness(.4) saturate(.7); pointer-events: none; user-select: none; }
+  .lock__cover { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: .8rem; text-align: center; background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--bg) 70%, transparent) 30%, color-mix(in srgb, var(--bg) 92%, transparent) 70%, var(--bg)); }
   .lock__cover span { font-size: clamp(1.4rem, 3.4vw, 2.6rem); letter-spacing: .5em; padding-left: .5em; text-transform: uppercase; font-weight: 500; }
   .lock__cover small { color: var(--muted); font-size: .9rem; letter-spacing: .06em; }
   /* Continuar al proyecto anterior o al siguiente, antes del pie */

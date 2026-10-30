@@ -14,8 +14,8 @@ const { lang = 'es' } = Astro.props as { lang?: Lang };
   /* Semitono circular: puntos que crecen hacia los bordes y se desvanecen en el centro, donde vive el logo */
   .pvc__dots { position: absolute; inset: 0; background-image: radial-gradient(circle at center, rgb(255 255 255 / .34) 0 1.6cqw, transparent 1.7cqw); background-size: 5.6cqw 5.6cqw;
     -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, transparent 25%, #000 100%); mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, transparent 25%, #000 100%); }
-  .pvc__logo { position: absolute; left: 50%; top: 42%; width: 72cqw; height: auto; transform: translate(-50%, -50%); filter: drop-shadow(0 1.2cqw 2cqw rgb(60 0 8 / .45)); }
+  .pvc__logo { position: absolute; left: 50%; top: 42%; width: 72cqw; height: auto; transform: translate(-50%, -50%); filter: blur(1.1cqw) drop-shadow(0 1.2cqw 2cqw rgb(60 0 8 / .45)); opacity: .9; }
   /* Cubierta: franja de cristal ahumado en la base */
-  .pvc__soon { position: absolute; left: 0; right: 0; bottom: 0; display: grid; place-items: center; padding: 7cqw 0; background: linear-gradient(to top, rgb(12 4 6 / .78), rgb(12 4 6 / .45)); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-top: 1px solid rgb(255 255 255 / .22); }
+  .pvc__soon { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; background: linear-gradient(to bottom, rgb(12 4 6 / .22), rgb(12 4 6 / .6) 55%, rgb(12 4 6 / .8)); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); border-top: 1px solid rgb(255 255 255 / .22); }
   .pvc__soon b { font-weight: 500; font-size: 4.6cqw; letter-spacing: .5em; padding-left: .5em; text-transform: uppercase; color: #fff; }
 </style>
