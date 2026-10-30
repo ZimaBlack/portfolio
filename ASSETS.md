@@ -92,11 +92,11 @@ Contraste verificado (WCAG): blanco/primario 6,1:1 · blanco/acento 5,2:1 · mut
 
 | Archivo | Origen | Estado |
 |---|---|---|
-| `prueba-01.mp4` / `.webp` | `Downloads/gemini_generated_video_7fe7ad4c.mp4` (recomprimido 540 px, sin audio; póster en 2,5 s) | REAL · generado con IA (Gemini) |
+| `prueba-01.mp4` / `.webp` | `Downloads/gemini_generated_video_7fe7ad4c.mp4` (recomprimido a 540 px, con audio; póster del segundo 0,3) | REAL · generado con IA (Gemini) |
 | `prueba-02.mp4` / `.webp` | `Downloads/gemini_generated_video_edc650e8.mp4` | ídem |
 | `prueba-03.mp4` / `.webp` | `Downloads/gemini_generated_video_8401a2e5.mp4` | ídem |
 
-Las capas (logo de entrada, subtítulos con código, marcas, paleta, sticker y cierres) son **GENERADAS** por código en `src/components/ColoradaVideos.astro`; no hay nada quemado en los videos. Los hex mostrados en el selector de la prueba 03 (plata, violeta, menta) son referencias decorativas, no parte de la paleta madre.
+Los subtítulos son la transcripción del audio (Whisper, con tiempos por palabra): 01 «Fluo, neón, oscuro, colorada», 02 «Fluo, neón, oscuro, kawaii, caos, colorada». El 03 no tiene voz detectable (Whisper solo devolvió frases inventadas típicas de ruido), así que no lleva subtítulos: **si dice algo, pasame la frase**. Las capas (logo de entrada, subtítulos con código, marcas, paleta, sticker y cierre con el líquido del hero) son **GENERADAS** por código en `src/components/ColoradaVideos.astro`; no hay nada quemado en los videos. Los hex mostrados en el selector de la prueba 03 (plata, violeta, menta) son referencias decorativas, no parte de la paleta madre.
 
 ## 7. Wanderlust · «Próximamente»
 
