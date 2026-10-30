@@ -6,17 +6,34 @@ import { withBase } from '../lib/i18n';
 const { photo, bw = '', masks, alt = '', ratio = '872 / 1330', blur = 0.5 } = Astro.props as { photo: string; bw?: string; masks: string[]; alt?: string; ratio?: string; blur?: number };
 // [variable de color, modo, opacidad] por máscara, en el orden de `masks`
 const layers: [string, string, number][] = [['--c1', 'hard-light', 0.5], ['--c0', 'overlay', 0.75]];
+// Capa extra «multiply» con el color principal: da cuerpo y saturación al fondo y la ropa sin aclarar
+const mult: [string, number] = ['--c0', 0.38];
 ---
-<figure class="tm" style={`--r:${ratio};--blur:${blur}`}>
+<figure class="tm" data-nozoom style={`--r:${ratio};--blur:${blur}`}>
   <img class="tm__base" src={withBase(photo)} alt={alt} loading="lazy" decoding="async" />
   {masks.map((m, i) => <i class="tm__l" aria-hidden="true" style={`--m:url(${withBase(m)});--c:var(${layers[i][0]});--bm:${layers[i][1]};--bo:${layers[i][2]}`}></i>)}
+  {masks[1] && <i class="tm__l tm__l--mul" aria-hidden="true" style={`--m:url(${withBase(masks[1])});--c:var(${mult[0]});--bm:multiply;--bo:${mult[1]}`}></i>}
+  <img class="tm__face" src={withBase(photo)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
   {bw && <img class="tm__bw" src={withBase(bw)} alt="" loading="lazy" decoding="async" />}
+  {bw && <i class="tm__noir" aria-hidden="true"></i>}
 </figure>
 
 <style>
   .tm { position: relative; margin: 0; aspect-ratio: var(--r); container-type: inline-size; isolation: isolate; }
   .tm img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .tm__l { position: absolute; inset: 0; pointer-events: none; background: var(--c); -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat; mix-blend-mode: var(--bm); opacity: var(--bo); filter: blur(calc(var(--blur, 0.5) * 1cqw)); transition: background-color .8s linear, opacity 1.4s ease; }
+  /* El rostro recupera parte de su luz original: el tinte no lo oscurece */
+  .tm .tm__face { pointer-events: none; opacity: .88; -webkit-mask-image: radial-gradient(ellipse 21% 16% at 46% 27%, #000 55%, transparent 100%); mask-image: radial-gradient(ellipse 21% 16% at 46% 27%, #000 55%, transparent 100%); transition: opacity 1.4s ease; }
+  /* Modo blanco y negro: noir vintage, con grano, desgaste y viñeteo */
+  .tm__bw { filter: grayscale(1) contrast(1.28) brightness(.95); }
+  .tm__noir { position: absolute; inset: 0; border-radius: 8cqw; pointer-events: none; opacity: 0; transition: opacity 1.4s ease; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 1.4 -.15'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+      linear-gradient(90deg, transparent 18%, rgb(255 255 255 / .5) 18.2%, transparent 18.5%, transparent 71%, rgb(255 255 255 / .35) 71.1%, transparent 71.4%),
+      radial-gradient(ellipse 85% 80% at 50% 45%, transparent 45%, rgb(0 0 0 / .85) 100%);
+    background-size: 260px 260px, 100% 100%, 100% 100%; animation: tm-flick .9s steps(2) infinite paused; }
+  @keyframes tm-flick { 0% { background-position: 0 0, 0 0, 0 0; } 50% { background-position: 60px -40px, 0 0, 0 0; } 100% { background-position: -30px 50px, 0 0, 0 0; } }
+  :global(html[data-pw-bw]) .tm__noir { opacity: .85; animation-play-state: running; }
+  :global(html[data-pw-bw]) .tm__face { opacity: 0; }
   .tm__bw { border-radius: 8cqw; opacity: 0; transition: opacity 1.4s ease; }
   :global(html[data-pw-bw]) .tm__bw { opacity: 1; }
   :global(html[data-pw-bw]) .tm__l { opacity: 0; }
