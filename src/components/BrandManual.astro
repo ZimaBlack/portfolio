@@ -215,11 +215,12 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   </div>
 
   <div class="wrap gcm__res" data-reveal>
-    <GcResources label={t.resH} />
-    <div class="gcm__block gcm__block--res">
-      <div class="gcm__text"><h2 class="h2">{t.resH}</h2><p class="gcm__hint">{t.resT}</p></div>
+    <div class="gcm__restxt-col">
+      <h2 class="h2">{t.resH}</h2>
+      <p class="gcm__hint">{t.resT}</p>
       <p class="gcm__restxt">{t.resP}</p>
     </div>
+    <GcResources label={t.resH} />
   </div>
 
   <div class="wrap gcm__title" data-reveal><h2 class="h2">{t.mock}</h2></div>
@@ -308,7 +309,10 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   .gcm__synth-t { display: grid; gap: 1.1rem; max-width: 62rem; }
   .gcm__synth-t .h2 { margin-bottom: .3rem; } .gcm__synth-t p { margin: 0; }
   .gcm__cols { display: grid; gap: 1.1rem; color: var(--muted); max-width: 46rem; }
-  .gcm__res { display: grid; gap: clamp(2rem, 5vw, 4rem); }
+  /* Recursos gráficos: dos columnas, la estructura es la protagonista y el texto queda arriba a la izquierda */
+  .gcm__res { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr); gap: clamp(2rem, 5vw, 5rem); align-items: start; }
+  .gcm__restxt-col { display: grid; gap: 1.2rem; align-content: start; align-self: start; }
+  @media (max-width: 860px) { .gcm__res { grid-template-columns: 1fr; } }
     .gcm__restxt { margin: 0; color: var(--muted); max-width: 52rem; line-height: 1.65; }
   .gcm__hint { font-size: .8rem; letter-spacing: .08em; }
   .gcm__pal { display: grid; gap: 1.6rem; }

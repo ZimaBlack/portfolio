@@ -13,10 +13,11 @@ for (let r = 0; r < 5; r++) {
     cells.push({ x: (s + 1) * R, y, d: SLOTS[s] === 'F' ? fullDouble(R) : halfDouble(R, 'l') });
   }
 }
+const PAD = 110; // aire interno alrededor de la trama (aspecto 2:3 conservado)
 const gy = 3 * PITCH + R + DY;
 ---
-<svg class="gcv" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" role="img" aria-label="Global Citizen" focusable="false">
-  <rect width={W} height={H} fill="#fafafa" />
+<svg class="gcv" viewBox={`${-PAD} ${-PAD * 1.78} ${W + 2 * PAD} ${H + 3 * PAD}`} preserveAspectRatio="xMidYMid slice" role="img" aria-label="Global Citizen" focusable="false">
+  <rect x={-PAD} y={-PAD * 1.78} width={W + 2 * PAD} height={H + 3 * PAD} fill="#fafafa" />
   {cells.map((c) => <path transform={`translate(${c.x} ${c.y})`} d={c.d} fill="#dfece4" />)}
   <g transform={`translate(${4 * R} ${gy}) scale(${(2 * R / 234).toFixed(4)}) translate(-117 -117)`} fill="#74b992"><path d={MID} /><path d={OUT} /></g>
 </svg>
