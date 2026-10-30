@@ -31,7 +31,7 @@ const t = {
 </style>
 <style>
   /* Vertical, centrado en la altura de la pantalla y pegado al borde derecho */
-  .pw { position: fixed; right: 1rem; transition: opacity .5s ease, transform .6s var(--ease); top: 50%; transform: translateY(-50%); z-index: 55; display: flex; align-items: center; gap: .5rem; }
+  .pw { position: fixed; right: 1rem; transition: opacity .5s ease, transform .9s var(--ease); top: 50%; transform: translate(var(--pw-dx, 0px), -50%); z-index: 55; display: flex; align-items: center; gap: .5rem; }
   .pw__panel { order: 2; display: flex; flex-direction: column; align-items: center; gap: .7rem; padding: .9rem 1rem; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 50px rgb(0 0 0 / .4);
     background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
     transition: transform .6s var(--ease), opacity .4s ease; }
@@ -58,7 +58,7 @@ const t = {
   .pw__tab:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
   .pw__tab i { width: 1.1rem; height: .7rem; border-radius: 3px; }
   /* En el pie de la web el widget se oculta */
-  .pw.is-away { opacity: 0; pointer-events: none; transform: translateY(-50%) translateX(1.5rem); }
+  .pw.is-away { opacity: 0; pointer-events: none; transform: translate(calc(var(--pw-dx, 0px) + 1.5rem), -50%); }
   @media (max-width: 760px) { .pw { right: .5rem; } .pw__rails { height: min(40vh, 18rem); gap: .6rem; } .pw__rail { width: 1.7rem; } .pw__knob { width: 2.4rem; margin-left: -1.2rem; } }
   @media (prefers-reduced-motion: reduce) { .pw__panel, .pw__knob { transition: none; } }
 </style>
@@ -187,6 +187,25 @@ const t = {
         rails.forEach((r) => r.querySelector('.pw__knob')!.classList.add('is-slide'));
         touched = true; render();
       };
+      // Paletas de prueba (desde la página): fijan los dos matices sin pasar por el contador del azar
+      window.addEventListener('pw:set', (e) => {
+        const h = (e as CustomEvent<{ hues: number[] }>).detail.hues;
+        if (busy) return;
+        hue[0] = h[0]; hue[1] = h[1]; reroll();
+        rails.forEach((r) => r.querySelector('.pw__knob')!.classList.add('is-slide'));
+        touched = true; render();
+      });
+      // En la sección con hueco (data-pw-slot) el widget viaja hasta allí e invita a jugar
+      const slot = document.querySelector<HTMLElement>('[data-pw-slot]');
+      const dock = () => {
+        if (!slot || matchMedia('(max-width: 860px)').matches) { pw.style.removeProperty('--pw-dx'); return; }
+        const r = slot.getBoundingClientRect(), vis = r.top < innerHeight * 0.8 && r.bottom > innerHeight * 0.2;
+        if (!vis) { pw.style.removeProperty('--pw-dx'); return; }
+        const p = pw.getBoundingClientRect(), cur = parseFloat(pw.style.getPropertyValue('--pw-dx') || '0');
+        const want = r.right - p.width / 2 - 8 - (p.left - cur + p.width / 2) + (p.width / 2) * 0;
+        pw.style.setProperty('--pw-dx', `${Math.round(want)}px`);
+      };
+      if (slot) { addEventListener('scroll', dock, { passive: true }); addEventListener('resize', dock); dock(); }
       const wait = (ms: number) => new Promise<void>((res) => setTimeout(res, ms));
       const randomBtn = pw.querySelector<HTMLButtonElement>('[data-pw-random]')!;
       randomBtn.addEventListener('click', async () => {

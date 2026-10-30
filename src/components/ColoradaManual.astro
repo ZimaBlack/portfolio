@@ -18,6 +18,18 @@ const inline = (file: string, label: string) => readFileSync(join(process.cwd(),
   .replace(/fill="#E03B7A"/gi, 'style="fill:var(--c0)"')
   .replace(/fill="#6CE829"/gi, 'style="fill:var(--c1)"')
   .replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} role="img" aria-label="${label}">`);
+// SVG de una sección: los rosas y verdes de la marca leen --c0 / --c1; los rellenos de degradado también
+const tinted = (file: string, label: string, slice = false) => readFileSync(join(process.cwd(), 'public/works/colorada/manual', file), 'utf8')
+  .replace(/fill="#E03B7A"/gi, 'style="fill:var(--c0)"').replace(/fill="#6CE829"/gi, 'style="fill:var(--c1)"')
+  .replace(/stop-color="#E03B7A"/gi, 'style="stop-color:var(--c0)"')
+  .replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')}${slice ? ' preserveAspectRatio="xMidYMax slice"' : ''} role="img" aria-label="${label}">`);
+const variable = tinted('paleta-variable.svg', 'Colorada — paleta variable');
+const closer = tinted('cierre.svg', 'Colorada', true);
+// Formas del mármol de la lámina de cierre: se reutilizan en las tres piezas de "Recursos gráficos"
+const marble = [...readFileSync(join(process.cwd(), 'public/works/colorada/manual/cierre.svg'), 'utf8').matchAll(/<path d="([^"]+)" fill="(?:black|url\([^)]*\))"/g)].map((m) => m[1]).filter((d) => /C/.test(d) && !/^M[\d. ]+[HV]/.test(d)).slice(0, 22);
+const crops = ['380 560 1500 1500', '1180 320 1500 1500', '640 640 1500 1500'];
+// Paletas de prueba (matices OKLCH del primer y segundo color): no activan el modo blanco y negro
+const presets: [number, number][] = [[28, 98], [52, 22], [345, 300], [292, 258], [88, 62], [150, 128]];
 const character = inline('logo.svg', 'Colorada — character');
 const wordmark = inline('mark.svg', 'Colorada — logotipo');
 
@@ -29,6 +41,16 @@ const t = es ? {
   sketchCap: 'Boceto original',
   photoCap: 'La marca tiñe la imagen: cambia los colores de la derecha',
   photo2Cap: 'Retrato teñido con los colores de la marca',
+  blend: 'Let’s blend!',
+  blendA: 'Una sola imagen, muchas versiones. El pelo, el isotipo y los fondos se pintan con los dos colores de la marca: probá una paleta o mové las barras y la fotografía cambia entera, sin perder su textura.',
+  blendHint: '¡Jugá con los colores!',
+  blendHintA: 'Mové las barras o elegí una paleta de prueba.',
+  varPal: 'Paleta variable',
+  varPalA: 'Dos colores madre, #E03B7A y #6CE829, de los que nace todo el sistema: el rosa lleva el peso y el verde acentúa.',
+  res: 'Recursos gráficos',
+  resA: 'Un mármol líquido de formas orgánicas que se usa en blanco y negro, en color o con el isotipo encima.',
+  mother: 'La paleta madre',
+  motherA: 'Estos tonos son la base de todas las aplicaciones: fondos, retratos y piezas que conservan el rosa como protagonista.',
   portrait: 'Una imagen, muchas versiones',
   portraitA: 'El pelo, el isotipo y los fondos se pintan con los dos colores de la marca: al mover el widget, la fotografía cambia entera y conserva su textura.',
   tint: 'La marca tiñe la imagen',
@@ -52,6 +74,16 @@ const t = es ? {
   sketchCap: 'Original sketch',
   photoCap: 'The brand tints the image: change the colors on the right',
   photo2Cap: 'Portrait tinted with the brand colors',
+  blend: 'Let’s blend!',
+  blendA: 'One image, many versions. The hair, the isotype and the backdrops are painted with the brand’s two colors: try a palette or move the bars and the whole photograph changes while keeping its texture.',
+  blendHint: 'Play with the colors!',
+  blendHintA: 'Move the bars or pick a test palette.',
+  varPal: 'Variable palette',
+  varPalA: 'Two mother colors, #E03B7A and #6CE829, from which the whole system is born: pink carries the weight and green accents.',
+  res: 'Graphic resources',
+  resA: 'A liquid marble of organic shapes used in black and white, in color or with the isotype on top.',
+  mother: 'The mother palette',
+  motherA: 'These tones are the base of every application: backgrounds, portraits and pieces that keep pink as the lead.',
   portrait: 'One image, many versions',
   portraitA: 'The hair, the isotype and the backdrops are painted with the brand’s two colors: move the widget and the whole photograph changes while keeping its texture.',
   tint: 'The brand tints the image',
@@ -98,11 +130,17 @@ const t = es ? {
     </div>
   </div>
 
-  <div class="wrap cm__row cm__row--rev cm__row--portrait" data-reveal>
-    <figure class="cm__photo cm__photo--big"><TintMask photo="/works/colorada/manual/retrato.webp" bw="/works/colorada/manual/retrato-bw.webp" masks={['/works/colorada/manual/retrato-m1.webp', '/works/colorada/manual/retrato-m0.webp']} alt={t.portrait} ratio="872 / 1330" blur={0.45} opacity={0.78} /></figure>
-    <div class="cm__side">
-      <h2 class="h2">{t.portrait}</h2>
-      <p class="cm__txt">{t.portraitA}</p>
+  <div class="wrap cm__blend" id="cm-blend" data-reveal>
+    <h2 class="h2">{t.blend}</h2>
+    <p class="cm__txt">{t.blendA}</p>
+    <div class="cm__blendgrid">
+      <figure class="cm__photo cm__photo--big"><TintMask photo="/works/colorada/manual/retrato.webp" bw="/works/colorada/manual/retrato-bw.webp" masks={['/works/colorada/manual/retrato-m1.webp', '/works/colorada/manual/retrato-m0.webp']} alt={t.blend} ratio="872 / 1330" blur={0.45} opacity={0.78} /></figure>
+      <ul class="cm__presets" role="group" aria-label={t.blendHintA}>
+        {presets.map(([h0, h1]) => (
+          <li><button type="button" data-preset={`${h0},${h1}`} aria-label={`${h0}° · ${h1}°`}><i style={`background:oklch(.73 .27 ${h0})`}></i><i style={`background:oklch(.58 .25 ${h1})`}></i></button></li>
+        ))}
+      </ul>
+      <div class="cm__slot" data-pw-slot><p><b>{t.blendHint}</b><span>{t.blendHintA}</span></p></div>
     </div>
   </div>
 
@@ -118,21 +156,42 @@ const t = es ? {
     </div>
   </div>
 
-  <div class="wrap cm__row cm__row--rev cm__color" data-reveal>
-    <figure class="cm__photo cm__photo--solo">
-      <img src={palettePhoto} alt={t.baseCap} loading="lazy" decoding="async" />
-    </figure>
-    <div class="cm__side">
-      <h2 class="h2">{t.color}</h2>
-      <p class="cm__txt">{t.colorA}</p>
-      <img class="cm__fixed" src={fixedLogo} alt="Colorada" loading="lazy" decoding="async" />
-      <div class="cm__base">
-        <span class="cm__sw" style="background:#E03B7A"></span><span class="cm__sw" style="background:#6CE829"></span>
-        <p class="muted"><strong>{t.base}</strong> · #E03B7A · #6CE829 — {t.baseCap}</p>
-      </div>
-    </div>
+  <div class="wrap cm__varpal" data-reveal>
+    <h2 class="h2">{t.varPal}</h2>
+    <p class="cm__txt">{t.varPalA}</p>
+    <div class="cm__vp" set:html={variable} />
   </div>
+
+  <div class="wrap cm__res" data-reveal>
+    <h2 class="h2">{t.res}</h2>
+    <p class="cm__txt">{t.resA}</p>
+    <ul class="cm__tiles">
+      {crops.map((vb, i) => (
+        <li class={`cm__tile cm__tile--${i}`}>
+          <svg viewBox={vb} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">{marble.map((d) => <path d={d} />)}</svg>
+          {i === 2 && <div class="cm__tilelogo" set:html={character} />}
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="wrap cm__mother" data-reveal>
+    <h2 class="h2">{t.mother}</h2>
+    <p class="cm__txt">{t.motherA}</p>
+    <img src={withBase('/works/colorada/manual/paleta-madre.webp')} alt={t.mother} width="2000" height="1821" loading="lazy" decoding="async" />
+  </div>
+
+  <div class="cm__closer" set:html={closer} aria-hidden="true" />
 </section>
+
+<script>
+  // Paletas de prueba: ajustan el widget directamente (no cuentan para el modo blanco y negro)
+  const initP = () => document.querySelectorAll<HTMLButtonElement>('[data-preset]:not([data-on])').forEach((b) => {
+    b.setAttribute('data-on', '');
+    b.addEventListener('click', () => { const [h0, h1] = b.dataset.preset!.split(',').map(Number); window.dispatchEvent(new CustomEvent('pw:set', { detail: { hues: [h0, h1] } })); });
+  });
+  document.addEventListener('astro:page-load', initP); initP();
+</script>
 
 <style>
   /* Contenedor común: el contenido vive en un ancho centrado (72 rem), alineado con el encabezado */
@@ -179,6 +238,36 @@ const t = es ? {
   .cm__base { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
   .cm__base p { margin: 0 0 0 .5rem; font-size: .82rem; }
   .cm__sw { width: 1.6rem; height: 1.6rem; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
+  /* Let's blend: la foto, las paletas de prueba y el hueco al que viaja el widget */
+  .cm__blend { display: grid; gap: 1.25rem; }
+  .cm__blend .cm__photo--big { max-width: 29rem; justify-self: start; }
+  .cm__blendgrid { display: grid; grid-template-columns: minmax(0, 29rem) auto minmax(18rem, 1fr); gap: clamp(1.2rem, 3vw, 3rem); align-items: center; margin-top: 1rem; }
+  .cm__presets { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
+  .cm__presets button { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 3.2rem; height: 3.2rem; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, #fff 6%); cursor: pointer; position: relative; transition: border-color .4s, transform .4s var(--ease); }
+  .cm__presets button:hover, .cm__presets button:focus-visible { border-color: var(--fg); transform: translateX(3px); }
+  .cm__presets i { grid-area: 1 / 1; width: 1.35rem; height: 1.35rem; border-radius: 5px; }
+  .cm__presets i:first-child { transform: translate(-.35rem, -.35rem); } .cm__presets i:last-child { transform: translate(.35rem, .35rem); }
+  .cm__slot { align-self: stretch; display: flex; align-items: center; min-height: 26rem; }
+  .cm__slot p { margin: 0; display: grid; gap: .3rem; font-size: .9rem; color: var(--muted); max-width: 8.5rem; }
+  .cm__slot b { color: var(--fg); font-weight: 600; font-size: 1.05rem; letter-spacing: .02em; }
+  .cm__slot p::after { content: '→'; font-size: 1.6rem; color: var(--c0); transition: color .8s linear; }
+  /* Paleta variable, recursos y paleta madre */
+  .cm__varpal, .cm__res, .cm__mother { display: grid; gap: 1.25rem; }
+  .cm__vp { max-width: 46rem; }
+  .cm__vp :global(svg) { width: 100%; height: auto; }
+  .cm__vp :global(path), .cm__closer :global(path), .cm__closer :global(stop) { transition: fill .8s linear, stop-color .8s linear; }
+  .cm__tiles { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.8rem, 2vw, 1.6rem); }
+  .cm__tile { position: relative; aspect-ratio: 1; border-radius: clamp(14px, 2vw, 26px); overflow: hidden; }
+  .cm__tile svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .cm__tile--0 { background: #f1f1f1; } .cm__tile--0 path { fill: #2f2f2f; }
+  .cm__tile--1 { background: var(--c0); transition: background-color .8s linear; } .cm__tile--1 path { fill: #fff; fill-opacity: .92; }
+  .cm__tile--2 { background: #fff; } .cm__tile--2 path { fill: var(--c0); transition: fill .8s linear; }
+  .cm__tilelogo { position: absolute; inset: 22% 22% 22%; display: grid; place-items: center; filter: drop-shadow(0 6px 14px rgb(0 0 0 / .25)); }
+  .cm__tilelogo :global(svg) { position: static; height: auto; }
+  .cm__mother img { width: 100%; max-width: 46rem; height: auto; }
+  .cm__closer { margin-inline: calc(50% - 50vw); height: clamp(26rem, 58vw, 44rem); background: #0b0b0a; overflow: hidden; margin-bottom: calc(-1 * clamp(4rem, 8vw, 8rem)); }
+  .cm__closer :global(svg) { width: 100%; height: 100%; display: block; }
+  @media (max-width: 860px) { .cm__blendgrid { grid-template-columns: minmax(0, 1fr) auto; } .cm__slot { display: none; } .cm__tiles { grid-template-columns: 1fr; } }
   @media (max-width: 860px) {
     .cm__row, .cm__row--sketch, .cm__pair { grid-template-columns: 1fr; }
     }
