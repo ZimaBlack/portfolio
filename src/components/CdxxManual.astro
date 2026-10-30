@@ -25,7 +25,8 @@ const t = es ? {
   typeA: 'La tipografía refleja la dualidad del concepto. Lexend aporta claridad formal, accesibilidad y espacios abiertos. Como contrapeso, Krona One irrumpe con una geometría audaz y futurista, e inyecta dinamismo sin perder elegancia.',
   res: 'Recursos y aplicaciones',
   resA: 'Lo fluido y lo irrepetible: la textura del papel marmolado es el recurso principal porque imita la sedosidad del chocolate derretido. Es orgánico, efímero y, al igual que cada pieza de chocolate artesanal, visualmente irrepetible.',
-  studio: 'Fotografías reales de estudio',
+  studio: 'Fotografías de estudio',
+  creditBy: 'Fotografías de estudio por',
   social: 'Redes',
 } : {
   title: 'Fused duality: the design behind a sensory experience',
@@ -44,7 +45,8 @@ const t = es ? {
   typeA: 'The typography reflects the duality of the concept. Lexend brings formal clarity, accessibility and open spaces. As a counterweight, Krona One bursts in with a bold, futuristic geometry and injects dynamism without losing elegance.',
   res: 'Resources and applications',
   resA: 'The fluid and the unrepeatable: the texture of marbled paper is the main resource because it imitates the silkiness of melted chocolate. It is organic, ephemeral and, like every piece of artisanal chocolate, visually unrepeatable.',
-  studio: 'Real studio photography',
+  studio: 'Studio photography',
+  creditBy: 'Studio photography by',
   social: 'Social',
 };
 
@@ -102,7 +104,7 @@ const colors = [
 
   <figure class="wrap cx__full" data-reveal>
     <img src={img('estudio')} alt={t.studio} loading="lazy" decoding="async" />
-    <figcaption class="muted">{t.studio}</figcaption>
+    <figcaption class="muted cx__credit">{t.creditBy} <a class="link" href="https://www.linkedin.com/in/valeria-carmona-6ba72b343/" target="_blank" rel="noopener noreferrer">Valeria Carmona ↗</a></figcaption>
   </figure>
 
   <div class="wrap cx__end" data-reveal><img src={withBase('/works/cdxx/tree.svg')} alt="" loading="lazy" decoding="async" /></div>
@@ -129,6 +131,7 @@ const colors = [
   .cx > figure.wrap:not(.cx__bleed) { margin-inline: auto; }
   .cx__full img { border-radius: 2px; }
   .cx__full figcaption { text-align: center; }
+  .cx__credit a { color: var(--fg); }
   .cx__bleed { width: 100vw; max-width: none !important; margin-inline: calc(50% - 50vw); padding: 0; }
   .cx__bleed img { border-radius: 0; }
   /* El texto de recursos sube y se monta apenas sobre el borde inferior de la imagen */
