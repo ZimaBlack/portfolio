@@ -269,9 +269,11 @@ const t = {
         pw.classList.add('is-timing');
         bw = true; touched = true; render();
         document.documentElement.setAttribute('data-pw-bw', '');
-        const veil = document.querySelector('.pw__bwv'); veil?.classList.remove('is-buzz'); void (veil as HTMLElement | null)?.offsetWidth; veil?.classList.add('is-buzz');
+        const veil = document.querySelector('.pw__bwv');
+        const buzz = () => { veil?.classList.remove('is-buzz'); void (veil as HTMLElement | null)?.offsetWidth; veil?.classList.add('is-buzz'); };
+        buzz(); window.addEventListener('pw:buzz', buzz);
         await wait(15000);
-        veil?.classList.remove('is-buzz');
+        veil?.classList.remove('is-buzz'); window.removeEventListener('pw:buzz', buzz);
         document.documentElement.removeAttribute('data-pw-bw');
         await wait(900);
         bw = false; randomize(next);
