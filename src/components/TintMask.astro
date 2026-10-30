@@ -28,6 +28,8 @@ const STEP = ['Capa 1', 'Capa 2', 'Capa 3'];
         <label>Fusión<select data-f="mode">{MODES.map((m) => <option value={m} selected={m === mode0}>{m}</option>)}</select></label>
         <label>Desenfoque <input type="range" min="0" max="3" step="0.05" value={blur} data-f="blur" /></label>
         <label>Opacidad <input type="range" min="0" max="100" step="1" value={Math.round(op0 * 100)} data-f="op" /></label>
+        <label>Saturación <input type="range" min="0" max="200" step="1" value={plain ? 100 : 74} data-f="sat" /></label>
+        <label>Luminosidad <input type="range" min="40" max="160" step="1" value={plain ? 100 : 90} data-f="lum" /></label>
       </div>
     ))}
   </div>
@@ -45,11 +47,11 @@ const STEP = ['Capa 1', 'Capa 2', 'Capa 3'];
   .tp__ctl input[type=range] { width: 100%; accent-color: var(--fg); }
   .tm { position: relative; margin: 0; aspect-ratio: var(--r); container-type: inline-size; border-radius: 3.5rem; overflow: hidden; isolation: isolate; }
   .tm img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-  .tm__l { position: absolute; inset: 0; pointer-events: none; background: var(--c); -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat; mix-blend-mode: var(--bm); opacity: var(--bo); filter: blur(calc(var(--blur, 0.5) * 1cqw)) saturate(.74) brightness(.9); transition: background-color .8s linear, opacity 1.4s ease; }
+  .tm__l { position: absolute; inset: 0; pointer-events: none; background: var(--c); -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat; mix-blend-mode: var(--bm); opacity: var(--bo); filter: blur(calc(var(--blur, 0.5) * 1cqw)) saturate(var(--sat, .74)) brightness(var(--lum, .9)); transition: background-color .8s linear, opacity 1.4s ease; }
   /* El «screen» es el resplandor: más desenfocado que el resto, para que la luz se derrame sobre las hebras */
   /* Método idéntico al de las fotos laterales: solo desenfoque, sin ajuste de saturación ni de brillo */
-  .tm--plain .tm__l { filter: blur(calc(var(--blur, 0.5) * 1cqw)); }
-  .tm__l[data-bm='screen'] { filter: blur(calc(var(--blur, 0.5) * 3.2cqw)) saturate(.74); }
+  .tm--plain { --sat: 1; --lum: 1; }
+  .tm__l[data-bm='screen'] { filter: blur(calc(var(--blur, 0.5) * 3.2cqw)) saturate(var(--sat, .74)); }
   /* Modo blanco y negro: noir vintage, con grano, desgaste y viñeteo */
   .tm__bw { filter: grayscale(1) contrast(1.28) brightness(.95); border-radius: 8cqw; opacity: 0; transition: opacity 1.4s ease; }
   .tm__noir { position: absolute; inset: 0; border-radius: 8cqw; pointer-events: none; opacity: 0; transition: opacity 1.4s ease; mix-blend-mode: overlay;
@@ -72,6 +74,8 @@ const STEP = ['Capa 1', 'Capa 2', 'Capa 3'];
       const ls = () => [...fig.querySelectorAll<HTMLElement>(`.tm__l[data-g="${g.dataset.g}"]`)];
       g.querySelector('[data-f=mode]')!.addEventListener('change', (e) => ls().forEach((l) => { const v = (e.target as HTMLSelectElement).value; l.style.setProperty('--bm', v); l.dataset.bm = v; }));
       g.querySelector('[data-f=blur]')!.addEventListener('input', (e) => ls().forEach((l) => l.style.setProperty('--blur', (e.target as HTMLInputElement).value)));
+      g.querySelector('[data-f=sat]')!.addEventListener('input', (e) => ls().forEach((l) => l.style.setProperty('--sat', String(+(e.target as HTMLInputElement).value / 100))));
+      g.querySelector('[data-f=lum]')!.addEventListener('input', (e) => ls().forEach((l) => l.style.setProperty('--lum', String(+(e.target as HTMLInputElement).value / 100))));
       g.querySelector('[data-f=op]')!.addEventListener('input', (e) => ls().forEach((l) => l.style.setProperty('--bo', String(+(e.target as HTMLInputElement).value / 100))));
     });
   });
