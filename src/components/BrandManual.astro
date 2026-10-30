@@ -224,8 +224,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   <div class="wrap gcm__title" data-reveal><h2 class="h2">{t.mock}</h2></div>
 
   <div class="wrap gcm__pair" data-reveal>
-    <figure><img src={img('card-green')} alt={t.cards} loading="lazy" decoding="async" /></figure>
-    <figure><img src={img('card-tray')} alt={t.cards} loading="lazy" decoding="async" /></figure>
+    <figure><img src={img('card-green')} alt={t.cards} loading="lazy" decoding="async" width="1000" height="1011" /></figure>
   </div>
   <figure class="gcm__bleed" data-reveal>
     <img src={img('banner-dark')} alt="Global Citizen" loading="lazy" decoding="async" />
@@ -286,9 +285,20 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   .chips li.is-green { color: var(--gc); }
   .chips li:hover { border-color: var(--gc); background: rgb(93 185 138 / .08); }
   .gcm__title { margin-bottom: calc(-1 * clamp(1.5rem, 4vw, 4rem)); }
-  .gcm__pair { display: grid; grid-template-columns: 1.55fr 1fr; gap: var(--gutter); }
-  .gcm__pair img { height: 100%; object-fit: cover; }
+  .gcm__pair { display: grid; justify-items: center; }
+  .gcm__pair figure { width: min(100%, 36rem); } /* a su tamaño natural: no se amplía por encima de su resolución */
   .gcm__avatars { max-width: 70rem; }
+  /* Legibilidad: tamaños, interlineado e interletrado del manual */
+  .gcm .h2 { font-size: clamp(1.5rem, 2.6vw, 2.15rem); letter-spacing: .1em; line-height: 1.22; }
+  .gcm__text p, .gcm__restxt, .gcm__cols p, .gcm__end p { font-size: clamp(1.06rem, 1.3vw, 1.22rem); line-height: 1.78; letter-spacing: .004em; color: color-mix(in srgb, var(--fg) 76%, transparent); }
+  .gcm__strong, .gcm__text p.gcm__strong, .gcm__synth-t p.gcm__strong { color: var(--fg); font-weight: 500; font-size: clamp(1.18rem, 1.6vw, 1.42rem); line-height: 1.55; letter-spacing: 0; }
+  .gcm__text { gap: 1.4rem; max-width: 44rem; }
+  .gcm figcaption { font-size: .92rem; line-height: 1.5; letter-spacing: .02em; }
+  .chips li { font-size: 1rem; padding: .55rem 1.1rem; letter-spacing: .015em; }
+  .gcm__sw b { font-size: 1rem; } .gcm__sw span { font-size: .86rem; letter-spacing: .05em; }
+  .gcm__sub { font-size: .85rem; }
+  .gcm__hint { font-size: .92rem; letter-spacing: .03em; color: color-mix(in srgb, var(--fg) 70%, transparent); }
+  .gcm__spec { font-size: 1.1rem; } .gcm__nr, .gcm__nl { font-size: 1.15rem; line-height: 1.6; } .gcm__nb { font-size: .95rem; }
   /* Concepto, grillas, paleta y tipografía */
   /* Estas secciones: el texto arriba, en una sola columna, y la pieza gráfica debajo ocupando todo el ancho */
   .gcm__block--concept, .gcm__block--grid, .gcm__block--res, .gcm__type, .gcm__block--mood { grid-template-columns: minmax(0, 1fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; }
