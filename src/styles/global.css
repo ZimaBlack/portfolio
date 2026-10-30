@@ -109,3 +109,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 :root[data-gc-theme] .footer :is(.footer__photo, .footer__screen, .footer__glitch) { display: block !important; }
 /* En modo oscuro el footer toma el mismo negro verdoso del proyecto, para que no haya salto de color entre el cierre y el pie */
 :root[data-gc-theme='dark'] .footer { --bg: #030705; background: #030705; }
+
+/* Omega Shields: un solo negro azulado para la portada, las secciones y el pie */
+:root[data-om] { --bg: #07070d; }
+:root[data-om] .footer { --bg: #07070d; background: #07070d; }
