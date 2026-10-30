@@ -90,8 +90,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
    colores del manual: Pure Snow #FAFAFA / Deep Onyx #1C1C1C y los verdes de la marca. */
 :root[data-gc-theme='light'] { --bg: #fafafa; --fg: #1c1c1c; --muted: #4f5953; --line: rgb(28 28 28 / .14); --accent: #1c1c1c; color-scheme: light;
   --gc-mod: #bcdccb; --gc-card: #f1f7f3; --gc-ink: #2c8a5b; --gc-grid: rgb(93 185 138 / .13); }
-:root[data-gc-theme='dark'] { --bg: #060a08; --fg: #ecebe6; --muted: #a7b1ab; --line: rgb(236 235 230 / .14); --accent: #ecebe6; color-scheme: dark;
-  --gc-mod: #dfefe5; --gc-card: #050b08; --gc-ink: #5db98a; --gc-grid: rgb(93 185 138 / .07); }
+:root[data-gc-theme='dark'] { --bg: #030705; --fg: #ecebe6; --muted: #a7b1ab; --line: rgb(236 235 230 / .14); --accent: #ecebe6; color-scheme: dark;
+  --gc-mod: #dfefe5; --gc-card: #020504; --gc-ink: #5db98a; --gc-grid: rgb(93 185 138 / .07); }
 /* la retícula y el cristal viven en GcBg y en las reglas siguientes: la retícula solo en modo oscuro; el cristal y el desenfoque solo en modo claro */
 :root[data-gc-theme] body { transition: background-color .6s ease, color .6s ease; }
 /* Sobre la portada (foto oscura) el encabezado conserva los colores claros, también en modo claro */
@@ -109,8 +109,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 :root[data-gc-theme='light'] .gcmd__col--3 { -webkit-mask-image: linear-gradient(90deg, #000 0, transparent 118%); mask-image: linear-gradient(90deg, #000 0, transparent 118%); filter: blur(1.6px); }
 :root[data-gc-theme='light'] .gcmd__col--3 img { filter: blur(1.4px); }
 
-/* Footer: la foto y el efecto de pantalla antigua son para fondo oscuro; siguen el modo del proyecto aunque el sistema opere al revés */
-:root[data-gc-theme='light'] :is(.footer__photo, .footer__glitch, .footer__screen) { display: none !important; }
-:root[data-gc-theme='dark'] .footer__photo { display: block !important; }
-:root[data-gc-theme='dark'] .footer__screen { display: block !important; }
-:root[data-gc-theme='dark'] .footer__glitch { display: block !important; }
+/* Footer de la web: conserva siempre su color oscuro (no sigue el modo del proyecto; el cierre propio del proyecto sí cambia) */
+:root[data-gc-theme] .footer { --bg: #0b0b0a; --fg: #ecebe6; --muted: #8a8982; --line: rgb(236 235 230 / .14); --accent: #ecebe6; color: #ecebe6; background: #0b0b0a; color-scheme: dark; }
+:root[data-gc-theme] .footer :is(.footer__photo, .footer__screen, .footer__glitch) { display: block !important; }

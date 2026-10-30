@@ -1,20 +1,17 @@
 ---
-// Fondo del proyecto (Global Citizen): en modo oscuro, una retícula grande de plano;
+// Fondo del proyecto (Global Citizen): en modo oscuro, negro verdoso liso;
 // en modo claro, sin retícula, con manchas de color difuminadas que dan cuerpo al cristal.
 ---
 <div class="gcb" aria-hidden="true">
-  <div class="gcb__grid"></div>
   <i class="gcb__orb gcb__orb--a"></i><i class="gcb__orb gcb__orb--b"></i><i class="gcb__orb gcb__orb--c"></i><i class="gcb__orb gcb__orb--d"></i>
 </div>
 
 <style is:global>
   .is-gc { position: relative; isolation: isolate; }
   .gcb { --g: clamp(92px, 11vw, 168px); position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-  .gcb__grid { position: absolute; inset: 0; background-image: linear-gradient(rgb(93 185 138 / .1) 1px, transparent 1px), linear-gradient(90deg, rgb(93 185 138 / .1) 1px, transparent 1px); background-size: var(--g) var(--g); }
   .gcb__orb { display: none; position: absolute; border-radius: 50%; filter: blur(70px); }
   /* Modo claro: sin retícula, con cristal y desenfoque */
-  :root[data-gc-theme='light'] .gcb__grid { display: none; }
-  :root[data-gc-theme='light'] .gcb__orb { display: block; }
+    :root[data-gc-theme='light'] .gcb__orb { display: block; }
   .gcb__orb--a { width: 38rem; height: 38rem; left: -10rem; top: 9%; background: radial-gradient(circle, rgb(93 185 138 / .38), transparent 68%); }
   .gcb__orb--b { width: 34rem; height: 34rem; right: -8rem; top: 27%; background: radial-gradient(circle, rgb(146 205 182 / .5), transparent 68%); }
   .gcb__orb--c { width: 40rem; height: 40rem; left: 14%; top: 52%; background: radial-gradient(circle, rgb(226 212 191 / .55), transparent 68%); }
