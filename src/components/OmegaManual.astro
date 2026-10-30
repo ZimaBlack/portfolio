@@ -266,12 +266,14 @@ const t = es ? {
   /* Variantes como cartas: grandes, inclinadas y superpuestas; borde recto, sin contorno, con fondo en degradado y resplandor */
   .om__row--iso { grid-template-columns: minmax(0, .8fr) minmax(0, 1.5fr); }
   .omv { position: relative; display: flex; justify-content: center; align-items: center; padding: 2rem 0 3rem; isolation: isolate; }
-  .omv::before { content: ''; position: absolute; inset: 0 8% 0; z-index: -1; background: radial-gradient(ellipse 55% 50% at 50% 50%, rgb(212 174 100 / .28), rgb(91 132 168 / .12) 55%, transparent 75%); filter: blur(22px); }
-  .omv__c { all: unset; box-sizing: border-box; position: relative; display: block; flex: 0 0 56%; aspect-ratio: 2 / 3; overflow: hidden; cursor: pointer; border-radius: 0; background: linear-gradient(160deg, #1b2644, #0c1320 70%); transition: transform .8s var(--ease), box-shadow .8s, filter .8s; filter: brightness(.7) saturate(.8); z-index: 1; }
+  .omv::before { content: ''; position: absolute; inset: 0 8% 0; z-index: -1; background: radial-gradient(ellipse 55% 50% at 50% 50%, rgb(70 120 200 / .34), rgb(40 70 140 / .16) 55%, transparent 75%); filter: blur(22px); }
+  .omv__c { all: unset; box-sizing: border-box; position: relative; display: block; flex: 0 0 56%; aspect-ratio: 2 / 3; overflow: hidden; cursor: pointer; border-radius: clamp(12px, 1.6vw, 20px); background: linear-gradient(160deg, #1b2644, #0c1320 70%); transition: transform .8s var(--ease), box-shadow .8s, filter .8s; filter: brightness(.7) saturate(.8); z-index: 1; }
   .omv__c:first-child { transform: rotate(-7deg) translateX(14%); }
   .omv__c:last-child { transform: rotate(6deg) translateX(-14%) translateY(2%); margin-left: -4%; }
   .omv__c:focus-visible { outline: 2px solid #5b84a8; outline-offset: 6px; }
-  .omv__c.is-active { z-index: 3; filter: none; box-shadow: 0 0 60px rgb(212 174 100 / .35), 0 34px 60px rgb(0 0 0 / .55); }
+  .omv__c.is-active { z-index: 3; filter: none; box-shadow: 0 0 60px rgb(70 120 200 / .45), 0 34px 60px rgb(0 0 0 / .55); }
+  .omv__c::after { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit; border: 2px solid #35446b; transition: border-color .8s; }
+  .omv__c.is-active::after { border-color: #17305a; }
   .omv__c:first-child.is-active { transform: rotate(-4deg) translateX(10%) scale(1.04); }
   .omv__c:last-child.is-active { transform: rotate(3deg) translateX(-10%) scale(1.04); }
   .omv__flat { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 42%, rgb(91 132 168 / .22), transparent 62%), linear-gradient(160deg, #1b2644, #0c1320 70%); }
