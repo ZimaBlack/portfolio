@@ -5,11 +5,13 @@
 //   «overlay» / «hard-light» / «multiply» ajustan el cuerpo del tono para que el color elegido se lea con su valor real.
 import { withBase } from '../lib/i18n';
 type Layer = { m: string; c: '--c0' | '--c1'; b: [string, number][] };
+// Tras la pila base, cada sector suma «multiply» si el color elegido es oscuro y «screen» si es muy claro (sus valores salen del script), para que
+// el color no quede limitado por la luz gris de la foto: un acento casi negro oscurece el flequillo y un lila claro lo aclara.
 const { photo, bw = '', layers, alt = '', ratio = '872 / 1330', blur = 0.5 } = Astro.props as { photo: string; bw?: string; layers: Layer[]; alt?: string; ratio?: string; blur?: number };
 ---
 <figure class="tm" data-nozoom style={`--r:${ratio};--blur:${blur}`}>
   <img class="tm__base" src={withBase(photo)} alt={alt} loading="lazy" decoding="async" />
-  {layers.map((L) => L.b.map(([mode, op]) => <i class="tm__l" aria-hidden="true" style={`--m:url(${withBase(L.m)});--c:var(${L.c});--bm:${mode};--bo:${op}`}></i>))}
+  {layers.map((L) => [...L.b, ['multiply', `calc(var(--m${L.c.slice(-1)}, 0) * ${L.c === '--c1' ? 0.9 : 0.7})`], ['screen', `calc(var(--s${L.c.slice(-1)}, 0) * 0.6)`]].map(([mode, op]) => <i class="tm__l" aria-hidden="true" style={`--m:url(${withBase(L.m)});--c:var(${L.c});--bm:${mode};--bo:${op}`}></i>))}
   {bw && <img class="tm__bw" src={withBase(bw)} alt="" loading="lazy" decoding="async" />}
   {bw && <i class="tm__noir" aria-hidden="true"></i>}
 </figure>
@@ -30,3 +32,22 @@ const { photo, bw = '', layers, alt = '', ratio = '872 / 1330', blur = 0.5 } = A
   :global(html[data-pw-bw]) .tm__l { opacity: 0; }
   :global(html[data-pw-bw]) .tm__noir { opacity: .85; animation-play-state: running; }
 </style>
+
+<script>
+  // Calcula, para cada color del widget, cuánto «multiply» (colores oscuros) o «screen» (colores muy claros) necesita su sector
+  const lum = (c: number[]) => { const f = (v: number) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]); };
+  const parse = (s: string) => { const h = /^#([0-9a-f]{6})$/i.exec(s.trim()); if (h) { const n = parseInt(h[1], 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; } const r = /rgba?\(([^)]+)\)/.exec(s); if (r) { const p = r[1].split(/[ ,/]+/).map(Number); return [p[0], p[1], p[2]]; } return null; };
+  const init = () => document.querySelectorAll<HTMLElement>('.tm:not([data-lum])').forEach((fig) => {
+    fig.setAttribute('data-lum', '');
+    const hero = document.querySelector<HTMLElement>('[data-pj-hero]');
+    const upd = () => [0, 1].forEach((i) => {
+      const c = parse(hero?.style.getPropertyValue(`--pw-${i}`) || '') ?? parse(getComputedStyle(fig).getPropertyValue(`--c${i}`)); if (!c) return;
+      const L = lum(c);
+      fig.style.setProperty(`--m${i}`, String(Math.max(0, Math.min(1, (0.3 - L) / 0.22))));
+      fig.style.setProperty(`--s${i}`, String(Math.max(0, Math.min(1, (L - 0.5) / 0.3))));
+    });
+    if (hero) new MutationObserver(upd).observe(hero, { attributes: true, attributeFilter: ['style'] });
+    upd();
+  });
+  document.addEventListener('astro:page-load', init); init();
+</script>
