@@ -7,6 +7,7 @@ summary:
   es: "Una selección de 16 logotipos de un oficio forjado antes de la IA, con su detalle proyecto por proyecto."
   en: "A selection of 16 logos from a craft built before AI, with each project’s details."
 featured: true
+homeOrder: 1
 headerMarquee: true
 order: 1
 cover: /works/logofolio/portada.png

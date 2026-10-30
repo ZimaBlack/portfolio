@@ -16,7 +16,8 @@ logo: /works/novapsi/logo.svg
 links:
   - { label: "Ver el sistema en línea", url: "https://psi-turnos-app.netlify.app/" }
 manual: novapsi
-featured: false
+featured: true
+homeOrder: 3
 order: 6
 tones: ["#14121f", "#5d5f93"]
 stack: ["Next.js 14", "TypeScript", "Tailwind", "SQLite", "Mercado Pago", "n8n"]

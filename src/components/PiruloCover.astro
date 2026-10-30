@@ -1,9 +1,9 @@
 ---
 // Portada de Pirulo (tarjeta 2:3): el logo sobre el rojo de la marca, con el semitono de puntos, y la cubierta «Coming soon».
 import { withBase, type Lang } from '../lib/i18n';
-const { lang = 'es' } = Astro.props as { lang?: Lang };
+const { lang = 'es', wide = false } = Astro.props as { lang?: Lang; wide?: boolean };
 ---
-<div class="pvc">
+<div class:list={['pvc', { 'pvc--wide': wide }]}>
   <i class="pvc__dots" aria-hidden="true"></i>
   <img class="pvc__logo" src={withBase('/works/pirulo-coleccionables/logo.svg')} alt="Pirulo Coleccionables" loading="lazy" decoding="async" />
   <span class="pvc__soon"><b>{lang === 'es' ? 'Próximamente' : 'Coming soon'}</b></span>
@@ -18,4 +18,8 @@ const { lang = 'es' } = Astro.props as { lang?: Lang };
   /* Cubierta: franja de cristal ahumado en la base */
   .pvc__soon { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; background: linear-gradient(to bottom, rgb(12 4 6 / .22), rgb(12 4 6 / .6) 55%, rgb(12 4 6 / .8)); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); border-top: 1px solid rgb(255 255 255 / .22); }
   .pvc__soon b { font-weight: 500; font-size: 4.6cqw; letter-spacing: .5em; padding-left: .5em; text-transform: uppercase; color: #fff; }
+  /* Formato horizontal y fino: el logo es enorme y se corta por los bordes, solo como un detalle del final de la lista */
+  .pvc--wide .pvc__dots { -webkit-mask-image: radial-gradient(ellipse 60% 90% at 50% 50%, transparent 20%, #000 100%); mask-image: radial-gradient(ellipse 60% 90% at 50% 50%, transparent 20%, #000 100%); background-size: 2.4cqw 2.4cqw; background-image: radial-gradient(circle at center, rgb(255 255 255 / .34) 0 .7cqw, transparent .75cqw); }
+  .pvc--wide .pvc__logo { top: 50%; width: 82cqw; max-width: none; }
+  .pvc--wide .pvc__soon b { font-size: 1.9cqw; }
 </style>

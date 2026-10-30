@@ -17,7 +17,7 @@ logo: /works/global-citizen/logo.svg
 mark: /works/global-citizen/mark.svg
 manual: global-citizen
 featured: true
-homeOrder: 1
+homeOrder: 2
 order: 15
 tones: ["#0e1f1a", "#1f5a46"]
 gallery: []

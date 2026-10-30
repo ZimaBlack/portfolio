@@ -20,8 +20,7 @@ mark: /works/pirulo-coleccionables/mark.svg
 manual: pirulo
 links:
   - { label: "Instagram", url: "https://www.instagram.com/pirulocoleccionables" }
-featured: true
-homeOrder: 3
+featured: false
 order: 7
 tones: ["#7A0F16", "#E02B33"]
 gallery: []

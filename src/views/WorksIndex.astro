@@ -2,23 +2,32 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import WorkCard from '../components/WorkCard.astro';
+import PiruloCover from '../components/PiruloCover.astro';
 import { copy, paths, type Lang } from '../lib/i18n';
 
 const { lang } = Astro.props as { lang: Lang };
 const c = copy[lang];
-const works = (await getCollection('works', (w) => !w.data.draft)).sort((a, b) => a.data.order - b.data.order);
+const all = (await getCollection('works', (w) => !w.data.draft)).sort((a, b) => a.data.order - b.data.order);
+const works = all.filter((w) => !w.data.locked);
+const soon = all.filter((w) => w.data.locked); // próximamente: van al final, en una franja fina
 const alt = lang === 'es' ? 'en' : 'es';
 ---
 <Base lang={lang} section="works" title={c.works.title} description={c.works.metaDesc}
   altHref={paths.works(alt)} esHref={paths.works('es')} enHref={paths.works('en')}>
   <section class="wrap top">
-    <p class="eyebrow" data-hero>{c.works.index} — {works.length} {c.works.projects}</p>
+    <p class="eyebrow" data-hero>{c.works.index} — {all.length} {c.works.projects}</p>
     <h1 class="display" data-hero-title>{c.works.title}</h1>
   </section>
   <section class="wrap list">
     <div class="grid">
       {works.map((w, i) => <WorkCard work={w} lang={lang} index={i} ratio="2 / 3" />)}
     </div>
+    {soon.map((w) => (
+      <a class="soon" href={paths.work(lang, w.id)} aria-label={`${w.data.title} — ${lang === 'es' ? 'Próximamente' : 'Coming soon'}`} data-reveal>
+        <div class="soon__in"><PiruloCover lang={lang} wide={true} /></div>
+        <span class="soon__meta"><span class="muted">{String(works.length + 1).padStart(2, '0')}</span><span>{w.data.title}</span></span>
+      </a>
+    ))}
   </section>
 </Base>
 
@@ -29,4 +38,9 @@ const alt = lang === 'es' ? 'en' : 'es';
   .grid > :global(:nth-child(3n + 2)) { margin-top: 6vw; }
   @media (max-width: 960px) { .grid { grid-template-columns: repeat(2, 1fr); } .grid > :global(:nth-child(3n + 2)) { margin-top: 0; } .grid > :global(:nth-child(2n)) { margin-top: 6vw; } }
   @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .grid > :global(*) { margin-top: 0 !important; } }
+  .soon { display: block; margin-top: clamp(4rem, 8vw, 7rem); }
+  .soon__in { aspect-ratio: 11 / 2; overflow: hidden; position: relative; }
+  .soon__in :global(.pvc) { position: absolute; inset: 0; }
+  .soon__meta { display: flex; gap: 1rem; padding-top: .8rem; font-size: .85rem; }
+  @media (max-width: 600px) { .soon__in { aspect-ratio: 16 / 5; } }
 </style>
