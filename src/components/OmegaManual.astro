@@ -3,6 +3,7 @@
 // Los recortes del manual están en /works/omega-shields/manual/
 import { withBase, type Lang } from '../lib/i18n';
 import OmegaArt from './OmegaArt.astro';
+import OmegaPattern from './OmegaPattern.astro';
 
 const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
@@ -64,7 +65,7 @@ const t = es ? {
     <ul class="om__tags">{t.tags.map((x) => <li>{x}</li>)}</ul>
   </div>
 
-  <figure class="wrap om__scene" data-reveal><div class="om__sceneb"><OmegaArt kind="scene" label="Omega Shields" /></div></figure>
+  <figure class="wrap om__concept" data-reveal><img src={withBase('/works/omega-shields/brand/concept.webp')} alt="Omega Shields" width="1534" height="1045" loading="lazy" decoding="async" /></figure>
 
   <div class="wrap om__row" data-reveal>
     <div class="om__side">
@@ -88,7 +89,7 @@ const t = es ? {
       <h2 class="h2">{t.weave}</h2>
       <p class="om__txt">{t.weaveA}</p>
     </div>
-    <figure class="om__fade"><OmegaArt kind="weave" label={t.weave} /></figure>
+    <figure class="om__fade"><div class="om__weave"><OmegaPattern uid="wv" variant="a" logo={false} animate={false} label={t.weave} /></div></figure>
   </div>
 
   <div class="wrap om__row om__row--rev" data-reveal>
@@ -97,7 +98,7 @@ const t = es ? {
       <h2 class="h2">{t.palette}</h2>
       <p class="om__txt">{t.paletteA}</p>
       <ul class="om__pal">
-        <li><span class="om__dot" style="background:#020718"></span><span><strong>{t.deep}</strong><em>#020718</em></span></li>
+        <li><span class="om__dot" style="background:#0D0B14"></span><span><strong>{t.deep}</strong><em>#0D0B14</em></span></li>
         <li><span class="om__dot" style="background:#E3D0A6"></span><span><strong>{t.gold}</strong><em>#E3D0A6</em></span></li>
       </ul>
     </div>
@@ -159,6 +160,9 @@ const t = es ? {
   .om__photo--tall { max-width: 24rem; justify-self: center; }
   .om__bleed img { width: 100%; }
   /* Recortes con fondo azul del manual: se difuminan hacia los bordes para fundirse con la página */
+  .om__concept { max-width: 72rem; }
+  .om__concept img { border-radius: 2px; }
+  .om__weave { aspect-ratio: 658 / 475; overflow: hidden; background: #0f0d18; border-radius: 2px; }
   .om__scene { display: grid; justify-items: center; }
   .om__sceneb { width: min(100%, 30rem); aspect-ratio: 636 / 886; overflow: hidden; border-radius: 4px; box-shadow: 0 30px 80px rgb(0 0 0 / .5); }
   .om__fade img { -webkit-mask-image: radial-gradient(closest-side at 50% 50%, #000 60%, transparent); mask-image: radial-gradient(closest-side at 50% 50%, #000 60%, transparent); }

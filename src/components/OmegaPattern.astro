@@ -1,0 +1,39 @@
+---
+// Trama del manual de Omega Shields (piezas vectoriales del proyecto): vitrales Art Déco / Art Nouveau en violeta casi negro,
+// con una celda central encendida en oro (tonos del concepto: #0F0D18 fondo, #232131 trazos, #E0C58E oro, brillo verde-plata en los bordes).
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+const { uid = 'op', par = 'xMidYMid slice', variant = 'b', logo = true, animate = true, label = 'Omega Shields' } = Astro.props as { uid?: string; par?: string; variant?: 'a' | 'b'; logo?: boolean; animate?: boolean; label?: string };
+const root = join(process.cwd(), 'public/works/omega-shields/brand');
+let raw = readFileSync(join(root, `pattern-${variant}.svg`), 'utf8');
+const inner = raw.replace(/<svg[^>]*>/, '').replace('</svg>', '').replace(/<defs>[\s\S]*?<\/defs>/, '');
+const vb = /viewBox="([^"]+)"/.exec(raw)![1];
+const dim = [...inner.matchAll(/<path d="([^"]+)" fill="#232131"\/>/g)].map((m) => m[1]);
+const lit = [...inner.matchAll(/<path d="([^"]+)" fill="url\(#paint\d+_linear[^"]*\)"\/>/g)].map((m) => m[1]);
+const lg = readFileSync(join(root, 'logo-glow.svg'), 'utf8');
+const lgBody = lg.replace(/<svg[^>]*>/, '').replace('</svg>', '').replace(/id="([^"]+)"/g, `id="${uid}-$1"`).replace(/url\(#([^)]+)\)/g, `url(#${uid}-$1)`);
+const [, , VW, VH] = vb.split(' ').map(Number);
+const cx = 330, cy = 352; // centro de la celda encendida
+---
+<svg class={`omp ${animate ? 'omp--a' : ''}`} viewBox={vb} preserveAspectRatio={par} role="img" aria-label={label} focusable="false">
+  <defs>
+    <linearGradient id={`${uid}-g`} x1="332" y1="0" x2="332" y2="484" gradientUnits="userSpaceOnUse"><stop offset=".2" stop-color="#f4e7b2" stop-opacity="0" /><stop offset=".55" stop-color="#f1e3a8" /><stop offset=".8" stop-color="#b9a46a" /><stop offset="1" stop-color="#e9efe3" /></linearGradient>
+    <radialGradient id={`${uid}-r`} cx="330" cy="352" r="150" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#e9d49a" stop-opacity=".55" /><stop offset=".5" stop-color="#8e7748" stop-opacity=".18" /><stop offset="1" stop-color="#8e7748" stop-opacity="0" /></radialGradient>
+  </defs>
+  <g class="omp__dim">{dim.map((d, i) => <path d={d} fill="#262339" style={`--i:${i}`} />)}</g>
+  <circle class="omp__halo" cx={cx} cy={cy} r="150" fill={`url(#${uid}-r)`} />
+  <g class="omp__lit">{lit.slice(0, Math.ceil(lit.length / 2)).map((d, i) => <path d={d} fill={`url(#${uid}-g)`} style={`--i:${i}`} />)}</g>
+  {logo && <g class="omp__logo" transform={`translate(${cx - 31 * 0.82} ${cy - 37 * 0.82 - 12}) scale(.82)`} set:html={lgBody} />}
+</svg>
+
+<style is:global>
+  .omp { display: block; width: 100%; height: 100%; }
+  .omp__logo { filter: drop-shadow(0 0 7px rgb(233 212 154 / .55)); }
+  .omp--a .omp__dim path { opacity: 0; animation: omp-in 1.8s calc(.2s + var(--i) * .12s) var(--gc-ease, ease) forwards; }
+  .omp--a .omp__lit path { opacity: 0; animation: omp-lit 2.4s calc(1.5s + var(--i) * .18s) ease forwards; }
+  .omp--a .omp__halo { opacity: 0; animation: omp-in 3s 1.8s ease forwards; }
+  .omp--a .omp__logo { opacity: 0; animation: omp-in 2.2s 2.4s ease forwards; }
+  @keyframes omp-in { to { opacity: 1; } }
+  @keyframes omp-lit { 0% { opacity: 0; } 55% { opacity: 1; } 100% { opacity: .92; } }
+  @media (prefers-reduced-motion: reduce) { .omp--a * { animation: none !important; opacity: 1 !important; } }
+</style>

@@ -9,8 +9,8 @@ summary:
 text:
   es: "La Ω abraza lo protegido, con tramas que sugieren circuitos y runas, y un packaging modular."
   en: "The Ω embraces what it protects, with weaves that suggest circuits and runes, and modular packaging."
-coverKind: omega
-heroAnimation: assemble
+cover: /works/omega-shields/brand/concept.webp
+heroAnimation: omega
 manual: omega-shields
 ornament: /works/omega-shields/ornament.svg
 logo: /works/omega-shields/logo.svg
