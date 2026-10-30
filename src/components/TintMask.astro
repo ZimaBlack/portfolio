@@ -4,19 +4,60 @@
 //   «color» pone el matiz y la saturación y deja la luz de la foto (las sombras y brillos del pelo siguen siendo suyos);
 //   «overlay» / «hard-light» / «multiply» ajustan el cuerpo del tono para que el color elegido se lea con su valor real.
 import { withBase } from '../lib/i18n';
-type Layer = { m: string; c: '--c0' | '--c1'; b: [string, number][] };
+type Layer = { n?: string; m: string; c: '--c0' | '--c1'; b: [string, number][] };
 // Tras la pila base, cada sector suma «multiply» si el color elegido es oscuro y «screen» si es muy claro (sus valores salen del script), para que
 // el color no quede limitado por la luz gris de la foto: un acento casi negro oscurece el flequillo y un lila claro lo aclara.
-const { photo, bw = '', layers, alt = '', ratio = '872 / 1330', blur = 0.5 } = Astro.props as { photo: string; bw?: string; layers: Layer[]; alt?: string; ratio?: string; blur?: number };
+const { photo, bw = '', layers, alt = '', ratio = '872 / 1330', blur = 0.5, tune = false } = Astro.props as { photo: string; bw?: string; layers: Layer[]; alt?: string; ratio?: string; blur?: number; tune?: boolean };
+const MODES = ['color','soft-light','overlay','hard-light','multiply','screen','normal','hue','saturation','luminosity','color-dodge','color-burn','darken','lighten'];
+const STEP = ['Capa 1', 'Capa 2', 'Capa 3'];
 ---
+<div class="tmw">
 <figure class="tm" data-nozoom style={`--r:${ratio};--blur:${blur}`}>
   <img class="tm__base" src={withBase(photo)} alt={alt} loading="lazy" decoding="async" />
-  {layers.map((L) => [...L.b, ['multiply', `calc(var(--m${L.c.slice(-1)}, 0) * ${L.c === '--c1' ? 0.8 : 0.5})`], ['screen', `calc(var(--s${L.c.slice(-1)}, 0) * 0.6)`]].map(([mode, op]) => <i class="tm__l" aria-hidden="true" data-bm={mode} style={`--m:url(${withBase(L.m)});--c:var(${L.c});--bm:${mode};--bo:${op}`}></i>))}
+  {layers.map((L, li) => [...L.b, ['multiply', `calc(var(--m${L.c.slice(-1)}, 0) * ${L.c === '--c1' ? 0.8 : 0.5})`], ['screen', `calc(var(--s${L.c.slice(-1)}, 0) * 0.6)`]].map(([mode, op], bi) => <i class="tm__l" aria-hidden="true" data-sec={li} data-idx={bi} data-bm={mode} style={`--m:url(${withBase(L.m)});--c:var(${L.c});--bm:${mode};--bo:${op}`}></i>))}
   {bw && <img class="tm__bw" src={withBase(bw)} alt="" loading="lazy" decoding="async" />}
   {bw && <i class="tm__noir" aria-hidden="true"></i>}
 </figure>
+{tune && (
+  <details class="tmc" data-tmc open>
+    <summary>Ajuste fino de la fusión</summary>
+    <div class="tmc__g">
+      <label class="tmc__row"><span>Desenfoque</span><input type="range" min="0" max="2" step="0.05" value={blur} data-tmc-blur /><output>{blur}</output></label>
+      <label class="tmc__row"><span>Intensidad general</span><input type="range" min="0" max="150" step="1" value="100" data-tmc-gain /><output>100</output></label>
+    </div>
+    {layers.map((L, li) => (
+      <fieldset class="tmc__sec">
+        <legend>{L.n ?? `Sector ${li + 1}`}</legend>
+        {L.b.map(([mode, op], bi) => (
+          <div class="tmc__row">
+            <select data-tmc-mode data-sec={li} data-idx={bi}>{MODES.map((m) => <option value={m} selected={m === mode}>{m}</option>)}</select>
+            <input type="range" min="0" max="1" step="0.01" value={op} data-tmc-op data-sec={li} data-idx={bi} />
+            <output>{Math.round(op * 100)}%</output>
+          </div>
+        ))}
+      </fieldset>
+    ))}
+    <div class="tmc__btns"><button type="button" data-tmc-copy>Copiar valores</button><button type="button" data-tmc-reset>Restablecer</button></div>
+  </details>
+)}
+</div>
 
 <style>
+  .tmw { display: grid; gap: 1rem; }
+  .tmc { font-size: .78rem; color: var(--muted); border: 1px solid var(--line); border-radius: 12px; padding: .6rem .9rem .9rem; background: color-mix(in srgb, var(--bg) 88%, #fff 3%); }
+  .tmc summary { cursor: pointer; color: var(--fg); letter-spacing: .08em; text-transform: uppercase; font-size: .72rem; padding: .2rem 0; }
+  .tmc__g, .tmc__sec { display: grid; gap: .35rem; margin: .6rem 0 0; }
+  .tmc__sec { border: 1px solid var(--line); border-radius: 8px; padding: .45rem .6rem .6rem; }
+  .tmc legend { padding: 0 .4rem; color: var(--fg); }
+  .tmc__row { display: grid; grid-template-columns: 7.2rem 1fr 2.6rem; gap: .5rem; align-items: center; }
+  .tmc__sec .tmc__row { grid-template-columns: 6.6rem 1fr 2.6rem; }
+  .tmc select { font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: .15rem .5rem; width: 100%; }
+  .tmc select option { color: #000; }
+  .tmc input[type=range] { width: 100%; accent-color: var(--fg); }
+  .tmc output { text-align: right; font-variant-numeric: tabular-nums; }
+  .tmc__btns { display: flex; gap: .5rem; margin-top: .7rem; }
+  .tmc__btns button { all: unset; cursor: pointer; padding: .3rem .8rem; border: 1px solid var(--line); border-radius: 999px; color: var(--fg); }
+  .tmc__btns button:hover { border-color: var(--fg); }
   .tm { position: relative; margin: 0; aspect-ratio: var(--r); container-type: inline-size; border-radius: 3.5rem; overflow: hidden; isolation: isolate; }
   .tm img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .tm__l { position: absolute; inset: 0; pointer-events: none; background: var(--c); -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat; mix-blend-mode: var(--bm); opacity: var(--bo); filter: blur(calc(var(--blur, 0.5) * 1cqw)); transition: background-color .8s linear, opacity 1.4s ease; }
@@ -34,6 +75,39 @@ const { photo, bw = '', layers, alt = '', ratio = '872 / 1330', blur = 0.5 } = A
   :global(html[data-pw-bw]) .tm__l { opacity: 0; }
   :global(html[data-pw-bw]) .tm__noir { opacity: .85; animation-play-state: running; }
 </style>
+
+<script>
+  // Controles de ajuste fino: cambian en vivo el modo y la opacidad de cada capa, el desenfoque y una intensidad general
+  const initTune = () => document.querySelectorAll<HTMLElement>('[data-tmc]:not([data-on])').forEach((box) => {
+    box.setAttribute('data-on', '');
+    const fig = box.parentElement!.querySelector<HTMLElement>('.tm')!;
+    const layer = (sec: string, idx: string) => fig.querySelector<HTMLElement>(`.tm__l[data-sec="${sec}"][data-idx="${idx}"]`)!;
+    const base = new Map<HTMLElement, number>();
+    fig.querySelectorAll<HTMLElement>('.tm__l[data-sec]').forEach((l) => base.set(l, parseFloat(l.style.getPropertyValue('--bo'))));
+    const cur = new Map(base);
+    let gain = 1;
+    const paint = (l: HTMLElement) => l.style.setProperty('--bo', String(Math.min(1, (cur.get(l) ?? 0) * gain)));
+    box.querySelectorAll<HTMLInputElement>('[data-tmc-op]').forEach((r) => r.addEventListener('input', () => {
+      const l = layer(r.dataset.sec!, r.dataset.idx!); cur.set(l, +r.value); paint(l); (r.nextElementSibling as HTMLElement).textContent = Math.round(+r.value * 100) + '%';
+    }));
+    box.querySelectorAll<HTMLSelectElement>('[data-tmc-mode]').forEach((sel) => sel.addEventListener('change', () => { const l = layer(sel.dataset.sec!, sel.dataset.idx!); l.style.setProperty('--bm', sel.value); l.dataset.bm = sel.value; }));
+    box.querySelector<HTMLInputElement>('[data-tmc-blur]')!.addEventListener('input', (e) => { const v = (e.target as HTMLInputElement).value; fig.style.setProperty('--blur', v); (e.target as HTMLElement).nextElementSibling!.textContent = v; });
+    box.querySelector<HTMLInputElement>('[data-tmc-gain]')!.addEventListener('input', (e) => { const v = +(e.target as HTMLInputElement).value; gain = v / 100; (e.target as HTMLElement).nextElementSibling!.textContent = String(v); base.forEach((_, l) => paint(l)); });
+    box.querySelector('[data-tmc-reset]')!.addEventListener('click', () => {
+      box.querySelectorAll<HTMLInputElement>('[data-tmc-op]').forEach((r) => { const l = layer(r.dataset.sec!, r.dataset.idx!); cur.set(l, base.get(l)!); r.value = String(base.get(l)); (r.nextElementSibling as HTMLElement).textContent = Math.round(base.get(l)! * 100) + '%'; });
+      box.querySelectorAll<HTMLSelectElement>('[data-tmc-mode]').forEach((sel) => { sel.value = sel.querySelector('option[selected]')?.getAttribute('value') ?? sel.value; sel.dispatchEvent(new Event('change')); });
+      const g = box.querySelector<HTMLInputElement>('[data-tmc-gain]')!; g.value = '100'; g.dispatchEvent(new Event('input'));
+      fig.querySelectorAll<HTMLElement>('.tm__l[data-sec]').forEach(paint);
+    });
+    box.querySelector('[data-tmc-copy]')!.addEventListener('click', (e) => {
+      const out: Record<string, [string, number][]> = {};
+      box.querySelectorAll<HTMLElement>('fieldset').forEach((f, i) => { out[f.querySelector('legend')!.textContent!] = [...f.querySelectorAll<HTMLElement>('.tmc__row')].map((row) => [row.querySelector('select')!.value, +row.querySelector<HTMLInputElement>('input')!.value]); });
+      const txt = JSON.stringify({ blur: fig.style.getPropertyValue('--blur'), intensidad: gain, sectores: out }, null, 1);
+      navigator.clipboard?.writeText(txt).then(() => { (e.target as HTMLElement).textContent = '¡Copiado!'; setTimeout(() => ((e.target as HTMLElement).textContent = 'Copiar valores'), 1500); });
+    });
+  });
+  document.addEventListener('astro:page-load', initTune); initTune();
+</script>
 
 <script>
   // Calcula, para cada color del widget, cuánto «multiply» (colores oscuros) o «screen» (colores muy claros) necesita su sector
