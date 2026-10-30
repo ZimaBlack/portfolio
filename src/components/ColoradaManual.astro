@@ -281,6 +281,8 @@ const t = es ? {
   .cm__vp :global(.pv-dot--0) { fill: color-mix(in srgb, var(--c0) 62%, #000); } .cm__vp :global(.pv-dot--1) { fill: color-mix(in srgb, var(--c1) 62%, #000); }
   .cm__vp :global(.pv-dot) { transition: fill .8s linear; }
   .cm__vp :global(.pv-hex) { font: 700 54px var(--sans); letter-spacing: .01em; transition: fill .8s linear; } .cm__vp :global(.pv-hex--0) { fill: var(--c0); } .cm__vp :global(.pv-hex--1) { fill: var(--c1); }
+  /* En el modo blanco y negro, solo la paleta madre y el cierre conservan el color: se montan por encima del velo gris */
+  :global(html[data-pw-bw]) .cm__mother, :global(html[data-pw-bw]) .cm__closer { z-index: 60; }
   .cm__tiles { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.8rem, 2vw, 1.6rem); }
   .cm__tile { position: relative; aspect-ratio: 1; border-radius: clamp(14px, 2vw, 26px); overflow: hidden; }
   .cm__tile svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
