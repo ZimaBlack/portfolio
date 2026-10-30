@@ -135,20 +135,21 @@ const STEP = ['Capa 1', 'Capa 2', 'Capa 3'];
     };
     // Vaivén sutil que se amortigua solo, como un péndulo que se detiene (los tintes siguen alineados)
     const sway = () => {
-      v.pause(); const base = +(v.dataset.t2 || 0), t0 = performance.now(), dur = 4600, amp = 0.22;
+      v.pause(); const base = +(v.dataset.t2 || 0), t0 = performance.now(), dur = 4500, amp = 0.22;
       const step = (now: number) => { const k = Math.min(1, (now - t0) / dur); v.currentTime = base + amp * Math.sin(k * Math.PI * 3) * Math.pow(1 - k, 1.6); if (k < 1) raf = requestAnimationFrame(step); else v.currentTime = base; };
       raf = requestAnimationFrame(step);
     };
     const reset = () => { timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(raf); fig.classList.remove('is-static', 'is-back', 'is-glitch'); root.removeAttribute('data-pw-back'); v.pause(); };
     // Línea de tiempo (15 s): cada glitch se adelanta un instante al cambio que anuncia, como un fallo que se contagia
     const start = () => {
-      reset(); v.currentTime = 0; v.play().catch(() => {});                                            // 0 s: el video arranca junto con el glitch de entrada (lo dispara el widget)
-      at(2400, () => glitch());                                                                         // 2,4 s: fallo
-      at(2650, () => { v.pause(); rewind(v.currentTime, 2300); });                                      // 2,65 s: retrocede con inercia hasta ~4,95 s
-      at(4800, () => glitch());                                                                         // 4,8 s: fallo
-      at(5050, () => fig.classList.add('is-static'));                                                   // 5,05 s: la estática entra de golpe y se asienta
-      at(8500, () => glitch());                                                                         // 8,5 s: fallo
-      at(8750, () => { fig.classList.add('is-back'); root.setAttribute('data-pw-back', ''); sway(); }); // 8,75 s: color; el video se mece y se detiene
+      // El video es un «boomerang» de 6 s (0→3 s hacia delante y 3→0 s en reversa), así el retroceso es continuo y nítido
+      reset(); v.currentTime = 0; v.play().catch(() => {});                                            // 0 s: arranca el video junto con el glitch de entrada (lo dispara el widget)
+      at(2750, () => glitch());                                                                         // 2,75 s: fallo breve justo antes de que el video dé la vuelta
+      at(5900, () => { v.pause(); v.currentTime = 0; });                                                // 6 s: vuelve a su postura original y se sostiene un instante
+      at(6350, () => glitch());                                                                         // 6,35 s: fallo
+      at(6600, () => fig.classList.add('is-static'));                                                   // 6,6 s: entra la estática
+      at(9900, () => glitch());                                                                         // 9,9 s: fallo
+      at(10150, () => { fig.classList.add('is-back'); root.setAttribute('data-pw-back', ''); sway(); }); // 10,15 s: color; el video se mece y se detiene
     };
     new MutationObserver(() => (root.hasAttribute('data-pw-bw') ? start() : reset())).observe(root, { attributes: true, attributeFilter: ['data-pw-bw'] });
   });
