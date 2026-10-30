@@ -11,6 +11,9 @@ text:
   es: "El pirulo de la marca padre vuelto isotipo, con outline blanco y semitono: un sistema gráfico juguetón que escala del empaque a las redes."
   en: "The parent brand’s candy cane turned into an isotype, with a white outline and halftone: a playful graphic system that scales from packaging to social media."
 draft: false
+coverKind: pirulo
+cover: /works/pirulo-coleccionables/logo.svg
+locked: true
 heroLights: halftone
 logo: /works/pirulo-coleccionables/logo.svg
 mark: /works/pirulo-coleccionables/mark.svg

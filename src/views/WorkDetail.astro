@@ -127,7 +127,12 @@ const next = all.length > 1 && at >= 0 ? all[(at + 1) % all.length] : undefined;
     {d.manual === 'cdxx' && <CdxxManual lang={lang} />}
     {d.manual === 'colorada' && <ColoradaManual lang={lang} />}
     {d.manual === 'novapsi' && <NovaPsiStory lang={lang} />}
-    {d.manual === 'pirulo' && <PiruloManual lang={lang} />}
+    {d.manual === 'pirulo' && (d.locked ? (
+      <div class="lock">
+        <div class="lock__in" inert aria-hidden="true"><PiruloManual lang={lang} /></div>
+        <div class="lock__cover" role="status"><span>{lang === 'es' ? 'Próximamente' : 'Coming soon'}</span><small>{lang === 'es' ? 'Este proyecto se está terminando de preparar.' : 'This project is still being prepared.'}</small></div>
+      </div>
+    ) : <PiruloManual lang={lang} />)}
     {d.manual === 'omega-shields' && <OmegaManual lang={lang} />}
 
     {d.video?.id && <section class="wrap vid" data-reveal><VideoEmbed provider={d.video.provider} id={d.video.id} title={d.title} play={c.detail.play} /></section>}
@@ -163,6 +168,12 @@ const next = all.length > 1 && at >= 0 ? all[(at + 1) % all.length] : undefined;
 </Base>
 
 <style>
+  /* Proyecto bloqueado: el contenido se ve apagado y desenfocado bajo una cubierta «Coming soon» */
+  .lock { position: relative; overflow: hidden; max-height: 78vh; }
+  .lock__in { filter: blur(7px) brightness(.55) saturate(.8); pointer-events: none; user-select: none; }
+  .lock__cover { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: .8rem; text-align: center; background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--bg) 85%, transparent) 78%, var(--bg)); }
+  .lock__cover span { font-size: clamp(1.4rem, 3.4vw, 2.6rem); letter-spacing: .5em; padding-left: .5em; text-transform: uppercase; font-weight: 500; }
+  .lock__cover small { color: var(--muted); font-size: .9rem; letter-spacing: .06em; }
   /* Continuar al proyecto anterior o al siguiente, antes del pie */
   .pn { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding-block: clamp(3rem, 7vw, 6rem) clamp(2rem, 5vw, 4rem); }
   .pn__a { position: relative; display: grid; gap: .35rem; padding: clamp(1.2rem, 3vw, 2rem) clamp(1.4rem, 3vw, 2.2rem); border: 1px solid var(--line); border-radius: 18px; transition: border-color .5s var(--ease), background .5s var(--ease), transform .5s var(--ease); }

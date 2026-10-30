@@ -1,0 +1,21 @@
+---
+// Portada de Pirulo (tarjeta 2:3): el logo sobre el rojo de la marca, con el semitono de puntos, y la cubierta «Coming soon».
+import { withBase, type Lang } from '../lib/i18n';
+const { lang = 'es' } = Astro.props as { lang?: Lang };
+---
+<div class="pvc">
+  <i class="pvc__dots" aria-hidden="true"></i>
+  <img class="pvc__logo" src={withBase('/works/pirulo-coleccionables/logo.svg')} alt="Pirulo Coleccionables" loading="lazy" decoding="async" />
+  <span class="pvc__soon"><b>{lang === 'es' ? 'Próximamente' : 'Coming soon'}</b></span>
+</div>
+
+<style>
+  .pvc { position: relative; width: 100%; height: 100%; overflow: hidden; container-type: inline-size; background: radial-gradient(ellipse 90% 70% at 50% 40%, #e02b33, #a3141c 70%, #7a0f16); }
+  /* Semitono circular: puntos que crecen hacia los bordes y se desvanecen en el centro, donde vive el logo */
+  .pvc__dots { position: absolute; inset: 0; background-image: radial-gradient(circle at center, rgb(255 255 255 / .34) 0 1.6cqw, transparent 1.7cqw); background-size: 5.6cqw 5.6cqw;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, transparent 25%, #000 100%); mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, transparent 25%, #000 100%); }
+  .pvc__logo { position: absolute; left: 50%; top: 42%; width: 72cqw; height: auto; transform: translate(-50%, -50%); filter: drop-shadow(0 1.2cqw 2cqw rgb(60 0 8 / .45)); }
+  /* Cubierta: franja de cristal ahumado en la base */
+  .pvc__soon { position: absolute; left: 0; right: 0; bottom: 0; display: grid; place-items: center; padding: 7cqw 0; background: linear-gradient(to top, rgb(12 4 6 / .78), rgb(12 4 6 / .45)); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-top: 1px solid rgb(255 255 255 / .22); }
+  .pvc__soon b { font-weight: 500; font-size: 4.6cqw; letter-spacing: .5em; padding-left: .5em; text-transform: uppercase; color: #fff; }
+</style>
