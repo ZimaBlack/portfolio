@@ -265,7 +265,9 @@ const t = {
         busy = true; randomBtn.disabled = true; presses = 0;
         // Los colores que vuelven se eligen ya: un líquido de esos colores llena las barras durante el minuto, como temporizador
         const next = pickHues();
-        pw.style.setProperty('--lq0', toHex([L0[0], C0[0], next[0]])); pw.style.setProperty('--lq1', toHex([L0[1], C0[1], next[1]]));
+        const q0 = toHex([L0[0], C0[0], next[0]]), q1 = toHex([L0[1], C0[1], next[1]]);
+        pw.style.setProperty('--lq0', q0); pw.style.setProperty('--lq1', q1);
+        document.documentElement.style.setProperty('--lq0', q0); document.documentElement.style.setProperty('--lq1', q1); // el retrato que vuelve a color adelanta la paleta que regresa
         pw.classList.add('is-timing');
         bw = true; touched = true; render();
         document.documentElement.setAttribute('data-pw-bw', '');
