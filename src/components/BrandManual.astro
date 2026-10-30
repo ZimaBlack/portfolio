@@ -8,6 +8,7 @@ import GcSynth from './GcSynth.astro';
 import GcResources from './GcResources.astro';
 import GcClose from './GcClose.astro';
 import GcMood from './GcMood.astro';
+import GcAvatars from './GcAvatars.astro';
 import markRaw from '../../public/works/global-citizen/mark.svg?raw';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -230,7 +231,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     <img src={img('banner-dark')} alt="Global Citizen" loading="lazy" decoding="async" />
   </figure>
   <figure class="wrap gcm__avatars" data-reveal>
-    <img src={img('avatars')} alt={t.avatars} loading="lazy" decoding="async" />
+    <GcAvatars label={t.avatars} />
     <figcaption class="muted">{t.avatars}</figcaption>
   </figure>
   <figure class="gcm__bleed" data-reveal>

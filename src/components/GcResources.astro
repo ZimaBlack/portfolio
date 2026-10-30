@@ -96,9 +96,8 @@ const TH = 5 * (2 * U + GAP) - GAP;
   .gcr__t--logo path { fill: #5db98a; fill-opacity: 1; }
   .gcr.is-in .gcr__t { animation: gcr-in 1.3s calc(var(--e) * .13s) var(--gc-ease) forwards; --fr: -90deg; }
   @keyframes gcr-in { from { opacity: 0; } to { opacity: 1; } }
-  .gcr__tin { transform-box: fill-box; transform-origin: center; transition: transform 1s var(--gc-ease); }
-  .gcr.is-in .gcr__t:not(.gcr__t--logo) .gcr__tin { animation: gc-radial 1.4s calc(var(--e) * .13s) var(--gc-ease) backwards; --fr: -90deg; }
-  .gcr__t:not(.gcr__t--logo):hover .gcr__tin { transform: rotate(180deg); }
+    /* La aparición gira sobre el centro del propio anillo (círculos concéntricos) y se escalona por la distancia al logo */
+  .gcr.is-in .gcr__t:not(.gcr__t--logo) .gcr__tin { animation: gc-radial 1.5s calc(var(--e) * .14s) var(--gc-ease) backwards; --fr: -90deg; }
   .gcr__t:not(.gcr__t--logo):hover path { fill: #5db98a; fill-opacity: 1; transition-duration: .3s; }
   .gcr__t.is-rip:not(:hover) path { animation: gcr-rip 1.3s calc(var(--rd, 0) * 1ms) ease-out; }
   @keyframes gcr-rip { 0%, 100% { fill-opacity: .55; } 35% { fill-opacity: .95; fill: #74c096; } }

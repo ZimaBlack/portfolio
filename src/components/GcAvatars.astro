@@ -1,0 +1,46 @@
+---
+// Avatares para redes (manual de marca), reconstruidos en código: el isotipo sobre cinco fondos de la marca.
+const { label = 'Avatares' } = Astro.props as { label?: string };
+const MID = `M116.914 79.1455V47.0698C85.0753 47.0698 58.2192 68.3743 49.7735 97.5089C47.971 103.677 47.0215 110.225 47.0215 116.963C47.0215 136.274 54.8523 153.736 67.5213 166.358C80.1406 179.027 97.6035 186.856 116.914 186.856C155.539 186.856 186.809 155.539 186.809 116.963H154.733C154.733 137.841 137.794 154.78 116.914 154.78C106.478 154.78 97.0348 150.557 90.2011 143.677C83.3694 136.844 79.1442 127.401 79.1442 116.963C79.1442 109.845 81.0928 103.203 84.5067 97.5089C91.1037 86.5003 103.154 79.1455 116.914 79.1455Z`;
+const OUT = `M232.265 97.5086C228.186 73.025 216.463 51.1029 199.621 34.2583L176.891 56.9871L166.359 67.5203L136.37 97.5086H199.43C200.949 103.725 201.708 110.273 201.708 116.963C201.708 163.795 163.748 201.755 116.914 201.755C93.5215 201.755 72.3599 192.265 56.9885 176.939V176.891C41.6615 161.517 32.1723 140.355 32.1723 116.963C32.1723 110.273 32.9314 103.725 34.4496 97.5086C43.2266 60.0234 76.8205 32.1702 116.914 32.1702V-0.00012207C58.9788 -0.00012207 10.8672 42.1824 1.61471 97.5086C0.568631 103.819 0 110.32 0 116.963C0 149.275 13.0968 178.505 34.2591 199.619C55.3738 220.782 84.6037 233.878 116.914 233.878C181.496 233.878 233.88 181.542 233.88 116.963C233.88 110.32 233.309 103.819 232.265 97.5086Z`;
+const K = (184 / 234).toFixed(4); // el isotipo ocupa ~54 % del lado, centrado
+const iso = `translate(${(170 - 117 * 0.7863).toFixed(1)} ${(170 - 117 * 0.7863).toFixed(1)}) scale(${K})`;
+---
+<ul class="gca" data-gc aria-label={label}>
+  <li style="--i:0"><svg viewBox="0 0 340 340" aria-hidden="true" focusable="false">
+    <rect width="340" height="340" fill="#fff" />
+    <g transform={iso} fill="#74b992"><path d={MID} /><path d={OUT} /></g>
+  </svg></li>
+  <li style="--i:1"><svg viewBox="0 0 340 340" aria-hidden="true" focusable="false">
+    <defs><radialGradient id="gca-g" cx="78%" cy="22%" r="95%"><stop offset="0" stop-color="#7bb892" /><stop offset="1" stop-color="#5a9570" /></radialGradient></defs>
+    <rect width="340" height="340" fill="url(#gca-g)" />
+    <g transform={iso} fill="#fff"><path d={MID} /><path d={OUT} /></g>
+  </svg></li>
+  <li style="--i:2"><svg viewBox="0 0 340 340" aria-hidden="true" focusable="false">
+    <rect width="340" height="340" fill="#2d2d2d" />
+    <g class="gca__guides"><path d="M80 0V340M170 0V340M238 0V340M263 0V340" /><path d="M-10 350L350 -10M70 350L350 70M-10 270L270 -10" /></g>
+    <g transform={iso} fill="none" stroke="#5db98a" stroke-width="1.6" stroke-linejoin="round"><path d={MID} /><path d={OUT} /></g>
+  </svg></li>
+  <li style="--i:3"><svg viewBox="0 0 340 340" aria-hidden="true" focusable="false">
+    <rect width="340" height="340" fill="#1c1c1c" />
+    <g transform={iso} fill="#e2d4bf"><path d={MID} /><path d={OUT} /></g>
+  </svg></li>
+  <li style="--i:4"><svg viewBox="0 0 340 340" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="gca-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1f1f1" /><stop offset="1" stop-color="#fafafa" /></linearGradient>
+      <linearGradient id="gca-f" x1="0.82" y1="0.1" x2="0.1" y2="0.95"><stop offset="0" stop-color="#7ebd99" /><stop offset="0.55" stop-color="#9cccb2" stop-opacity=".85" /><stop offset="1" stop-color="#cfe6da" stop-opacity=".05" /></linearGradient>
+    </defs>
+    <rect width="340" height="340" fill="url(#gca-bg)" />
+    <g transform={iso} fill="url(#gca-f)"><path d={MID} /><path d={OUT} /></g>
+  </svg></li>
+</ul>
+
+<style is:global>
+  .gca { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(.4rem, 1.2vw, 1rem); }
+  .gca li { aspect-ratio: 1; overflow: hidden; opacity: 0; }
+  .gca svg { display: block; width: 100%; height: 100%; }
+  .gca__guides path { fill: none; stroke: rgb(255 255 255 / .1); stroke-width: 1; }
+  .gca.is-in li { animation: gc-radial 1.3s calc(var(--i) * .16s) var(--gc-ease) forwards; }
+  @media (max-width: 640px) { .gca { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (prefers-reduced-motion: reduce) { .gca li { opacity: 1; animation: none !important; } }
+</style>

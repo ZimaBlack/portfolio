@@ -1,21 +1,9 @@
 ---
-// Fondo del proyecto (Global Citizen): en modo oscuro, una retícula grande de plano en la que el isotipo queda anclado en las celdas;
+// Fondo del proyecto (Global Citizen): en modo oscuro, una retícula grande de plano;
 // en modo claro, sin retícula, con manchas de color difuminadas que dan cuerpo al cristal.
-const MID = `M116.914 79.1455V47.0698C85.0753 47.0698 58.2192 68.3743 49.7735 97.5089C47.971 103.677 47.0215 110.225 47.0215 116.963C47.0215 136.274 54.8523 153.736 67.5213 166.358C80.1406 179.027 97.6035 186.856 116.914 186.856C155.539 186.856 186.809 155.539 186.809 116.963H154.733C154.733 137.841 137.794 154.78 116.914 154.78C106.478 154.78 97.0348 150.557 90.2011 143.677C83.3694 136.844 79.1442 127.401 79.1442 116.963C79.1442 109.845 81.0928 103.203 84.5067 97.5089C91.1037 86.5003 103.154 79.1455 116.914 79.1455Z`;
-const OUT = `M232.265 97.5086C228.186 73.025 216.463 51.1029 199.621 34.2583L176.891 56.9871L166.359 67.5203L136.37 97.5086H199.43C200.949 103.725 201.708 110.273 201.708 116.963C201.708 163.795 163.748 201.755 116.914 201.755C93.5215 201.755 72.3599 192.265 56.9885 176.939V176.891C41.6615 161.517 32.1723 140.355 32.1723 116.963C32.1723 110.273 32.9314 103.725 34.4496 97.5086C43.2266 60.0234 76.8205 32.1702 116.914 32.1702V-0.00012207C58.9788 -0.00012207 10.8672 42.1824 1.61471 97.5086C0.568631 103.819 0 110.32 0 116.963C0 149.275 13.0968 178.505 34.2591 199.619C55.3738 220.782 84.6037 233.878 116.914 233.878C181.496 233.878 233.88 181.542 233.88 116.963C233.88 110.32 233.309 103.819 232.265 97.5086Z`;
-// [columna, fila, celdas de lado, tipo]: el isotipo ocupa siempre un número entero de celdas y se apoya en sus líneas
-const marks: [number, number, number, 'o' | 'f' | 'h'][] = [];
-const cols = [0, 7, 1, 6, 0, 8, 1, 7];
-for (let k = 0; k < 22; k++) marks.push([cols[k % cols.length], 7 + k * 5, k % 3 === 1 ? 2 : 1, k % 4 === 2 ? 'f' : k % 4 === 3 ? 'h' : 'o']);
 ---
 <div class="gcb" aria-hidden="true">
   <div class="gcb__grid"></div>
-  {marks.map(([c, r, s, t]) => (
-    <svg class={`gcb__m gcb__m--${t}`} viewBox="0 0 234 234" style={`left:calc(var(--g) * ${c});top:calc(var(--g) * ${r});width:calc(var(--g) * ${s});height:calc(var(--g) * ${s})`} focusable="false">
-      {t === 'h' ? <path d={OUT} clip-path="url(#gcb-l)" /> : <><path d={MID} /><path d={OUT} /></>}
-    </svg>
-  ))}
-  <svg width="0" height="0" style="position:absolute" focusable="false"><defs><clipPath id="gcb-l"><rect x="-60" y="-60" width="176.914" height="360" /></clipPath></defs></svg>
   <i class="gcb__orb gcb__orb--a"></i><i class="gcb__orb gcb__orb--b"></i><i class="gcb__orb gcb__orb--c"></i><i class="gcb__orb gcb__orb--d"></i>
 </div>
 
@@ -23,13 +11,9 @@ for (let k = 0; k < 22; k++) marks.push([cols[k % cols.length], 7 + k * 5, k % 3
   .is-gc { position: relative; isolation: isolate; }
   .gcb { --g: clamp(92px, 11vw, 168px); position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
   .gcb__grid { position: absolute; inset: 0; background-image: linear-gradient(rgb(93 185 138 / .1) 1px, transparent 1px), linear-gradient(90deg, rgb(93 185 138 / .1) 1px, transparent 1px); background-size: var(--g) var(--g); }
-  .gcb__m { position: absolute; overflow: visible; }
-  .gcb__m path { fill: rgb(93 185 138 / .04); stroke: rgb(93 185 138 / .3); stroke-width: 1.4; vector-effect: non-scaling-stroke; }
-  .gcb__m--f path { fill: rgb(93 185 138 / .14); stroke: none; }
-  .gcb__m--h path { fill: rgb(223 239 229 / .08); stroke: rgb(93 185 138 / .35); }
   .gcb__orb { display: none; position: absolute; border-radius: 50%; filter: blur(70px); }
   /* Modo claro: sin retícula, con cristal y desenfoque */
-  :root[data-gc-theme='light'] .gcb__grid, :root[data-gc-theme='light'] .gcb__m { display: none; }
+  :root[data-gc-theme='light'] .gcb__grid { display: none; }
   :root[data-gc-theme='light'] .gcb__orb { display: block; }
   .gcb__orb--a { width: 38rem; height: 38rem; left: -10rem; top: 9%; background: radial-gradient(circle, rgb(93 185 138 / .38), transparent 68%); }
   .gcb__orb--b { width: 34rem; height: 34rem; right: -8rem; top: 27%; background: radial-gradient(circle, rgb(146 205 182 / .5), transparent 68%); }
