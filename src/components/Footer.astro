@@ -5,6 +5,8 @@ import Icon from './Icon.astro';
 import Crt from './Crt.astro';
 const { lang } = Astro.props as { lang: Lang };
 const c = copy[lang];
+// La frase en oraciones, cada una en su bloque; las palabras cortas se pegan a la siguiente (nada de «el» o «y» huérfanos al final de una línea)
+const sentences = c.footer.quote.split(/(?<=[.!?])\s+/).map((x) => x.replace(/(^|\s)(\p{L}{1,2}) /gu, '$1$2\u00a0'));
 
 // Fundidos al negro con curva suave (smootherstep) y muchos pasos: sin escalones ni bordes marcados.
 const smooth = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
@@ -22,7 +24,9 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
   <div class="wrap footer__content">
     <p class="eyebrow" data-reveal>{c.footer.eyebrow}</p>
     <figure class="quote" data-reveal>
-      <blockquote class="display" data-split-scroll>“{c.footer.quote}”</blockquote>
+      <blockquote class="quote__t" data-read aria-label={c.footer.quote}>
+        {sentences.map((x, i) => <span class:list={['quote__s', { 'quote__s--b': i === sentences.length - 1 }]} aria-hidden="true">{i === 0 ? '“' : ''}{x}{i === sentences.length - 1 ? '”' : ''}</span>)}
+      </blockquote>
       <figcaption class="eyebrow">— {c.footer.author}</figcaption>
     </figure>
     <div class="footer__row" data-reveal>
@@ -84,7 +88,15 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
 
   .footer__content { position: relative; z-index: 1; }
   .quote { margin: 1.5rem 0 2.5rem; max-width: 58ch; }
-  .quote blockquote { margin: 0; font-size: clamp(1.1rem, 2.1vw, 1.8rem); line-height: 1.3; letter-spacing: .02em; text-wrap: balance; }
+  /* La frase se lee como texto, no como un titular: minúsculas, interletrado normal y cada oración en su bloque */
+  .quote { max-width: 34rem; }
+  .quote__t { margin: 0; display: grid; gap: .55em; font-size: clamp(1.5rem, 3.1vw, 2.5rem); font-weight: 500; line-height: 1.28; letter-spacing: .003em; text-transform: none; text-wrap: balance; text-shadow: 0 1px 20px rgb(0 0 0 / .65); }
+  .quote__s--b { font-weight: 600; }
+  .quote__s { display: block; }
+  /* Acompaña la lectura: las palabras se encienden a medida que la frase sube por la pantalla */
+  :global(.js) .quote__t.is-read :global(.qw) { opacity: .34; transition: opacity .5s ease; }
+  :global(.js) .quote__t.is-read :global(.qw.on) { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { :global(.js) .quote__t.is-read :global(.qw) { opacity: 1; transition: none; } }
   .quote figcaption { margin-top: 1.75rem; }
   .footer__row { display: flex; flex-wrap: wrap; gap: .75rem; }
   .footer__base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-top: clamp(5rem, 10vw, 9rem); font-size: .85rem; }
@@ -102,7 +114,35 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
     }, { threshold: 0.2 });
     io.observe(f);
     glitch(f);
+    reading();
   };
+
+  // Lectura guiada: parte la frase en palabras y las enciende según el avance de la pantalla
+  const reading = () => {
+    const q = document.querySelector<HTMLElement>('[data-read]:not(.is-read)');
+    if (!q) return;
+    const words: HTMLElement[] = [];
+    q.querySelectorAll<HTMLElement>('.quote__s').forEach((sEl) => {
+      const txt = sEl.textContent ?? '';
+      sEl.textContent = '';
+      txt.split(' ').forEach((w, i, a) => {
+        const sp = document.createElement('span'); sp.className = 'qw'; sp.textContent = w; sEl.append(sp); words.push(sp);
+        if (i < a.length - 1) sEl.append(' ');
+      });
+    });
+    q.classList.add('is-read');
+    const update = () => {
+      const r = q.getBoundingClientRect(), vh = innerHeight;
+      // 0 cuando la frase asoma por abajo; 1 cuando sube a poco más de la mitad de la pantalla (así se completa aunque la página ya no pueda subir más)
+      const p = Math.max(0, Math.min(1, (vh * 0.95 - r.top) / (vh * 0.33)));
+      const n = Math.round(p * words.length * 1.05);
+      words.forEach((w, i) => w.classList.toggle('on', i < n));
+    };
+    readOff?.(); // una sola vez por página (la navegación no acumula oyentes)
+    addEventListener('scroll', update, { passive: true }); addEventListener('resize', update); update();
+    readOff = () => { removeEventListener('scroll', update); removeEventListener('resize', update); };
+  };
+  let readOff: (() => void) | null = null;
 
   // Glitch cada ~12 s (entre 11 y 13 s) sólo mientras el footer se ve y la pestaña está activa
   let glitchTimer = 0;
