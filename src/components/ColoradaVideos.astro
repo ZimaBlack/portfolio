@@ -349,6 +349,8 @@ const L = {
   @keyframes card-in { from { opacity: 0; } to { opacity: 1; } }
   @keyframes card-out { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
   .card__liq { position: absolute; inset: 0; width: 100%; height: 100%; }
+  /* Celular: el fluido del placeholder con desenfoque gaussiano (se agranda un poco para que el borde no se aclare) */
+  @media (max-width: 760px), (hover: none) { .card__liq { filter: blur(4.5cqw); transform: scale(1.14); } }
   .card__logo { position: relative; width: 56cqw; filter: drop-shadow(0 1.4cqw 2.4cqw rgb(0 0 0 / .5)); }
   .card__logo :global(svg) { display: block; width: 100%; height: auto; }
   .ly--card.is-on .card__logo { animation: pop 1s cubic-bezier(.3, 1.4, .5, 1) .1s both; }
