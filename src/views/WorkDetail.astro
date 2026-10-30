@@ -135,7 +135,12 @@ const next = all.length > 1 && at >= 0 ? all[(at + 1) % all.length] : undefined;
       </div>
     ) : <PiruloManual lang={lang} />)}
     {d.manual === 'omega-shields' && <OmegaManual lang={lang} />}
-    {d.manual === 'wanderlust' && <WanderStory lang={lang} />}
+    {d.manual === 'wanderlust' && (d.locked ? (
+      <div class="lock">
+        <div class="lock__in" inert aria-hidden="true"><WanderStory lang={lang} /></div>
+        <div class="lock__cover" role="status"><span>{lang === 'es' ? 'Próximamente' : 'Coming soon'}</span><small>{lang === 'es' ? 'Este proyecto se está terminando de preparar.' : 'This project is still being prepared.'}</small></div>
+      </div>
+    ) : <WanderStory lang={lang} />)}
 
     {d.video?.id && <section class="wrap vid" data-reveal><VideoEmbed provider={d.video.provider} id={d.video.id} title={d.title} play={c.detail.play} /></section>}
 

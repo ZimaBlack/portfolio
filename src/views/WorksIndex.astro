@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import WorkCard from '../components/WorkCard.astro';
 import PiruloCover from '../components/PiruloCover.astro';
+import WanderCover from '../components/wander/WanderCover.astro';
 import { copy, paths, type Lang } from '../lib/i18n';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -22,10 +23,10 @@ const alt = lang === 'es' ? 'en' : 'es';
     <div class="grid">
       {works.map((w, i) => <WorkCard work={w} lang={lang} index={i} ratio="2 / 3" />)}
     </div>
-    {soon.map((w) => (
+    {soon.map((w, i) => (
       <a class="soon" href={paths.work(lang, w.id)} aria-label={`${w.data.title} — ${lang === 'es' ? 'Próximamente' : 'Coming soon'}`} data-reveal>
-        <div class="soon__in"><PiruloCover lang={lang} wide={true} /></div>
-        <span class="soon__meta"><span class="muted">{String(works.length + 1).padStart(2, '0')}</span><span>{w.data.title}</span></span>
+        <div class="soon__in">{w.data.coverKind === 'wanderlust' ? <WanderCover lang={lang} wide={true} /> : <PiruloCover lang={lang} wide={true} />}</div>
+        <span class="soon__meta"><span class="muted">{String(works.length + i + 1).padStart(2, '0')}</span><span>{w.data.title}</span></span>
       </a>
     ))}
   </section>
@@ -40,7 +41,7 @@ const alt = lang === 'es' ? 'en' : 'es';
   @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .grid > :global(*) { margin-top: 0 !important; } }
   .soon { display: block; margin-top: clamp(4rem, 8vw, 7rem); }
   .soon__in { aspect-ratio: 11 / 2; overflow: hidden; position: relative; }
-  .soon__in :global(.pvc) { position: absolute; inset: 0; }
+  .soon__in :global(.pvc), .soon__in :global(.wvc) { position: absolute; inset: 0; }
   .soon__meta { display: flex; gap: 1rem; padding-top: .8rem; font-size: .85rem; }
   @media (max-width: 600px) { .soon__in { aspect-ratio: 16 / 5; } }
 </style>

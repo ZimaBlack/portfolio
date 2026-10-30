@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { withBase, type Lang } from '../lib/i18n';
 import TintPhoto from './TintPhoto.astro';
 import TintMask from './TintMask.astro';
+import ColoradaVideos from './ColoradaVideos.astro';
 
 const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
@@ -185,6 +186,8 @@ const t = es ? {
     <p class="cm__txt">{t.motherA}</p>
     <img src={withBase('/works/colorada/manual/paleta-madre.webp')} alt={t.mother} width="2000" height="1821" loading="lazy" decoding="async" />
   </div>
+
+  <ColoradaVideos lang={lang} />
 
   <div class="cm__closer" aria-hidden="true"><div class="cm__closerin" set:html={closer} /></div>
 </section>

@@ -85,3 +85,19 @@ Contraste verificado (WCAG): blanco/primario 6,1:1 · blanco/acento 5,2:1 · mut
 - **Cap. 6:** qué parte del entorno 3D se concretó y con qué herramientas; planta y foto del stand armado.
 - **Cap. 7:** todos los indicadores (tiempos de armado, consultas al diseñador, aperturas/clics/ventas, adopción del PM con IA, QR y visitas). No se inventó ninguno.
 - Rol exacto, tamaño del equipo y años: confirmar en `src/content/works/wanderlust-videos.md`.
+
+---
+
+## 6. Colorada · «Videos de prueba con IA» (`public/works/colorada/videos/`)
+
+| Archivo | Origen | Estado |
+|---|---|---|
+| `prueba-01.mp4` / `.webp` | `Downloads/gemini_generated_video_7fe7ad4c.mp4` (recomprimido 540 px, sin audio; póster en 2,5 s) | REAL · generado con IA (Gemini) |
+| `prueba-02.mp4` / `.webp` | `Downloads/gemini_generated_video_edc650e8.mp4` | ídem |
+| `prueba-03.mp4` / `.webp` | `Downloads/gemini_generated_video_8401a2e5.mp4` | ídem |
+
+Las capas (logo de entrada, subtítulos con código, marcas, paleta, sticker y cierres) son **GENERADAS** por código en `src/components/ColoradaVideos.astro`; no hay nada quemado en los videos. Los hex mostrados en el selector de la prueba 03 (plata, violeta, menta) son referencias decorativas, no parte de la paleta madre.
+
+## 7. Wanderlust · «Próximamente»
+
+El proyecto está cargado completo pero con `locked: true` (mismo formato que Pirulo: contenido desenfocado bajo una cubierta). Para publicarlo: quitar `locked: true` y `coverKind` de `src/content/works/wanderlust-videos.md`.

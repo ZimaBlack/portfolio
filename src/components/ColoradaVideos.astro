@@ -1,0 +1,372 @@
+---
+// «Videos de prueba con IA»: tres clips verticales generados con IA como banco de pruebas de la marca.
+// Encima de cada uno, todo hecho con código: animación del logo al inicio, subtítulos con una línea de código que se escribe,
+// elementos superpuestos (marcas de rostro, paleta, etiqueta, sticker, selector de color) y un cierre propio.
+// La línea de tiempo de cada clip (`cues` y `layers`) es la misma que se muestra en «Ver el código».
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { Code } from 'astro:components';
+import { withBase, type Lang } from '../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const es = lang === 'es';
+const t = (a: string, b: string) => (es ? a : b);
+const V = '/works/colorada/videos';
+
+// Logos en línea: el pelo y el mechón leen --c0 / --c1 (siguen al widget de color de la página)
+const inline = (file: string, label: string) => readFileSync(join(process.cwd(), 'public/works/colorada', file), 'utf8')
+  .replace(/fill="#E03B7A"/gi, 'style="fill:var(--c0)"')
+  .replace(/fill="#6CE829"/gi, 'style="fill:var(--c1)"')
+  .replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} role="img" aria-label="${label}">`);
+const character = inline('logo.svg', 'Colorada');
+const wordmark = inline('mark.svg', 'Colorada');
+
+type Layer = { kind: 'brackets' | 'chips' | 'tag' | 'sticker' | 'picker'; a: number; b: number; text?: string; stops?: { at: number; hex: string; name: string }[] };
+type Clip = { n: string; title: string; note: string; src: string; poster: string; intro: 'a' | 'b' | 'c'; outro: 'a' | 'b' | 'c'; cues: { a: number; b: number; say: string; code: string }[]; layers: Layer[] };
+
+const clips: Clip[] = [
+  {
+    n: '01', title: t('Noche neón', 'Neon night'), note: t('El color cambia con la luz de la escena.', 'The colour shifts with the scene light.'),
+    src: `${V}/prueba-01.mp4`, poster: `${V}/prueba-01.webp`, intro: 'a', outro: 'a',
+    cues: [
+      { a: 1.9, b: 4.3, say: t('Rosa con mechón verde.', 'Pink with a green streak.'), code: 'hair.base = "#E03B7A"' },
+      { a: 4.3, b: 6.7, say: t('Cambia la noche, cambia el tono.', 'The night changes, the tone follows.'), code: 'palette.shift({ hue: +48 })' },
+      { a: 6.7, b: 8.0, say: t('Mismo personaje, otra luz.', 'Same character, another light.'), code: 'scene.light = "cyan"' },
+    ],
+    layers: [
+      { kind: 'brackets', a: 2.0, b: 6.6 },
+      { kind: 'chips', a: 2.4, b: 8.0 },
+      { kind: 'sticker', a: 5.0, b: 6.8, text: 'Let’s blend!' },
+    ],
+  },
+  {
+    n: '02', title: t('Spray en escena', 'Spray on stage'), note: t('El producto entra al plano con su propia etiqueta.', 'The product enters the frame with its own tag.'),
+    src: `${V}/prueba-02.mp4`, poster: `${V}/prueba-02.webp`, intro: 'b', outro: 'b',
+    cues: [
+      { a: 1.9, b: 4.0, say: t('Un spray, dos colores.', 'One spray, two colours.'), code: '<Spray base="pink" accent="green" />' },
+      { a: 4.0, b: 6.2, say: t('Del boceto a la cara.', 'From sketch to face.'), code: 'brand.apply(character)' },
+      { a: 6.2, b: 8.0, say: t('Hecho para la escena.', 'Made for the stage.'), code: 'stage.mode = "on"' },
+    ],
+    layers: [
+      { kind: 'tag', a: 2.2, b: 6.0, text: t('Spray de color', 'Colour spray') },
+      { kind: 'brackets', a: 4.0, b: 6.0 },
+      { kind: 'chips', a: 4.2, b: 8.0 },
+      { kind: 'sticker', a: 6.2, b: 8.0, text: t('¡A teñir!', 'Dye time!') },
+    ],
+  },
+  {
+    n: '03', title: t('Paleta variable', 'Variable palette'), note: t('Cuatro colores del pelo, una sola variable.', 'Four hair colours, a single variable.'),
+    src: `${V}/prueba-03.mp4`, poster: `${V}/prueba-03.webp`, intro: 'c', outro: 'c',
+    cues: [
+      { a: 2.0, b: 4.9, say: t('Una paleta, muchas versiones.', 'One palette, many versions.'), code: '--c0: var(--pw-0)' },
+      { a: 4.9, b: 7.2, say: t('El color es una variable.', 'Colour is a variable.'), code: 'root.style.setProperty("--c0", hex)' },
+      { a: 7.2, b: 8.1, say: t('Plata, violeta, menta.', 'Silver, violet, mint.'), code: 'palette = ["silver", "violet", "mint"]' },
+    ],
+    layers: [
+      { kind: 'picker', a: 2.0, b: 8.0, stops: [
+        { at: 0, hex: '#8A8D96', name: t('plata', 'silver') },
+        { at: 2.4, hex: '#7A4BE0', name: t('violeta', 'violet') },
+        { at: 5.0, hex: '#4FD1B0', name: t('menta', 'mint') },
+        { at: 7.2, hex: '#C9CBD1', name: t('plata', 'silver') },
+      ] },
+    ],
+  },
+];
+
+const timelineCode = (c: Clip) => `// ${c.title}: la línea de tiempo que se monta sobre el video
+const timeline = ${JSON.stringify({ intro: `logo-${c.intro}`, cues: c.cues.map(({ a, b, say, code }) => ({ a, b, say, code })), layers: c.layers.map(({ kind, a, b, text }) => ({ kind, a, b, ...(text ? { text } : {}) })), outro: `cierre-${c.outro}` }, null, 2)};`;
+const L = {
+  title: t('Videos de prueba con IA', 'AI test videos'),
+  lead: t('Tres clips verticales generados con IA, usados como banco de pruebas de la marca. Sobre cada uno monté con código la animación del logo al inicio, subtítulos con una línea de código que se escribe, elementos superpuestos y un cierre propio.', 'Three vertical AI-generated clips, used as a test bench for the brand. Over each one I built, in code, the logo animation at the start, subtitles with a typed line of code, overlaid elements and a closing card of its own.'),
+  layers: t('Con capas', 'With layers'), raw: t('Original', 'Original'),
+  play: t('Reproducir', 'Play'), pause: t('Pausar', 'Pause'),
+  code: t('Ver el código de las capas', 'View the layers’ code'),
+  tag: t('Generados con IA (Gemini); las personas que aparecen no existen.', 'AI-generated (Gemini); the people shown do not exist.'),
+  region: t('Videos de prueba', 'Test videos'),
+};
+---
+<section class="wrap cmv" id="videos-ia" data-reveal aria-label={L.region}>
+  <header class="cmv__head">
+    <h2 class="h2">{L.title}</h2>
+    <p class="cmv__lead">{L.lead}</p>
+    <div class="cmv__tools">
+      <div class="cmv__seg" role="group" aria-label={L.title}>
+        <button type="button" data-cmv-mode="layers" aria-pressed="true">{L.layers}</button>
+        <button type="button" data-cmv-mode="raw" aria-pressed="false">{L.raw}</button>
+      </div>
+      <p class="cmv__tag">{L.tag}</p>
+    </div>
+  </header>
+
+  <div class="cmv__row">
+    {clips.map((c) => (
+      <article class="vp" data-vp data-play={L.play} data-pause={L.pause}>
+        <div class="vp__screen">
+          <video src={withBase(c.src)} poster={withBase(c.poster)} muted playsinline loop preload="metadata" aria-label={`${L.title} ${c.n}: ${c.title}`}></video>
+
+          <div class="ly ly--prog" aria-hidden="true"><i></i></div>
+
+          {c.layers.map((l) => (
+            <div class={`ly ly--${l.kind}`} data-a={l.a} data-b={l.b} data-stops={l.stops ? JSON.stringify(l.stops) : undefined} aria-hidden="true">
+              {l.kind === 'brackets' && (<><i></i><i></i><i></i><i></i><span>face.lock</span></>)}
+              {l.kind === 'chips' && (<><b><i style="background:var(--c0)"></i>#E03B7A</b><b><i style="background:var(--c1)"></i>#6CE829</b></>)}
+              {l.kind === 'tag' && (<><i></i><span>{l.text}</span><em>colorada</em></>)}
+              {l.kind === 'sticker' && <span>{l.text}</span>}
+              {l.kind === 'picker' && (<><i class="ly__sw"></i><b class="ly__hex"></b><em class="ly__nm"></em></>)}
+            </div>
+          ))}
+
+          <div class="cues" aria-live="off">
+            {c.cues.map((q) => (
+              <p class="cue" data-a={q.a} data-b={q.b}><span class="cue__say">{q.say}</span><code class="cue__code" data-code={q.code}></code></p>
+            ))}
+          </div>
+
+          <!-- Animación del logo al inicio -->
+          <div class={`ly ly--in in-${c.intro}`} data-a="0" data-b={c.intro === 'c' ? 2.0 : 1.8} aria-hidden="true">
+            {c.intro === 'a' && <><i class="in__disc"></i><div class="in__logo" set:html={character} /></>}
+            {c.intro === 'b' && <><i class="in__bar in__bar--0"></i><i class="in__bar in__bar--1"></i><i class="in__bar in__bar--2"></i><div class="in__logo in__logo--word" set:html={wordmark} /></>}
+            {c.intro === 'c' && <><code class="in__code">&lt;colorada /&gt;</code><div class="in__logo in__logo--late" set:html={character} /></>}
+          </div>
+
+          <!-- Cierre -->
+          <div class={`ly ly--out out-${c.outro}`} data-a="8.1" data-b="99" aria-hidden="true">
+            {c.outro === 'a' && <><i class="out__glow"></i><div class="out__logo" set:html={character} /><p class="out__t">Let’s blend!</p></>}
+            {c.outro === 'b' && <><i class="out__half out__half--l"></i><i class="out__half out__half--r"></i><div class="out__box"><div class="out__word" set:html={wordmark} /></div><p class="out__t out__t--dark">Let’s blend!</p></>}
+            {c.outro === 'c' && <><span class="out__stripes"><i></i><i></i><i></i><i></i><i></i></span><div class="out__logo out__logo--sm" set:html={character} /><p class="out__hex"><b style="color:var(--c0)">#E03B7A</b> · <b style="color:var(--c1)">#6CE829</b></p></>}
+          </div>
+
+          <button type="button" class="vp__btn" data-vp-btn aria-label={L.play}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg></button>
+        </div>
+        <h3 class="vp__t"><span>{c.n}</span>{c.title}</h3>
+        <p class="vp__n">{c.note}</p>
+        <details class="vp__code">
+          <summary>{L.code}</summary>
+          <Code code={timelineCode(c)} lang="ts" theme="github-dark" wrap={false} />
+        </details>
+      </article>
+    ))}
+  </div>
+</section>
+
+<script>
+  // Línea de tiempo: cada capa con data-a / data-b se enciende (clase is-on) mientras el video está entre esos segundos.
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const hl = (s: string) => esc(s)
+    .replace(/("[^"]*")/g, '<i class="s">$1</i>')
+    .replace(/(#[0-9a-fA-F]{6})/g, '<i class="h" style="--h:$1">$1</i>');
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const initVideos = () => {
+    document.querySelectorAll<HTMLElement>('[data-vp]:not([data-on])').forEach((vp) => {
+      vp.setAttribute('data-on', '');
+      const v = vp.querySelector('video')!;
+      const btn = vp.querySelector<HTMLButtonElement>('[data-vp-btn]')!;
+      const layers = [...vp.querySelectorAll<HTMLElement>('[data-a]')].map((el) => ({ el, a: +el.dataset.a!, b: +el.dataset.b!, on: false }));
+      const prog = vp.querySelector<HTMLElement>('.ly--prog i')!;
+      const picker = vp.querySelector<HTMLElement>('.ly--picker');
+      const stops: { at: number; hex: string; name: string }[] = picker?.dataset.stops ? JSON.parse(picker.dataset.stops) : [];
+      let userPaused = false, raf = 0;
+
+      const tick = () => {
+        const t = v.currentTime, d = v.duration || 10;
+        prog.style.transform = `scaleX(${Math.min(1, t / d)})`;
+        for (const l of layers) {
+          const on = t >= l.a && t < l.b;
+          if (on !== l.on) { l.on = on; l.el.classList.toggle('is-on', on); }
+          const code = l.el.querySelector<HTMLElement>('.cue__code');
+          if (on && code) { // escribe la línea de código a lo largo de ~1 s
+            const full = code.dataset.code ?? '';
+            const n = Math.min(full.length, Math.ceil(((t - l.a) / 1) * full.length));
+            code.innerHTML = hl(full.slice(0, n)) + (n < full.length ? '<u></u>' : '');
+          }
+        }
+        if (picker && stops.length) {
+          const s = [...stops].reverse().find((x) => t >= x.at) ?? stops[0];
+          picker.style.setProperty('--sw', s.hex);
+          const hex = picker.querySelector('.ly__hex'), nm = picker.querySelector('.ly__nm');
+          if (hex && hex.textContent !== s.hex) { hex.textContent = s.hex; if (nm) nm.textContent = s.name; }
+        }
+        raf = v.paused ? 0 : requestAnimationFrame(tick);
+      };
+      const sync = () => {
+        const paused = v.paused;
+        vp.classList.toggle('is-paused', paused);
+        btn.setAttribute('aria-label', (paused ? vp.dataset.play : vp.dataset.pause) ?? '');
+        if (!paused && !raf) raf = requestAnimationFrame(tick);
+        if (paused) tick();
+      };
+      v.addEventListener('play', sync); v.addEventListener('pause', sync); v.addEventListener('seeked', tick);
+      const toggle = () => { if (v.paused) { userPaused = false; v.play().catch(() => {}); } else { userPaused = true; v.pause(); } };
+      btn.addEventListener('click', toggle);
+      vp.querySelector('.vp__screen')!.addEventListener('click', (e) => { if (e.target === btn || btn.contains(e.target as Node)) return; toggle(); });
+
+      // Se reproduce solo mientras se ve (salvo con «reducir movimiento»)
+      if (!reduced() && 'IntersectionObserver' in window) {
+        new IntersectionObserver(([e]) => {
+          if (e.isIntersecting && !userPaused) v.play().catch(() => {});
+          else if (!e.isIntersecting) v.pause();
+        }, { threshold: 0.55 }).observe(vp);
+      }
+      sync();
+    });
+
+    // Con capas / Original
+    const root = document.getElementById('videos-ia');
+    root?.querySelectorAll<HTMLButtonElement>('[data-cmv-mode]:not([data-on])').forEach((b) => {
+      b.setAttribute('data-on', '');
+      b.addEventListener('click', () => {
+        root.classList.toggle('is-raw', b.dataset.cmvMode === 'raw');
+        root.querySelectorAll('[data-cmv-mode]').forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+      });
+    });
+  };
+  document.addEventListener('astro:page-load', initVideos);
+  initVideos();
+</script>
+
+<style>
+  .cmv { display: grid; gap: clamp(1.8rem, 3.5vw, 3rem); }
+  .cmv__head { display: grid; gap: 1rem; max-width: 52rem; }
+  .cmv__lead { margin: 0; color: var(--muted); line-height: 1.6; font-size: clamp(1rem, 1.3vw, 1.15rem); }
+  .cmv__tools { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1.4rem; }
+  .cmv__seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: .2rem; }
+  .cmv__seg button { background: none; border: 0; color: var(--muted); font: inherit; font-size: .8rem; padding: .35rem .95rem; border-radius: 999px; cursor: pointer; transition: background .3s, color .3s; }
+  .cmv__seg button[aria-pressed='true'] { background: var(--fg); color: var(--bg); }
+  .cmv__tag { margin: 0; font-size: .75rem; color: var(--muted); }
+
+  .cmv__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.5rem, 3vw, 3rem); align-items: start; }
+  @media (max-width: 900px) {
+    .cmv__row { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: min(78%, 20rem); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 1rem; margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); }
+    .vp { scroll-snap-align: center; }
+  }
+
+  .vp { display: grid; gap: .6rem; max-width: 20rem; width: 100%; margin-inline: auto; min-width: 0; }
+  .vp__screen { position: relative; aspect-ratio: 9 / 16; border-radius: 2rem; overflow: hidden; background: #000; container-type: inline-size; box-shadow: 0 0 0 .45rem #15151a, 0 0 0 calc(.45rem + 1px) rgb(255 255 255 / .16), 0 1.6rem 3rem rgb(0 0 0 / .45); cursor: pointer; isolation: isolate; }
+  .vp__screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .vp__t { display: flex; gap: .7rem; align-items: baseline; margin: .9rem 0 0; font-size: 1.05rem; font-weight: 600; }
+  .vp__t span { color: var(--muted); font-weight: 400; font-size: .8rem; }
+  .vp__n { margin: 0; color: var(--muted); font-size: .85rem; line-height: 1.5; }
+  .vp__btn { position: absolute; left: 50%; top: 50%; width: 15cqw; aspect-ratio: 1; transform: translate(-50%, -50%); display: grid; place-items: center; border: 0; border-radius: 50%; background: rgb(0 0 0 / .5); color: #fff; backdrop-filter: blur(6px); cursor: pointer; z-index: 9; opacity: 0; transition: opacity .3s; }
+  .vp__btn svg { width: 45%; fill: currentColor; }
+  .vp.is-paused .vp__btn, .vp__screen:hover .vp__btn, .vp__btn:focus-visible { opacity: 1; }
+  .vp__btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+  /* Capas: todo lo que se monta sobre el video */
+  .ly { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+  .is-raw .ly, .is-raw .cues { display: none; }
+  .ly--prog { top: 2.4cqw; bottom: auto; left: 4cqw; right: 4cqw; height: .9cqw; border-radius: 1cqw; background: rgb(255 255 255 / .28); overflow: hidden; z-index: 6; }
+  .ly--prog i { display: block; height: 100%; background: #fff; transform-origin: left; transform: scaleX(0); }
+
+  .ly:not(.ly--prog):not(.ly--in):not(.ly--out), .cue { opacity: 0; transition: opacity .35s var(--ease); }
+  .ly.is-on, .cue.is-on { opacity: 1; }
+
+  /* Subtítulos: frase + línea de código que se escribe */
+  .cues { position: absolute; left: 5cqw; right: 5cqw; bottom: 9cqw; z-index: 5; display: grid; }
+  .cue { grid-area: 1 / 1; display: grid; gap: 1.6cqw; justify-items: start; align-self: end; }
+  .cue__say { font-weight: 700; font-size: 5.4cqw; line-height: 1.18; color: #fff; text-shadow: 0 .4cqw 1.6cqw rgb(0 0 0 / .8); background: linear-gradient(transparent 55%, color-mix(in srgb, var(--c0) 70%, transparent) 55%); padding: 0 1cqw; margin-left: -1cqw; }
+  .cue__code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 3.5cqw; line-height: 1.4; color: #e9e9ef; background: rgb(8 8 14 / .78); border: 1px solid rgb(255 255 255 / .18); border-radius: 1.4cqw; padding: 1.3cqw 2.2cqw; min-height: 1.4em; max-width: 100%; overflow: hidden; white-space: nowrap; backdrop-filter: blur(4px); }
+  .cue__code :global(.s) { color: #ffa7c4; font-style: normal; }
+  .cue__code :global(.h) { color: var(--h); font-style: normal; text-shadow: 0 0 1.2cqw rgb(0 0 0 / .7); }
+  .cue__code :global(u) { display: inline-block; width: .55ch; height: 1.05em; vertical-align: text-bottom; background: var(--c1); text-decoration: none; margin-left: .15ch; animation: blink .7s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Elementos superpuestos */
+  .ly--brackets { inset: 16% 19% auto 19%; height: 40%; }
+  .ly--brackets i { position: absolute; width: 11cqw; height: 11cqw; border: 0 solid #fff; filter: drop-shadow(0 0 1cqw rgb(0 0 0 / .6)); }
+  .ly--brackets i:nth-child(1) { top: 0; left: 0; border-width: .7cqw 0 0 .7cqw; } .ly--brackets i:nth-child(2) { top: 0; right: 0; border-width: .7cqw .7cqw 0 0; }
+  .ly--brackets i:nth-child(3) { bottom: 0; left: 0; border-width: 0 0 .7cqw .7cqw; } .ly--brackets i:nth-child(4) { bottom: 0; right: 0; border-width: 0 .7cqw .7cqw 0; }
+  .ly--brackets span { position: absolute; left: 0; top: -6cqw; font: 700 3cqw ui-monospace, Menlo, monospace; letter-spacing: .08em; color: #fff; background: var(--c0); padding: .5cqw 1.6cqw; border-radius: 1cqw; }
+  .ly--brackets.is-on { animation: lock .7s var(--ease) both; }
+  @keyframes lock { from { transform: scale(1.18); } to { transform: scale(1); } }
+  .ly--chips { inset: auto auto 38% 4.5cqw; display: grid; gap: 1.3cqw; align-content: end; }
+  .ly--chips b { display: inline-flex; align-items: center; gap: 1.6cqw; font: 700 3.3cqw ui-monospace, Menlo, monospace; color: #fff; background: rgb(8 8 14 / .72); border-radius: 99cqw; padding: 1cqw 2.6cqw 1cqw 1cqw; backdrop-filter: blur(4px); }
+  .ly--chips b i { width: 5cqw; aspect-ratio: 1; border-radius: 50%; border: .5cqw solid #fff; }
+  .ly--chips.is-on b { animation: slide-in .5s var(--ease) both; } .ly--chips.is-on b:nth-child(2) { animation-delay: .12s; }
+  @keyframes slide-in { from { transform: translateX(-120%); } to { transform: none; } }
+  .ly--tag { inset: 17% auto auto 0; display: flex; align-items: center; gap: 2cqw; height: 11cqw; padding: 0 4cqw 0 4.5cqw; background: #fff; color: #14080f; border-radius: 0 99cqw 99cqw 0; font-weight: 800; font-size: 4cqw; box-shadow: 0 1cqw 3cqw rgb(0 0 0 / .35); }
+  .ly--tag i { width: 3cqw; aspect-ratio: 1; border-radius: 50%; background: var(--c0); box-shadow: 4cqw 0 0 var(--c1); margin-right: 4cqw; }
+  .ly--tag em { font: 600 2.6cqw ui-monospace, Menlo, monospace; color: #6b6b75; font-style: normal; text-transform: uppercase; letter-spacing: .1em; }
+  .ly--tag.is-on { animation: slide-in .6s var(--ease) both; transform-origin: left; }
+  .ly--sticker { inset: 12% 5cqw auto auto; display: grid; place-items: start end; }
+  .ly--sticker span { display: block; font-weight: 800; font-size: 5.4cqw; color: #fff; background: var(--c0); border: .8cqw solid #fff; border-radius: 3cqw; padding: 1.4cqw 3.4cqw; transform: rotate(-7deg); box-shadow: 0 1.2cqw 2.4cqw rgb(0 0 0 / .4); }
+  .ly--sticker.is-on span { animation: sticker .6s cubic-bezier(.3, 1.6, .5, 1) both; }
+  @keyframes sticker { from { transform: rotate(-26deg) scale(.2); } to { transform: rotate(-7deg) scale(1); } }
+  .ly--picker { --sw: #8a8d96; inset: auto 5cqw 38% auto; display: grid; justify-items: end; gap: 1.2cqw; }
+  .ly__sw { width: 15cqw; aspect-ratio: 1; border-radius: 50%; background: var(--sw); border: 1cqw solid #fff; box-shadow: 0 1cqw 2.4cqw rgb(0 0 0 / .45); transition: background .4s; }
+  .ly__hex { font: 700 3.6cqw ui-monospace, Menlo, monospace; color: #fff; background: rgb(8 8 14 / .75); padding: .7cqw 2cqw; border-radius: 1cqw; }
+  .ly__nm { font-style: normal; font-size: 3cqw; color: #fff; text-shadow: 0 .3cqw 1cqw rgb(0 0 0 / .8); text-transform: uppercase; letter-spacing: .14em; }
+
+  /* Animación del logo al inicio (el logo lee --c0 / --c1) */
+  .ly--in, .ly--out { z-index: 7; display: grid; place-items: center; opacity: 0; visibility: hidden; }
+  .ly--in.is-on, .ly--out.is-on { opacity: 1; visibility: visible; }
+  .in__logo, .out__logo { width: 52cqw; }
+  .in__logo :global(svg), .out__logo :global(svg), .out__word :global(svg) { display: block; width: 100%; height: auto; }
+  .in__logo { filter: drop-shadow(0 1.4cqw 2.4cqw rgb(0 0 0 / .5)); }
+  .in-a { background: rgb(10 4 8 / .62); }
+  .in-a.is-on { animation: fade-out 1.8s linear both; }
+  .in__disc { position: absolute; width: 150cqw; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, var(--c0), color-mix(in srgb, var(--c0) 40%, #14080f) 70%); }
+  .in-a.is-on .in__disc { animation: disc 1.8s var(--ease) both; }
+  @keyframes disc { 0% { transform: scale(0); } 40% { transform: scale(1); } 100% { transform: scale(1); } }
+  .in-a.is-on .in__logo { animation: pop 1.8s cubic-bezier(.3, 1.4, .5, 1) both; }
+  @keyframes pop { 0% { transform: scale(.4) rotate(-10deg); opacity: 0; } 35% { transform: scale(1) rotate(0); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes fade-out { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+  .in-b { overflow: hidden; }
+  .in-b.is-on { animation: fade-out 1.8s linear both; }
+  .in__bar { position: absolute; inset: 0 0 auto 0; height: 34%; transform: translateX(-101%); }
+  .in__bar--0 { top: 0; background: var(--c0); } .in__bar--1 { top: 33%; background: #fff; } .in__bar--2 { top: 66%; background: var(--c1); height: 34%; }
+  .in-b.is-on .in__bar { animation: bar 1.8s var(--ease) both; } .in-b.is-on .in__bar--1 { animation-delay: .08s; } .in-b.is-on .in__bar--2 { animation-delay: .16s; }
+  @keyframes bar { 0% { transform: translateX(-101%); } 35%, 55% { transform: none; } 100% { transform: translateX(101%); } }
+  .in__logo--word { position: relative; width: 62cqw; opacity: 0; }
+  .in-b.is-on .in__logo--word { animation: word 1.8s var(--ease) both; }
+  @keyframes word { 0%, 30% { opacity: 0; transform: scale(.85); } 45%, 62% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.05); } }
+  .in-c { background: #0c0610; }
+  .in-c.is-on { animation: fade-out 2s linear both; }
+  .in__code { position: absolute; font: 700 7cqw ui-monospace, Menlo, monospace; color: var(--c1); white-space: nowrap; overflow: hidden; width: 0; border-right: .8cqw solid var(--c1); }
+  .in-c.is-on .in__code { animation: type .8s steps(12) .1s forwards, code-out .3s linear 1s forwards; }
+  @keyframes type { to { width: 12ch; } } @keyframes code-out { to { opacity: 0; } }
+  .in__logo--late { opacity: 0; width: 48cqw; }
+  .in-c.is-on .in__logo--late { animation: pop 1s cubic-bezier(.3, 1.4, .5, 1) 1s both; }
+
+  /* Cierres */
+  .out-a { background: #14080f; }
+  .out-a.is-on { animation: wipe-up .7s var(--ease) both; }
+  @keyframes wipe-up { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0); } }
+  .out__glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--c0) 65%, transparent), transparent 62%), radial-gradient(circle at 80% 90%, color-mix(in srgb, var(--c1) 35%, transparent), transparent 55%); }
+  .out-a .out__logo { position: relative; margin-top: -10cqw; }
+  .out-a.is-on .out__logo { animation: pop 1.2s cubic-bezier(.3, 1.4, .5, 1) .3s both; }
+  .out__t { position: absolute; left: 0; right: 0; bottom: 14cqw; margin: 0; text-align: center; font-weight: 800; font-size: 8cqw; letter-spacing: -.01em; color: #fff; }
+  .out-a.is-on .out__t, .out-b.is-on .out__t { animation: rise .7s var(--ease) .6s both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(4cqw); } to { opacity: 1; transform: none; } }
+  .out-b { background: transparent; overflow: hidden; }
+  .out__half { position: absolute; top: 0; bottom: 0; width: 50.5%; }
+  .out__half--l { left: 0; background: var(--c0); } .out__half--r { right: 0; background: var(--c1); }
+  .out-b.is-on .out__half--l { animation: from-l .6s var(--ease) both; } .out-b.is-on .out__half--r { animation: from-r .6s var(--ease) both; }
+  @keyframes from-l { from { transform: translateX(-101%); } to { transform: none; } } @keyframes from-r { from { transform: translateX(101%); } to { transform: none; } }
+  .out__box { position: relative; background: #14080f; border-radius: 4cqw; padding: 7cqw 8cqw; width: 70cqw; box-shadow: 0 2cqw 5cqw rgb(0 0 0 / .4); }
+  .out-b.is-on .out__box { animation: pop .9s cubic-bezier(.3, 1.4, .5, 1) .45s both; }
+  .out__t--dark { color: #14080f; }
+  .out-c { background: #0c0610; overflow: hidden; }
+  .out-c.is-on { animation: fade-in .4s linear both; }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .out__stripes { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(5, 1fr); }
+  .out__stripes i { transform: scaleY(0); transform-origin: bottom; }
+  .out__stripes i:nth-child(1) { background: var(--c0); } .out__stripes i:nth-child(2) { background: var(--c1); } .out__stripes i:nth-child(3) { background: #fff; } .out__stripes i:nth-child(4) { background: var(--c0); } .out__stripes i:nth-child(5) { background: var(--c1); }
+  .out-c.is-on .out__stripes i { animation: stripe 1.5s var(--ease) both; }
+  .out-c.is-on .out__stripes i:nth-child(2) { animation-delay: .06s; } .out-c.is-on .out__stripes i:nth-child(3) { animation-delay: .12s; } .out-c.is-on .out__stripes i:nth-child(4) { animation-delay: .18s; } .out-c.is-on .out__stripes i:nth-child(5) { animation-delay: .24s; }
+  @keyframes stripe { 0% { transform: scaleY(0); } 35% { transform: scaleY(1); } 70%, 100% { transform: scaleY(1); opacity: .22; } }
+  .out__logo--sm { position: relative; width: 46cqw; }
+  .out-c.is-on .out__logo--sm { animation: pop 1s cubic-bezier(.3, 1.4, .5, 1) .75s both; }
+  .out__hex { position: absolute; left: 0; right: 0; bottom: 13cqw; margin: 0; text-align: center; font: 700 4.4cqw ui-monospace, Menlo, monospace; color: #fff; opacity: 0; }
+  .out-c.is-on .out__hex { animation: rise .6s var(--ease) 1s both; }
+
+  /* Detalle: el código de las capas */
+  .vp__code { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .vp__code summary { cursor: pointer; padding: .6rem .9rem; font-size: .8rem; color: var(--muted); list-style: none; }
+  .vp__code summary::-webkit-details-marker { display: none; }
+  .vp__code summary::before { content: '+ '; }
+  .vp__code[open] summary::before { content: '– '; }
+  .vp__code :global(pre) { margin: 0 !important; padding: .9rem 1rem !important; font-size: .7rem; line-height: 1.55; overflow-x: auto; max-height: 20rem; border-radius: 0; }
+
+  @media (prefers-reduced-motion: reduce) { .ly, .cue, .ly *, .cue *, .out__t, .out__hex { animation: none !important; transition: none !important; } }
+</style>

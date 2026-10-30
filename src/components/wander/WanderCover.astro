@@ -1,0 +1,21 @@
+---
+// Portada de Wanderlust (franja «Próximamente» del índice y tarjeta): el isologo blanco sobre el gris de la marca, con la cubierta «Coming soon».
+import { withBase, type Lang } from '../../lib/i18n';
+const { lang = 'es', wide = false } = Astro.props as { lang?: Lang; wide?: boolean };
+---
+<div class:list={['wvc', { 'wvc--wide': wide }]}>
+  <i class="wvc__glow" aria-hidden="true"></i>
+  <img class="wvc__logo" src={withBase('/works/wanderlust-videos/marca/iso-blanco.webp')} alt="Wanderlust Videos" loading="lazy" decoding="async" />
+  <span class="wvc__soon"><b>{lang === 'es' ? 'Próximamente' : 'Coming soon'}</b></span>
+</div>
+
+<style>
+  .wvc { position: relative; width: 100%; height: 100%; overflow: hidden; container-type: inline-size; background: #282931; }
+  .wvc__glow { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 80% at 78% 8%, rgb(10 103 148 / .55), transparent 65%), radial-gradient(ellipse 60% 70% at 8% 105%, rgb(124 205 225 / .22), transparent 70%); }
+  .wvc__logo { position: absolute; left: 50%; top: 42%; width: 64cqw; height: auto; transform: translate(-50%, -50%); filter: blur(1.1cqw) drop-shadow(0 1.2cqw 2cqw rgb(0 0 0 / .4)); opacity: .9; }
+  .wvc__soon { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; background: linear-gradient(to bottom, rgb(12 12 16 / .2), rgb(12 12 16 / .6) 55%, rgb(12 12 16 / .8)); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); border-top: 1px solid rgb(255 255 255 / .22); }
+  .wvc__soon b { font-weight: 500; font-size: 4.6cqw; letter-spacing: .5em; padding-left: .5em; text-transform: uppercase; color: #fff; }
+  /* Franja fina del índice: el logo grande, cortado por los bordes */
+  .wvc--wide .wvc__logo { top: 50%; width: 46cqw; max-width: none; }
+  .wvc--wide .wvc__soon b { font-size: 1.9cqw; }
+</style>

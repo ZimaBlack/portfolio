@@ -14,9 +14,10 @@ text:
 cover: /works/wanderlust-videos/cover.webp
 manual: wanderlust
 draft: false
-featured: true
-homeOrder: 0
-order: 0
+locked: true
+coverKind: wanderlust
+featured: false
+order: 8
 tones: ["#282931", "#0A6794"]
 gallery: []
 ---

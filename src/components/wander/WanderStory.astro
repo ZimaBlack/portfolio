@@ -58,7 +58,7 @@ const demos = [
 ];
 ---
 <div class="ws">
-  <div class="wrap hero" data-reveal>
+  <div class="wrap wsh" data-reveal>
     <Fig lang={lang} src={`${P}/marca/iso-blanco.webp`} alt={t('Isologo de Wanderlust Videos en blanco', 'Wanderlust Videos logo mark in white')} ratio="21 / 9" fit="contain" surface="brand" eager={true} />
     <nav class="thread" aria-label={t('Capítulos del proyecto', 'Project chapters')}>
       {thread.map((s, i) => <a href={`#${s.id}`}><span>{String(i + 1).padStart(2, '0')}</span>{s.k}</a>)}
@@ -242,7 +242,7 @@ const demos = [
 
 <style>
   .ws { padding-bottom: clamp(3rem, 6vw, 6rem); }
-  .hero { padding-top: clamp(2rem, 4vw, 4rem); display: grid; gap: 1.2rem; }
+  .wsh { padding-top: clamp(2rem, 4vw, 4rem); display: grid; gap: 1.2rem; }
   .thread { display: flex; flex-wrap: wrap; gap: .5rem .6rem; }
   .thread a { display: inline-flex; gap: .5rem; align-items: baseline; padding: .45rem .95rem; border: 1px solid var(--line); border-radius: 999px; font-size: .82rem; transition: border-color .4s var(--ease), background .4s var(--ease); }
   .thread a span { color: var(--muted); font-size: .7rem; }
