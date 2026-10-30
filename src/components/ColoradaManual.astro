@@ -220,6 +220,7 @@ const t = es ? {
   .cm > figure.wrap { margin-inline: auto; }
   .cm { --c0: var(--pw-0, #e03b7a); --c1: var(--pw-1, #6ce829); display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(4rem, 8vw, 8rem); }
   .cm figure { margin: 0; }
+  @media (max-width: 760px) { .cm { gap: var(--rhythm) !important; padding-block: var(--rhythm) !important; } .cm__txt { font-size: 1.02rem; line-height: 1.7; } }
   .cm :global(.wrap) { padding-right: max(var(--gutter), 5.5rem); } /* deja libre el borde donde va el widget de color */
   @media (max-width: 760px) { .cm :global(.wrap) { padding-right: var(--gutter); } } /* en el celular el widget empieza contraído: márgenes simétricos */
   .cm__head { display: grid; gap: 1.5rem; max-width: 62rem; }

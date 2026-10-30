@@ -248,6 +248,7 @@ const demos = [
   .thread a span { color: var(--muted); font-size: .7rem; }
   .thread a:hover { border-color: var(--fg); background: color-mix(in srgb, var(--fg) 6%, transparent); }
 
+  @media (max-width: 760px) { .body { gap: var(--rhythm) !important; padding-block: var(--rhythm) 0 !important; } .ws .lead { font-size: 1.15rem; } }
   .body { display: grid; gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(4rem, 9vw, 9rem) 0; }
   .ch { display: grid; gap: 2rem 3rem; grid-template-columns: minmax(10rem, 1fr) 4fr; align-items: start; scroll-margin-top: 6rem; }
   .ch--wide { grid-template-columns: 1fr; }

@@ -54,6 +54,7 @@ const t = {
   /* El widget también pierde el color mientras dura el modo blanco y negro */
   .pw { --gs: 0; } html[data-pw-bw] .pw :is(.pw__random, .pw__tab) { filter: grayscale(1) contrast(1.05); }
   html[data-pw-bw] .pw__rail { background: linear-gradient(to bottom, #b9b9b9, #7a7a7a 55%, #444) !important; }
+  @media (max-width: 760px) { html[data-pw-bw] .pw__rail { background: linear-gradient(to right, #b9b9b9, #7a7a7a 55%, #444) !important; } }
 </style>
 <style>
   /* Vertical, centrado en la altura de la pantalla y pegado al borde derecho */
@@ -79,7 +80,7 @@ const t = {
   .pw__random:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
   .pw__random:disabled { opacity: .4; cursor: default; pointer-events: none; }
   .pw__random svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-  .pw__knob.is-slide { transition: top .7s var(--ease), transform .3s var(--ease); }
+  .pw__knob.is-slide { transition: top .7s var(--ease), left .7s var(--ease), transform .3s var(--ease); }
   /* Cada barra: el arco iris, con una perilla que toma el color que aplica */
   .pw__rail { position: relative; width: 2.1rem; border-radius: 8px; cursor: grab; touch-action: none;
     background: linear-gradient(to bottom, #e8452a, #f1e63a 17%, #6df13a 33%, #3af1f1 50%, #1a1aff 67%, #c43af1 83%, #e8452a); } /* respaldo: el script la redibuja con los colores reales */
@@ -96,7 +97,23 @@ const t = {
   /* En el pie de la web el widget se oculta */
   .pw.is-away { opacity: 0; pointer-events: none; transform: translate(calc(var(--pw-dx, 0px) + 1.5rem), calc(-50% + var(--pw-dy, 0px))); }
   .pw.is-docked { transition: opacity .5s ease, transform .35s ease-out; }
-  @media (max-width: 760px) { .pw { right: .5rem; } .pw__rails { height: min(40vh, 18rem); gap: .6rem; } .pw__rail, .pw__lq i { width: 1.7rem; } .pw__lq { gap: .6rem; } .pw__knob { width: 2.4rem; margin-left: -1.2rem; } }
+  /* Celular: barras horizontales, en una franja pegada abajo y a todo el ancho; la pestaña queda arriba a la izquierda */
+  @media (max-width: 760px) {
+    .pw { left: 0; right: 0; top: auto; bottom: 0; transform: none; display: block; pointer-events: none; }
+    .pw > * { pointer-events: auto; }
+    .pw__tab { position: absolute; left: .85rem; bottom: calc(100% + .6rem); }
+    .pw__panel { flex-direction: row; width: 100%; gap: .9rem; padding: .8rem 1.1rem calc(.8rem + env(safe-area-inset-bottom)); border-radius: 18px 18px 0 0; border-width: 1px 0 0; box-shadow: 0 -12px 40px rgb(0 0 0 / .35); }
+    .pw.is-closed .pw__panel { position: absolute; left: 0; right: 0; bottom: 0; transform: translateY(110%); opacity: 0; pointer-events: none; }
+    .pw__rails { flex: 1; min-width: 0; flex-direction: column; height: auto; gap: .7rem; }
+    .pw__rail { width: 100%; height: 1.7rem; }
+    .pw__knob { width: 1.5rem; height: 2.5rem; margin: -1.25rem 0 0 -.75rem; }
+    .pw__random { width: 2.8rem; height: 2.8rem; }
+    .pw__lq { flex-direction: column; gap: .7rem; }
+    .pw__lq i { width: 0; height: 1.7rem; align-self: flex-start; animation-name: pw-fill-x; }
+    .pw__lq i::before { display: none; }
+    .pw.is-away { opacity: 0; transform: translateY(100%); }
+  }
+  @keyframes pw-fill-x { to { width: 100%; } }
   @media (prefers-reduced-motion: reduce) { .pw__panel, .pw__knob { transition: none; } .pw__lq i::before { animation: none; } }
 </style>
 
@@ -154,9 +171,15 @@ const t = {
       const hue = base.map((b) => b[2]);
       let touched = false;
       let fixed: string[] | null = null; // colores exactos elegidos desde una paleta de prueba (se sueltan al mover las barras)
-      rails.forEach((rail, i) => {
-        rail.style.background = `linear-gradient(to bottom, ${Array.from({ length: 25 }, (_, k) => toHex([L0[i], C0[i], (k / 24) * 360])).join(', ')})`;
+      // Vertical en escritorio; horizontal en el celular (la franja de abajo)
+      const mq = matchMedia('(max-width: 760px)');
+      const horiz = () => mq.matches;
+      const paintRails = () => rails.forEach((rail, i) => {
+        rail.style.background = `linear-gradient(${horiz() ? 'to right' : 'to bottom'}, ${Array.from({ length: 25 }, (_, k) => toHex([L0[i], C0[i], (k / 24) * 360])).join(', ')})`;
+        rail.setAttribute('aria-orientation', horiz() ? 'horizontal' : 'vertical');
       });
+      paintRails();
+      mq.addEventListener('change', () => { paintRails(); render(); });
 
       // Dónde caen las dos luces del fondo: siempre asimétricas, y otras en cada gesto
       let ax = 20, ay = 30, bx = 78, by = 74;
@@ -175,7 +198,8 @@ const t = {
         const hex = bw ? GRAYS : fixed ?? hue.map((h, i) => toHex([L0[i], C0[i], h]));
         rails.forEach((rail, i) => {
           rail.querySelector<HTMLElement>('.pw__knob')!.style.setProperty('--k', hex[i]);
-          rail.querySelector<HTMLElement>('.pw__knob')!.style.top = `${(hue[i] / 360) * 100}%`;
+          const knob = rail.querySelector<HTMLElement>('.pw__knob')!, pct = `${(hue[i] / 360) * 100}%`;
+          if (horiz()) { knob.style.left = pct; knob.style.top = '50%'; } else { knob.style.top = pct; knob.style.left = '50%'; }
           rail.setAttribute('aria-valuenow', String(Math.round(hue[i])));
           dots[i].style.background = hex[i];
         });
@@ -194,16 +218,16 @@ const t = {
       };
 
       rails.forEach((rail, i) => {
-        const setFromY = (clientY: number) => {
+        const setFromY = (e: PointerEvent) => {
           if (busy) return;
           const r = rail.getBoundingClientRect();
-          hue[i] = clamp((clientY - r.top) / r.height, 0, 1) * 360;
+          hue[i] = clamp(horiz() ? (e.clientX - r.left) / r.width : (e.clientY - r.top) / r.height, 0, 1) * 360;
           fixed = null; touched = true;
           render();
         };
         let id = -1;
-        rail.addEventListener('pointerdown', (e) => { if (busy) return; rail.querySelector('.pw__knob')!.classList.remove('is-slide'); id = e.pointerId; rail.setPointerCapture(id); rail.classList.add('is-drag'); reroll(); setFromY(e.clientY); });
-        rail.addEventListener('pointermove', (e) => { if (e.pointerId === id) setFromY(e.clientY); });
+        rail.addEventListener('pointerdown', (e) => { if (busy) return; rail.querySelector('.pw__knob')!.classList.remove('is-slide'); id = e.pointerId; rail.setPointerCapture(id); rail.classList.add('is-drag'); reroll(); setFromY(e); });
+        rail.addEventListener('pointermove', (e) => { if (e.pointerId === id) setFromY(e); });
         const end = (e: PointerEvent) => { if (e.pointerId === id) { id = -1; rail.classList.remove('is-drag'); } };
         rail.addEventListener('pointerup', end);
         rail.addEventListener('pointercancel', end);

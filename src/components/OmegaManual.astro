@@ -280,6 +280,7 @@ const t = es ? {
   /* Contenedor común: el contenido vive en un ancho centrado (72 rem), alineado con el encabezado */
   .om > .wrap { max-width: 72rem; }
   .om > figure.wrap { margin-inline: auto; }
+  @media (max-width: 760px) { .om { gap: var(--rhythm) !important; padding-block: var(--rhythm) !important; } .om__txt { font-size: 1.02rem; line-height: 1.7; } }
   .om { --gold: #e3d0a6; display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(4rem, 8vw, 8rem); }
   .om figure { margin: 0; }
   .om img { width: 100%; height: auto; display: block; }

@@ -199,6 +199,7 @@ const next = all.length > 1 && at >= 0 ? all[(at + 1) % all.length] : undefined;
   .is-pal .meta dt { color: color-mix(in srgb, var(--pw-0) 60%, var(--muted)); transition: color .8s linear; }
   .is-pal .meta { border-top-color: color-mix(in srgb, var(--pw-0) 40%, var(--line)); transition: border-color .8s linear; }
   .is-pal :global(.eyebrow a):hover { color: var(--pw-0); }
+  @media (max-width: 760px) { .intro { padding-top: 7.5rem !important; } .meta { gap: 1.25rem; } .meta dd { font-size: 1rem; line-height: 1.6; } }
   .intro { padding-top: clamp(9rem, 16vw, 14rem); display: grid; gap: 1.25rem; max-width: 72rem; }
   .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1.5rem; margin: 1rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--line); font-size: .9rem; }
   .meta dt { color: var(--muted); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; margin-bottom: .35rem; }

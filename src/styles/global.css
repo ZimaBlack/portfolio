@@ -39,6 +39,15 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .wrap { width: 100%; max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
 .section { padding-block: clamp(6rem, 14vw, 14rem); }
 
+/* Celular: un solo ritmo de espacios (--rhythm) para todas las secciones y un texto un poco más legible */
+@media (max-width: 760px) {
+  :root { --rhythm: 4.5rem; --muted: #a3a29b; }
+  body { line-height: 1.62; }
+  .section { padding-block: var(--rhythm); }
+  .eyebrow { font-size: .78rem; letter-spacing: .12em; }
+  .display, .h2, .title { letter-spacing: .22em; line-height: 1.45; }
+}
+
 /* Jerarquía tipográfica */
 /* Formato único de títulos del sitio: versalitas en negrita con interletrado amplio */
 .display, .h2, .title { font-family: var(--sans); font-weight: 700; font-size: clamp(1.15rem, 2vw, 1.6rem); letter-spacing: .3em; text-transform: uppercase; line-height: 1.4; margin: 0; }
