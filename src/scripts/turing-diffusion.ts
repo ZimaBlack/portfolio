@@ -14,6 +14,7 @@ export interface TuringControls {
   apply: () => void;
   enable: (on: boolean) => void; // apaga/enciende la reacción al cursor (apagado: no dibuja ni escucha)
   stillFade: (on: boolean) => void; // permite o no el brillo + apagado cuando el cursor lleva mucho tiempo quieto
+  scatter: (x: number, y: number) => void; // siembra un foco extra sin cortar los que están creciendo (difusión automática del celular)
 }
 export interface TuringOptions {
   target?: Window | HTMLElement;       // dónde se escucha el cursor (por defecto, el propio canvas)
@@ -22,12 +23,14 @@ export interface TuringOptions {
   stillFade?: boolean;                 // brillo + apagado por cursor quieto permitidos desde el comienzo (por defecto, sí)
 }
 
-interface Seed { x: number; y: number; t: number; trail: boolean } // x, y en celdas; t = instante de la siembra
+interface Seed { x: number; y: number; t: number; trail: boolean; retireAt?: number } // x, y en celdas; t = instante de la siembra; retireAt = empieza a apagarse
+
 
 const TRAIL_CELLS = 12;  // alcance de un rastro (en celdas)
 const NUCLEI_MS = 3200;  // los núcleos al azar sólo caen los primeros segundos de cada foco
 const FLASH_MS = 650;     // duración del destello de luminosidad antes de apagarse
 const STILL_FADE_MS = 1800; // y lo que tarda en desvanecerse
+const RETIRE_MS = 2400;     // un foco retirado por uno nuevo se apaga en este tiempo
 
 export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLElement | null, opts: TuringOptions = {}): TuringControls | null {
   if (!canvas.getContext('2d') || matchMedia('(prefers-reduced-motion: reduce)').matches) return null;
@@ -79,7 +82,7 @@ export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLEleme
       if (disturbedAt) alpha = Math.min(alpha, Math.max(0, 1 - (now - disturbedAt) / fadeOutMs));
     }
     if (alpha <= 0) seeds = seeds.filter((s) => s.trail); // el principal se disolvió del todo
-    seeds = seeds.filter((s) => !s.trail || now - s.t < P.trailLife);
+    seeds = seeds.filter((s) => (!s.trail || now - s.t < P.trailLife) && (!s.retireAt || now - s.retireAt < RETIRE_MS));
     if (!seeds.length) { sim.clear(); raf = 0; stillStage = 0; fadeOutMs = 900; apply(); if (inside && !retired) armIdle(); return; }
 
     // Los núcleos al azar sólo caen cerca de focos recientes
@@ -91,7 +94,7 @@ export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLEleme
       let m = 0;
       for (const s of seeds) {
         const rg = reach(s, now);
-        const e = (1 - smooth((Math.hypot(x - s.x, y - s.y) - rg * 0.62) / (rg * 0.38))) * (s.trail ? trailAlpha(s, now) : alpha);
+        const e = (1 - smooth((Math.hypot(x - s.x, y - s.y) - rg * 0.62) / (rg * 0.38))) * (s.trail ? trailAlpha(s, now) : alpha) * (s.retireAt ? 1 - smooth((now - s.retireAt) / RETIRE_MS) : 1);
         if (e > m) m = e;
       }
       return m;
@@ -159,6 +162,16 @@ export function initTuringDiffusion(canvas: HTMLCanvasElement, panel?: HTMLEleme
     params: P, apply, resize, clear,
     stillFade: (v) => { stillOn = v; lastMoveAt = performance.now(); },
     restart: (x = sim.w / 2, y = sim.h / 2) => { if (on) start(x, y); },
+    scatter: (x, y) => {
+      if (!on) return;
+      const now = performance.now();
+      lastMoveAt = now; // sin cursor, el apagado por quietud no debe actuar mientras se siembra solo
+      const live = seeds.filter((s) => !s.trail && !s.retireAt);
+      if (!live.length) { start(x, y); return; }
+      if (live.length >= 2) live[0].retireAt = now; // como mucho dos focos vivos: el más viejo se apaga suave
+      sim.clearDisc(x, y, P.radius * 0.35);
+      addSeed(x, y); startedAt = now; disturbedAt = 0; kick();
+    },
     enable: (v) => { if (v === on) return; on = v; if (on) { sim.resize(); inside = false; } else { clearTimeout(idleTimer); clear(); } },
   };
 }

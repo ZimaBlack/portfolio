@@ -342,7 +342,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
 
 <style>
   /* Armonía: una paleta de cuatro tonos sacada del isotipo y de la marca del sistema — ciruela-azulado (base), pervinca (acento), cielo (flujo) y crema (texto cálido) */
-  .np { --ac: #a9aedb; --sky: #38bdf8; --cream: #f1e9dc; --ink: #14121f; display: grid; gap: clamp(3.5rem, 7vw, 7rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(5rem, 9vw, 9rem); }
+  .np { --ac: #a9aedb; --sky: #38bdf8; --cream: #f1e9dc; --ink: #14121f; display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(3.5rem, 7vw, 7rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(5rem, 9vw, 9rem); }
   .np > .wrap { max-width: 72rem; }
   .np figure { margin: 0; }
   .np img { width: 100%; height: auto; display: block; }

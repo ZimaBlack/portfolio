@@ -8,6 +8,7 @@ import { initTuringDiffusion, type TuringControls } from './turing-diffusion';
 export interface TuringBackground {
   setActive: (on: boolean) => void;     // encendido sólo en la Home
   setStillFade: (on: boolean) => void;  // brillo + apagado por cursor quieto: sólo con el hero principal a la vista
+  setAuto: (on: boolean) => void;       // celular: sin cursor, la difusión se siembra sola en lugares al azar
 }
 
 const INTERACTIVE = 'a, button, input, textarea, select, [data-no-seed]';
@@ -23,7 +24,17 @@ export function initTuringBackground(canvas: HTMLCanvasElement, preset: Partial<
     },
   });
   cursor?.enable(false);
+  // Difusión automática (celular, sin cursor): cada 3,5–6 s cae un foco en un punto al azar de la parte visible del hero
+  let autoTimer = 0;
+  const drop = () => {
+    const hero = document.querySelector<HTMLElement>('.hero');
+    const r = hero?.getBoundingClientRect();
+    const top = Math.max(0, r?.top ?? 0), bottom = Math.min(innerHeight, r?.bottom ?? innerHeight);
+    if (bottom - top > 80) cursor?.scatter(innerWidth * (0.08 + Math.random() * 0.84), top + (bottom - top) * (0.1 + Math.random() * 0.8));
+    autoTimer = window.setTimeout(drop, 3500 + Math.random() * 2500);
+  };
   return {
+    setAuto: (on) => { clearTimeout(autoTimer); autoTimer = 0; if (on && cursor) autoTimer = window.setTimeout(drop, 500); },
     setActive: (on) => cursor?.enable(on),
     setStillFade: (on) => cursor?.stillFade(on),
   };

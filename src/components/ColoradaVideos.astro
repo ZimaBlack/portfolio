@@ -277,6 +277,7 @@ const L = {
     .cmv__row { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: min(78%, 20rem); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 1rem; margin-inline: calc(var(--gutter) * -1) calc(max(var(--gutter), 5.5rem) * -1); padding-inline: var(--gutter) max(var(--gutter), 5.5rem); scroll-padding-inline: var(--gutter); }
     .vp { scroll-snap-align: center; }
   }
+  @media (max-width: 760px) { .cmv__row { margin-right: calc(var(--gutter) * -1); padding-right: var(--gutter); } }
 
   .vp { max-width: 18rem; width: 100%; margin-inline: auto; min-width: 0; }
   .vp { --c0: var(--v0); --c1: var(--v1); transition: --v0 .5s linear, --v1 .5s linear; }

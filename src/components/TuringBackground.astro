@@ -31,8 +31,11 @@ import preset from '../data/background.json';
     const hero = document.querySelector<HTMLElement>('.hero');
     canvas.classList.toggle('is-off', !hero);
     bg.setActive(!!hero);
+    bg.setAuto(false);
     if (!hero) return;
-    io = new IntersectionObserver(([e]) => { canvas.classList.toggle('is-hero', e.isIntersecting); bg?.setStillFade(e.isIntersecting); }, { threshold: 0.35 }); // el brillo y apagado por cursor quieto, sólo con el hero a la vista
+    // En el celular no hay cursor: con el hero a la vista, la difusión se genera sola y al azar
+    const touch = matchMedia('(hover: none), (pointer: coarse), (max-width: 760px)').matches;
+    io = new IntersectionObserver(([e]) => { canvas.classList.toggle('is-hero', e.isIntersecting); bg?.setStillFade(e.isIntersecting); bg?.setAuto(touch && e.isIntersecting); }, { threshold: 0.35 }); // el brillo y apagado por cursor quieto, sólo con el hero a la vista
     io.observe(hero);
   };
   document.addEventListener('astro:page-load', wire);

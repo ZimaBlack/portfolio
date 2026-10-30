@@ -218,9 +218,10 @@ const t = es ? {
   /* Contenedor común: el contenido vive en un ancho centrado (72 rem), alineado con el encabezado */
   .cm > .wrap { max-width: 72rem; }
   .cm > figure.wrap { margin-inline: auto; }
-  .cm { --c0: var(--pw-0, #e03b7a); --c1: var(--pw-1, #6ce829); display: grid; gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(4rem, 8vw, 8rem); }
+  .cm { --c0: var(--pw-0, #e03b7a); --c1: var(--pw-1, #6ce829); display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(3rem, 6vw, 6rem) clamp(4rem, 8vw, 8rem); }
   .cm figure { margin: 0; }
   .cm :global(.wrap) { padding-right: max(var(--gutter), 5.5rem); } /* deja libre el borde donde va el widget de color */
+  @media (max-width: 760px) { .cm :global(.wrap) { padding-right: var(--gutter); } } /* en el celular el widget empieza contraído: márgenes simétricos */
   .cm__head { display: grid; gap: 1.5rem; max-width: 62rem; }
   .cm__lead { margin: 0; font-size: clamp(1.25rem, 2.2vw, 2rem); line-height: 1.35; }
   .cm__txt { margin: 0; color: var(--muted); max-width: 40rem; }
