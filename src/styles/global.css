@@ -92,6 +92,19 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   --gc-mod: #bcdccb; --gc-card: #f1f7f3; --gc-ink: #2c8a5b; --gc-grid: rgb(93 185 138 / .13); }
 :root[data-gc-theme='dark'] { --bg: #0e1512; --fg: #ecebe6; --muted: #8a938e; --line: rgb(236 235 230 / .14); --accent: #ecebe6; color-scheme: dark;
   --gc-mod: #dfefe5; --gc-card: #0c1a14; --gc-ink: #5db98a; --gc-grid: rgb(93 185 138 / .07); }
-:root[data-gc-theme] body { background-image: linear-gradient(var(--gc-grid) 1px, transparent 1px), linear-gradient(90deg, var(--gc-grid) 1px, transparent 1px); background-size: 56px 56px; transition: background-color .6s ease, color .6s ease; }
+/* la retícula y el cristal viven en GcBg y en las reglas siguientes: la retícula solo en modo oscuro; el cristal y el desenfoque solo en modo claro */
+:root[data-gc-theme] body { transition: background-color .6s ease, color .6s ease; }
 /* Sobre la portada (foto oscura) el encabezado conserva los colores claros, también en modo claro */
 :root[data-gc-theme='light'] .header:not(.is-solid) { color: #ecebe6; --fg: #ecebe6; --muted: #c9ccc8; --bg: #0b0b0a; --line: rgb(236 235 230 / .18); }
+
+/* Modo claro: cristal y desenfoque sobre las manchas de color del fondo */
+:root[data-gc-theme='light'] :is(.gcg__card, .gcs__c, .gcm__sw li, .chips li, .gcm__spec, .gcr__tapiz-wrap, .gcc li, .gcmd__ref, .gcw__btn) {
+  -webkit-backdrop-filter: blur(22px) saturate(1.35); backdrop-filter: blur(22px) saturate(1.35);
+  background-color: rgb(255 255 255 / .46); border-color: rgb(255 255 255 / .8); box-shadow: 0 14px 44px rgb(44 138 91 / .09), inset 0 1px 0 rgb(255 255 255 / .85);
+}
+:root[data-gc-theme='light'] .gcg__card { background-image: none; border: 1px solid rgb(255 255 255 / .8); border-radius: 14px; }
+:root[data-gc-theme='light'] .gcm__sw li { background-color: color-mix(in srgb, var(--c) 72%, transparent); }
+:root[data-gc-theme='light'] :is(.gcs__c, .gcc li, .gcr__tapiz-wrap, .gcm__spec) { border: 1px solid rgb(255 255 255 / .8); border-radius: 14px; padding: clamp(.6rem, 1.6vw, 1.1rem); }
+/* El mood board se difumina hacia el borde derecho solo en modo claro */
+:root[data-gc-theme='light'] .gcmd__col--3 { -webkit-mask-image: linear-gradient(90deg, #000 0, transparent 118%); mask-image: linear-gradient(90deg, #000 0, transparent 118%); filter: blur(1.6px); }
+:root[data-gc-theme='light'] .gcmd__col--3 img { filter: blur(1.4px); }

@@ -1,0 +1,40 @@
+---
+// Mood board (manual de marca): las siete referencias del estilo suizo, en cuatro columnas escalonadas. La columna del borde se difumina
+// (solo en modo claro, como cristal esmerilado). Cada pieza entra con un fundido sutil.
+import { withBase } from '../lib/i18n';
+const { lang = 'es', label = 'Mood board' } = Astro.props as { lang?: 'es' | 'en'; label?: string };
+const m = (n: string) => withBase(`/works/global-citizen/mood/${n}.webp`);
+const cols: [string, number, number, string][][] = [
+  [['circles', 256, 522, 'Módulos en blanco y negro']],
+  [['beethoven', 312, 422, 'Beethoven: póster de Josef Müller-Brockmann'], ['tag', 312, 528, 'Etiqueta tipográfica']],
+  [['letter', 310, 435, 'Papelería sobre retícula'], ['silo', 311, 498, 'Sitio con jerarquía tipográfica']],
+  [['orange', 272, 363, 'Web con formas geométricas'], ['yellow', 272, 391, 'Póster: Richard Feynman, 1918']],
+];
+const refs = lang === 'es' ? 'Referencias' : 'References';
+---
+<figure class="gcmd" data-gc aria-label={label}>
+  <div class="gcmd__grid">
+    {cols.map((col, ci) => (
+      <div class={`gcmd__col gcmd__col--${ci}`}>
+        {col.map(([n, w, h, alt], i) => (
+          <img src={m(n)} alt={alt} width={w} height={h} loading="lazy" decoding="async" data-nozoom style={`--i:${ci * 2 + i}`} />
+        ))}
+        {ci === 1 && <figcaption class="gcmd__ref"><span>{refs}:</span><b>Josef Müller-Brockmann</b><b>Armin Hofmann</b></figcaption>}
+      </div>
+    ))}
+  </div>
+</figure>
+
+<style is:global>
+  .gcmd { margin: 0; }
+  .gcmd__grid { display: grid; grid-template-columns: 0.82fr 1fr 1fr 0.88fr; gap: clamp(.8rem, 2.4vw, 2rem); align-items: start; }
+  .gcmd__col { display: grid; gap: clamp(.8rem, 2.4vw, 2rem); align-content: start; }
+  .gcmd__col--0 { margin-top: 26%; } .gcmd__col--3 { margin-top: 18%; }
+  .gcmd__col img { width: 100%; height: auto; display: block; opacity: 0; transform: translateY(14px); }
+  .gcmd.is-in .gcmd__col img { animation: gcmd-in 1.1s calc(var(--i) * .12s) var(--gc-ease, ease) forwards; }
+  @keyframes gcmd-in { to { opacity: 1; transform: none; } }
+  .gcmd__ref { display: grid; gap: .1rem; font-size: .95rem; padding: .2rem .4rem 0; color: var(--muted); }
+  .gcmd__ref b { color: var(--fg); font-weight: 500; font-size: 1.02rem; }
+  @media (max-width: 720px) { .gcmd__grid { grid-template-columns: 1fr 1fr; } .gcmd__col--0, .gcmd__col--3 { margin-top: 0; } }
+  @media (prefers-reduced-motion: reduce) { .gcmd__col img { opacity: 1; transform: none; animation: none !important; } }
+</style>
