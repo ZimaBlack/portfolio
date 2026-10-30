@@ -134,13 +134,11 @@ const t = es ? {
   <div class="wrap om__res" data-reveal>
     <div class="om__side"><h2 class="h2">{t.res}</h2><p class="om__txt">{t.resA}</p></div>
     <div class="omb" role="img" aria-label={t.res} style={`--b:url(${withBase('/works/omega-shields/ornaments/band.svg')})`}><i></i><i class="omb__s"></i></div>
-    <div class="om__resrow">
-      <figure class="omx" data-omi>
-        <img class="omx__e omx__e--a" src={withBase('/works/omega-shields/ornaments/emblem-forged.svg')} alt="Forged" width="290" height="402" loading="lazy" decoding="async" />
-        <img class="omx__e omx__e--b" src={withBase('/works/omega-shields/ornaments/emblem-essentials.svg')} alt="Essentials" width="273" height="306" loading="lazy" decoding="async" />
-      </figure>
-      <figure class="om__photo om__c1"><img src={g('concept-art')} alt={t.concept} width="1310" height="1904" loading="lazy" decoding="async" /></figure>
-    </div>
+    <figure class="omx" data-omi>
+      <div class="omx__pat" aria-hidden="true"><OmegaPattern uid="rx" variant="b" logo={false} animate={false} label="" par="xMidYMid slice" /></div>
+      <img class="omx__e omx__e--a" src={withBase('/works/omega-shields/ornaments/emblem-forged.svg')} alt="Forged" width="290" height="402" loading="lazy" decoding="async" />
+      <img class="omx__e omx__e--b" src={withBase('/works/omega-shields/ornaments/emblem-essentials.svg')} alt="Essentials" width="273" height="306" loading="lazy" decoding="async" />
+    </figure>
   </div>
 
   <figure class="om__bleed" data-reveal><img src={g('scene')} alt={t.scene} width="2000" height="840" loading="lazy" decoding="async" /></figure>
@@ -329,14 +327,15 @@ const t = es ? {
   .omv__c.is-active .omv__live { opacity: 1; }
   @media (max-width: 860px) { .om__row--iso { grid-template-columns: 1fr; } }
   /* Encuadre de las secciones: un ornamento a cada lado, pegado al borde y con su proporción (160 × 546); encastran al entrar */
-  .om__row, .om__res, .om__apps, .om__deco, .om__prods { position: relative; padding-block: clamp(2.6rem, 6vw, 4.4rem); padding-inline: clamp(4.6rem, 15vw, 12.5rem); }
+  .om__row, .om__res, .om__apps, .om__deco, .om__prods { position: relative; padding-block: clamp(2.6rem, 6vw, 4.4rem); padding-inline: clamp(1.2rem, 3vw, 2.5rem); }
   .om__row::before, .om__row::after, .om__res::before, .om__res::after, .om__apps::before, .om__apps::after, .om__deco::before, .om__deco::after, .om__prods::before, .om__prods::after {
-    content: ''; position: absolute; top: 50%; height: min(100%, 24rem); aspect-ratio: 160 / 546; pointer-events: none; z-index: 0; opacity: 0; translate: 0 -50%;
+    content: ''; position: absolute; top: 50%; height: min(100%, 24rem); aspect-ratio: 160 / 546; width: auto; pointer-events: none; z-index: 0; opacity: 0; translate: 0 -50%;
     background: no-repeat center / 100% 100%; transition: opacity 1.2s ease, transform 1.4s var(--ease); }
-  .om__row::before, .om__res::before, .om__apps::before, .om__deco::before, .om__prods::before { left: 0; background-image: var(--sl); transform: translateX(-60%); }
-  .om__row::after, .om__res::after, .om__apps::after, .om__deco::after, .om__prods::after { right: 0; background-image: var(--sr); transform: translateX(60%); }
+  .om__row::before, .om__res::before, .om__apps::before, .om__deco::before, .om__prods::before { left: calc(50% - 50vw + .8rem); background-image: var(--sr); transform: translateX(-60%); }
+  .om__row::after, .om__res::after, .om__apps::after, .om__deco::after, .om__prods::after { right: calc(50% - 50vw + .8rem); background-image: var(--sl); transform: translateX(60%); }
   .is-in.om__row::before, .is-in.om__res::before, .is-in.om__apps::before, .is-in.om__deco::before, .is-in.om__prods::before,
-  .is-in.om__row::after, .is-in.om__res::after, .is-in.om__apps::after, .is-in.om__deco::after, .is-in.om__prods::after { opacity: .42; transform: none; }
+  .is-in.om__row::after, .is-in.om__res::after, .is-in.om__apps::after, .is-in.om__deco::after, .is-in.om__prods::after { opacity: .24; transform: none; }
+  @media (max-width: 1280px) { .om__row::before, .om__row::after, .om__res::before, .om__res::after, .om__apps::before, .om__apps::after, .om__deco::before, .om__deco::after, .om__prods::before, .om__prods::after { display: none; } }
   .om__row > *, .om__res > *, .om__apps > *, .om__deco > *, .om__prods > * { position: relative; z-index: 1; }
   .om__scene { display: grid; justify-items: center; }
   .om__sceneb { width: min(100%, 30rem); aspect-ratio: 636 / 886; overflow: hidden; border-radius: 4px; box-shadow: 0 30px 80px rgb(0 0 0 / .5); }
@@ -367,17 +366,16 @@ const t = es ? {
   @keyframes omb-sheen { 0% { opacity: 0; background-position: 130% 0; } 6% { opacity: .75; } 18% { opacity: .75; } 26% { opacity: 0; background-position: -30% 0; } 100% { opacity: 0; background-position: -30% 0; } }
   @media (prefers-reduced-motion: reduce) { .omb .omb__s { animation: none; } }
   /* Emblemas que encastran y flotan en vertical, rectos, con el ritmo de la filigrana, y un glow que respira */
-  .om__resrow { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--gutter); align-items: stretch; }
-  .omx { position: relative; margin: 0; min-height: 22rem; display: flex; align-items: center; justify-content: center; gap: clamp(1rem, 4vw, 3rem); background: radial-gradient(ellipse 60% 55% at 50% 50%, rgb(70 120 200 / .18), transparent 70%), #0d0b14; }
-  .om .omx__e { position: static; width: clamp(5.5rem, 14vw, 11rem); height: auto; opacity: 0; }
+  .omx { position: relative; margin: 0; aspect-ratio: 21 / 9; overflow: hidden; display: flex; align-items: center; justify-content: center; gap: clamp(2rem, 8vw, 7rem); background: radial-gradient(ellipse 50% 70% at 50% 50%, #1b2644, #0d0b14 75%); }
+  .omx__pat { position: absolute; inset: 0; opacity: .55; -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, transparent 8%, #000 100%); mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, transparent 8%, #000 100%); }
+  .omx__pat svg { width: 100%; height: 100%; }
+  .omx::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 36% 60% at 50% 52%, rgb(70 120 200 / .28), transparent 70%); }
+  .om .omx__e { position: relative; z-index: 1; width: clamp(6rem, 17vw, 14rem); height: auto; opacity: 0; }
   .omx.is-in .omx__e { animation: omx-in 1.6s .2s var(--ease) both, omx-float 7s 1.8s ease-in-out infinite, omx-glow 5s 1.8s ease-in-out infinite; }
   .omx.is-in .omx__e--b { animation-delay: .7s, 2.3s, 2.8s; }
   @keyframes omx-in { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: none; } }
   @keyframes omx-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
   @keyframes omx-glow { 0%, 100% { filter: drop-shadow(0 0 8px rgb(212 174 100 / .35)); } 50% { filter: drop-shadow(0 0 24px rgb(240 205 130 / .85)); } }
-  .om__resrow .om__c1 { max-width: none; justify-self: stretch; }
-  .om__resrow .om__c1 img { width: 100%; height: 100%; object-fit: cover; }
-  @media (max-width: 860px) { .om__resrow { grid-template-columns: 1fr; } }
   @media (prefers-reduced-motion: reduce) { .om .omx__e { opacity: 1; animation: none !important; } }
   .om__res { display: grid; gap: clamp(2rem, 5vw, 3.5rem); }
   .om__resg { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gutter); align-items: center; }
