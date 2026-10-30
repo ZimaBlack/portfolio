@@ -121,14 +121,14 @@ const t = es ? {
     <h2 class="h2">{t.blend}</h2>
     <p class="cm__txt">{t.blendA}</p>
     <div class="cm__blendgrid">
-      <figure class="cm__photo cm__photo--big"><TintMask photo="/works/colorada/manual/r3.webp" blur={0.35} bw="/works/colorada/manual/r3.webp" layers={[
-        { n: 'Campera', m: '/works/colorada/manual/r3-cloth.webp', c: '--c0', bl: 0.8, b: [['overlay', 0.7]] },
-        { n: 'Pelo', m: '/works/colorada/manual/r3-hairMain.webp', c: '--c0', bl: 0.8, b: [['overlay', 0.7]] },
-        { n: 'Mechones', m: '/works/colorada/manual/r3-hairAcc.webp', c: '--c1', bl: 0, b: [['overlay', 0.63]] },
-        { n: 'Flequillo', m: '/works/colorada/manual/r3-front.webp', c: '--c1', bl: 0, b: [['overlay', 0.63]] },
-        { n: 'Logos', m: '/works/colorada/manual/r3-logoMain.webp', c: '--c0', bl: 0.8, b: [['overlay', 0.7]] },
-        { n: 'Logos acento', m: '/works/colorada/manual/r3-logoAcc.webp', c: '--c1', bl: 0, b: [['overlay', 0.63]] },
-      ]} alt={t.blend} ratio="1391 / 1830" tune={true} /></figure>
+      <figure class="cm__photo cm__photo--big"><TintMask photo="/works/colorada/manual/r3.webp" plain={true} bw="/works/colorada/manual/r3.webp" layers={[
+        { n: 'Campera', m: '/works/colorada/manual/r3-cloth.webp', c: '--c0', bl: 0.6, sat: 1, lum: 1, b: [['color', 0.77]] },
+        { n: 'Pelo', m: '/works/colorada/manual/r3-hairMain.webp', c: '--c0', bl: 0.6, sat: 1, lum: 1, b: [['color', 0.77]] },
+        { n: 'Mechones', m: '/works/colorada/manual/r3-hairAcc.webp', c: '--c1', bl: 0.6, sat: 1.31, lum: 0.4, b: [['color', 0.83]] },
+        { n: 'Flequillo', m: '/works/colorada/manual/r3-front.webp', c: '--c1', bl: 0.6, sat: 1.31, lum: 0.4, b: [['color', 0.83]] },
+        { n: 'Logos', m: '/works/colorada/manual/r3-logoMain.webp', c: '--c0', bl: 0.6, sat: 1, lum: 1, b: [['color', 0.77]] },
+        { n: 'Logos acento', m: '/works/colorada/manual/r3-logoAcc.webp', c: '--c1', bl: 0.6, sat: 1.31, lum: 0.4, b: [['color', 0.83]] },
+      ]} alt={t.blend} ratio="1391 / 1830" /></figure>
       <div class="cm__proc">
         <figure class="cm__pola cm__pola--a"><TintPhoto photo="/works/colorada/manual/foto-01.webp" shapes="/works/colorada/manual/foto-01.svg" alt={t.photoCap} ratio="1792 / 2400" blur={1.6} /></figure>
         <figure class="cm__pola cm__pola--b"><TintPhoto photo="/works/colorada/manual/foto-03.webp" shapes="/works/colorada/manual/foto-03.svg" alt={t.photo2Cap} ratio="1298 / 1718" blur={1.6} /></figure>
@@ -139,21 +139,6 @@ const t = es ? {
         ))}
       </ul>
       <div class="cm__slot" data-pw-slot aria-hidden="true"></div>
-    </div>
-  </div>
-
-  <div class="wrap cm__cmp" id="cm-compare" data-reveal>
-    <h2 class="h2">{t.cmp}</h2>
-    <p class="cm__txt">{t.cmpA}</p>
-    <div class="cm__cmpgrid">
-      <figure class="cm__photo cm__photo--big"><TintMask photo="/works/colorada/manual/r3.webp" bw="/works/colorada/manual/r3.webp" plain={true} tune={true} alt={t.cmp} ratio="1391 / 1830" layers={[
-          { n: 'Campera', m: '/works/colorada/manual/r3-cloth.webp', c: '--c0', bl: 1.6, b: [['color', 0.67]] },
-          { n: 'Pelo', m: '/works/colorada/manual/r3-hairMain.webp', c: '--c0', bl: 1.6, b: [['color', 0.67]] },
-          { n: 'Mechones', m: '/works/colorada/manual/r3-hairAcc.webp', c: '--c1', bl: 1.6, b: [['color', 0.67]] },
-          { n: 'Flequillo', m: '/works/colorada/manual/r3-front.webp', c: '--c1', bl: 1.6, b: [['color', 0.67]] },
-          { n: 'Logos', m: '/works/colorada/manual/r3-logoMain.webp', c: '--c0', bl: 1.6, b: [['color', 0.67]] },
-          { n: 'Logos acento', m: '/works/colorada/manual/r3-logoAcc.webp', c: '--c1', bl: 1.6, b: [['color', 0.67]] },
-        ]} /><figcaption class="muted">{t.cmpCap}</figcaption></figure>
     </div>
   </div>
 
@@ -266,14 +251,15 @@ const t = es ? {
   /* Let's blend: la foto, las paletas de prueba y el hueco al que viaja el widget */
   .cm__cmp { display: grid; gap: 1.25rem; } .cm__cmpgrid { max-width: 32rem; }
   .cm__blend { display: grid; gap: 1.25rem; }
-  .cm__blend .cm__photo--big { max-width: 28rem; justify-self: start; }
-  .cm__blendgrid { display: grid; grid-template-columns: minmax(0, 28rem) minmax(0, 13rem) auto minmax(11rem, 1fr); gap: clamp(1.2rem, 3vw, 3rem); align-items: center; margin-top: 1rem; }
+  .cm__blend .cm__photo--big { max-width: 34rem; justify-self: start; }
+  .cm__blendgrid { display: grid; grid-template-columns: minmax(0, 34rem) minmax(0, 6.5rem) auto minmax(8rem, 1fr); gap: clamp(1.2rem, 3vw, 3rem); align-items: center; margin-top: 1rem; }
   .cm__presets { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
   .cm__presets button { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 3.2rem; height: 3.2rem; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, #fff 6%); cursor: pointer; position: relative; transition: border-color .4s, transform .4s var(--ease); }
   .cm__presets button:hover, .cm__presets button:focus-visible { border-color: var(--fg); transform: translateX(3px); }
   .cm__presets i { grid-area: 1 / 1; width: 1.35rem; height: 1.35rem; border-radius: 5px; }
   .cm__presets i:first-child { transform: translate(-.35rem, -.35rem); } .cm__presets i:last-child { transform: translate(.35rem, .35rem); }
-  .cm__proc { display: grid; gap: 1.2rem; align-self: center; }
+  /* Las fotos del proceso se montan sobre el borde del retrato, hacia el widget */
+  .cm__proc { display: grid; gap: 1.2rem; align-self: center; margin-left: -7rem; position: relative; z-index: 2; }
   .cm__proc .cm__pola { padding: .4rem .4rem 1.6rem; }
   .cm__slot { align-self: stretch; display: flex; align-items: center; min-height: 26rem; }
   /* Paleta variable, recursos y paleta madre */
