@@ -10,7 +10,6 @@ const img = (n: string) => withBase(`/works/pirulo-coleccionables/manual/${n}.we
 const t = es ? {
   lead: 'Marca satélite de MTG Pirulo: ilustrativa, nutrida de cómic y manga.',
   brandA: 'Hereda amabilidad y nostalgia, y busca identidad propia.',
-  tags: ['Ilustrativa', 'Cómic y manga', 'Amable', 'Nostálgica'],
   rebrand: 'Rebranding',
   rebrandA: 'Parte del pirulo de la mascota de la marca padre y lo vuelve un gesto amable: ofrecer algo preciado.',
   rebrandB: 'El pirulo es el vínculo entre marcas.',
@@ -30,7 +29,6 @@ const t = es ? {
 } : {
   lead: 'A satellite brand of MTG Pirulo: illustrative, drawn from comics and manga.',
   brandA: 'It inherits friendliness and nostalgia, and seeks an identity of its own.',
-  tags: ['Illustrative', 'Comics & manga', 'Friendly', 'Nostalgic'],
   rebrand: 'Rebranding',
   rebrandA: 'It starts from the candy cane of the parent brand’s mascot and turns it into a friendly gesture: offering something precious.',
   rebrandB: 'The candy cane is the bond between brands.',
@@ -52,9 +50,6 @@ const brand = [['#D11126', ''], ['#AD2A24', ''], ['#AD7EA6', ''], ['#905C89', ''
 const bgs = ['#551113', '#1D2443'];
 ---
 <section class="pr" aria-label={es ? 'Identidad' : 'Identity'}>
-  <div class="wrap pr__head" data-reveal>
-    <ul class="pr__tags">{t.tags.map((x) => <li>{x}</li>)}</ul>
-  </div>
 
   <figure class="wrap pr__ph" data-reveal><img src={img('color')} alt="Pirulo" loading="lazy" decoding="async" /></figure>
 
@@ -109,8 +104,6 @@ const bgs = ['#551113', '#1D2443'];
   .pr__head { display: grid; gap: 1.5rem; max-width: 62rem; }
   .pr__lead { margin: 0; font-size: clamp(1.25rem, 2.2vw, 2rem); line-height: 1.35; }
   .pr__txt { margin: 0; color: var(--muted); max-width: 40rem; }
-  .pr__tags { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; margin: .5rem 0 0; padding: 0; }
-  .pr__tags li { padding: .35rem 1rem; border: 1px solid color-mix(in srgb, var(--red) 70%, transparent); border-radius: 999px; font-size: .85rem; color: #ee6a74; }
   .pr .h2 { margin-bottom: 1rem; }
   .pr__ph img, .pr__halftone { border-radius: 14px; }
   .pr__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }

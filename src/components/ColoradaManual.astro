@@ -38,7 +38,6 @@ const wordmark = inline('mark.svg', 'Colorada — logotipo');
 const t = es ? {
   lead: 'Identidad variable para una marca personal de cabello fantasía.',
   brandA: 'Un personaje, un conejo y una paleta que cambia según el momento.',
-  tags: ['Audaz', 'Joven y rebelde', 'Sensual y simpática', 'De contrastes'],
   sketch: 'Del boceto al personaje',
   sketchCap: 'Boceto original',
   photoCap: 'La marca tiñe la imagen: cambia los colores de la derecha',
@@ -72,7 +71,6 @@ const t = es ? {
 } : {
   lead: 'A variable identity for a fantasy hair-care personal brand.',
   brandA: 'A character, a bunny and a palette that changes with the moment.',
-  tags: ['Bold', 'Young & rebellious', 'Sensual & sympathetic', 'Of contrasts'],
   sketch: 'From sketch to character',
   sketchCap: 'Original sketch',
   photoCap: 'The brand tints the image: change the colors on the right',
@@ -107,9 +105,6 @@ const t = es ? {
 
 ---
 <section class="cm" aria-label={es ? 'Identidad' : 'Identity'}>
-  <div class="wrap cm__head" data-reveal>
-    <ul class="cm__tags">{t.tags.map((x) => <li>{x}</li>)}</ul>
-  </div>
 
   <div class="wrap cm__row cm__row--sketch cm__row--plain" data-reveal>
     <figure class="cm__sketch">
@@ -226,8 +221,6 @@ const t = es ? {
   .cm__head { display: grid; gap: 1.5rem; max-width: 62rem; }
   .cm__lead { margin: 0; font-size: clamp(1.25rem, 2.2vw, 2rem); line-height: 1.35; }
   .cm__txt { margin: 0; color: var(--muted); max-width: 40rem; }
-  .cm__tags { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; margin: .5rem 0 0; padding: 0; }
-  .cm__tags li { padding: .35rem 1rem; border: 1px solid color-mix(in srgb, var(--c0) 70%, transparent); border-radius: 999px; font-size: .85rem; color: color-mix(in srgb, var(--c0) 55%, var(--fg)); transition: border-color .8s linear, color .8s linear; }
   .cm .h2 { margin-bottom: 1rem; }
   .cm__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }
   .cm__row--sketch { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }

@@ -15,7 +15,6 @@ const videoUrl = 'https://www.facebook.com/mtgpirulo/videos/entro-omega-shields-
 const t = es ? {
   lead: 'Accesorios TCG para proteger mazos, cartas y colecciones.',
   brandA: 'Art Déco, medieval fantástico y orfebrería mística: un sello que protege y distingue.',
-  tags: ['Art Déco', 'Medieval fantástico', 'Orfebrería mística', 'Sci-Fi'],
   iso: 'Isologotipo',
   isoA: 'La Ω se divide para abrazar lo protegido. En el espacio negativo se abre una figura de fuerza y cercanía.',
   isoB: 'Dos versiones: Essentials y Forged.',
@@ -50,7 +49,6 @@ const t = es ? {
 } : {
   lead: 'TCG accessories to protect decks, cards and collections.',
   brandA: 'Art Deco, fantasy medieval and mystic goldsmithing: a seal that protects and distinguishes.',
-  tags: ['Art Deco', 'Fantasy medieval', 'Mystic goldsmithing', 'Sci-Fi'],
   iso: 'Isologotype',
   isoA: 'The Ω splits to embrace what it protects. Negative space opens a figure of strength and closeness.',
   isoB: 'Two versions: Essentials and Forged.',
@@ -85,9 +83,6 @@ const t = es ? {
 };
 ---
 <section class="om" aria-label={es ? 'Identidad' : 'Identity'} style={`--sl:url(${withBase('/works/omega-shields/ornaments/side-l.svg')});--sr:url(${withBase('/works/omega-shields/ornaments/side-r.svg')})`}>
-  <div class="wrap om__head" data-reveal>
-    <ul class="om__tags">{t.tags.map((x) => <li>{x}</li>)}</ul>
-  </div>
 
   <div class="wrap om__row om__row--iso omfr" data-reveal>
     <div class="om__side">
@@ -288,8 +283,6 @@ const t = es ? {
   .om__head { display: grid; gap: 1.5rem; max-width: 62rem; }
   .om__lead { margin: 0; font-size: clamp(1.25rem, 2.2vw, 2rem); line-height: 1.35; }
   .om__txt { margin: 0; color: var(--muted); max-width: 40rem; }
-  .om__tags { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; margin: .5rem 0 0; padding: 0; }
-  .om__tags li { padding: .35rem 1rem; border: 1px solid color-mix(in srgb, var(--gold) 50%, transparent); border-radius: 999px; font-size: .85rem; color: var(--gold); }
   .om .h2 { margin-bottom: 1rem; }
   .om__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }
   .om__row--rev { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
