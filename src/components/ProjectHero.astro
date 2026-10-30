@@ -165,11 +165,11 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   .pjh__omega { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
   /* Fondo negro con degradados: arranca azul oscuro y vira a dorado cuando se enciende el corte central */
   .pjh__omega::before, .pjh__omega::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
-  .pjh__omega::before { background: radial-gradient(ellipse 70% 75% at 50% 78%, rgb(18 36 100 / .6), transparent 70%); animation: pjo-fade-out 1s 1.5s ease forwards; }
-  .pjh__omega::after { background: radial-gradient(ellipse 70% 75% at 50% 78%, rgb(120 90 36 / .42), transparent 70%); opacity: 0; animation: pjo-fade-in 1.2s 1.5s ease forwards; }
+  .pjh__omega::before { background: radial-gradient(ellipse 70% 75% at 50% 78%, rgb(18 36 100 / .45), transparent 70%); animation: pjo-fade-out 1s 1.5s ease forwards; }
+  .pjh__omega::after { background: radial-gradient(ellipse 70% 75% at 50% 78%, rgb(120 90 36 / .3), transparent 70%); opacity: 0; animation: pjo-fade-in 1.2s 1.5s ease forwards; }
   @keyframes pjo-fade-out { to { opacity: 0; } } @keyframes pjo-fade-in { to { opacity: 1; } }
   /* La estructura es mayor que la ventana: se sale por los bordes y la carta central queda centrada abajo */
-  .pjh__ompw { position: absolute; left: 50%; bottom: 0; width: max(104vw, 132vh); aspect-ratio: 665 / 484; transform: translateX(-50%); }
+  .pjh__ompw { position: absolute; left: 50%; bottom: 0; width: max(84vw, 106vh); aspect-ratio: 665 / 484; transform: translateX(-50%); }
   .pjh__vig2 { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 85% 85% at 50% 70%, transparent 40%, rgb(3 3 8 / .75) 100%); }
   @media (prefers-reduced-motion: reduce) { .pjh__omega .omp { animation: none; } }
   .pjh { position: relative; width: 100%; min-height: 100vh; min-height: 100svh; overflow: hidden; isolation: isolate; }
