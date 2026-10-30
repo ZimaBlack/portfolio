@@ -128,12 +128,12 @@ const rows: { b: boolean; chips: Chip[] }[] = [
 ];
 ---
 <section class="gcm" aria-label={es ? 'Identidad' : 'Identity'}>
-  <figure class="gcm__bleed" data-reveal>
+  <figure class="gcm__bleed">
     <GcLogos label={t.logos} />
     <figcaption class="wrap muted">{t.logos}</figcaption>
   </figure>
 
-  <div class="wrap gcm__block gcm__block--concept" data-reveal>
+  <div class="wrap gcm__block gcm__block--concept">
     <div class="gcm__text">
       <h2 class="h2">{t.conceptH}</h2>
       <p class="gcm__strong">{t.conceptL}</p>
@@ -142,7 +142,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     <GcConcept label={t.conceptH} />
   </div>
 
-  <div class="wrap gcm__block gcm__block--grid" data-reveal>
+  <div class="wrap gcm__block gcm__block--grid">
     <div class="gcm__text">
       <h2 class="h2">{t.gridH}</h2>
       <p class="gcm__strong">{t.gridL}</p>
@@ -151,7 +151,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     <GcGrid label={t.gridH} />
   </div>
 
-  <div class="wrap gcm__synth" data-reveal>
+  <div class="wrap gcm__synth">
     <div class="gcm__synth-t">
       <h2 class="h2">{t.deconH}</h2>
       <p class="gcm__strong">{t.deconL}</p>
@@ -162,7 +162,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   </div>
 
   <div class="wrap gcm__block gcm__block--mood">
-    <div class="gcm__text" data-reveal>
+    <div class="gcm__text">
       <h2 class="h2">{t.insp}</h2>
       <p>{t.inspA}</p>
       <p class="gcm__strong">{t.inspB}</p>
@@ -171,13 +171,13 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   </div>
 
   <div class="wrap gcm__block gcm__block--map">
-    <div class="gcm__text" data-reveal>
+    <div class="gcm__text">
       <h2 class="h2">{t.map}</h2>
       <p>{t.mapA}</p>
       <p>{t.mapB}</p>
       <p class="gcm__strong">{t.mapC}</p>
     </div>
-    <div class="gcm__chips" data-reveal>
+    <div class="gcm__chips">
       {rows.map((r) => (
         <ul class:list={['chips', { 'chips--b': r.b }]}>
           {r.chips.map(([label, green]) => <li class:list={{ 'is-green': green }}>{label}</li>)}
@@ -187,7 +187,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   </div>
 
 
-  <div class="wrap gcm__pal" data-reveal>
+  <div class="wrap gcm__pal">
     <div class="gcm__text">
       <h2 class="h2">{t.palH}</h2>
       <p>{t.palP}</p>
@@ -201,7 +201,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     </ul>
   </div>
 
-  <div class="wrap gcm__block gcm__type" data-reveal>
+  <div class="wrap gcm__block gcm__type">
     <div class="gcm__text">
       <h2 class="h2">{t.typH}</h2>
       <p>{t.typP}</p>
@@ -214,7 +214,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     </div>
   </div>
 
-  <div class="wrap gcm__res" data-reveal>
+  <div class="wrap gcm__res">
     <div class="gcm__restxt-col">
       <h2 class="h2">{t.resH}</h2>
       <p class="gcm__restxt">{t.resP}</p>
@@ -222,36 +222,36 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     <GcResources label={t.resH} />
   </div>
 
-  <div class="wrap gcm__title" data-reveal><h2 class="h2">{t.mock}</h2></div>
+  <div class="wrap gcm__title"><h2 class="h2">{t.mock}</h2></div>
 
-  <div class="wrap gcm__pair" data-reveal>
+  <div class="wrap gcm__pair">
     <figure><img src={img('card-green')} alt={t.cards} loading="lazy" decoding="async" width="1000" height="1011" /></figure>
   </div>
-  <figure class="gcm__bleed" data-reveal>
+  <figure class="gcm__bleed">
     <img src={img('banner-dark')} alt="Global Citizen" loading="lazy" decoding="async" />
   </figure>
-  <figure class="wrap gcm__avatars" data-reveal>
+  <figure class="wrap gcm__avatars">
     <GcAvatars label={t.avatars} />
     <figcaption class="muted">{t.avatars}</figcaption>
   </figure>
-  <figure class="gcm__bleed" data-reveal>
+  <figure class="gcm__bleed">
     <img src={img('tube-flatlay')} alt={t.paper} loading="lazy" decoding="async" />
     <figcaption class="wrap muted">{t.paper}</figcaption>
   </figure>
-  <figure class="gcm__bleed" data-reveal>
+  <figure class="gcm__bleed">
     <img src={img('fence')} alt={t.fence} loading="lazy" decoding="async" />
     <figcaption class="wrap muted">{t.fence}</figcaption>
   </figure>
 
-  <figure class="gcm__bleed gcm__bleed--flush" data-reveal>
+  <figure class="gcm__bleed gcm__bleed--flush">
     <img src={img('banner-wide')} alt="Global Citizen" loading="lazy" decoding="async" />
   </figure>
-  <figure class="gcm__bleed gcm__bleed--flush" data-reveal>
+  <figure class="gcm__bleed gcm__bleed--flush">
     <img src={img('billboard')} alt={t.boards} loading="lazy" decoding="async" />
     <figcaption class="wrap muted">{t.boards}</figcaption>
   </figure>
 
-  <div class="wrap gcm__end" data-reveal>
+  <div class="wrap gcm__end">
     <h2 class="h2">{t.end}</h2>
     <div><p>{t.endA}</p><p>{t.endB}</p></div>
   </div>
@@ -297,6 +297,11 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   .gcm figcaption { font-size: .92rem; line-height: 1.5; letter-spacing: .02em; }
   .chips li { font-size: 1rem; padding: .55rem 1.1rem; letter-spacing: .015em; }
   .gcm__sw b { font-size: 1rem; } .gcm__sw span { font-size: .86rem; letter-spacing: .05em; }
+  /* Pocas entradas, solo donde explican el concepto (logos, módulo, grilla, deconstrucción y cierre). Avatares, inspiración, trama de recursos y paleta aparecen sin animar. */
+  :global(.gcm .gca li) { opacity: 1; animation: none !important; }
+  :global(.gcm .gcmd__col img) { opacity: 1; transform: none; animation: none !important; }
+  :global(.gcm .gcr__t) { opacity: 1; animation: none !important; }
+  :global(.gcm .gcr__tin) { animation: none !important; }
   .gcm__sub { font-size: .85rem; }
   .gcm__hint { font-size: .92rem; letter-spacing: .03em; color: color-mix(in srgb, var(--fg) 70%, transparent); }
   .gcm__spec { font-size: 1.1rem; } .gcm__nr, .gcm__nl { font-size: 1.15rem; line-height: 1.6; } .gcm__nb { font-size: .95rem; }
@@ -318,8 +323,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
   .gcm__sub { margin: 1.2rem 0 0; font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
   .gcm__sw { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .6rem; }
   .gcm__sw--x { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .gcm__sw li { display: grid; align-content: end; gap: .15rem; min-height: clamp(7rem, 13vw, 11rem); padding: 1rem; border-radius: 4px; background: var(--c); color: var(--f); transform: translateY(18px); opacity: 0; transition: transform .8s calc(var(--i) * .1s) var(--ease, ease), opacity .8s calc(var(--i) * .1s) ease; }
-  .gcm__sw.is-in li { transform: none; opacity: 1; }
+  .gcm__sw li { display: grid; align-content: end; gap: .15rem; min-height: clamp(7rem, 13vw, 11rem); padding: 1rem; border-radius: 4px; background: var(--c); color: var(--f); }
   .gcm__sw b { font-weight: 700; font-size: .9rem; } .gcm__sw span { font-size: .78rem; opacity: .8; letter-spacing: .06em; }
   .gcm__spec { display: grid; gap: .9rem; font-family: 'Nunito Sans', var(--sans); }
   .gcm__spec p { margin: 0; }
