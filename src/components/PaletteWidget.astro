@@ -287,7 +287,17 @@ const t = {
 
       const setOpen = (open: boolean) => { pw.classList.toggle('is-closed', !open); toggle.setAttribute('aria-expanded', String(open)); };
       setOpen(!matchMedia('(max-width: 760px)').matches);
-      toggle.addEventListener('click', () => setOpen(pw.classList.contains('is-closed')));
+      toggle.addEventListener('click', () => { autoFolded = false; setOpen(pw.classList.contains('is-closed')); });
+      // Áreas que piden espacio (los videos): el widget se contrae solo y vuelve a abrirse al salir, si estaba abierto
+      let autoFolded = false;
+      const onFold = (e: Event) => {
+        const fold = (e as CustomEvent).detail?.fold;
+        if (fold && !pw.classList.contains('is-closed')) { autoFolded = true; setOpen(false); }
+        else if (!fold && autoFolded) { autoFolded = false; setOpen(true); }
+      };
+      const w = window as unknown as { __pwFold?: (e: Event) => void };
+      if (w.__pwFold) window.removeEventListener('pw:fold', w.__pwFold);
+      w.__pwFold = onFold; window.addEventListener('pw:fold', onFold);
       render();
     });
   };

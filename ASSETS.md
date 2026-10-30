@@ -101,3 +101,7 @@ Los subtítulos son la transcripción del audio (Whisper, con tiempos por palabr
 ## 7. Wanderlust · «Próximamente»
 
 El proyecto está cargado completo pero con `locked: true` (mismo formato que Pirulo: contenido desenfocado bajo una cubierta). Para publicarlo: quitar `locked: true` y `coverKind` de `src/content/works/wanderlust-videos.md`.
+
+### Beats de fondo (originales, libres de copyright)
+
+`demo-src/beats/make_beats.py` sintetiza tres beats desde cero con numpy (sin samples ni melodías de terceros): 01 La menor y 02 Do mayor, a 96 BPM y 10 s exactos (4 compases), y 03 un loop de 8 pulsos (5,92 s) con un arpegio que sube mientras cambia el color del pelo. Van mezclados dentro del audio de cada `prueba-0N.mp4` (la voz de los clips 1 y 2 queda por encima), así que no hay nada que sincronizar. La entrada del logo dura 2 pulsos (1,25 s) y el cierre entra en el 4.º compás (7,5 s). Para regenerarlos: `python3 demo-src/beats/make_beats.py <carpeta>`.

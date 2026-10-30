@@ -144,7 +144,7 @@ const t = es ? {
       </div>
       <ul class="cm__presets" role="group" aria-label={t.blend}>
         {presets.map(([a, b]) => (
-          <li><button type="button" data-cm-preset={`${a},${b}`} aria-label={`${a} · ${b}`}><i style={`background:${b}`}></i><i style={`background:${a}`}></i></button></li>
+          <li><button type="button" data-cm-preset={`${a},${b}`} aria-label={`${a} · ${b}`} style={`--a:${a};--b:${b}`}></button></li>
         ))}
       </ul>
       <div class="cm__slot" data-pw-slot aria-hidden="true"></div>
@@ -181,13 +181,13 @@ const t = es ? {
     </ul>
   </div>
 
+  <ColoradaVideos lang={lang} />
+
   <div class="wrap cm__mother" data-reveal>
     <h2 class="h2">{t.mother}</h2>
     <p class="cm__txt">{t.motherA}</p>
     <img src={withBase('/works/colorada/manual/paleta-madre.webp')} alt={t.mother} width="2000" height="1821" loading="lazy" decoding="async" />
   </div>
-
-  <ColoradaVideos lang={lang} />
 
   <div class="cm__closer" aria-hidden="true"><div class="cm__closerin" set:html={closer} /></div>
 </section>
@@ -270,12 +270,9 @@ const t = es ? {
     transition: background .8s linear; }
   .cm__blend .cm__photo--big { max-width: 34rem; justify-self: start; }
   .cm__blendgrid { display: grid; grid-template-columns: minmax(0, 34rem) minmax(0, 6.5rem) auto minmax(8rem, 1fr); gap: clamp(1.2rem, 3vw, 3rem); align-items: center; margin-top: 1rem; }
-  .cm__presets { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
-  .cm__presets button { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 3.2rem; height: 3.2rem; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, #fff 6%); cursor: pointer; position: relative; transition: border-color .4s, transform .4s var(--ease); }
-  .cm__presets button:hover, .cm__presets button:focus-visible { border-color: var(--fg); transform: translateX(3px); }
-  .cm__presets i { grid-area: 1 / 1; width: 1.35rem; height: 1.35rem; border-radius: 5px; }
-  .cm__presets i:first-child { transform: translate(-.35rem, -.35rem); } .cm__presets i:last-child { transform: translate(.35rem, .35rem); }
-  /* Las fotos del proceso se montan sobre el borde del retrato, hacia el widget */
+  .cm__presets { list-style: none; margin: 0; padding: .6rem; display: grid; gap: .6rem; justify-self: center; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--bg) 78%, #fff 5%); backdrop-filter: blur(6px); }
+  .cm__presets button { all: unset; box-sizing: border-box; display: block; width: 2.3rem; height: 2.3rem; border-radius: 50%; cursor: pointer; background: linear-gradient(135deg, var(--a) 0 50%, var(--b) 50% 100%); box-shadow: inset 0 0 0 .16rem rgb(0 0 0 / .4), 0 0 0 1px var(--line); transition: transform .4s var(--ease), box-shadow .4s; }
+  .cm__presets button:hover, .cm__presets button:focus-visible { transform: scale(1.14); box-shadow: inset 0 0 0 .16rem rgb(0 0 0 / .4), 0 0 0 2px var(--fg); }
   .cm__proc { display: grid; gap: 1.2rem; align-self: center; margin-left: -7rem; position: relative; z-index: 2; }
   .cm__proc .cm__pola { padding: .4rem .4rem 1.6rem; }
   .cm__slot { align-self: stretch; display: flex; align-items: center; min-height: 26rem; }
@@ -306,7 +303,7 @@ const t = es ? {
   .cm__closer { position: relative; z-index: 1; margin-top: calc(-1 * clamp(14rem, 30vw, 26rem)); margin-bottom: 0; height: clamp(22rem, 44vw, 34rem); display: grid; place-items: end center; pointer-events: none; }
   .cm__closerin { width: min(100%, 44rem); height: 100%; -webkit-mask-image: radial-gradient(ellipse 52% 60% at 50% 78%, #000 30%, transparent 78%); mask-image: radial-gradient(ellipse 52% 60% at 50% 78%, #000 30%, transparent 78%); }
   .cm__closerin :global(svg) { width: 100%; height: 100%; display: block; }
-  @media (max-width: 860px) { .cm__varpal-t { position: static; } .cm__vp { margin-right: 0; padding-top: 1.5rem; } .cm__blendgrid { grid-template-columns: minmax(0, 1fr) auto; } .cm__slot { display: none; } .cm__tiles { grid-template-columns: 1fr; } }
+  @media (max-width: 860px) { .cm__presets { grid-auto-flow: column; justify-self: start; } .cm__varpal-t { position: static; } .cm__vp { margin-right: 0; padding-top: 1.5rem; } .cm__blendgrid { grid-template-columns: minmax(0, 1fr) auto; } .cm__slot { display: none; } .cm__tiles { grid-template-columns: 1fr; } }
   @media (max-width: 860px) {
     .cm__row, .cm__row--sketch, .cm__pair { grid-template-columns: 1fr; }
     }

@@ -25,21 +25,32 @@ const wordmark = inline('mark.svg', 'Colorada');    // variante sin el isotipo e
 type Word = { w: string; a: number; b: number };
 type Layer = { kind: 'brackets' | 'chips' | 'tag' | 'sticker'; a: number; b: number; text?: string };
 type Stop = { at: number; c0: string; c1: string };
-type Clip = { n: string; title: string; src: string; poster: string; words: Word[]; layers: Layer[]; loop?: boolean; stops?: Stop[] };
+type Clip = { n: string; title: string; src: string; poster: string; words: Word[]; layers: Layer[]; loop?: boolean; stops: Stop[] };
 
-const IN_TO = 1.4;   // la tarjeta de entrada se va a los 1,4 s
-const OUT_AT = 8.0;  // la tarjeta de cierre llega a los 8 s
+const IN_TO = 1.25;  // 2 pulsos del beat (96 BPM): la tarjeta de entrada se va
+const OUT_AT = 7.5;  // inicio del 4.º compás del beat: llega la tarjeta de cierre
 
 const clips: Clip[] = [
   {
     n: '01', title: t('Noche neón', 'Neon night'), src: `${V}/prueba-01.mp4`, poster: `${V}/prueba-01.webp`,
     words: [{ w: 'Fluo,', a: 0.0, b: 1.32 }, { w: 'neón,', a: 1.42, b: 2.62 }, { w: 'oscuro,', a: 3.46, b: 4.8 }, { w: 'colorada.', a: 5.76, b: 6.92 }],
-    layers: [{ kind: 'brackets', a: 1.5, b: 7.6 }, { kind: 'chips', a: 1.6, b: 7.6 }, { kind: 'sticker', a: 5.76, b: 7.6, text: 'Let’s blend!' }],
+    layers: [{ kind: 'brackets', a: 1.5, b: 7.5 }, { kind: 'chips', a: 1.6, b: 7.5 }, { kind: 'sticker', a: 5.76, b: 7.5, text: 'Let’s blend!' }],
+    // Colores que se ven en el pelo en cada momento: los superpuestos los siguen
+    stops: [
+      { at: 0.0, c0: '#E8407C', c1: '#8CDF2E' }, { at: 1.5, c0: '#D43FA0', c1: '#9AE05A' }, { at: 2.0, c0: '#B547D8', c1: '#4EE8A4' },
+      { at: 3.0, c0: '#A24FE0', c1: '#52E39C' }, { at: 3.5, c0: '#8A4A9A', c1: '#7BB46A' }, { at: 4.0, c0: '#7A4A68', c1: '#8A9A78' },
+      { at: 4.5, c0: '#9A3E72', c1: '#6E9A4E' }, { at: 5.0, c0: '#C23E86', c1: '#7CD04A' }, { at: 5.5, c0: '#E8407C', c1: '#8CDF2E' },
+    ],
   },
   {
     n: '02', title: t('Kawaii y caos', 'Kawaii and chaos'), src: `${V}/prueba-02.mp4`, poster: `${V}/prueba-02.webp`,
     words: [{ w: 'Fluo,', a: 0.0, b: 1.0 }, { w: 'neón,', a: 1.04, b: 1.96 }, { w: 'oscuro,', a: 2.48, b: 2.96 }, { w: 'kawaii,', a: 3.54, b: 4.7 }, { w: 'caos,', a: 4.94, b: 5.52 }, { w: 'colorada.', a: 5.92, b: 7.04 }],
-    layers: [{ kind: 'chips', a: 1.5, b: 7.6 }, { kind: 'sticker', a: 3.54, b: 4.9, text: 'Kawaii' }, { kind: 'sticker', a: 4.94, b: 5.9, text: t('¡Caos!', 'Chaos!') }, { kind: 'brackets', a: 5.9, b: 7.6 }],
+    layers: [{ kind: 'chips', a: 1.5, b: 7.5 }, { kind: 'sticker', a: 3.54, b: 4.9, text: 'Kawaii' }, { kind: 'sticker', a: 4.94, b: 5.9, text: t('¡Caos!', 'Chaos!') }, { kind: 'brackets', a: 5.9, b: 7.5 }],
+    stops: [
+      { at: 0.0, c0: '#E5336E', c1: '#8FE02A' }, { at: 0.5, c0: '#EE5A8A', c1: '#C9D84A' }, { at: 1.0, c0: '#E5336E', c1: '#8FE02A' },
+      { at: 1.5, c0: '#E83E8C', c1: '#43E39A' }, { at: 2.0, c0: '#D4264F', c1: '#6A6A78' }, { at: 3.0, c0: '#C9A6E4', c1: '#A8D8C8' },
+      { at: 4.0, c0: '#F0409A', c1: '#A6E84A' }, { at: 4.5, c0: '#E5336E', c1: '#8FE02A' }, { at: 5.0, c0: '#E8408C', c1: '#46E8A0' }, { at: 5.5, c0: '#E5336E', c1: '#8FE02A' },
+    ],
   },
   {
     // Sin voz: loop del cambio de color. Los dos tonos del logo siguen el pelo que se ve en cada momento.
@@ -87,9 +98,9 @@ const L = {
 
   <div class="cmv__row">
     {clips.map((c) => (
-      <article class="vp" data-vp data-loop={c.loop ? '1' : undefined} data-stops={c.stops ? JSON.stringify(c.stops) : undefined} data-play={L.play} data-pause={L.pause} data-mute={L.mute} data-unmute={L.unmute}>
+      <article class="vp" data-vp data-loop={c.loop ? '1' : undefined} data-stops={JSON.stringify(c.stops)} data-play={L.play} data-pause={L.pause} data-mute={L.mute} data-unmute={L.unmute}>
         <div class="vp__screen">
-          <video src={withBase(c.src)} poster={withBase(c.poster)} playsinline preload="metadata" loop={c.loop} muted={c.loop} aria-label={`${L.title} ${c.n}: ${c.title}`}></video>
+          <video src={withBase(c.src)} poster={withBase(c.poster)} playsinline preload="metadata" loop={c.loop} aria-label={`${L.title} ${c.n}: ${c.title}`}></video>
 
           <div class="ly ly--prog" aria-hidden="true"><i></i></div>
 
@@ -103,7 +114,7 @@ const L = {
           ))}
 
           {c.words.length > 0 && (
-            <p class="sub" lang="es" data-a="0" data-b={c.words[c.words.length - 1].b + 0.7}>
+            <p class="sub" lang="es" data-a="0" data-b={c.words[c.words.length - 1].b + 0.4}>
               {c.words.map((w) => <span class="w" data-a={w.a} data-b={w.b}>{w.w} </span>)}
             </p>
           )}
@@ -122,7 +133,7 @@ const L = {
             </>
           )}
 
-          {!c.loop && (
+          {(
             <button type="button" class="vp__snd" data-vp-snd aria-pressed="false" aria-label={L.mute}>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" /><path class="on" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" /><path class="off" d="M16 9l5 6M21 9l-5 6" /></svg>
             </button>
@@ -146,6 +157,8 @@ const L = {
   const vps = () => [...document.querySelectorAll<HTMLElement>('[data-vp]')];
   const setDim = (el: HTMLElement, on: boolean) => { el.classList.toggle('is-dim', on); if (on) el.setAttribute('aria-disabled', 'true'); else el.removeAttribute('aria-disabled'); };
   const undim = () => vps().forEach((x) => setDim(x, false));
+  // Luminancia relativa: decide si el texto sobre el color va oscuro o claro
+  const lum = (hex: string) => { const n = parseInt(hex.slice(1), 16); const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
 
   const initVideos = () => {
     const hero = document.querySelector<HTMLElement>('[data-pj-hero]');
@@ -184,7 +197,7 @@ const L = {
         // Clip 3: el logotipo toma los colores del pelo que se ve
         if (stops.length) {
           let k = 0; stops.forEach((s, i) => { if (t >= s.at) k = i; });
-          if (k !== stopAt) { stopAt = k; vp.style.setProperty('--v0', stops[k].c0); vp.style.setProperty('--v1', stops[k].c1); }
+          if (k !== stopAt) { stopAt = k; vp.style.setProperty('--v0', stops[k].c0); vp.style.setProperty('--v1', stops[k].c1); vp.style.setProperty('--on0', lum(stops[k].c0) > 0.4 ? '#14080f' : '#fff'); }
         }
         raf = v.paused ? 0 : requestAnimationFrame(tick);
       };
@@ -204,7 +217,7 @@ const L = {
         if (v.ended || (!v.loop && v.currentTime >= (v.duration || 10) - 0.05)) v.currentTime = 0;
         active = vp;
         vps().forEach((o) => { if (o !== vp) { o.querySelector('video')!.pause(); setDim(o, true); } });
-        v.muted = v.loop ? true : snd?.getAttribute('aria-pressed') === 'true';
+        v.muted = snd?.getAttribute('aria-pressed') === 'true';
         v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
       };
       const toggle = () => { if (vp.classList.contains('is-dim')) return; if (v.paused) play(); else v.pause(); };
@@ -221,6 +234,13 @@ const L = {
       if ('IntersectionObserver' in window) new IntersectionObserver(([e]) => { if (!e.isIntersecting && !v.paused) v.pause(); }, { threshold: 0.15 }).observe(vp);
       sync();
     });
+
+    // Con los videos a la vista, el widget de color se contrae solo
+    const area = document.getElementById('videos-ia');
+    if (area && 'IntersectionObserver' in window && !area.dataset.fold) {
+      area.dataset.fold = '1';
+      new IntersectionObserver(([e]) => window.dispatchEvent(new CustomEvent('pw:fold', { detail: { fold: e.isIntersecting } })), { threshold: 0.08 }).observe(area);
+    }
 
     // Con capas / Original
     const root = document.getElementById('videos-ia');
@@ -242,22 +262,22 @@ const L = {
   @property --v1 { syntax: '<color>'; inherits: true; initial-value: #3c3c44; }
 
   .cmv { display: grid; gap: clamp(1.8rem, 3.5vw, 3rem); }
-  .cmv__head { display: grid; gap: 1rem; max-width: 52rem; }
+  .cmv__head { display: grid; gap: 1rem; max-width: 40rem; justify-items: center; text-align: center; margin-inline: auto; }
   .cmv__lead { margin: 0; color: var(--muted); line-height: 1.6; font-size: clamp(1rem, 1.3vw, 1.15rem); }
-  .cmv__tools { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1.4rem; }
+  .cmv__tools { display: grid; justify-items: center; gap: .8rem; }
   .cmv__seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: .2rem; }
   .cmv__seg button { background: none; border: 0; color: var(--muted); font: inherit; font-size: .8rem; padding: .35rem .95rem; border-radius: 999px; cursor: pointer; transition: background .3s, color .3s; }
   .cmv__seg button[aria-pressed='true'] { background: var(--fg); color: var(--bg); }
   .cmv__tag { margin: 0; font-size: .75rem; color: var(--muted); }
 
-  .cmv__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.5rem, 3vw, 3rem); align-items: start; }
+  .cmv__row { display: grid; grid-template-columns: repeat(3, minmax(0, 18rem)); gap: clamp(1.5rem, 3vw, 3rem); align-items: start; justify-content: center; }
   @media (max-width: 900px) {
-    .cmv__row { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: min(78%, 20rem); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 1rem; margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); }
+    .cmv__row { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: min(78%, 20rem); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 1rem; margin-inline: calc(var(--gutter) * -1) calc(max(var(--gutter), 5.5rem) * -1); padding-inline: var(--gutter) max(var(--gutter), 5.5rem); scroll-padding-inline: var(--gutter); }
     .vp { scroll-snap-align: center; }
   }
 
-  .vp { max-width: 20rem; width: 100%; margin-inline: auto; min-width: 0; }
-  .vp[data-loop] { --c0: var(--v0); --c1: var(--v1); transition: --v0 .5s linear, --v1 .5s linear; }
+  .vp { max-width: 18rem; width: 100%; margin-inline: auto; min-width: 0; }
+  .vp { --c0: var(--v0); --c1: var(--v1); transition: --v0 .5s linear, --v1 .5s linear; }
   .vp__screen { position: relative; aspect-ratio: 9 / 16; border-radius: 2rem; overflow: hidden; background: #000; container-type: inline-size; box-shadow: 0 0 0 .45rem #15151a, 0 0 0 calc(.45rem + 1px) rgb(255 255 255 / .16), 0 1.6rem 3rem rgb(0 0 0 / .45); cursor: pointer; isolation: isolate; transition: filter .7s var(--ease); }
   .vp__screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
@@ -292,7 +312,7 @@ const L = {
   .sub.is-on { opacity: 1; }
   .w { display: inline-block; opacity: .42; padding: .1cqw 1.2cqw .3cqw; margin: 0 -.2cqw; border-radius: 1.6cqw; transition: opacity .2s, background .2s, transform .2s; }
   .w.is-done { opacity: 1; }
-  .w.is-now { opacity: 1; background: var(--c0); transform: scale(1.06); -webkit-text-stroke: 0; text-shadow: 0 .3cqw 1cqw rgb(0 0 0 / .45); }
+  .w.is-now { opacity: 1; background: var(--c0); color: var(--on0, #fff); transform: scale(1.06); -webkit-text-stroke: 0; }
 
   /* Elementos superpuestos */
   .ly--brackets { inset: 16% 19% auto 19%; height: 40%; }
@@ -306,12 +326,12 @@ const L = {
   .ly--chips.is-on b { animation: pop-dot .5s cubic-bezier(.3, 1.6, .5, 1) both; } .ly--chips.is-on b:nth-child(2) { animation-delay: .1s; }
   @keyframes pop-dot { from { transform: scale(0); } to { transform: none; } }
   .ly--sticker { inset: 11% 5cqw auto auto; display: grid; place-items: start end; }
-  .ly--sticker span { display: block; font-weight: 800; font-size: 6cqw; color: #fff; background: var(--c0); border: .8cqw solid #0c0610; border-radius: 3cqw; padding: 1.4cqw 3.4cqw; transform: rotate(-7deg); box-shadow: .8cqw 1.2cqw 0 var(--c1); }
+  .ly--sticker span { display: block; font-weight: 800; font-size: 6cqw; color: var(--on0, #fff); background: var(--c0); border: .8cqw solid #0c0610; border-radius: 3cqw; padding: 1.4cqw 3.4cqw; transform: rotate(-7deg); box-shadow: .8cqw 1.2cqw 0 var(--c1); }
   .ly--sticker.is-on span { animation: sticker .6s cubic-bezier(.3, 1.6, .5, 1) both; }
   @keyframes sticker { from { transform: rotate(-26deg) scale(.2); } to { transform: rotate(-7deg) scale(1); } }
 
   /* Entrada y cierre: la misma tarjeta, con la misma activación (el líquido del hero y el logo que aparece de golpe) */
-  .ly--card { z-index: 7; display: grid; place-items: center; opacity: 0; visibility: hidden; overflow: hidden; }
+  .ly--card { --c0: var(--pw-0, #e03b7a); --c1: var(--pw-1, #6ce829); z-index: 7; display: grid; place-items: center; opacity: 0; visibility: hidden; overflow: hidden; }
   .ly--card.is-on { opacity: 1; visibility: visible; }
   .ly--in { background: rgb(10 5 8 / .5); }
   .ly--out { background: #0a0508; }
