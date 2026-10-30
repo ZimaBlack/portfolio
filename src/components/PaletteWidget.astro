@@ -29,6 +29,22 @@ const t = {
   /* Modo blanco y negro: un velo que quita el color a todo el sitio (el widget queda por encima) */
   .pw__bwv { position: fixed; inset: 0; z-index: 54; pointer-events: none; opacity: 0; -webkit-backdrop-filter: grayscale(1) contrast(1.06); backdrop-filter: grayscale(1) contrast(1.06); transition: opacity 1.4s ease; }
   html[data-pw-bw] .pw__bwv { opacity: 1; }
+  /* Zumbido: al pasar a blanco y negro, un desenfoque que vibra y unas barras de interferencia, solo por un instante */
+  .pw__bwv::after { content: ''; position: absolute; inset: 0; opacity: 0; mix-blend-mode: overlay;
+    background: repeating-linear-gradient(0deg, rgb(255 255 255 / .55) 0 2px, transparent 2px 6px), linear-gradient(90deg, transparent 20%, rgb(255 255 255 / .35) 50%, transparent 80%); }
+  html[data-pw-bw] .pw__bwv.is-buzz { animation: pw-buzz .85s steps(14, end) 1 both; }
+  html[data-pw-bw] .pw__bwv.is-buzz::after { animation: pw-buzz-l .85s steps(14, end) 1 both; }
+  @keyframes pw-buzz {
+    0% { -webkit-backdrop-filter: grayscale(0) blur(0); backdrop-filter: grayscale(0) blur(0); }
+    12% { -webkit-backdrop-filter: grayscale(.6) blur(4px); backdrop-filter: grayscale(.6) blur(4px); }
+    24% { -webkit-backdrop-filter: grayscale(1) blur(1px); backdrop-filter: grayscale(1) blur(1px); }
+    38% { -webkit-backdrop-filter: grayscale(1) blur(5px); backdrop-filter: grayscale(1) blur(5px); }
+    52% { -webkit-backdrop-filter: grayscale(1) blur(2px); backdrop-filter: grayscale(1) blur(2px); }
+    70% { -webkit-backdrop-filter: grayscale(1) blur(3px); backdrop-filter: grayscale(1) blur(3px); }
+    100% { -webkit-backdrop-filter: grayscale(1) contrast(1.06) blur(0); backdrop-filter: grayscale(1) contrast(1.06) blur(0); }
+  }
+  @keyframes pw-buzz-l { 0% { opacity: 0; transform: translateX(-2%); } 15% { opacity: .5; transform: translateX(1.5%); } 30% { opacity: .15; } 45% { opacity: .45; transform: translateX(-1%); } 70% { opacity: .12; } 100% { opacity: 0; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { html[data-pw-bw] .pw__bwv.is-buzz, html[data-pw-bw] .pw__bwv.is-buzz::after { animation: none; } }
   /* El widget también pierde el color mientras dura el modo blanco y negro */
   .pw { --gs: 0; } html[data-pw-bw] .pw :is(.pw__random, .pw__tab) { filter: grayscale(1) contrast(1.05); }
   html[data-pw-bw] .pw__rail { background: linear-gradient(to bottom, #b9b9b9, #7a7a7a 55%, #444) !important; }
@@ -247,7 +263,9 @@ const t = {
         pw.classList.add('is-timing');
         bw = true; touched = true; render();
         document.documentElement.setAttribute('data-pw-bw', '');
+        const veil = document.querySelector('.pw__bwv'); veil?.classList.remove('is-buzz'); void (veil as HTMLElement | null)?.offsetWidth; veil?.classList.add('is-buzz');
         await wait(60000);
+        veil?.classList.remove('is-buzz');
         document.documentElement.removeAttribute('data-pw-bw');
         await wait(900);
         bw = false; randomize(next);
