@@ -4,8 +4,8 @@ kind: design
 discipline: { es: "Branding", en: "Branding" }
 role: { es: "Identidad visual", en: "Visual identity" }
 summary:
-  es: "Una selección de logotipos que condensa un estilo y un oficio propios, forjados antes de la IA. A continuación, el detalle de cada proyecto."
-  en: "A selection of logos shaped by a distinct style and a craft built before AI. Each project’s details follow below."
+  es: "Una selección de 16 logotipos de un oficio forjado antes de la IA, con su detalle proyecto por proyecto."
+  en: "A selection of 16 logos from a craft built before AI, with each project’s details."
 featured: true
 headerMarquee: true
 order: 1

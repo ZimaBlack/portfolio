@@ -7,8 +7,8 @@ summary:
   es: "Identidad para una marca de bienes raíces e inversión, de inspiración suiza."
   en: "Identity for a real estate and investment brand, Swiss-inspired."
 text:
-  es: "Isotipo geométrico, grilla y espacio negativo, con un verde de marca y un modo oscuro «blueprint»."
-  en: "A geometric isotype, grid and negative space, with a brand green and a “blueprint” dark mode."
+  es: "Un módulo de medio anillo que se repite, se refleja y se acopla: del estilo suizo y el constructivismo nace un sistema de retícula, espacio negativo y un verde de marca, con modo claro y oscuro «blueprint»."
+  en: "A half-ring module that repeats, mirrors and couples: Swiss style and constructivism give rise to a system of grid, negative space and a brand green, with light and “blueprint” dark modes."
 heroImage: /works/global-citizen/bg
 heroAnimation: modular
 cover: /works/global-citizen/cover.webp

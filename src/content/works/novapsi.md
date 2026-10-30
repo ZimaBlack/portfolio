@@ -5,11 +5,11 @@ year: 2026
 discipline: { es: "Producto digital", en: "Digital product" }
 role: { es: "Diseño y desarrollo", en: "Design and development" }
 summary:
-  es: "Turnos para consultorios de salud mental, con seña online y recordatorios."
-  en: "Appointments for mental-health practices, with online deposits and reminders."
+  es: "Plataforma de turnos para consultorios de salud mental, con seña online y recordatorios."
+  en: "An appointment platform for mental-health practices, with online deposits and reminders."
 text:
-  es: "Tres accesos —paciente, profesional y servicio técnico— sobre un mismo código."
-  en: "Three accesses —patient, professional and technical support— on one codebase."
+  es: "Una sola base de código con tres accesos —paciente, profesional y servicio técnico—, diseñada con una armonía de azul y crema que transmite calma y confianza."
+  en: "One codebase with three accesses —patient, professional and technical support— designed in a blue-and-cream harmony that conveys calm and trust."
 heroAnimation: iso
 cover: /works/novapsi/cover.webp
 logo: /works/novapsi/logo.svg

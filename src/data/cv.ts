@@ -38,7 +38,8 @@ export const cv = {
 
   // ── Página 1 · columna derecha ────────────────────────────────
   relevantExperience: [
-    I(L('2009 — hoy', '2009 — present'), L('Diseñador Freelancer', 'Freelance Designer'), L('Blackroom Design'), true),
+    I(L('2025 — hoy', '2025 — present'), L('Diseñador Freelancer', 'Freelance Designer'), L('ZMA.BLK Design'), true),
+    I(L('2009 — 2024'), L('Diseñador Freelancer', 'Freelance Designer'), L('Blackroom Design'), true),
     I(L('2023 — 2025'), L('Diseñador Visual General · Front End · UX/UI', 'General Visual Designer · Front End · UX/UI'), L('Wanderlust Videos'), true),
     I(L('2023 — 2024'), L('Diseñador Visual General · Front End · UX/UI', 'General Visual Designer · Front End · UX/UI'), L('Quark Talent'), true),
     I(L('2021 — 2022'), L('Diseñador Gráfico · WordPress Theme Dev', 'Graphic Designer · WordPress Theme Dev'), L('Kurve.ar'), true),
@@ -65,10 +66,11 @@ export const cv = {
 
   // ── Página 2 · detalle ────────────────────────────────────────
   current: [
-    I(L('2009 — hoy', '2009 — present'), L('Labor de Diseñador Freelancer', 'Freelance Designer'), L('Blackroom Design'), true),
+    I(L('2025 — hoy', '2025 — present'), L('Labor de Diseñador Freelancer', 'Freelance Designer'), L('ZMA.BLK Design'), true),
     I(L('2016 — hoy', '2016 — present'), L('Diseñador en Emprendimiento Editorial', 'Designer at editorial venture'), L('Attico — Cuadernos Artesanales', 'Attico — Handmade Notebooks')),
   ],
   professional: [
+    I(L('2009 — 2024'), L('Labor de Diseñador Freelancer', 'Freelance Designer'), L('Blackroom Design'), true),
     I(L('2023 — 2025'), L('Diseñador Visual General · Front End · UX/UI', 'General Visual Designer · Front End · UX/UI'), L('Wanderlust Videos'), true),
     I(L('2024'), L('Concept Artist & Diseño de Personaje · Branding', 'Concept Artist & Character Design · Branding'), L('Unidad Expandida — corto Fulldom', 'Unidad Expandida — short film Fulldom'), true),
     I(L('2023'), L('Diseñador Visual General · UX/UI · Diseñador Gráfico · Web Designer', 'General Visual Designer · UX/UI · Graphic Designer · Web Designer'), L('Quark Talent'), true),

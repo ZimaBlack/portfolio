@@ -7,8 +7,8 @@ summary:
   es: "Identidad variable para una marca personal de cabello fantasía."
   en: "A variable identity for a fantasy hair-care personal brand."
 text:
-  es: "Un personaje, un conejo y una paleta que cambia con el widget de color de la derecha."
-  en: "A character, a bunny and a palette that changes with the color widget on the right."
+  es: "Un personaje y un conejo como emblema, y una paleta viva que se reconfigura con el widget de color: la marca cambia de tono sin perder su carácter lúdico y su trazo."
+  en: "A character and a bunny as emblem, and a living palette that reconfigures through the color widget: the brand shifts hue without losing its playful character and line."
 logo: /works/colorada/logo.svg
 mark: /works/colorada/mark.svg
 featured: false
