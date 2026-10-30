@@ -14,7 +14,7 @@ const SPEED = 0.045;        // velocidad del flujo
 const FRAG = `#version 300 es
 precision highp float;
 out vec4 o;
-uniform vec2 uRes; uniform float uT; uniform vec3 uC1; uniform vec3 uC2; uniform vec2 uP1; uniform vec2 uP2; uniform float uI;
+uniform vec2 uRes; uniform float uT; uniform vec3 uC1; uniform vec3 uC2; uniform vec2 uP1; uniform vec2 uP2; uniform float uI; uniform float uSoft; uniform float uSpeed; uniform float uZoom;
 
 float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float vnoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
@@ -29,8 +29,8 @@ float field(vec2 p, float t){
 
 void main(){
   vec2 uv = gl_FragCoord.xy / uRes;
-  vec2 p = (uv - .5) * vec2(uRes.x / uRes.y, 1.) * 1.35;
-  float t = uT * ${SPEED.toFixed(3)};
+  vec2 p = (uv - .5) * vec2(uRes.x / uRes.y, 1.) * uZoom;
+  float t = uT * uSpeed;
   float h = field(p, t);
 
   // Dos tonos: cada uno domina cerca de su luz; entre medio se reparten según el flujo
@@ -38,7 +38,7 @@ void main(){
   float k = clamp(w2 / (w1 + w2 + 1e-4) + (h - .5) * .9, 0., 1.);
 
   // Diseño plano: colores sólidos, sin luz ni degradados; los bordes son nítidos (se suavizan sólo un píxel para que no se escalonen)
-  float aaH = fwidth(h) * 1.3 + 1e-4, aaK = fwidth(k) * 1.3 + 1e-4;
+  float aaH = max(fwidth(h) * 1.3, uSoft) + 1e-4, aaK = max(fwidth(k) * 1.3, uSoft * 1.6) + 1e-4;
   float cov = smoothstep(-aaH, aaH, h + (w1 + w2) * .15 - .46);   // cuánto líquido hay: el resto es el negro del fondo
   vec3 col = mix(uC1, uC2, smoothstep(-aaK, aaK, k - .5));        // cuál de los dos tonos
   // Viñeta: una sombra suave que oscurece los bordes de la portada (el color se apaga hacia el negro)
@@ -77,7 +77,9 @@ export function initLiquid(hero: HTMLElement) {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   const u = (n: string) => gl.getUniformLocation(prog, n);
-  const U = { res: u('uRes'), t: u('uT'), c1: u('uC1'), c2: u('uC2'), p1: u('uP1'), p2: u('uP2'), i: u('uI') };
+  const U = { res: u('uRes'), t: u('uT'), c1: u('uC1'), c2: u('uC2'), p1: u('uP1'), p2: u('uP2'), i: u('uI'), soft: u('uSoft'), speed: u('uSpeed'), zoom: u('uZoom') };
+  // Celular: un estilo más fluido: bordes suaves en lugar de nítidos, formas más grandes, corriente algo más viva y menos resolución (el desenfoque la compensa)
+  const mobile = matchMedia('(max-width: 760px), (hover: none)');
 
   const read = (): State => {
     const cs = getComputedStyle(hero);
@@ -98,7 +100,8 @@ export function initLiquid(hero: HTMLElement) {
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const resize = () => {
     const r = hero.getBoundingClientRect();
-    canvas.width = Math.max(2, Math.round(r.width * SCALE)); canvas.height = Math.max(2, Math.round(r.height * SCALE));
+    const sc = mobile.matches ? 0.55 : SCALE;
+    canvas.width = Math.max(2, Math.round(r.width * sc)); canvas.height = Math.max(2, Math.round(r.height * sc));
     gl.viewport(0, 0, canvas.width, canvas.height);
     draw(performance.now());
   };
@@ -109,6 +112,7 @@ export function initLiquid(hero: HTMLElement) {
     gl.uniform3f(U.c1, cur.ga[0] / 255, cur.ga[1] / 255, cur.ga[2] / 255); gl.uniform3f(U.c2, cur.gb[0] / 255, cur.gb[1] / 255, cur.gb[2] / 255);
     gl.uniform2f(U.p1, cur.ax / 100, 1 - cur.ay / 100); gl.uniform2f(U.p2, cur.bx / 100, 1 - cur.by / 100);
     gl.uniform1f(U.i, cur.gi);
+    gl.uniform1f(U.soft, mobile.matches ? 0.045 : 0); gl.uniform1f(U.speed, mobile.matches ? SPEED * 1.5 : SPEED); gl.uniform1f(U.zoom, mobile.matches ? 0.95 : 1.35);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
 

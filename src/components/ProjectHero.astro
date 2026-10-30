@@ -189,6 +189,8 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   .pjh__ht { position: absolute; left: 0; top: 0; z-index: -1; pointer-events: none; animation: ht-in 1.8s ease both;
     -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%); mask-image: linear-gradient(to bottom, transparent 0, #000 16%); }
   @keyframes ht-in { from { opacity: 0; } to { opacity: 1; } }
+  /* Celular: el fluido con desenfoque gaussiano (se agranda un poco para que el borde no se aclare) */
+  @media (max-width: 760px), (hover: none) { .pjh__liquid { filter: blur(20px); transform: scale(1.14); } }
 
 
   /* ── Foto de fondo (si hay): cubre la portada y se coloca para que la figura clara quede hacia la derecha (a ~66 % del ancho) */
