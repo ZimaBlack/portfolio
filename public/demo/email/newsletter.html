@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <title>Newsletter de ejemplo · Relevo</title>
+  <!--[if mso]><style>table,td{font-family:Arial,sans-serif !important}</style><![endif]-->
+  <style>
+    /* Los clientes de mail ignoran casi todo CSS externo: lo esencial va inline en cada celda.
+       Este bloque solo mejora lo que sí soportan (responsive y modo oscuro). */
+    body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; }
+    a { color: #1f5fbf; }
+    @media (max-width: 620px) {
+      .container { width: 100% !important; }
+      .px { padding-left: 20px !important; padding-right: 20px !important; }
+      .stack { display: block !important; width: 100% !important; }
+      .h1 { font-size: 28px !important; line-height: 34px !important; }
+    }
+    @media (prefers-color-scheme: dark) {
+      .bg-page { background: #12151c !important; }
+      .bg-card { background: #1b1f2a !important; }
+      .tx { color: #f6f5f3 !important; }
+      .tx-muted { color: #b7bccb !important; }
+      .lnk { color: #8fc8e8 !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#f6f5f3;" class="bg-page">
+  <!-- Preheader: lo que se lee en la bandeja antes de abrir (oculto en el cuerpo) -->
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#f6f5f3;">Tres novedades para ordenar tus entregas este mes. &#8199;&#847; &#8199;&#847; &#8199;&#847;</div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f6f5f3;">
+    <tr><td align="center" style="padding:24px 12px;">
+
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" class="container bg-card" style="width:600px;max-width:600px;background:#ffffff;border-radius:18px;">
+        <!-- Cabecera -->
+        <tr><td class="px" style="padding:28px 40px 0 40px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:800;letter-spacing:-0.02em;color:#1b1f2a;" ><span class="tx">Relevo</span></td></tr>
+
+        <!-- Hero -->
+        <tr><td class="px" style="padding:32px 40px 8px 40px;font-family:Arial,Helvetica,sans-serif;">
+          <p style="margin:0 0 12px 0;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:#5b6170;" class="tx-muted">Novedades de temporada</p>
+          <h1 class="h1 tx" style="margin:0;font-size:36px;line-height:42px;font-weight:800;letter-spacing:-0.02em;color:#1b1f2a;">Entregas a tiempo, sin perseguir a nadie.</h1>
+          <p class="tx-muted" style="margin:16px 0 0 0;font-size:16px;line-height:26px;color:#5b6170;">Tres cambios que hicimos este mes para que cada proyecto muestre en qué estado está y quién tiene la pelota.</p>
+        </td></tr>
+
+        <!-- Botón "a prueba de balas": tabla + enlace, funciona sin imágenes ni CSS -->
+        <tr><td class="px" style="padding:24px 40px 8px 40px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+            <td align="center" bgcolor="#c2410c" style="border-radius:999px;">
+              <a href="https://example.com/novedades" style="display:inline-block;padding:14px 28px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:999px;">Ver las novedades</a>
+            </td>
+          </tr></table>
+        </td></tr>
+
+        <!-- Dos columnas que se apilan en móvil -->
+        <tr><td class="px" style="padding:32px 40px 8px 40px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+            <td class="stack" width="50%" valign="top" style="padding:0 12px 16px 0;font-family:Arial,Helvetica,sans-serif;">
+              <h2 class="tx" style="margin:0 0 6px 0;font-size:18px;line-height:24px;color:#1b1f2a;">Estados claros</h2>
+              <p class="tx-muted" style="margin:0;font-size:15px;line-height:23px;color:#5b6170;">Seis estados, con color y con texto.</p>
+            </td>
+            <td class="stack" width="50%" valign="top" style="padding:0 0 16px 12px;font-family:Arial,Helvetica,sans-serif;">
+              <h2 class="tx" style="margin:0 0 6px 0;font-size:18px;line-height:24px;color:#1b1f2a;">Revisiones con historial</h2>
+              <p class="tx-muted" style="margin:0;font-size:15px;line-height:23px;color:#5b6170;">Cada ronda queda registrada.</p>
+            </td>
+          </tr></table>
+        </td></tr>
+
+        <!-- Pie -->
+        <tr><td class="px" style="padding:24px 40px 36px 40px;border-top:1px solid #d9d7d2;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:20px;color:#5b6170;">
+          <span class="tx-muted">Recibís este correo porque te suscribiste a las novedades de Relevo (demo ficticia).<br>
+          <a href="https://example.com/baja" class="lnk" style="color:#1f5fbf;">Darme de baja</a> · <a href="https://example.com/privacidad" class="lnk" style="color:#1f5fbf;">Privacidad</a></span>
+        </td></tr>
+      </table>
+
+    </td></tr>
+  </table>
+</body>
+</html>

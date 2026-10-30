@@ -1,0 +1,11 @@
+---
+// Marca «PENDIENTE» (se apaga con showPending = false en src/data/cases.ts).
+import { showPending } from '../../data/cases';
+import { u } from '../../lib/casesUi';
+const { lang } = Astro.props;
+---
+{showPending && <span class="pend">{u(lang).pending}</span>}
+<style>
+  .pend { display: inline-block; vertical-align: .15em; margin-left: .6em; padding: .12rem .55rem; border: 1px solid #e84d00; color: #ff7a3d; border-radius: 999px; font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; line-height: 1.5; }
+  @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .pend { color: #b43a00; border-color: #b43a00; } }
+</style>

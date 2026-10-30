@@ -1,0 +1,29 @@
+@use 'mixins' as *;
+
+// Componente: botón. Base + variantes + tamaños + estados. Nada de valores sueltos.
+.btn {
+  --btn-pad-y: var(--s-3); --btn-pad-x: var(--s-5);
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2);
+  padding: var(--btn-pad-y) var(--btn-pad-x); min-height: 2.75rem;      // objetivo táctil ≥ 44px
+  font: 700 var(--fs-0)/1 var(--font-sans); letter-spacing: .01em; text-decoration: none; cursor: pointer;
+  border: 2px solid transparent; border-radius: var(--r-pill);
+  transition: filter .2s, box-shadow .2s, background .2s;
+  @include focus-ring;
+
+  &--primary { @include btn-variant(var(--c-primary)); }
+  &--accent  { @include btn-variant(var(--c-accent)); }
+  &--danger  { @include btn-variant(var(--c-danger)); }
+  &--ghost   { background: transparent; color: var(--c-ink); border-color: var(--c-ink);
+               &:hover:not(:disabled), &.is-hover { background: var(--c-ink); color: var(--c-surface); } }
+  &--sm { --btn-pad-y: var(--s-2); --btn-pad-x: var(--s-4); min-height: 2.25rem; font-size: var(--fs--1); }
+  &--lg { --btn-pad-y: var(--s-4); --btn-pad-x: var(--s-6); font-size: var(--fs-1); }
+  &--icon { padding: 0; width: 2.75rem; border-radius: 50%; }
+
+  // Estados
+  &:disabled, &[aria-disabled='true'] { opacity: .45; cursor: not-allowed; }
+  &.is-loading { position: relative; color: transparent; pointer-events: none;
+    &::after { content: ''; position: absolute; width: 1.1em; height: 1.1em; border-radius: 50%;
+      border: 2px solid var(--c-surface); border-right-color: transparent; animation: spin .7s linear infinite; } }
+  &.is-focus { box-shadow: var(--focus); }                                // solo para mostrar el estado en la demo
+}
+@keyframes spin { to { transform: rotate(360deg); } }

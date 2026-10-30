@@ -1,0 +1,32 @@
+@use 'sass:map';
+@use 'tokens';
+
+// Un único mixin de media query en lugar de repetir @media por todo el código.
+//   @include respond(md)        → desde 768px
+//   @include respond(md, down)  → hasta 767.98px
+@mixin respond($bp, $dir: up) {
+  $width: map.get(tokens.$breakpoints, $bp);
+  @if not $width { @error "Breakpoint desconocido: #{$bp}"; }
+  @if $dir == down {
+    @media (max-width: #{$width - .02px}) { @content; }
+  } @else {
+    @media (min-width: #{$width}) { @content; }
+  }
+}
+
+// Foco visible y consistente (WCAG 2.4.7). Se usa en todo elemento interactivo.
+@mixin focus-ring {
+  &:focus-visible { outline: 2px solid transparent; box-shadow: var(--focus); }
+}
+
+// Variante de botón: fondo, texto y fondo en hover salen de tokens, no de valores sueltos.
+@mixin btn-variant($bg, $fg: var(--c-surface), $hover: null) {
+  background: $bg; color: $fg; border-color: $bg;
+  &:hover:not(:disabled), &.is-hover { filter: brightness(.92); }
+  @if $hover { &:hover:not(:disabled) { background: $hover; border-color: $hover; filter: none; } }
+}
+
+// Texto truncado en N líneas
+@mixin clamp-lines($n) {
+  display: -webkit-box; -webkit-line-clamp: $n; -webkit-box-orient: vertical; overflow: hidden;
+}

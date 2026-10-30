@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aster · mini design system</title>
+  <meta name="description" content="Tokens, escala tipográfica, botones y estados. Demo del portfolio de Pablo Ponce: recreado con marca neutra.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Saltar al contenido</a>
+<div class="doc">
+  <header>
+    <p class="t-eyebrow">Demo · recreado en limpio con marca neutra</p>
+    <h1>Aster, un mini design system</h1>
+    <p class="t-lead">Tokens → escala tipográfica → botones → estados. Cada valor sale de un mapa SCSS; cada componente vive en su archivo; contraste AA y foco visible desde el primer botón.</p>
+    <div class="row"><a class="btn btn--primary" href="../landing/index.html">Ver la landing</a><a class="btn btn--ghost" href="../email/newsletter.html">Ver el email</a></div>
+  </header>
+
+  <main id="main" class="doc" style="padding:0">
+    <section aria-labelledby="h-color">
+      <header><p class="t-eyebrow">01 · Tokens</p><h2 id="h-color">Color y contraste</h2></header>
+      <p class="t-body">La razón de contraste se calcula en vivo, contra blanco y contra la tinta, y se marca AA (≥ 4,5:1) para texto normal. El naranja pasa en texto grande, no en texto chico: queda documentado, no escondido.</p>
+      <div class="grid" id="swatches" aria-live="polite"></div>
+    </section>
+
+    <section aria-labelledby="h-type">
+      <header><p class="t-eyebrow">02 · Tipografía</p><h2 id="h-type">Escala modular × 1,25</h2></header>
+      <div class="scale">
+        <div><code>--fs-5 · h1</code><p class="t-h1">Diseño y código</p></div>
+        <div><code>--fs-4 · h2</code><p class="t-h2">Una sola fuente de verdad</p></div>
+        <div><code>--fs-1 · h3 / lead</code><p class="t-h3">Del manual a la clase CSS</p></div>
+        <div><code>--fs-0 · body</code><p class="t-body">Montserrat Variable, con pila de respaldo para que el texto nunca espere a la fuente.</p></div>
+        <div><code>--fs--1 · caption</code><p class="t-caption">Texto auxiliar, nunca por debajo de 0,8 rem.</p></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-btn">
+      <header><p class="t-eyebrow">03 · Botones</p><h2 id="h-btn">Variantes, tamaños y estados</h2></header>
+      <div class="matrix">
+        <div class="stack"><h3 class="t-h3">Variantes</h3>
+          <div class="row"><button class="btn btn--primary">Primario</button><button class="btn btn--accent">Acento</button><button class="btn btn--ghost">Fantasma</button><button class="btn btn--danger">Peligro</button></div></div>
+        <div class="stack"><h3 class="t-h3">Tamaños</h3>
+          <div class="row"><button class="btn btn--primary btn--sm">Pequeño</button><button class="btn btn--primary">Normal</button><button class="btn btn--primary btn--lg">Grande</button><button class="btn btn--primary btn--icon" aria-label="Agregar">+</button></div></div>
+        <div class="stack"><h3 class="t-h3">Estados</h3>
+          <div class="row"><button class="btn btn--primary">Reposo</button><button class="btn btn--primary is-hover">Hover</button><button class="btn btn--primary is-focus">Foco</button><button class="btn btn--primary" disabled>Deshabilitado</button><button class="btn btn--primary is-loading" aria-busy="true">Cargando</button></div></div>
+        <div class="stack"><h3 class="t-h3">Sobre fondo oscuro</h3>
+          <div class="dark row"><button class="btn btn--accent">Acento</button><button class="btn btn--ghost" style="color:#fff;border-color:#fff">Fantasma</button></div></div>
+      </div>
+      <p class="t-caption">Probá el teclado: Tab muestra el anillo de foco (2 px de aire + 2 px de color), nunca se elimina el <code>outline</code> sin reemplazo.</p>
+    </section>
+
+    <section aria-labelledby="h-st">
+      <header><p class="t-eyebrow">04 · Estados</p><h2 id="h-st">Chips de proyecto, alertas y campos</h2></header>
+      <div class="stack">
+        <div class="row" role="list" aria-label="Estados de proyecto">
+          <span role="listitem" class="chip chip--draft">Draft</span><span role="listitem" class="chip chip--pending">Pending</span><span role="listitem" class="chip chip--in-process">In process</span><span role="listitem" class="chip chip--revision">Revision</span><span role="listitem" class="chip chip--approved">Approved</span><span role="listitem" class="chip chip--done">Done</span>
+        </div>
+        <p class="t-caption">Cada estado tiene color <em>y</em> texto: el color nunca es el único canal.</p>
+      </div>
+      <div class="cols">
+        <div class="stack">
+          <div class="alert alert--success" role="status"><strong>Guardado</strong>Los cambios se aplicaron.</div>
+          <div class="alert alert--warning" role="status"><strong>Falta un dato</strong>Completá el campo para continuar.</div>
+          <div class="alert alert--danger" role="alert"><strong>No se pudo enviar</strong>Revisá la conexión e intentá otra vez.</div>
+          <div class="alert alert--info" role="status"><strong>Dato útil</strong>Los estados se generan desde un mapa SCSS.</div>
+        </div>
+        <form class="card stack" onsubmit="return false" novalidate>
+          <div class="field"><label for="f1">Nombre del proyecto</label><input id="f1" placeholder="Ej. Trailer de boda" aria-describedby="f1h"><span class="hint" id="f1h">Se muestra al equipo.</span></div>
+          <div class="field"><label for="f2">Correo</label><input id="f2" value="nombre@" aria-invalid="true" aria-describedby="f2e"><span class="error" id="f2e">Falta el dominio del correo.</span></div>
+          <button class="btn btn--primary" type="submit">Enviar</button>
+        </form>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+// Contraste WCAG calculado en vivo desde las variables CSS.
+(function () {
+  var names = ['ink','muted','paper','surface','line','primary','accent','sky','success','warning','danger','info'];
+  var css = getComputedStyle(document.documentElement);
+  function rgb(hex){ hex=hex.trim().replace('#',''); return [0,2,4].map(function(i){return parseInt(hex.substr(i,2),16)/255}); }
+  function lum(h){ var c=rgb(h).map(function(v){return v<=.03928? v/12.92 : Math.pow((v+.055)/1.055,2.4)}); return .2126*c[0]+.7152*c[1]+.0722*c[2]; }
+  function ratio(a,b){ var x=lum(a),y=lum(b); return (Math.max(x,y)+.05)/(Math.min(x,y)+.05); }
+  var wrap = document.getElementById('swatches');
+  names.forEach(function(n){
+    var hex = css.getPropertyValue('--c-'+n);
+    var onW = ratio(hex,'#ffffff'), onI = ratio(hex,'#1b1f2a');
+    var best = onW >= onI ? ['#ffffff', onW, 'blanco'] : ['#1b1f2a', onI, 'tinta'];
+    var ok = best[1] >= 4.5;
+    var el = document.createElement('div'); el.className='swatch';
+    el.innerHTML = '<div class="swatch__c" style="background:'+hex+';color:'+best[0]+'">'+n+'</div>'+
+      '<div class="swatch__m"><b>'+hex.trim().toUpperCase()+'</b><span>Texto '+best[2]+': '+best[1].toFixed(1)+':1 <span class="ratio'+(ok?'':' is-fail')+'">'+(ok?'AA':(best[1]>=3?'AA grande':'no cumple'))+'</span></span></div>';
+    wrap.appendChild(el);
+  });
+})();
+</script>
+</body>
+</html>

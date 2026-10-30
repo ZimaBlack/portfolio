@@ -1,0 +1,49 @@
+---
+// Home / manifiesto: una frase, el rol, el hilo y las 5 tarjetas de casos.
+import CaseCard from './CaseCard.astro';
+import Icon from '../Icon.astro';
+import { cases } from '../../data/cases';
+import { paths, type Lang } from '../../lib/i18n';
+import { u } from '../../lib/casesUi';
+const { lang } = Astro.props as { lang: Lang };
+const ui = u(lang);
+---
+<section class="section wrap cs" id="casos">
+  <header class="cs__head">
+    <p class="eyebrow" data-reveal>{ui.eyebrow}</p>
+    <h2 class="cs__quote" data-split-scroll>{ui.manifesto}</h2>
+    <ol class="cs__thread" aria-label={ui.homeTitle}>
+      {ui.thread.map((t) => <li>{t}</li>)}
+    </ol>
+  </header>
+  <div class="cs__grid">
+    <div class="cs__a"><CaseCard c={cases[0]} lang={lang} ratio="4 / 3" /></div>
+    <div class="cs__b"><CaseCard c={cases[1]} lang={lang} ratio="4 / 3" /></div>
+    <div class="cs__c"><CaseCard c={cases[2]} lang={lang} ratio="4 / 5" /></div>
+    <div class="cs__d"><CaseCard c={cases[3]} lang={lang} ratio="4 / 5" /></div>
+    <div class="cs__e"><CaseCard c={cases[4]} lang={lang} ratio="4 / 5" /></div>
+  </div>
+  <p class="cs__more" data-reveal>
+    <a class="btn" href={paths.cases(lang)}>{ui.all} <Icon name="arrow-up-right" /></a>
+    <a class="cs__link" href={paths.archive(lang)}>{ui.archive}</a>
+    <a class="cs__link" href={paths.code(lang)}>{ui.code}</a>
+    <a class="cs__link" href={paths.contact(lang)}>{lang === 'es' ? 'Contacto' : 'Contact'}</a>
+  </p>
+</section>
+<style>
+  .cs { padding-bottom: clamp(5rem, 9vw, 9rem); }
+  .cs__head { display: grid; gap: 1.4rem; margin-bottom: clamp(3rem, 6vw, 6rem); }
+  .cs__quote { font-size: clamp(1.6rem, 4vw, 3.4rem); line-height: 1.12; letter-spacing: -.025em; font-weight: 500; max-width: 24ch; margin: 0; }
+  .cs__thread { display: flex; flex-wrap: wrap; gap: .4rem 1.6rem; list-style: none; margin: .6rem 0 0; padding: 0; font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .cs__thread li + li::before { content: '→'; margin-right: 1.6rem; opacity: .6; }
+  .cs__grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: clamp(2.5rem, 5vw, 5rem) var(--gutter); }
+  .cs__a { grid-column: 1 / span 4; }
+  .cs__b { grid-column: 5 / span 2; align-self: end; }
+  .cs__c { grid-column: 1 / span 2; }
+  .cs__d { grid-column: 3 / span 2; margin-top: 5vw; }
+  .cs__e { grid-column: 5 / span 2; }
+  .cs__more { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 2rem; margin-top: clamp(3rem, 6vw, 6rem); }
+  .cs__link { color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: .15rem; transition: color .4s; }
+  .cs__link:hover { color: var(--fg); }
+  @media (max-width: 860px) { .cs__grid > div { grid-column: 1 / -1 !important; margin-top: 0 !important; } }
+</style>

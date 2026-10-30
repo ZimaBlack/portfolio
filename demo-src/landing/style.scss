@@ -1,0 +1,67 @@
+// Landing de campaña: hero → features → testimonios → how-it-works → pricing → CTA.
+// Reutiliza tokens, mixins, botones y estados del mini design system: aquí no hay valores sueltos.
+@use '../design-system/tokens';
+@use '../design-system/mixins' as *;
+@use '../design-system/typography';
+@use '../design-system/buttons';
+@use '../design-system/states';
+
+.wrap { width: min(100% - 2.5rem, 72rem); margin-inline: auto; }
+.section { padding-block: clamp(3.5rem, 9vw, 7rem); }
+.section--tint { background: var(--c-surface); border-block: 1px solid var(--c-line); }
+.section__head { display: grid; gap: var(--s-3); margin-bottom: var(--s-7); max-width: 40rem; }
+
+.skip { position: absolute; left: var(--s-4); top: -4rem; background: var(--c-ink); color: var(--c-surface); padding: var(--s-3) var(--s-4); border-radius: var(--r-md); z-index: 20; &:focus { top: var(--s-4); } }
+
+// --- Navegación ---
+.nav { position: sticky; top: 0; z-index: 10; background: rgb(246 245 243 / .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--c-line); }
+.nav__in { display: flex; align-items: center; justify-content: space-between; min-height: 4rem; gap: var(--s-4); }
+.nav__brand { font-weight: 800; letter-spacing: -.02em; color: var(--c-ink); text-decoration: none; font-size: var(--fs-1); }
+.nav__links { display: none; gap: var(--s-5); list-style: none; margin: 0; padding: 0; a { color: var(--c-ink); text-decoration: none; font-weight: 600; &:hover { text-decoration: underline; } }
+              @include respond(md) { display: flex; } }
+
+// --- Hero ---
+.hero { padding-block: clamp(3rem, 9vw, 7rem); }
+.hero__in { display: grid; gap: var(--s-8); align-items: center; @include respond(lg) { grid-template-columns: 1.1fr .9fr; } }
+.hero__copy { display: grid; gap: var(--s-5); justify-items: start; }
+.hero__copy .t-lead { max-width: 34rem; }
+.hero__actions { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+.hero__note { font-size: var(--fs--1); color: var(--c-muted); }
+.hero__art { position: relative; aspect-ratio: 5 / 4; border-radius: var(--r-lg); overflow: hidden; color: var(--c-surface);
+  background: radial-gradient(60% 60% at 70% 20%, rgb(143 200 232 / .55), transparent 70%), radial-gradient(70% 70% at 20% 90%, rgb(194 65 12 / .55), transparent 70%), var(--c-ink);
+  display: grid; place-items: center; padding: var(--s-6); }
+.hero__panel { width: min(100%, 22rem); display: grid; gap: var(--s-3); background: rgb(255 255 255 / .1); border: 1px solid rgb(255 255 255 / .25); border-radius: var(--r-lg); padding: var(--s-5); backdrop-filter: blur(8px); }
+.hero__panel .chip { justify-self: start; background: var(--c-surface); }
+
+// --- Features ---
+.features { display: grid; gap: var(--s-5); @include respond(md) { grid-template-columns: repeat(3, 1fr); } }
+.feature { display: grid; gap: var(--s-3); align-content: start; }
+.feature__ico { width: 3rem; height: 3rem; border-radius: var(--r-md); display: grid; place-items: center; background: var(--t-primary); color: var(--c-primary); font-weight: 800; }
+.feature p { color: var(--c-muted); }
+
+// --- Testimonios ---
+.quotes { display: grid; gap: var(--s-5); @include respond(md) { grid-template-columns: repeat(2, 1fr); } }
+.quote { display: grid; gap: var(--s-4); margin: 0; }
+.quote blockquote { margin: 0; font-size: var(--fs-1); line-height: 1.4; }
+.quote figcaption { font-size: var(--fs--1); color: var(--c-muted); display: flex; gap: var(--s-3); align-items: center; }
+.avatar { width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--c-sky); display: grid; place-items: center; font-weight: 800; color: var(--c-ink); }
+
+// --- How it works ---
+.steps { display: grid; gap: var(--s-5); counter-reset: step; list-style: none; padding: 0; margin: 0; @include respond(md) { grid-template-columns: repeat(3, 1fr); } }
+.step { counter-increment: step; display: grid; gap: var(--s-3); padding-top: var(--s-5); border-top: 3px solid var(--c-ink);
+  &::before { content: '0' counter(step); font-weight: 800; font-size: var(--fs-3); color: var(--c-accent); line-height: 1; } }
+.step p { color: var(--c-muted); }
+
+// --- Pricing ---
+.plans { display: grid; gap: var(--s-5); align-items: stretch; @include respond(md) { grid-template-columns: repeat(3, 1fr); } }
+.plan { display: grid; gap: var(--s-4); align-content: start;
+  &--featured { border: 2px solid var(--c-primary); position: relative; }
+  &__tag { position: absolute; top: -.8rem; left: var(--s-5); background: var(--c-primary); color: var(--c-surface); font-size: var(--fs--1); font-weight: 700; padding: .15rem .7rem; border-radius: var(--r-pill); } }
+.plan__price { font-size: var(--fs-4); font-weight: 800; letter-spacing: -.02em; small { font-size: var(--fs-0); font-weight: 500; color: var(--c-muted); } }
+.plan ul { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--s-2); li::before { content: '✓'; color: var(--c-success); font-weight: 800; margin-right: .5em; } }
+
+// --- CTA final ---
+.cta { background: var(--c-ink); color: var(--c-surface); border-radius: var(--r-lg); padding: clamp(2rem, 6vw, 4.5rem); display: grid; gap: var(--s-5); justify-items: start;
+  .t-lead { color: rgb(255 255 255 / .8); } }
+.footer { padding-block: var(--s-7); color: var(--c-muted); font-size: var(--fs--1); }
+.demo-note { background: var(--t-warning); color: var(--c-ink); text-align: center; padding: var(--s-2) var(--s-4); font-size: var(--fs--1); }

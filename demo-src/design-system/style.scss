@@ -1,0 +1,31 @@
+// Punto de entrada. Un archivo por componente: tokens → mixins → tipografía → componentes.
+@use 'tokens';
+@use 'mixins' as *;
+@use 'typography';
+@use 'buttons';
+@use 'states';
+
+// Layout de la página de documentación
+.skip { position: absolute; left: var(--s-4); top: -4rem; background: var(--c-ink); color: var(--c-surface); padding: var(--s-3) var(--s-4); border-radius: var(--r-md); z-index: 10;
+        &:focus { top: var(--s-4); } }
+.doc { max-width: 76rem; margin-inline: auto; padding: var(--s-6) var(--s-5) var(--s-9); display: grid; gap: var(--s-8); }
+.doc header { display: grid; gap: var(--s-3); padding-top: var(--s-6); }
+.doc section { display: grid; gap: var(--s-5); }
+.doc section > header { padding: 0; border-bottom: 2px solid var(--c-ink); padding-bottom: var(--s-3); }
+.grid { display: grid; gap: var(--s-4); grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); }
+.row { display: flex; flex-wrap: wrap; gap: var(--s-4); align-items: center; }
+.stack { display: grid; gap: var(--s-3); }
+.cols { display: grid; gap: var(--s-6); @include respond(md) { grid-template-columns: 1fr 1fr; } }
+
+.swatch { border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--c-line); background: var(--c-surface); }
+.swatch__c { height: 5.5rem; display: flex; align-items: flex-end; padding: var(--s-3); font-weight: 700; }
+.swatch__m { padding: var(--s-3); display: grid; gap: .15rem; font-size: var(--fs--1); }
+.swatch__m b { font-size: var(--fs-0); }
+.ratio { display: inline-block; padding: .05rem .5rem; border-radius: var(--r-pill); font-weight: 700; background: var(--t-success); color: var(--c-success); }
+.ratio.is-fail { background: var(--t-danger); color: var(--c-danger); }
+
+.scale { display: grid; gap: var(--s-3); }
+.scale > div { display: grid; gap: var(--s-1); @include respond(md) { grid-template-columns: 10rem 1fr; align-items: baseline; } }
+.scale code { justify-self: start; }
+.matrix { display: grid; gap: var(--s-4); @include respond(lg) { grid-template-columns: repeat(2, 1fr); } }
+.dark { background: var(--c-ink); color: var(--c-surface); padding: var(--s-6); border-radius: var(--r-lg); }

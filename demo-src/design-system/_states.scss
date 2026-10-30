@@ -1,0 +1,47 @@
+@use 'sass:list';
+@use 'tokens';
+@use 'mixins' as *;
+
+// Estados de proyecto como chips: un color de borde y texto por estado, fondo suave opcional.
+// Se generan desde el mapa de tokens para que agregar un estado sea una línea.
+$project-states: (
+  draft:      (var(--c-ink),     var(--c-surface)),
+  pending:    (var(--c-warning), var(--t-warning)),
+  in-process: (var(--c-info),    var(--t-info)),
+  revision:   (var(--c-danger),  var(--t-danger)),
+  approved:   (var(--c-primary), var(--t-primary)),
+  done:       (var(--c-success), var(--t-success)),
+);
+
+.chip {
+  display: inline-flex; align-items: center; gap: var(--s-2);
+  padding: .3rem .8rem; border: 2px solid currentColor; border-radius: var(--r-md);
+  font: 700 var(--fs--1)/1.2 var(--font-sans); letter-spacing: .06em; text-transform: uppercase;
+  @each $name, $pair in $project-states {
+    &--#{$name} { color: list.nth($pair, 1); background: list.nth($pair, 2); }
+  }
+}
+
+// Alertas: mismo patrón, con icono por texto (no se comunica solo con color).
+.alert {
+  padding: var(--s-4) var(--s-5); border-left: 6px solid currentColor; border-radius: var(--r-md); color: var(--c-ink);
+  @each $name in (success, warning, danger, info) {
+    &--#{$name} { background: var(--t-#{$name}); border-left-color: var(--c-#{$name}); }
+  }
+  strong { display: block; }
+}
+
+// Campos de formulario
+.field { display: grid; gap: var(--s-2); }
+.field label { font-weight: 700; font-size: var(--fs--1); }
+.field input, .field select, .field textarea {
+  font: inherit; padding: var(--s-3) var(--s-4); border: 2px solid var(--c-ink); border-radius: var(--r-md);
+  background: var(--c-surface); color: var(--c-ink); min-height: 2.75rem;
+  @include focus-ring;
+  &::placeholder { color: var(--c-muted); }
+  &[aria-invalid='true'] { border-color: var(--c-danger); }
+}
+.field .hint { font-size: var(--fs--1); color: var(--c-muted); }
+.field .error { font-size: var(--fs--1); color: var(--c-danger); font-weight: 600; }
+
+.card { background: var(--c-surface); border: 1px solid var(--c-line); border-radius: var(--r-lg); padding: var(--s-6); box-shadow: var(--shadow-1); }

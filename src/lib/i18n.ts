@@ -9,10 +9,18 @@ const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
 export const withBase = (p: string) => `${base}${p.startsWith('/') ? p : '/' + p}`;
 
 const seg = { es: 'trabajos', en: 'works' } as const;
+const segCases = { es: 'casos', en: 'cases' } as const;
+const segArchive = { es: 'archivo', en: 'archive' } as const;
+const segCode = { es: 'codigo', en: 'code' } as const;
+const pre = (l: Lang) => (l === 'es' ? '' : '/en');
 export const paths = {
   home: (l: Lang) => withBase(l === 'es' ? '/' : '/en/'),
   works: (l: Lang) => withBase(`${l === 'es' ? '' : '/en'}/${seg[l]}/`),
   work: (l: Lang, id: string) => withBase(`${l === 'es' ? '' : '/en'}/${seg[l]}/${id}/`),
+  cases: (l: Lang) => withBase(`${pre(l)}/${segCases[l]}/`),
+  caseOf: (l: Lang, id: string) => withBase(`${pre(l)}/${segCases[l]}/${id}/`),
+  archive: (l: Lang) => withBase(`${pre(l)}/${segArchive[l]}/`),
+  code: (l: Lang) => withBase(`${pre(l)}/${segCode[l]}/`),
   contact: (l: Lang) => paths.home(l) + '#contacto',
   cv: (l: Lang) => withBase(`${l === 'es' ? '' : '/en'}/cv/`),
 };
@@ -28,6 +36,7 @@ const defaults = {
     tagline: 'Marcas, interfaces y movimiento con criterio.',
     nav: [
       { key: 'home', label: 'Inicio' },
+      { key: 'cases', label: 'Casos' },
       { key: 'works', label: 'Trabajos' },
       { key: 'cv', label: 'CV' },
       { key: 'contact', label: 'Contacto' },
@@ -126,6 +135,7 @@ const defaults = {
     tagline: 'Brands, interfaces and motion with purpose.',
     nav: [
       { key: 'home', label: 'Home' },
+      { key: 'cases', label: 'Cases' },
       { key: 'works', label: 'Work' },
       { key: 'cv', label: 'CV' },
       { key: 'contact', label: 'Contact' },

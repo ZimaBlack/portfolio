@@ -1,0 +1,53 @@
+@use "sass:math";
+// Tokens del mini design system «Aster» (marca neutra, recreada desde cero).
+// Una sola fuente de verdad: los mapas generan variables CSS y los mixins las leen.
+
+// --- Color --------------------------------------------------------------
+$colors: (
+  ink:       #1b1f2a,  // texto principal y fondos oscuros
+  muted:     #5b6170,  // texto secundario (5,6:1 sobre paper)
+  paper:     #f6f5f3,  // fondo de página
+  surface:   #ffffff,  // tarjetas y campos
+  line:      #d9d7d2,  // bordes de baja jerarquía
+  primary:   #1f5fbf,  // acción principal (6,1:1 con blanco)
+  accent:    #c2410c,  // acento cálido (5,2:1 con blanco)
+  sky:       #8fc8e8,  // solo decorativo / fondos suaves
+  success:   #1e7a4d,
+  warning:   #7a5600,  // texto sobre #ffe9a8
+  danger:    #b42336,
+  info:      #0e6e8f,
+);
+
+// Fondos suaves para estados (siempre llevan texto ink o el color del estado)
+$tints: (
+  success: #dff3e8,
+  warning: #ffe9a8,
+  danger:  #fbe1e4,
+  info:    #d9eef6,
+  primary: #dde8f9,
+);
+
+// --- Tipografía ---------------------------------------------------------
+$font-sans: 'Montserrat Variable', 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+$scale-ratio: 1.25;           // escala modular
+$scale-steps: (-1, 0, 1, 2, 3, 4, 5);
+
+// --- Espacio, radios, sombras ------------------------------------------
+$space: (1: .25rem, 2: .5rem, 3: .75rem, 4: 1rem, 5: 1.5rem, 6: 2rem, 7: 3rem, 8: 4.5rem, 9: 7rem);
+$radius: (sm: 6px, md: 10px, lg: 18px, pill: 999px);
+
+// --- Breakpoints (mobile first) ----------------------------------------
+$breakpoints: (sm: 576px, md: 768px, lg: 992px, xl: 1200px);
+
+:root {
+  @each $name, $value in $colors { --c-#{$name}: #{$value}; }
+  @each $name, $value in $tints  { --t-#{$name}: #{$value}; }
+  @each $name, $value in $space  { --s-#{$name}: #{$value}; }
+  @each $name, $value in $radius { --r-#{$name}: #{$value}; }
+  @each $step in $scale-steps {
+    --fs-#{$step}: #{calc(1rem * #{math.pow($scale-ratio, $step)})};
+  }
+  --font-sans: #{$font-sans};
+  --focus: 0 0 0 3px var(--c-surface), 0 0 0 5px var(--c-primary);
+  --shadow-1: 0 1px 2px rgb(27 31 42 / .08), 0 4px 14px rgb(27 31 42 / .06);
+}
