@@ -7,7 +7,7 @@ import { withBase } from '../lib/i18n';
 type Layer = { n?: string; bl?: number; sat?: number; lum?: number; m: string; c: '--c0' | '--c1'; b: [string, number][] };
 // Tras la pila base, cada sector suma «multiply» si el color elegido es oscuro y «screen» si es muy claro (sus valores salen del script), para que
 // el color no quede limitado por la luz gris de la foto: un acento casi negro oscurece el flequillo y un lila claro lo aclara.
-const { photo, bw = '', layers, alt = '', ratio = '872 / 1330', blur = 0.5, tune = false, plain = false } = Astro.props as { photo: string; bw?: string; layers: Layer[]; alt?: string; ratio?: string; blur?: number; tune?: boolean; plain?: boolean };
+const { photo, bw = '', layers, alt = '', ratio = '872 / 1330', blur = 0.5, tune = false, plain = false, video = '' } = Astro.props as { photo: string; bw?: string; layers: Layer[]; alt?: string; ratio?: string; blur?: number; tune?: boolean; plain?: boolean; video?: string };
 const mode0 = layers[0]?.b[0]?.[0] ?? 'color';
 const op0 = layers[0]?.b[0]?.[1] ?? 0.9;
 const MODES = ['color','soft-light','overlay','hard-light','multiply','screen','normal','hue','saturation','luminosity','color-dodge','color-burn','darken','lighten'];
@@ -17,7 +17,10 @@ const STEP = ['Capa 1', 'Capa 2', 'Capa 3'];
 <figure class:list={['tm', { 'tm--plain': plain }]} data-nozoom style={`--r:${ratio};--blur:${blur}`}>
   <img class="tm__base" src={withBase(photo)} alt={alt} loading="lazy" decoding="async" />
   {layers.map((L, li) => [...L.b, ...(plain ? [] : [['multiply', `calc(var(--m${L.c.slice(-1)}, 0) * ${L.c === '--c1' ? 0.8 : 0.5})`], ['screen', `calc(var(--s${L.c.slice(-1)}, 0) * 0.6)`]])].map(([mode, op], bi) => <i class="tm__l" aria-hidden="true" data-g={bi === 0 ? (L.c === '--c0' ? 0 : 1) : undefined} data-bm={mode} style={`--blur:${L.bl ?? blur};${L.sat != null ? `--sat:${L.sat};` : ''}${L.lum != null ? `--lum:${L.lum};` : ''}--m:url(${withBase(L.m)});--c:var(${L.c});--bm:${mode};--bo:${op}`}></i>))}
-  {bw && <img class="tm__bw" src={withBase(bw)} alt="" loading="lazy" decoding="async" />}
+  {video
+    ? <video class="tm__bw tm__vid" src={withBase(video)} poster={withBase(bw)} muted playsinline preload="auto" aria-hidden="true"></video>
+    : bw && <img class="tm__bw" src={withBase(bw)} alt="" loading="lazy" decoding="async" />}
+  {video && <i class="tm__static" aria-hidden="true"></i>}
   {bw && <i class="tm__noir" aria-hidden="true"></i>}
 </figure>
 {tune && (
@@ -60,7 +63,22 @@ const STEP = ['Capa 1', 'Capa 2', 'Capa 3'];
       radial-gradient(ellipse 85% 80% at 50% 45%, transparent 45%, rgb(0 0 0 / .85) 100%);
     background-size: 260px 260px, 100% 100%, 100% 100%; animation: tm-flick .9s steps(2) infinite paused; }
   @keyframes tm-flick { 0% { background-position: 0 0, 0 0, 0 0; } 50% { background-position: 60px -40px, 0 0, 0 0; } 100% { background-position: -30px 50px, 0 0, 0 0; } }
+  .tm__vid { object-fit: cover; }
   :global(html[data-pw-bw]) .tm__bw { opacity: 1; }
+  /* Estática: a los 4 s del video se cubre de ruido; al terminar, un glitch devuelve el retrato a color */
+  .tm__static { position: absolute; inset: -4%; border-radius: 8cqw; pointer-events: none; opacity: 0; mix-blend-mode: normal;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='linear' slope='0' intercept='1'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"), repeating-linear-gradient(0deg, rgb(255 255 255 / .35) 0 2px, rgb(0 0 0 / .35) 2px 5px); background-size: 220px 220px, 100% 100%; }
+  .tm.is-static .tm__static { animation: tm-static 1s steps(10, end) forwards; }
+  @keyframes tm-static { 0% { opacity: 0; transform: translate(0, 0); } 15% { opacity: .55; transform: translate(-2%, 1%); } 40% { opacity: .85; transform: translate(2%, -2%); } 70% { opacity: .95; transform: translate(-1%, 2%); } 100% { opacity: .7; transform: translate(0, 0); } }
+  :global(html[data-pw-bw]) .tm.is-back .tm__bw, :global(html[data-pw-bw]) .tm.is-back .tm__noir { opacity: 0; }
+  :global(html[data-pw-bw]) .tm.is-back .tm__l { opacity: var(--bo); }
+  /* Al volver a color, la sección sube por encima del velo gris: el retrato y las fotos recuperan el color mientras el resto del sitio sigue en blanco y negro */
+  :global(html[data-pw-back] .cm__blend) { position: relative; z-index: 60; }
+  :global(html[data-pw-back] .pw) { z-index: 61; }
+  .tm.is-back { animation: tm-glitch .6s steps(8, end) 1; }
+  .tm.is-back .tm__static { animation: tm-static-out .6s steps(8, end) forwards; }
+  @keyframes tm-static-out { 0% { opacity: .8; } 100% { opacity: 0; } }
+  @keyframes tm-glitch { 0% { filter: blur(0); transform: translateX(0); } 20% { filter: blur(4px) hue-rotate(40deg); transform: translateX(-1.5%); } 45% { filter: blur(1px); transform: translateX(1.2%); } 70% { filter: blur(3px) hue-rotate(-30deg); transform: translateX(-.6%); } 100% { filter: blur(0); transform: none; } }
   :global(html[data-pw-bw]) .tm__l { opacity: 0; }
   :global(html[data-pw-bw]) .tm__noir { opacity: .85; animation-play-state: running; }
 </style>
@@ -80,6 +98,20 @@ const STEP = ['Capa 1', 'Capa 2', 'Capa 3'];
     });
   });
   document.addEventListener('astro:page-load', initTune); initTune();
+</script>
+
+<script>
+  // Secuencia del video en blanco y negro: arranca con el modo, a los 4 s se cubre de estática y luego vuelve a color con un glitch
+  const initVid = () => document.querySelectorAll<HTMLElement>('.tm:not([data-vid])').forEach((fig) => {
+    const v = fig.querySelector<HTMLVideoElement>('video.tm__vid'); if (!v) return;
+    fig.setAttribute('data-vid', '');
+    let t1 = 0, t2 = 0;
+    const reset = () => { clearTimeout(t1); clearTimeout(t2); fig.classList.remove('is-static', 'is-back'); document.documentElement.removeAttribute('data-pw-back'); v.pause(); };
+    const start = () => { reset(); v.currentTime = 0; v.play().catch(() => {}); t1 = window.setTimeout(() => fig.classList.add('is-static'), 4000); t2 = window.setTimeout(() => { fig.classList.add('is-back'); document.documentElement.setAttribute('data-pw-back', ''); }, 5000); };
+    const root = document.documentElement;
+    new MutationObserver(() => (root.hasAttribute('data-pw-bw') ? start() : reset())).observe(root, { attributes: true, attributeFilter: ['data-pw-bw'] });
+  });
+  document.addEventListener('astro:page-load', initVid); initVid();
 </script>
 
 <script>

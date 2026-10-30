@@ -67,7 +67,7 @@ const t = {
   .pw__rails { position: relative; }
   .pw__lq { position: absolute; inset: 0; display: none; gap: 1rem; pointer-events: none; z-index: 3; }
   .pw.is-timing .pw__lq { display: flex; }
-  .pw__lq i { position: relative; width: 2.1rem; align-self: flex-end; height: 0; border-radius: 8px; background: var(--q); box-shadow: inset 0 0 12px rgb(255 255 255 / .22); animation: pw-fill 60s linear forwards; }
+  .pw__lq i { position: relative; width: 2.1rem; align-self: flex-end; height: 0; border-radius: 8px; background: var(--q); box-shadow: inset 0 0 12px rgb(255 255 255 / .22); animation: pw-fill 15s linear forwards; }
   .pw__lq i:first-child { --q: var(--lq0); } .pw__lq i:last-child { --q: var(--lq1); }
   .pw__lq i::before { content: ''; position: absolute; left: 0; right: 0; top: -.45rem; height: .9rem; background: var(--q); -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='34' height='14' viewBox='0 0 34 14'><path d='M0 8 Q8.5 0 17 8 T34 8 V14 H0Z' fill='black'/></svg>") 0 0 / 34px 14px repeat-x; mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='34' height='14' viewBox='0 0 34 14'><path d='M0 8 Q8.5 0 17 8 T34 8 V14 H0Z' fill='black'/></svg>") 0 0 / 34px 14px repeat-x; animation: pw-wave 2.4s linear infinite; }
   .pw__lq i:last-child::before { animation-duration: 3.1s; animation-direction: reverse; }
@@ -270,7 +270,7 @@ const t = {
         bw = true; touched = true; render();
         document.documentElement.setAttribute('data-pw-bw', '');
         const veil = document.querySelector('.pw__bwv'); veil?.classList.remove('is-buzz'); void (veil as HTMLElement | null)?.offsetWidth; veil?.classList.add('is-buzz');
-        await wait(60000);
+        await wait(15000);
         veil?.classList.remove('is-buzz');
         document.documentElement.removeAttribute('data-pw-bw');
         await wait(900);
