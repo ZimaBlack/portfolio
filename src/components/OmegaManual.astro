@@ -284,9 +284,9 @@ const t = es ? {
   @media (max-width: 860px) { .om__row--iso { grid-template-columns: 1fr; } }
   /* Encuadre de las secciones con el marco del proyecto (Group 21): se desvanece hacia los bordes */
   .om__row, .om__res, .om__apps, .om__deco, .om__prods { position: relative; padding-block: clamp(2.6rem, 6vw, 4.4rem); padding-inline: clamp(1.6rem, 4.5vw, 4rem); }
-  .om__row::before, .om__res::before, .om__apps::before, .om__deco::before, .om__prods::before { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0; opacity: .5; transform: scaleX(-1);
+  .om__row::before, .om__res::before, .om__apps::before, .om__deco::before, .om__prods::before { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0; opacity: .75;
     border: clamp(34px, 5vw, 60px) solid transparent; border-image-source: var(--sf); border-image-slice: 150 fill; border-image-width: clamp(34px, 5vw, 60px);
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); }
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(180deg, transparent, #000 10%, #000 90%, transparent); }
   .om__row > *, .om__res > *, .om__apps > *, .om__deco > *, .om__prods > * { position: relative; z-index: 1; }
   .om__scene { display: grid; justify-items: center; }
   .om__sceneb { width: min(100%, 30rem); aspect-ratio: 636 / 886; overflow: hidden; border-radius: 4px; box-shadow: 0 30px 80px rgb(0 0 0 / .5); }
