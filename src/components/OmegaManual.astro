@@ -24,9 +24,9 @@ const t = es ? {
   logoA: 'Tipografía display tecnológica, de terminaciones suaves: contrapunto a lo orgánico del isotipo.',
   weave: 'Tramas',
   weaveA: 'Tramas Art Déco que sugieren circuitos, runas y energía: un campo protector lineal para insignias, sellos y cofres.',
-  palette: 'Azure Deep & Solemn Gold',
-  paletteA: 'Azure Deep, Navy Ink y Solemn Gold: contención y resplandor, con el verde de las fundas como acento. El emblema es monocromático y absorbe los matices de cada universo.',
-  deep: 'Azure Deep', gold: 'Solemn Gold', navy: 'Navy Ink', green: 'Sleeve Green', navy: 'Navy Ink', green: 'Sleeve Green',
+  palette: 'Azure Deep, Navy Ink & Solemn Gold',
+  paletteA: 'Azure Deep, Navy Ink y Solemn Gold: contención y resplandor. El emblema es monocromático y absorbe los matices de cada universo.',
+  deep: 'Azure Deep', gold: 'Solemn Gold', navy: 'Navy Ink', navy: 'Navy Ink',
   neon: 'El emblema, en versión neón',
   pattern: 'Patrón',
   patternA: 'Textura gráfica que repite el escudo.',
@@ -59,9 +59,9 @@ const t = es ? {
   logoA: 'A tech display typeface with soft terminals: a counterpoint to the organic isotype.',
   weave: 'Weaves',
   weaveA: 'Art Deco weaves that suggest circuits, runes and energy: a linear protective field for insignia, seals and chests.',
-  palette: 'Azure Deep & Solemn Gold',
-  paletteA: 'Azure Deep, Navy Ink and Solemn Gold: containment and radiance, with the sleeve green as an accent. The emblem is monochrome and absorbs the hues of each universe.',
-  deep: 'Azure Deep', gold: 'Solemn Gold', navy: 'Navy Ink', green: 'Sleeve Green', navy: 'Navy Ink', green: 'Sleeve Green',
+  palette: 'Azure Deep, Navy Ink & Solemn Gold',
+  paletteA: 'Azure Deep, Navy Ink and Solemn Gold: containment and radiance. The emblem is monochrome and absorbs the hues of each universe.',
+  deep: 'Azure Deep', gold: 'Solemn Gold', navy: 'Navy Ink', navy: 'Navy Ink',
   neon: 'The emblem, in neon',
   pattern: 'Pattern',
   patternA: 'A graphic texture that repeats the shield.',
@@ -123,13 +123,12 @@ const t = es ? {
     <div class="om__side">
       <h2 class="h2">{t.palette}</h2>
       <p class="om__txt">{t.paletteA}</p>
-      <ul class="om__pal">
-        <li><span class="om__dot" style="background:#0D0B14"></span><span><strong>{t.deep}</strong><em>#0D0B14</em></span></li>
-        <li><span class="om__dot" style="background:#1F2A47"></span><span><strong>{t.navy}</strong><em>#1F2A47</em></span></li>
-        <li><span class="om__dot" style="background:#D4AE64"></span><span><strong>{t.gold}</strong><em>#D4AE64</em></span></li>
-        <li><span class="om__dot" style="background:#3E9A72"></span><span><strong>{t.green}</strong><em>#3E9A72</em></span></li>
-      </ul>
-    </div>
+</div>
+    <ul class="om__rh" data-omi>
+      {[['#0D0B14', t.deep], ['#1F2A47', t.navy], ['#D4AE64', t.gold]].map(([c, n], i) => (
+        <li style={`--c:${c};--i:${i}`}><i aria-hidden="true"></i><strong>{n}</strong><em>{c}</em></li>
+      ))}
+    </ul>
   </div>
 
   <div class="wrap om__res" data-reveal>
@@ -347,6 +346,15 @@ const t = es ? {
   .om__name { display: grid; place-items: center; }
   /* El nombre toma el oro del manual (Solemn Gold) en vez del relleno original del SVG */
   .om__name span { width: min(100%, 26rem); aspect-ratio: 476 / 153; background: var(--gold); -webkit-mask: var(--n) center / contain no-repeat; mask: var(--n) center / contain no-repeat; }
+  /* Paleta en rombos de la marca, con un glow leve */
+  .om__rh { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; gap: clamp(1.4rem, 4vw, 3.4rem); }
+  .om__rh li { display: grid; justify-items: center; gap: .3rem; text-align: center; opacity: 0; transform: translateY(14px); transition: opacity 1s calc(var(--i) * .18s) ease, transform 1.2s calc(var(--i) * .18s) var(--ease); }
+  .om__rh.is-in li { opacity: 1; transform: none; }
+  .om__rh i { display: block; width: clamp(5.6rem, 11vw, 8.6rem); aspect-ratio: 5 / 7; background: var(--c); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); margin-bottom: .6rem; }
+  .om__rh li { filter: drop-shadow(0 0 12px color-mix(in srgb, var(--c) 60%, #5b84a8 40%)); }
+  .om__rh li:first-child i { box-shadow: none; outline: none; background: linear-gradient(#0d0b14, #0d0b14); }
+  .om__rh strong { font-weight: 500; font-size: .95rem; filter: none; } .om__rh em { font-style: normal; font-size: .8rem; color: var(--muted); letter-spacing: .06em; }
+  @media (max-width: 860px) { .om__rh { justify-content: flex-start; } }
   .om__pal { list-style: none; margin: .5rem 0 0; padding: 0; display: grid; gap: 1rem; }
   .om__pal li { display: flex; align-items: center; gap: 1.1rem; }
   .om__pal span:last-child { display: grid; line-height: 1.35; }
