@@ -111,26 +111,15 @@ const t = es ? {
     <div class="cm__logo cm__logo--big" set:html={character} />
   </div>
 
-  <div class="wrap cm__row cm__row--rev cm__row--polaroid" data-reveal>
-    <div class="cm__polas">
-      <figure class="cm__pola cm__pola--a">
-        <TintPhoto photo="/works/colorada/manual/foto-01.webp" shapes="/works/colorada/manual/foto-01.svg" alt={t.photoCap} ratio="1792 / 2400" blur={1.6} />
-      </figure>
-      <figure class="cm__pola cm__pola--b">
-        <TintPhoto photo="/works/colorada/manual/foto-03.webp" shapes="/works/colorada/manual/foto-03.svg" alt={t.photo2Cap} ratio="1298 / 1718" blur={1.6} />
-      </figure>
-    </div>
-    <div class="cm__side">
-      <h2 class="h2">{t.tint}</h2>
-      <p class="cm__txt">{t.tintA}</p>
-    </div>
-  </div>
-
   <div class="wrap cm__blend" id="cm-blend" data-reveal>
     <h2 class="h2">{t.blend}</h2>
     <p class="cm__txt">{t.blendA}</p>
     <div class="cm__blendgrid">
-      <figure class="cm__photo cm__photo--big"><TintMask photo="/works/colorada/manual/retrato.webp" bw="/works/colorada/manual/retrato-bw.webp" masks={['/works/colorada/manual/retrato-m1.webp', '/works/colorada/manual/retrato-m0.webp']} alt={t.blend} ratio="872 / 1330" opacity={0.96} /></figure>
+      <figure class="cm__photo cm__photo--big"><TintMask photo="/works/colorada/manual/retrato.webp" bw="/works/colorada/manual/retrato-bw.webp" masks={['/works/colorada/manual/retrato-m0.webp', '/works/colorada/manual/retrato-m1.webp']} alt={t.blend} ratio="872 / 1330" /></figure>
+      <div class="cm__proc">
+        <figure class="cm__pola cm__pola--a"><TintPhoto photo="/works/colorada/manual/foto-01.webp" shapes="/works/colorada/manual/foto-01.svg" alt={t.photoCap} ratio="1792 / 2400" blur={1.6} /></figure>
+        <figure class="cm__pola cm__pola--b"><TintPhoto photo="/works/colorada/manual/foto-03.webp" shapes="/works/colorada/manual/foto-03.svg" alt={t.photo2Cap} ratio="1298 / 1718" blur={1.6} /></figure>
+      </div>
       <ul class="cm__presets" role="group" aria-label={t.blend}>
         {presets.map(([a, b]) => (
           <li><button type="button" data-cm-preset={`${a},${b}`} aria-label={`${a} · ${b}`}><i style={`background:${b}`}></i><i style={`background:${a}`}></i></button></li>
@@ -176,7 +165,7 @@ const t = es ? {
     <img src={withBase('/works/colorada/manual/paleta-madre.webp')} alt={t.mother} width="2000" height="1821" loading="lazy" decoding="async" />
   </div>
 
-  <div class="cm__closer" set:html={closer} aria-hidden="true" />
+  <div class="cm__closer" aria-hidden="true"><div class="cm__closerin" set:html={closer} /></div>
 </section>
 
 <script>
@@ -235,20 +224,22 @@ const t = es ? {
   .cm__sw { width: 1.6rem; height: 1.6rem; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
   /* Let's blend: la foto, las paletas de prueba y el hueco al que viaja el widget */
   .cm__blend { display: grid; gap: 1.25rem; }
-  .cm__blend .cm__photo--big { max-width: 46rem; justify-self: start; }
-  .cm__blendgrid { display: grid; grid-template-columns: minmax(0, 46rem) auto minmax(11rem, 1fr); gap: clamp(1.2rem, 3vw, 3rem); align-items: center; margin-top: 1rem; }
+  .cm__blend .cm__photo--big { max-width: 32rem; justify-self: start; }
+  .cm__blendgrid { display: grid; grid-template-columns: minmax(0, 32rem) minmax(0, 15rem) auto 1fr; gap: clamp(1.2rem, 3vw, 3rem); align-items: center; margin-top: 1rem; }
   .cm__presets { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
   .cm__presets button { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 3.2rem; height: 3.2rem; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, #fff 6%); cursor: pointer; position: relative; transition: border-color .4s, transform .4s var(--ease); }
   .cm__presets button:hover, .cm__presets button:focus-visible { border-color: var(--fg); transform: translateX(3px); }
   .cm__presets i { grid-area: 1 / 1; width: 1.35rem; height: 1.35rem; border-radius: 5px; }
   .cm__presets i:first-child { transform: translate(-.35rem, -.35rem); } .cm__presets i:last-child { transform: translate(.35rem, .35rem); }
+  .cm__proc { display: grid; gap: 1.2rem; align-self: center; }
+  .cm__proc .cm__pola { padding: .4rem .4rem 1.6rem; }
   .cm__slot { align-self: stretch; display: flex; align-items: center; min-height: 26rem; }
   /* Paleta variable, recursos y paleta madre */
   .cm__res, .cm__mother { display: grid; gap: 1.25rem; }
   /* Paleta variable: la lámina va contra la derecha (junto al widget) y el título y el texto se montan sobre ella, alineados a la izquierda */
   .cm__varpal { position: relative; display: grid; justify-items: end; }
   .cm__varpal-t { position: absolute; left: var(--gutter); top: 0; z-index: 1; display: grid; gap: 1.25rem; max-width: 28rem; }
-  .cm__vp { width: min(100%, 52rem); margin-right: -3rem; padding-top: 5rem; }
+  .cm__vp { width: min(100%, 36rem); margin-right: -1rem; padding-top: 4rem; }
   .cm__vp :global(svg) { width: 100%; height: auto; }
   .cm__vp :global(path), .cm__closer :global(path), .cm__closer :global(stop) { transition: fill .8s linear, stop-color .8s linear; }
   .cm__tiles { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.8rem, 2vw, 1.6rem); }
@@ -259,9 +250,11 @@ const t = es ? {
   .cm__tile--2 { background: #fff; } .cm__tile--2 path { fill: var(--c0); transition: fill .8s linear; }
   .cm__tilelogo { position: absolute; inset: 22% 22% 22%; display: grid; place-items: center; filter: drop-shadow(0 6px 14px rgb(0 0 0 / .25)); }
   .cm__tilelogo :global(svg) { position: static; height: auto; }
-  .cm__mother img { width: 100%; max-width: 46rem; height: auto; }
-  .cm__closer { margin-inline: calc(50% - 50vw); height: clamp(26rem, 58vw, 44rem); background: #0b0b0a; overflow: hidden; margin-bottom: calc(-1 * clamp(4rem, 8vw, 8rem)); }
-  .cm__closer :global(svg) { width: 100%; height: 100%; display: block; }
+  .cm__mother { position: relative; z-index: 2; } .cm__mother img { width: 100%; height: auto; }
+  /* Cierre: más chico, desvanecido en radial hacia afuera; la paleta madre se monta encima y quedan a la vista el conejo y el logo del centro */
+  .cm__closer { position: relative; z-index: 1; margin-top: calc(-1 * clamp(14rem, 30vw, 26rem)); margin-bottom: 0; height: clamp(22rem, 44vw, 34rem); display: grid; place-items: end center; pointer-events: none; }
+  .cm__closerin { width: min(100%, 44rem); height: 100%; -webkit-mask-image: radial-gradient(ellipse 52% 60% at 50% 78%, #000 30%, transparent 78%); mask-image: radial-gradient(ellipse 52% 60% at 50% 78%, #000 30%, transparent 78%); }
+  .cm__closerin :global(svg) { width: 100%; height: 100%; display: block; }
   @media (max-width: 860px) { .cm__varpal-t { position: static; } .cm__vp { margin-right: 0; padding-top: 1.5rem; } .cm__blendgrid { grid-template-columns: minmax(0, 1fr) auto; } .cm__slot { display: none; } .cm__tiles { grid-template-columns: 1fr; } }
   @media (max-width: 860px) {
     .cm__row, .cm__row--sketch, .cm__pair { grid-template-columns: 1fr; }
