@@ -24,6 +24,11 @@ const t = {
   </div>
 </aside>
 
+<style is:global>
+  /* Modo blanco y negro: un velo que quita el color a todo el sitio (el widget queda por encima) */
+  .pw__bwv { position: fixed; inset: 0; z-index: 54; pointer-events: none; opacity: 0; -webkit-backdrop-filter: grayscale(1) contrast(1.06); backdrop-filter: grayscale(1) contrast(1.06); transition: opacity 1.4s ease; }
+  html[data-pw-bw] .pw__bwv { opacity: 1; }
+</style>
 <style>
   /* Vertical, centrado en la altura de la pantalla y pegado al borde derecho */
   .pw { position: fixed; right: 1rem; transition: opacity .5s ease, transform .6s var(--ease); top: 50%; transform: translateY(-50%); z-index: 55; display: flex; align-items: center; gap: .5rem; }
@@ -91,7 +96,9 @@ const t = {
     return '#' + rgb.map((v) => Math.round(clamp(gamma(clamp(v, 0, 1)), 0, 1) * 255).toString(16).padStart(2, '0')).join('').toUpperCase();
   };
 
+  document.addEventListener('astro:before-swap', () => document.documentElement.removeAttribute('data-pw-bw'));
   const init = () => {
+    if (!document.querySelector('.pw__bwv')) { const v = document.createElement('div'); v.className = 'pw__bwv'; v.setAttribute('aria-hidden', 'true'); document.body.appendChild(v); }
     document.querySelectorAll<HTMLElement>('[data-pw]:not([data-ready])').forEach((pw) => {
       pw.dataset.ready = '1';
       const foot = document.querySelector('#contacto, footer');
@@ -186,12 +193,13 @@ const t = {
         if (busy) return;
         presses++;
         if (presses < 3) { randomize(); return; }
-        // 3.ª vez: blanco y negro → se desvanecen las luces → vuelve con otra paleta
+        // 3.ª vez: el sitio pierde el color durante 1 minuto (blanco y negro, con el retrato alternativo) y vuelve con otra paleta
         busy = true; randomBtn.disabled = true; presses = 0;
         bw = true; touched = true; render();
-        await wait(1900);
-        intensity = 0; render();
-        await wait(1500);
+        document.documentElement.setAttribute('data-pw-bw', '');
+        await wait(60000);
+        document.documentElement.removeAttribute('data-pw-bw');
+        await wait(900);
         bw = false; randomize();
         intensity = 1; render();
         await wait(1200);
