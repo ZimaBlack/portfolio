@@ -132,6 +132,7 @@ const t = es ? {
 
   <div class="wrap om__res" data-reveal>
     <div class="om__side"><h2 class="h2">{t.res}</h2><p class="om__txt">{t.resA}</p></div>
+    <div class="omb" role="img" aria-label={t.res} style={`--b:url(${withBase('/works/omega-shields/ornaments/band.svg')})`}><i></i><i class="omb__s"></i></div>
     <div class="om__resg">
       <figure class="om__photo om__c1"><img src={g('concept-art')} alt={t.concept} width="1310" height="1904" loading="lazy" decoding="async" /></figure>
     </div>
@@ -285,6 +286,12 @@ const t = es ? {
   .om__pal span:last-child { display: grid; line-height: 1.35; }
   .om__pal em { font-style: normal; font-size: .82rem; color: var(--muted); }
   .om__dot { width: 3.2rem; aspect-ratio: 1; border-radius: 50%; flex: none; box-shadow: 0 0 0 1px var(--line); }
+  /* Banda ornamental (Group 30): oro bronce, con un destello que la recorre cada cierto tiempo (el mismo recurso que LogoFolio) */
+  .omb { position: relative; width: 100%; aspect-ratio: 1280 / 498; }
+  .omb i { position: absolute; inset: 0; -webkit-mask: var(--b) center / contain no-repeat; mask: var(--b) center / contain no-repeat; background: linear-gradient(180deg, #9b8350, #7d6a41); }
+  .omb .omb__s { background: linear-gradient(115deg, transparent 38%, rgb(255 238 190 / .95) 50%, transparent 62%) 130% 0 / 260% 100% no-repeat; opacity: 0; animation: omb-sheen 9s 2s ease-out infinite; }
+  @keyframes omb-sheen { 0% { opacity: 0; background-position: 130% 0; } 6% { opacity: .75; } 18% { opacity: .75; } 26% { opacity: 0; background-position: -30% 0; } 100% { opacity: 0; background-position: -30% 0; } }
+  @media (prefers-reduced-motion: reduce) { .omb .omb__s { animation: none; } }
   .om__res { display: grid; gap: clamp(2rem, 5vw, 3.5rem); }
   .om__resg { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gutter); align-items: center; }
   .om__c1 { max-width: 34rem; justify-self: center; }
