@@ -296,6 +296,10 @@ const L = {
   .vp__btn .i-pause { display: block; } .vp__btn .i-play { display: none; }
   .vp.is-paused .vp__btn .i-pause { display: none; } .vp.is-paused .vp__btn .i-play { display: block; }
   .vp.is-paused .vp__btn, .vp__screen:hover .vp__btn, .vp__btn:focus-visible { opacity: 1; }
+  /* Celular (sin hover): al reproducir, el botón no se queda fijo sobre la imagen; pasa a una esquina abajo a la derecha */
+  @media (hover: none), (max-width: 760px) {
+    .vp:not(.is-paused) .vp__btn { left: auto; top: auto; right: 4cqw; bottom: 4cqw; transform: none; width: 12.5cqw; opacity: .88; }
+  }
   .vp__btn:focus-visible, .vp__snd:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
   .vp__snd { position: absolute; right: 4cqw; top: 7cqw; width: 9cqw; aspect-ratio: 1; display: grid; place-items: center; border: 0; border-radius: 50%; background: rgb(0 0 0 / .5); color: #fff; cursor: pointer; z-index: 9; backdrop-filter: blur(6px); }
   .vp__snd svg { width: 58%; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
