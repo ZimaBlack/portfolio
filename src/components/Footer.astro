@@ -58,11 +58,11 @@ const fades = `--fade-l:${ramp(0, 42)}; --fade-t:${ramp(0, 24)}; --fade-t-m:${ra
      y los enlaces abajo (sobre el buzo). Se funde en todos sus bordes. */
   @media (max-width: 760px) {
     .footer { --crt-mask: linear-gradient(to bottom, var(--fade-t-m), #000 34%, #000 72%, var(--fade-b-m)); }
-    .footer { display: flex; flex-direction: column; min-height: min(calc(200vw + 6.5rem), 78rem); padding-block: 5rem 2.25rem; }
+    .footer { display: flex; flex-direction: column; min-height: max(100svh, min(calc(250vw + 7rem), 96rem)); padding-block: 5.5rem 2.5rem; }
     .footer__content { flex: 1; display: flex; flex-direction: column; }
     .footer .footer__base { margin-top: auto; padding-top: 4rem; } /* más específico: gana a la regla base que va después */
-    .footer__screen { right: auto; left: -13%; bottom: 6.5rem; width: 126%; max-width: none; height: auto; }
-    .footer__photo { top: auto; bottom: 6.5rem; left: -13%; right: auto; width: 126%; max-width: none; height: auto; object-fit: fill;
+    .footer__screen { right: auto; left: -24%; bottom: 7rem; width: 148%; max-width: none; height: auto; }
+    .footer__photo { top: auto; bottom: 7rem; left: -24%; right: auto; width: 148%; max-width: none; height: auto; object-fit: fill;
       -webkit-mask-image: linear-gradient(to bottom, var(--fade-t-m), #000 34%, #000 72%, var(--fade-b-m)); -webkit-mask-composite: source-in;
       mask-image: linear-gradient(to bottom, var(--fade-t-m), #000 34%, #000 72%, var(--fade-b-m)); }
   }
