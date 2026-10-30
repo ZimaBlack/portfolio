@@ -1,0 +1,332 @@
+---
+// Proyecto «Wanderlust Videos: de la marca a la plataforma»: un solo recorrido en 7 capítulos
+// (marca → sistema → plataforma → campañas → experiencias → impacto). Las imágenes viven en /works/wanderlust-videos/.
+// Sin archivo, una imagen dibuja un PLACEHOLDER. Lo que falta de verdad queda marcado «PENDIENTE» (ver ASSETS.md).
+import { Code } from 'astro:components';
+import Fig from './Fig.astro';
+import tokensRaw from '../../../demo-src/design-system/_tokens.scss?raw';
+import buttonsRaw from '../../../demo-src/design-system/_buttons.scss?raw';
+import { withBase, type Lang } from '../../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const es = lang === 'es';
+const t = (a: string, b: string) => (es ? a : b);
+const showPending = true; // false = oculta las marcas «PENDIENTE» antes de publicar
+const P = '/works/wanderlust-videos';
+
+const excerpt = (raw: string, from: string, to: string) => {
+  const lines = raw.split('\n');
+  const a = Math.max(0, lines.findIndex((x) => x.includes(from)));
+  const b = lines.findIndex((x, i) => i > a && x.includes(to));
+  return lines.slice(a, b > a ? b : undefined).join('\n').trimEnd();
+};
+
+const thread = [
+  { id: 'partida', k: t('Punto de partida', 'Starting point') },
+  { id: 'marca', k: t('Marca', 'Brand') },
+  { id: 'sistema', k: t('Sistema', 'System') },
+  { id: 'plataforma', k: t('Plataforma', 'Platform') },
+  { id: 'campanas', k: t('Campañas', 'Campaigns') },
+  { id: 'experiencias', k: t('Experiencias', 'Experiences') },
+  { id: 'impacto', k: t('Impacto', 'Impact') },
+];
+const swatches = [
+  { hex: '#34343C', name: t('Gris oscuro', 'Dark grey'), use: t('Fondos y texto', 'Backgrounds and text') },
+  { hex: '#0A6794', name: t('Azul', 'Blue'), use: t('Botones', 'Buttons') },
+  { hex: '#E84D00', name: t('Naranja', 'Orange'), use: t('Alertas y acentos', 'Alerts and accents') },
+  { hex: '#EDE9E7', name: t('Gris cálido', 'Warm grey'), use: t('Fondos claros', 'Light backgrounds') },
+  { hex: '#7CCDE1', name: t('Celeste', 'Sky'), use: t('Detalles', 'Details') },
+];
+const metrics = [
+  t('Tiempo de armado de una pieza o pantalla nueva', 'Time to build a new piece or screen'),
+  t('Consultas al diseñador por uso de marca', 'Brand-usage questions to the designer'),
+  t('Aperturas, clics y ventas de campañas', 'Campaign opens, clicks and sales'),
+  t('Adopción del PM con IA', 'AI PM adoption'),
+  t('Escaneos de QR y visitas al stand', 'QR scans and stand visits'),
+];
+const more = [
+  { src: `${P}/campanas/filmstrip.webp`, alt: t('Tira de película', 'Film strip'), cap: t('Tira de película con el lema, elemento recurrente', 'Film strip carrying the tagline, a recurring element'), surface: 'light' as const },
+  { src: `${P}/campanas/ipad-pricing.webp`, alt: t('Mockup en tableta', 'Tablet mockup'), cap: t('Pieza de marca sobre tableta', 'Brand piece on a tablet'), surface: 'light' as const },
+  { src: `${P}/experiencias/merch-botella.webp`, alt: t('Botella', 'Bottle'), cap: t('Botella con etiqueta', 'Bottle with label') },
+  { src: `${P}/experiencias/gorra-negra.webp`, alt: t('Gorra negra', 'Black cap'), cap: t('Gorra con parche, versión negra', 'Cap with patch, black version') },
+  { src: `${P}/experiencias/afterwrap-logo.webp`, alt: 'afterWRAP', cap: t('afterWRAP, submarca', 'afterWRAP, sub-brand'), surface: 'light' as const },
+];
+const demos = [
+  { href: '/demo/landing/index.html', k: t('Landing de campaña', 'Campaign landing'), d: t('Hero → features → testimonios → pricing → CTA', 'Hero → features → testimonials → pricing → CTA') },
+  { href: '/demo/email/newsletter.html', k: t('Plantilla de email', 'Email template'), d: t('Tablas, estilos inline y modo oscuro', 'Tables, inline styles and dark mode') },
+  { href: '/demo/email/signature.html', k: t('Firma de mail', 'Email signature'), d: t('Una pieza chica, bien resuelta', 'A small piece, done right') },
+];
+---
+<div class="ws">
+  <div class="wrap hero" data-reveal>
+    <Fig lang={lang} src={`${P}/marca/iso-blanco.webp`} alt={t('Isologo de Wanderlust Videos en blanco', 'Wanderlust Videos logo mark in white')} ratio="21 / 9" fit="contain" surface="brand" eager={true} />
+    <nav class="thread" aria-label={t('Capítulos del proyecto', 'Project chapters')}>
+      {thread.map((s, i) => <a href={`#${s.id}`}><span>{String(i + 1).padStart(2, '0')}</span>{s.k}</a>)}
+    </nav>
+  </div>
+
+  <div class="wrap body">
+    <!-- 01 · Punto de partida -->
+    <section class="ch" id="partida" data-reveal>
+      <h2 class="ch__h"><span>01</span>{t('Punto de partida', 'Starting point')}</h2>
+      <div class="ch__c">
+        <p class="lead">{t('Wanderlust Videos es un servicio B2B de post-producción de video de bodas para filmmakers. La marca vive sobre video, en una plataforma web, en mails, en hojas de cálculo y en tableros de tareas.', 'Wanderlust Videos is a B2B wedding-video post-production service for filmmakers. The brand lives over video, in a web platform, in emails, in spreadsheets and on task boards.')}</p>
+        <p class="lead lead--s">{t('El isologo en degradé azul/fucsia perdía legibilidad sobre imágenes en movimiento y cada plataforma lo mostraba distinto.', 'The blue/magenta gradient logo lost legibility over moving images, and every platform rendered it differently.')}</p>
+        <div class="ba" id="ba">
+          <div class="ba__box">
+            <img class="ba__img" src={withBase(`${P}/marca/iso-anterior.webp`)} alt={t('Isologo anterior en degradé', 'Previous gradient logo')} loading="lazy" />
+            <img class="ba__img ba__img--after" src={withBase(`${P}/marca/iso-blanco.webp`)} alt={t('Isologo nuevo, blanco', 'New logo, white')} loading="lazy" />
+            <span class="ba__tag ba__tag--l">{t('Antes', 'Before')}</span><span class="ba__tag ba__tag--r">{t('Después', 'After')}</span>
+            <span class="ba__line" aria-hidden="true"></span>
+          </div>
+          <label class="ba__ctl"><span class="sr">{t('Deslizá para comparar el antes y el después', 'Slide to compare before and after')}</span><input type="range" min="0" max="100" value="50" aria-label={t('Comparar antes y después', 'Compare before and after')} /></label>
+        </div>
+        <p class="note">{t('Prueba pendiente: el logo antes/después sobre un frame de video real.', 'Pending: the before/after logo over a real video frame.')}{showPending && <span class="pend">{t('Pendiente', 'Pending')}</span>}</p>
+      </div>
+    </section>
+
+    <!-- 02 · Marca -->
+    <section class="ch" id="marca" data-reveal>
+      <h2 class="ch__h"><span>02</span>{t('La marca', 'The brand')}</h2>
+      <div class="ch__c">
+        <p class="lead">{t('Un isologo blanco, Montserrat como tipografía y una paleta que complementa la marca sin entrar nunca en ella.', 'A white logo, Montserrat as the typeface and a palette that complements the brand without ever going inside it.')}</p>
+        <ol class="dec">
+          <li><h3>{t('Isologo blanco', 'White logo')}</h3><p>{t('Un solo color sobre cualquier fondo oscuro o sobre video: la forma queda legible porque no depende de un degradé que cambia de contraste según la imagen de atrás.', 'A single colour on any dark background or video: the shape stays legible because it does not rely on a gradient whose contrast shifts with the image behind it.')}</p></li>
+          <li><h3>{t('Montserrat', 'Montserrat')}</h3><p>{t('Está disponible en Sheets, mail y Trello: el texto se ve igual donde el equipo trabaja, sin instalar nada.', 'It is available in Sheets, email and Trello: type looks the same wherever the team works, with nothing to install.')}</p></li>
+          <li><h3>{t('Colores fuera de la marca', 'Colours outside the brand')}</h3><p>{t('Cada color tiene un rol (acción, alerta, fondo). Nunca va dentro del isologo, así el logo no cambia cuando cambia una campaña.', 'Each colour has a job (action, alert, background). It never goes inside the logo, so the logo does not change when a campaign does.')}</p></li>
+        </ol>
+        <ul class="swatches" aria-label={t('Paleta', 'Palette')}>
+          {swatches.map((s) => <li><i style={`background:${s.hex}`}></i><b>{s.hex}</b><span>{s.name}</span><em>{s.use}</em></li>)}
+        </ul>
+        <div class="grid grid--3">
+          <Fig lang={lang} src={`${P}/marca/logo-blanco.webp`} alt={t('Logotipo horizontal blanco', 'White horizontal logotype')} cap={t('Logotipo horizontal', 'Horizontal logotype')} fit="contain" surface="brand" ratio="4 / 3" />
+          <Fig lang={lang} src={`${P}/marca/logo-sobre-oscuro.webp`} alt={t('Logotipo con espacio de respiro', 'Logotype with clear space')} cap={t('Con su espacio de respiro', 'With its clear space')} fit="contain" surface="brand" ratio="4 / 3" />
+          <Fig lang={lang} src={`${P}/experiencias/gorra-navy.webp`} alt={t('Gorra azul marino con el parche de la marca', 'Navy cap with the brand patch')} cap={t('En un objeto real: la gorra', 'On a real object: the cap')} ratio="4 / 3" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 · Sistema -->
+    <section class="ch ch--wide" id="sistema" data-reveal>
+      <h2 class="ch__h"><span>03</span>{t('El sistema', 'The system')}</h2>
+      <div class="ch__c ch__c--wide">
+        <p class="lead">{t('La regla pasa del PDF al código: un manual, variables, mixins y componentes. Un botón o un estado nuevo deja de ser una decisión de diseño y pasa a ser una línea.', 'The rule moves from the PDF to the code: a manual, variables, mixins and components. A new button or state stops being a design decision and becomes one line.')}</p>
+        <div class="chain" aria-label={t('Del manual al componente', 'From manual to component')}>
+          {[t('Manual de marca', 'Brand manual'), 'Variables', 'Mixins', t('Componentes', 'Components'), t('Pantallas', 'Screens')].map((s, i, a) => <><span class="chain__i">{s}</span>{i < a.length - 1 && <span class="chain__a" aria-hidden="true">→</span>}</>)}
+        </div>
+        <figure class="demo">
+          <div class="demo__bar"><span class="demo__dot"></span><span class="demo__dot"></span><span class="demo__dot"></span><b>{t('Demo viva', 'Live demo')}</b><button type="button" class="demo__btn" id="demo-toggle" aria-pressed="false" data-on={t('Dejar de interactuar', 'Stop interacting')} data-off={t('Interactuar', 'Interact')}>{t('Interactuar', 'Interact')}</button><a href={withBase('/demo/design-system/index.html')} target="_blank" rel="noopener">{t('Pantalla completa', 'Full screen')} ↗</a></div>
+          <iframe id="demo-frame" src={withBase('/demo/design-system/index.html')} title={t('Aster: el sistema recreado con marca neutra', 'Aster: the system rebuilt with a neutral brand')} loading="lazy" style="aspect-ratio:16 / 11"></iframe>
+          <figcaption>{t('Aster: el sistema recreado en limpio con una marca neutra. El código de la empresa es privado; la estructura y el criterio son los mismos.', 'Aster: the system rebuilt from scratch with a neutral brand. The company code is private; the structure and the reasoning are the same.')}</figcaption>
+        </figure>
+        <div class="code-pair">
+          <figure class="code"><figcaption><code>_tokens.scss</code><span>{t('Los mapas son la fuente de verdad; de ahí salen las variables CSS.', 'Maps are the source of truth; CSS variables are generated from them.')}</span></figcaption>
+            <Code code={excerpt(tokensRaw, '// --- Color', '// --- Tipografía')} lang="scss" theme="github-dark" wrap={false} /></figure>
+          <figure class="code"><figcaption><code>_buttons.scss</code><span>{t('El botón: base, variantes, tamaños y estados en un solo componente.', 'The button: base, variants, sizes and states in a single component.')}</span></figcaption>
+            <Code code={excerpt(buttonsRaw, '// Componente: botón', '@keyframes')} lang="scss" theme="github-dark" wrap={false} /></figure>
+        </div>
+        <ul class="checks">
+          <li>{t('Un único mixin respond() en lugar de repetir @media.', 'A single respond() mixin instead of repeating @media.')}</li>
+          <li>{t('Un archivo por componente.', 'One file per component.')}</li>
+          <li>{t('Contraste AA verificado con una fórmula, no a ojo.', 'AA contrast verified with a formula, not by eye.')}</li>
+          <li>{t('Foco visible en todo elemento interactivo.', 'Visible focus on every interactive element.')}</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 04 · Plataforma -->
+    <section class="ch ch--wide" id="plataforma" data-reveal>
+      <h2 class="ch__h"><span>04</span>{t('La plataforma', 'The platform')}</h2>
+      <div class="ch__c ch__c--wide">
+        <p class="lead">{t('Cuatro roles (cliente, editor, QA y project manager) comparten un proyecto. Diseñé los mapas de estados y de proceso que ordenan quién hace qué y cuándo.', 'Four roles (client, editor, QA and project manager) share one project. I designed the state and process maps that organise who does what and when.')}</p>
+        <ol class="dec">
+          <li><h3>{t('Un estado principal y sub-estados por rol', 'One main state and per-role sub-states')}</h3><p>{t('Seis estados para leer el panorama y sub-estados según quién mira, para saber a quién le toca actuar.', 'Six states to read the big picture, and sub-states depending on who is looking, to know whose turn it is.')}</p></li>
+          <li><h3>{t('Color por rol y por estado, siempre con texto', 'Colour by role and state, always with text')}</h3><p>{t('Cada rol tiene su insignia (CL, ED, PM, QA) y cada estado su color. Los mapas se leen sin leyenda.', 'Each role has a badge (CL, ED, PM, QA) and each state a colour. The maps read without a legend.')}</p></li>
+        </ol>
+        <div class="grid grid--3">
+          <Fig lang={lang} src={`${P}/plataforma/flow-estados.webp`} alt={t('Mapa de estados de proyecto', 'Project state map')} cap={t('Flow de estados', 'State flow')} ratio="2 / 3" fit="contain" surface="light" zoom={true} />
+          <Fig lang={lang} src={`${P}/plataforma/flow-proceso-a.webp`} alt={t('Flow de proceso, primera mitad', 'Process flow, first half')} cap={t('Proceso (1/2): del pedido a la asignación', 'Process (1/2): from order to assignment')} ratio="2 / 3" fit="contain" surface="light" zoom={true} />
+          <Fig lang={lang} src={`${P}/plataforma/flow-proceso-b.webp`} alt={t('Flow de proceso, segunda mitad', 'Process flow, second half')} cap={t('Proceso (2/2): edición, revisión y cierre', 'Process (2/2): editing, review and close')} ratio="2 / 3" fit="contain" surface="light" zoom={true} />
+        </div>
+        <div class="grid grid--3">
+          <Fig lang={lang} alt={t('Pantallas finales de la plataforma', 'Final platform screens')} cap={t('Pantallas finales en contexto', 'Final screens in context')} ratio="4 / 3" why={t('Hace falta una captura anonimizada, sin nombres de clientes.', 'An anonymised capture with no client names is needed.')} />
+          <Fig lang={lang} src={`${P}/plataforma/ia-base.webp`} alt={t('Burbuja de IA en reposo', 'AI bubble at rest')} cap={t('El PM con IA: en reposo', 'The AI PM: at rest')} ratio="4 / 3" fit="contain" surface="light" />
+          <Fig lang={lang} src={`${P}/plataforma/ia-pensando.webp`} alt={t('Burbuja de IA pensando', 'AI bubble thinking')} cap={t('El PM con IA: «pensando»', 'The AI PM: “thinking”')} ratio="4 / 3" fit="contain" surface="light" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 · Campañas -->
+    <section class="ch ch--wide" id="campanas" data-reveal>
+      <h2 class="ch__h"><span>05</span>{t('Las campañas', 'The campaigns')}</h2>
+      <div class="ch__c ch__c--wide">
+        <p class="lead">{t('La marca sale a jugar: Cyber Monday, Elopement Videos, ofertas de Navidad, captación de filmmakers, landings y newsletters, todo sobre los mismos tokens.', 'The brand goes out to play: Cyber Monday, Elopement Videos, Christmas offers, filmmaker outreach, landings and newsletters, all on the same tokens.')}</p>
+        <div class="camp">
+          <Fig lang={lang} src={`${P}/campanas/cyber-desktop.webp`} alt={t('Cyber Monday Deals, escritorio', 'Cyber Monday Deals, desktop')} cap={t('Cyber Monday Deals, escritorio', 'Cyber Monday Deals, desktop')} ratio="16 / 10" />
+          <Fig lang={lang} src={`${P}/campanas/cyber-mobile.webp`} alt={t('Cyber Monday Deals, móvil', 'Cyber Monday Deals, mobile')} cap={t('La misma campaña, adaptada a móvil', 'The same campaign, adapted to mobile')} ratio="3 / 4" fit="contain" surface="dark" />
+        </div>
+        <div class="grid grid--3">
+          <Fig lang={lang} src={`${P}/campanas/calling-all.webp`} alt={t('Captación de filmmakers', 'Filmmaker outreach')} cap={t('«Filmmaker? Let’s Connect»: tipografía como imagen', '“Filmmaker? Let’s Connect”: type as image')} ratio="4 / 3" fit="contain" surface="dark" />
+          <Fig lang={lang} alt="Special Christmas Offer" cap="Special Christmas Offer" ratio="4 / 3" why={t('Lleva una foto de pareja: confirmar licencia o reemplazar.', 'Contains a couple photo: confirm licence or replace.')} />
+          <Fig lang={lang} alt="Newsletter Elopement Videos" cap="Newsletter Elopement Videos" ratio="4 / 3" why={t('Reexportar el PSD con una foto libre de uso.', 'Re-export the PSD with a licence-free photo.')} />
+        </div>
+        <ul class="demos" aria-label={t('Demos vivas', 'Live demos')}>
+          {demos.map((d) => <li><a href={withBase(d.href)} target="_blank" rel="noopener"><b>{d.k}</b><span>{d.d}</span><em>{t('Demo viva', 'Live demo')} ↗</em></a></li>)}
+        </ul>
+      </div>
+    </section>
+
+    <!-- 06 · Experiencias -->
+    <section class="ch ch--wide" id="experiencias" data-reveal>
+      <h2 class="ch__h"><span>06</span>{t('Las experiencias', 'The experiences')}</h2>
+      <div class="ch__c ch__c--wide">
+        <p class="lead">{t('Del pixel al espacio: el stand de la marca en WPPI, con sus sobres, su merch y «Videos Estrella», un entorno 3D en el navegador.', 'From pixel to space: the brand’s WPPI stand, with its envelopes, merch and “Videos Estrella”, a 3D environment in the browser.')}{showPending && <span class="pend">{t('Alcance a confirmar', 'Scope to confirm')}</span>}</p>
+        <div class="exp">
+          <Fig lang={lang} src={`${P}/experiencias/silla-estrella.webp`} alt={t('Silla de director con la estrella iridiscente', 'Director’s chair with the iridescent star')} cap={t('Videos Estrella: la silla de director y la estrella', 'Videos Estrella: the director’s chair and the star')} ratio="4 / 5" />
+          <div class="exp__side">
+            <Fig lang={lang} src={`${P}/experiencias/sobre.webp`} alt={t('Sobre del stand', 'Stand envelope')} cap={t('Sobre del stand', 'Stand envelope')} ratio="4 / 3" fit="contain" surface="light" />
+            <Fig lang={lang} alt={t('Planta del stand en WPPI', 'WPPI stand floor plan')} cap={t('Planta del stand en WPPI', 'WPPI stand floor plan')} ratio="4 / 3" why={t('Reexportar el archivo de Illustrator a PNG o PDF.', 'Re-export the Illustrator file to PNG or PDF.')} />
+          </div>
+        </div>
+        <Fig lang={lang} alt={t('El stand armado', 'The stand built')} cap={t('El stand en la feria', 'The stand at the fair')} ratio="21 / 9" why={t('Hace falta una foto del stand armado, sin personas identificables.', 'A photo of the built stand with no identifiable people is needed.')} />
+      </div>
+    </section>
+
+    <!-- 07 · Impacto -->
+    <section class="ch" id="impacto" data-reveal>
+      <h2 class="ch__h"><span>07</span>{t('Qué cambió', 'What changed')}</h2>
+      <div class="ch__c">
+        <p class="lead">{t('Para el equipo: una regla escrita en lugar de preguntar o adivinar, y piezas y pantallas que se arman con componentes en vez de empezar de cero.', 'For the team: a written rule instead of asking or guessing, and pieces and screens built from components instead of from scratch.')}{showPending && <span class="pend">{t('A confirmar', 'To confirm')}</span>}</p>
+        <ul class="metrics" aria-label={t('Indicadores', 'Metrics')}>
+          {metrics.map((m) => <li><span>{m}</span>{showPending ? <span class="pend pend--l">{t('Pendiente', 'Pending')}</span> : <b>—</b>}</li>)}
+        </ul>
+      </div>
+    </section>
+
+    <!-- Más piezas -->
+    <section class="ch ch--wide" id="mas" data-reveal>
+      <h2 class="ch__h"><span>+</span>{t('Más piezas', 'More pieces')}</h2>
+      <div class="ch__c ch__c--wide">
+        <div class="more">
+          {more.map((m) => <Fig lang={lang} src={m.src} alt={m.alt} cap={m.cap} ratio="1 / 1" fit="contain" surface={m.surface ?? 'dark'} />)}
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  // Comparador antes/después del isologo
+  const init = () => {
+    const ba = document.getElementById('ba');
+    const input = ba?.querySelector<HTMLInputElement>('input[type=range]');
+    const box = ba?.querySelector<HTMLElement>('.ba__box');
+    if (!input || !box) return;
+    const set = () => box.style.setProperty('--p', `${input.value}%`);
+    input.addEventListener('input', set); set();
+  };
+  // La demo no captura la rueda del mouse hasta que se pide interactuar
+  const initDemo = () => {
+    const btn = document.getElementById('demo-toggle') as HTMLButtonElement | null;
+    const frame = document.getElementById('demo-frame');
+    if (!btn || !frame) return;
+    btn.addEventListener('click', () => {
+      const on = btn.getAttribute('aria-pressed') !== 'true';
+      btn.setAttribute('aria-pressed', String(on));
+      frame.classList.toggle('is-live', on);
+      btn.textContent = (on ? btn.dataset.on : btn.dataset.off) ?? '';
+    });
+  };
+  document.addEventListener('astro:page-load', () => { init(); initDemo(); });
+</script>
+
+<style>
+  .ws { padding-bottom: clamp(3rem, 6vw, 6rem); }
+  .hero { padding-top: clamp(2rem, 4vw, 4rem); display: grid; gap: 1.2rem; }
+  .thread { display: flex; flex-wrap: wrap; gap: .5rem .6rem; }
+  .thread a { display: inline-flex; gap: .5rem; align-items: baseline; padding: .45rem .95rem; border: 1px solid var(--line); border-radius: 999px; font-size: .82rem; transition: border-color .4s var(--ease), background .4s var(--ease); }
+  .thread a span { color: var(--muted); font-size: .7rem; }
+  .thread a:hover { border-color: var(--fg); background: color-mix(in srgb, var(--fg) 6%, transparent); }
+
+  .body { display: grid; gap: clamp(4rem, 9vw, 9rem); padding-block: clamp(4rem, 9vw, 9rem) 0; }
+  .ch { display: grid; gap: 2rem 3rem; grid-template-columns: minmax(10rem, 1fr) 4fr; align-items: start; scroll-margin-top: 6rem; }
+  .ch--wide { grid-template-columns: 1fr; }
+  .ch__h { display: flex; gap: 1rem; align-items: baseline; margin: 0; font-size: .78rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 700; }
+  .ch__h span { color: var(--muted); font-weight: 400; }
+  @media (min-width: 900px) { .ch:not(.ch--wide) .ch__h { position: sticky; top: 6rem; } }
+  .ch__c { display: grid; gap: 2rem; max-width: 62rem; }
+  .ch__c--wide { max-width: none; }
+  @media (max-width: 899px) { .ch { grid-template-columns: 1fr; } }
+  .lead { font-size: clamp(1.1rem, 1.8vw, 1.5rem); line-height: 1.5; margin: 0; max-width: 56ch; }
+  .lead--s { font-size: clamp(1rem, 1.4vw, 1.2rem); color: var(--muted); }
+  .note { margin: 0; font-size: .85rem; color: var(--muted); }
+
+  .pend { display: inline-block; vertical-align: .15em; margin-left: .6em; padding: .12rem .55rem; border: 1px solid #e84d00; color: #ff7a3d; border-radius: 999px; font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; line-height: 1.5; }
+  .pend--l { margin: 0; }
+  @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .pend { color: #b43a00; border-color: #b43a00; } }
+
+  .dec { list-style: none; counter-reset: d; margin: 0; padding: 0; display: grid; gap: 1.6rem; max-width: 62rem; }
+  .dec li { counter-increment: d; display: grid; gap: .5rem; padding-top: 1.1rem; border-top: 1px solid var(--line); }
+  .dec h3 { margin: 0; font-size: 1.1rem; font-weight: 600; }
+  .dec h3::before { content: counter(d, decimal-leading-zero) ' '; color: var(--muted); font-weight: 400; margin-right: .6rem; }
+  .dec p { margin: 0; color: color-mix(in srgb, var(--fg) 82%, var(--bg)); max-width: 62ch; line-height: 1.6; }
+
+  .swatches { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: .8rem; }
+  .swatches li { display: grid; gap: .15rem; font-size: .8rem; }
+  .swatches i { display: block; height: 4.4rem; border-radius: 4px; border: 1px solid var(--line); margin-bottom: .4rem; }
+  .swatches b { font-size: .9rem; } .swatches em { font-style: normal; color: var(--muted); }
+
+  .grid { display: grid; gap: 1.5rem; }
+  .grid--3 { grid-template-columns: repeat(3, 1fr); }
+  .camp { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.5rem; align-items: start; }
+  .exp { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+  .exp__side { display: grid; gap: 1.5rem; }
+  .more { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 1.2rem; }
+  @media (max-width: 760px) { .grid--3, .camp, .exp { grid-template-columns: 1fr; } }
+
+  /* Comparador antes/después */
+  .ba { display: grid; gap: .7rem; max-width: 46rem; }
+  .ba__box { --p: 50%; position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 4px; background: #282931; }
+  .ba__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 4%; }
+  .ba__img--after { clip-path: inset(0 0 0 var(--p)); }
+  .ba__line { position: absolute; top: 0; bottom: 0; left: var(--p); width: 2px; background: #fff; box-shadow: 0 0 0 1px rgb(0 0 0 / .3); }
+  .ba__tag { position: absolute; top: .7rem; padding: .15rem .6rem; border-radius: 999px; background: rgb(0 0 0 / .55); color: #fff; font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; }
+  .ba__tag--l { left: .7rem; } .ba__tag--r { right: .7rem; }
+  .ba__ctl input { width: 100%; accent-color: var(--fg); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .chain { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; }
+  .chain__i { padding: .5rem 1rem; border: 1px solid var(--fg); border-radius: 999px; font-size: .85rem; }
+  .chain__a { color: var(--muted); }
+
+  .demo { margin: 0; display: grid; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .demo__bar { display: flex; align-items: center; gap: .4rem; padding: .6rem .9rem; border-bottom: 1px solid var(--line); font-size: .8rem; }
+  .demo__bar b { margin-left: .6rem; letter-spacing: .12em; text-transform: uppercase; font-size: .68rem; }
+  .demo__bar a { color: var(--muted); } .demo__bar a:hover { color: var(--fg); }
+  .demo__dot { width: .6rem; height: .6rem; border-radius: 50%; background: var(--line); }
+  .demo iframe { width: 100%; border: 0; background: #fff; display: block; pointer-events: none; }
+  .demo iframe.is-live { pointer-events: auto; }
+  .demo__btn { margin-left: auto; padding: .2rem .8rem; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--fg); font: inherit; font-size: .75rem; cursor: pointer; }
+  .demo__btn:hover, .demo__btn[aria-pressed='true'] { border-color: var(--fg); }
+  .demo__btn + a { margin-left: .8rem; }
+  .demo figcaption { padding: .7rem .9rem; font-size: .8rem; color: var(--muted); border-top: 1px solid var(--line); }
+
+  .code-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; align-items: start; }
+  @media (max-width: 960px) { .code-pair { grid-template-columns: 1fr; } }
+  .code { margin: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; min-width: 0; }
+  .code figcaption { display: grid; gap: .2rem; padding: .7rem 1rem; background: rgb(127 127 127 / .12); font-size: .78rem; color: var(--muted); }
+  .code figcaption code { color: var(--fg); font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+  .code :global(pre) { margin: 0 !important; padding: 1rem 1.1rem !important; font-size: .74rem; line-height: 1.6; overflow-x: auto; border-radius: 0; max-height: 26rem; }
+  .checks { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: .6rem 2rem; font-size: .9rem; color: var(--muted); }
+  .checks li::before { content: '✓ '; color: var(--fg); }
+
+  .demos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
+  .demos a { display: grid; gap: .3rem; padding: 1.1rem 1.2rem; border: 1px solid var(--line); border-radius: 12px; transition: border-color .4s var(--ease), transform .4s var(--ease); }
+  .demos a:hover { border-color: var(--fg); transform: translateY(-2px); }
+  .demos b { font-weight: 600; } .demos span { color: var(--muted); font-size: .85rem; } .demos em { font-style: normal; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+
+  .metrics { list-style: none; margin: 0; padding: 0; display: grid; }
+  .metrics li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 0; border-top: 1px solid var(--line); }
+  .metrics li:last-child { border-bottom: 1px solid var(--line); }
+  .metrics b { font-size: 1.4rem; font-weight: 600; }
+</style>

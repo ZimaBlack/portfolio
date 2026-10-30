@@ -5,7 +5,6 @@ import WorkCard from '../components/WorkCard.astro';
 import Icon from '../components/Icon.astro';
 import { site } from '../data/site';
 import { cv } from '../data/cv';
-import CasesHome from '../components/cases/CasesHome.astro';
 import PromptTerminal from '../components/PromptTerminal.astro';
 import Crt from '../components/Crt.astro';
 import { copy, paths, type Lang } from '../lib/i18n';
@@ -30,8 +29,6 @@ const alt = lang === 'es' ? 'en' : 'es';
 
   <!-- Todo lo que no es el hero se oscurece un poco más: un velo negro sobre el patrón de fondo, que entra con suavidad al salir del hero -->
   <div class="home__rest">
-  <CasesHome lang={lang} />
-
   <section class="section wrap" id="trabajos">
     <header class="head">
       <p class="eyebrow" data-reveal>{c.featured.eyebrow}</p>

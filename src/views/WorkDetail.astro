@@ -17,6 +17,7 @@ import GcModeWidget from '../components/GcModeWidget.astro';
 import Lightbox from '../components/Lightbox.astro';
 import NovaPsiStory from '../components/NovaPsiStory.astro';
 import OmegaManual from '../components/OmegaManual.astro';
+import WanderStory from '../components/wander/WanderStory.astro';
 import { ambientOf, isLight, toneOfHex, type Tone } from '../lib/palette';
 import { site } from '../data/site';
 import { copy, loc, paths, type Lang } from '../lib/i18n';
@@ -134,6 +135,7 @@ const next = all.length > 1 && at >= 0 ? all[(at + 1) % all.length] : undefined;
       </div>
     ) : <PiruloManual lang={lang} />)}
     {d.manual === 'omega-shields' && <OmegaManual lang={lang} />}
+    {d.manual === 'wanderlust' && <WanderStory lang={lang} />}
 
     {d.video?.id && <section class="wrap vid" data-reveal><VideoEmbed provider={d.video.provider} id={d.video.id} title={d.title} play={c.detail.play} /></section>}
 

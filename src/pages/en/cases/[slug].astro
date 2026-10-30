@@ -1,9 +1,0 @@
----
-import CaseView from '../../../components/cases/CaseView.astro';
-import { cases } from '../../../data/cases';
-export function getStaticPaths() {
-  return cases.map((c) => ({ params: { slug: c.slug }, props: { c } }));
-}
-const { c } = Astro.props;
----
-<CaseView {c} lang="en" />
