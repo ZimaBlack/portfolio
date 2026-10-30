@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { withBase, type Lang } from '../lib/i18n';
 import TintPhoto from './TintPhoto.astro';
+import TintMask from './TintMask.astro';
 
 const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
@@ -28,6 +29,8 @@ const t = es ? {
   sketchCap: 'Boceto original',
   photoCap: 'La marca tiñe la imagen: cambia los colores de la derecha',
   photo2Cap: 'Retrato teñido con los colores de la marca',
+  portrait: 'Una imagen, muchas versiones',
+  portraitA: 'El pelo, el isotipo y los fondos se pintan con los dos colores de la marca: al mover el widget, la fotografía cambia entera y conserva su textura.',
   tint: 'La marca tiñe la imagen',
   tintA: 'El cabello toma los dos colores de la marca. Las formas se desenfocan y se funden con la foto.',
   sketchTxt: 'Todo parte de un trazo a lápiz: una cabeza que se acurruca, el flequillo como gesto y una mirada de reojo. La marca conserva esa actitud.',
@@ -49,6 +52,8 @@ const t = es ? {
   sketchCap: 'Original sketch',
   photoCap: 'The brand tints the image: change the colors on the right',
   photo2Cap: 'Portrait tinted with the brand colors',
+  portrait: 'One image, many versions',
+  portraitA: 'The hair, the isotype and the backdrops are painted with the brand’s two colors: move the widget and the whole photograph changes while keeping its texture.',
   tint: 'The brand tints the image',
   tintA: 'The hair takes the brand’s two colors. The shapes are blurred and blended into the photo.',
   sketchTxt: 'It all starts with a pencil line: a head curling up, the fringe as a gesture and a sideways glance. The brand keeps that attitude.',
@@ -90,6 +95,14 @@ const t = es ? {
     <div class="cm__side">
       <h2 class="h2">{t.tint}</h2>
       <p class="cm__txt">{t.tintA}</p>
+    </div>
+  </div>
+
+  <div class="wrap cm__row cm__row--rev" data-reveal>
+    <figure class="cm__photo cm__photo--solo"><TintMask photo="/works/colorada/manual/retrato.webp" masks={['/works/colorada/manual/retrato-m0.webp', '/works/colorada/manual/retrato-m1.webp']} alt={t.portrait} ratio="872 / 1330" blur={0.9} opacity={0.72} /></figure>
+    <div class="cm__side">
+      <h2 class="h2">{t.portrait}</h2>
+      <p class="cm__txt">{t.portraitA}</p>
     </div>
   </div>
 
