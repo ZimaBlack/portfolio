@@ -3,7 +3,7 @@
 //   capa 1 (color acento, --c1): «hard-light» al 50 %  ·  capa 2 (color principal, --c0): «overlay» al 75 %.
 // Los colores salen del widget y se animan suavemente al cambiar.
 import { withBase } from '../lib/i18n';
-const { photo, bw = '', masks, alt = '', ratio = '872 / 1330', blur = 0.5 } = Astro.props as { photo: string; bw?: string; masks: string[]; alt?: string; ratio?: string; blur?: number };
+const { photo, bw = '', masks, alt = '', ratio = '872 / 1330', blur = 0.5, face = true } = Astro.props as { photo: string; bw?: string; masks: string[]; alt?: string; ratio?: string; blur?: number; face?: boolean };
 // [variable de color, modo, opacidad] por máscara, en el orden de `masks`
 const layers: [string, string, number][] = [['--c1', 'hard-light', 0.5], ['--c0', 'overlay', 0.75]];
 // Capa extra «multiply» con el color principal: da cuerpo y saturación al fondo y la ropa sin aclarar
@@ -13,13 +13,13 @@ const mult: [string, number] = ['--c0', 0.38];
   <img class="tm__base" src={withBase(photo)} alt={alt} loading="lazy" decoding="async" />
   {masks.map((m, i) => <i class="tm__l" aria-hidden="true" style={`--m:url(${withBase(m)});--c:var(${layers[i][0]});--bm:${layers[i][1]};--bo:${layers[i][2]}`}></i>)}
   {masks[1] && <i class="tm__l tm__l--mul" aria-hidden="true" style={`--m:url(${withBase(masks[1])});--c:var(${mult[0]});--bm:multiply;--bo:${mult[1]}`}></i>}
-  <img class="tm__face" src={withBase(photo)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+  {face && <img class="tm__face" src={withBase(photo)} alt="" aria-hidden="true" loading="lazy" decoding="async" />}
   {bw && <img class="tm__bw" src={withBase(bw)} alt="" loading="lazy" decoding="async" />}
   {bw && <i class="tm__noir" aria-hidden="true"></i>}
 </figure>
 
 <style>
-  .tm { position: relative; margin: 0; aspect-ratio: var(--r); container-type: inline-size; isolation: isolate; }
+  .tm { position: relative; margin: 0; aspect-ratio: var(--r); container-type: inline-size; border-radius: 3.5rem; overflow: hidden; isolation: isolate; }
   .tm img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .tm__l { position: absolute; inset: 0; pointer-events: none; background: var(--c); -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat; mix-blend-mode: var(--bm); opacity: var(--bo); filter: blur(calc(var(--blur, 0.5) * 1cqw)); transition: background-color .8s linear, opacity 1.4s ease; }
   /* El rostro recupera parte de su luz original: el tinte no lo oscurece */
