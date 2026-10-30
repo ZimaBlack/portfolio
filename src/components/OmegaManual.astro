@@ -39,6 +39,7 @@ const t = es ? {
   concept: 'Concepto del arte',
   details: 'Detalles gráficos: textura granulada y marcos mutables',
   dielines: 'Desplegables de la caja',
+  variants: 'Ver variantes de corte',
   dielinesA: 'Tres variantes del troquel, con las ventanas que dejan ver el color de las fundas.',
   scene: 'El producto en escena',
   video: 'Video de lanzamiento',
@@ -73,6 +74,7 @@ const t = es ? {
   concept: 'Art concept',
   details: 'Graphic details: subtle grain texture and mutable frames',
   dielines: 'Box dielines',
+  variants: 'See die-cut variants',
   dielinesA: 'Three die-cut variants, with windows that show the color of the sleeves.',
   scene: 'The product in scene',
   video: 'Launch video',
@@ -142,19 +144,6 @@ const t = es ? {
     </div>
   </div>
 
-  <div class="wrap om__res" data-reveal>
-    <div class="om__side"><h2 class="h2">{t.dielines}</h2><p class="om__txt">{t.dielinesA}</p></div>
-    <div class="omc" data-omc>
-      <div class="omc__track">
-        {['cut-red', 'cut-blue', 'cut-blue2'].map((n) => <div class="omc__s"><img src={g(n)} alt={t.dielines} loading="lazy" decoding="async" /></div>)}
-        {['cut-red', 'cut-blue', 'cut-blue2'].map((n) => <div class="omc__s omc__s--z"><div class="omc__z" style={`background-image:url(${g(n)})`} role="img" aria-label={t.dielines}></div></div>)}
-      </div>
-      <button type="button" class="omc__b omc__b--prev" data-omc-prev aria-label={es ? 'Anterior' : 'Previous'}>←</button>
-      <button type="button" class="omc__b omc__b--next" data-omc-next aria-label={es ? 'Siguiente' : 'Next'}>→</button>
-      <div class="omc__dots" data-omc-dots></div>
-    </div>
-  </div>
-
   <figure class="om__bleed" data-reveal><img src={g('scene')} alt={t.scene} width="2000" height="840" loading="lazy" decoding="async" /></figure>
 
   <div class="wrap om__side om__deco" data-reveal>
@@ -165,7 +154,7 @@ const t = es ? {
   <figure class="om__full" data-reveal><img src={g('line')} alt="Omega Shields" width="2000" height="990" loading="lazy" decoding="async" /></figure>
   <div class="wrap om__prods" data-reveal>
     <figure class="om__photo omf"><img src={g('bag-magnetic')} alt="Magnetic case" width="1493" height="2000" loading="lazy" decoding="async" /></figure>
-    <figure class="om__photo omf"><img src={g('box-front')} alt={t.pack} width="1493" height="2000" loading="lazy" decoding="async" /></figure>
+    <figure class="om__photo omf om__open"><button type="button" class="om__openb" data-om-open aria-haspopup="dialog"><img src={g('box-front')} alt={t.pack} width="1493" height="2000" loading="lazy" decoding="async" /><span class="om__hint">{t.variants} <b aria-hidden="true">+</b></span></button></figure>
     <figure class="om__photo omf"><img src={g('bag-sleeves')} alt="Sleeves" width="1601" height="2000" loading="lazy" decoding="async" /></figure>
   </div>
 
@@ -177,6 +166,20 @@ const t = es ? {
     </div>
   </div>
 </section>
+
+<dialog class="omm" data-om-dialog aria-label={t.dielines}>
+  <button type="button" class="omm__x" data-om-close aria-label={es ? 'Cerrar' : 'Close'}>×</button>
+  <p class="omm__t">{t.dielines}</p>
+    <div class="omc" data-omc data-omc>
+      <div class="omc__track">
+        {['cut-red', 'cut-blue', 'cut-blue2'].map((n) => <div class="omc__s"><img src={g(n)} alt={t.dielines} loading="lazy" decoding="async" /></div>)}
+        {['cut-red', 'cut-blue', 'cut-blue2'].map((n) => <div class="omc__s omc__s--z"><div class="omc__z" style={`background-image:url(${g(n)})`} role="img" aria-label={t.dielines}></div></div>)}
+      </div>
+      <button type="button" class="omc__b omc__b--prev" data-omc-prev aria-label={es ? 'Anterior' : 'Previous'}>←</button>
+      <button type="button" class="omc__b omc__b--next" data-omc-next aria-label={es ? 'Siguiente' : 'Next'}>→</button>
+      <div class="omc__dots" data-omc-dots></div>
+    </div>
+</dialog>
 
 <script>
   // Carrusel de desplegables: desplazamiento con flechas y puntos
@@ -218,6 +221,19 @@ const t = es ? {
     els.forEach((el) => io.observe(el));
   };
   document.addEventListener('astro:page-load', initI); initI();
+</script>
+
+<script>
+  const initM = () => {
+    const d = document.querySelector<HTMLDialogElement>('[data-om-dialog]'); const o = document.querySelector<HTMLElement>('[data-om-open]');
+    if (!d || !o || o.dataset.on) return; o.dataset.on = '1';
+    o.addEventListener('click', () => { d.showModal(); d.querySelector<HTMLElement>('.omc__track')?.scrollTo({ left: 0 }); document.documentElement.style.overflow = 'hidden'; });
+    const close = () => { d.close(); };
+    d.addEventListener('close', () => { document.documentElement.style.overflow = ''; });
+    d.querySelector('[data-om-close]')?.addEventListener('click', close);
+    d.addEventListener('click', (e) => { if (e.target === d) close(); });
+  };
+  document.addEventListener('astro:page-load', initM); initM();
 </script>
 
 <style>
@@ -273,6 +289,24 @@ const t = es ? {
   .om__deco { max-width: 72rem; }
   .om__prods { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); }
   .om__prods img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+  /* Caja destacada: abre el modal de variantes de corte */
+  .om__prods { grid-template-columns: 1fr 1.7fr 1fr; align-items: center; }
+  .om__open { z-index: 2; }
+  .om__open .om__openb { all: unset; display: block; position: relative; cursor: pointer; overflow: hidden; width: 100%; }
+  .om__open img { aspect-ratio: 3 / 4.1 !important; transition: transform 1.2s var(--ease), filter .6s; filter: drop-shadow(0 0 28px rgb(212 174 100 / .22)); }
+  .om__open .om__openb:hover img, .om__open .om__openb:focus-visible img { transform: scale(1.05); filter: brightness(1.12) drop-shadow(0 0 34px rgb(212 174 100 / .45)); }
+  .om__hint { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; gap: .6rem; padding: 1.1rem 1rem; font-size: .8rem; letter-spacing: .18em; text-transform: uppercase; color: #e3d0a6; background: linear-gradient(0deg, rgb(13 11 20 / .92), transparent); transform: translateY(100%); transition: transform .6s var(--ease); }
+  .om__hint b { font-weight: 300; font-size: 1.2rem; line-height: 1; }
+  .om__openb:hover .om__hint, .om__openb:focus-visible .om__hint { transform: none; }
+  @media (hover: none) { .om__hint { transform: none; } }
+  @media (max-width: 760px) { .om__prods { grid-template-columns: 1fr; } }
+  /* Modal de variantes */
+  .omm { border: 0; padding: 0; width: min(76rem, 94vw); max-height: 92vh; background: #fff; color: #0d0b14; overflow: hidden; }
+  .omm::backdrop { background: rgb(5 4 9 / .88); backdrop-filter: blur(6px); }
+  .omm__t { margin: 0; padding: 1rem 1.4rem; font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; color: #2c4560; border-bottom: 1px solid #dfe5ec; }
+  .omm__x { all: unset; position: absolute; top: .5rem; right: .8rem; z-index: 3; cursor: pointer; font-size: 1.8rem; line-height: 1; padding: .2rem .6rem; color: #2c4560; }
+  .omm .omc__s { aspect-ratio: 2000 / 1100; }
+
   @media (max-width: 760px) { .om__prods { grid-template-columns: 1fr; } }
   .om__cards { display: grid; gap: var(--gutter); }
   .om__card img { width: 100%; aspect-ratio: 2000 / 800; object-fit: cover; object-position: 50% 50%; }
@@ -296,14 +330,14 @@ const t = es ? {
   .omv__c.is-active .omv__live { opacity: 1; }
   @media (max-width: 860px) { .om__row--iso { grid-template-columns: 1fr; } }
   /* Encuadre de las secciones: un ornamento a cada lado, pegado al borde y con su proporción (160 × 546); encastran al entrar */
-  .om__row, .om__res, .om__apps, .om__deco, .om__prods { position: relative; padding-block: clamp(2.6rem, 6vw, 4.4rem); padding-inline: clamp(3.4rem, 11vw, 9.5rem); }
+  .om__row, .om__res, .om__apps, .om__deco, .om__prods { position: relative; padding-block: clamp(2.6rem, 6vw, 4.4rem); padding-inline: clamp(4.6rem, 15vw, 12.5rem); }
   .om__row::before, .om__row::after, .om__res::before, .om__res::after, .om__apps::before, .om__apps::after, .om__deco::before, .om__deco::after, .om__prods::before, .om__prods::after {
     content: ''; position: absolute; top: 50%; height: min(100%, 24rem); aspect-ratio: 160 / 546; pointer-events: none; z-index: 0; opacity: 0; translate: 0 -50%;
     background: no-repeat center / 100% 100%; transition: opacity 1.2s ease, transform 1.4s var(--ease); }
   .om__row::before, .om__res::before, .om__apps::before, .om__deco::before, .om__prods::before { left: 0; background-image: var(--sl); transform: translateX(-60%); }
   .om__row::after, .om__res::after, .om__apps::after, .om__deco::after, .om__prods::after { right: 0; background-image: var(--sr); transform: translateX(60%); }
   .is-in.om__row::before, .is-in.om__res::before, .is-in.om__apps::before, .is-in.om__deco::before, .is-in.om__prods::before,
-  .is-in.om__row::after, .is-in.om__res::after, .is-in.om__apps::after, .is-in.om__deco::after, .is-in.om__prods::after { opacity: .8; transform: none; }
+  .is-in.om__row::after, .is-in.om__res::after, .is-in.om__apps::after, .is-in.om__deco::after, .is-in.om__prods::after { opacity: .42; transform: none; }
   .om__row > *, .om__res > *, .om__apps > *, .om__deco > *, .om__prods > * { position: relative; z-index: 1; }
   .om__scene { display: grid; justify-items: center; }
   .om__sceneb { width: min(100%, 30rem); aspect-ratio: 636 / 886; overflow: hidden; border-radius: 4px; box-shadow: 0 30px 80px rgb(0 0 0 / .5); }
