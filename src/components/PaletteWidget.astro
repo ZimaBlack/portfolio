@@ -30,7 +30,8 @@ const t = {
   .pw__bwv { position: fixed; inset: 0; z-index: 54; pointer-events: none; opacity: 0; -webkit-backdrop-filter: grayscale(1) contrast(1.06); backdrop-filter: grayscale(1) contrast(1.06); transition: opacity 1.4s ease; }
   html[data-pw-bw] .pw__bwv { opacity: 1; }
   /* El widget también pierde el color mientras dura el modo blanco y negro */
-  .pw { --gs: 0; } html[data-pw-bw] .pw :is(.pw__rail, .pw__random, .pw__tab) { filter: grayscale(1) contrast(1.05); }
+  .pw { --gs: 0; } html[data-pw-bw] .pw :is(.pw__random, .pw__tab) { filter: grayscale(1) contrast(1.05); }
+  html[data-pw-bw] .pw__rail { background: linear-gradient(to bottom, #b9b9b9, #7a7a7a 55%, #444) !important; }
 </style>
 <style>
   /* Vertical, centrado en la altura de la pantalla y pegado al borde derecho */
@@ -62,7 +63,7 @@ const t = {
     background: linear-gradient(to bottom, #e8452a, #f1e63a 17%, #6df13a 33%, #3af1f1 50%, #1a1aff 67%, #c43af1 83%, #e8452a); } /* respaldo: el script la redibuja con los colores reales */
   .pw__rail:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
   .pw__rail.is-drag { cursor: grabbing; }
-  .pw__knob { position: absolute; left: 50%; top: 0; width: 2.9rem; height: 1.5rem; margin: -.75rem 0 0 -1.45rem; border-radius: 6px; background: var(--k, #f5282c);
+  .pw__knob { z-index: 5; position: absolute; left: 50%; top: 0; width: 2.9rem; height: 1.5rem; margin: -.75rem 0 0 -1.45rem; border-radius: 6px; background: var(--k, #f5282c);
     border: 2px solid #fff; box-shadow: 0 2px 8px rgb(0 0 0 / .45); transition: transform .3s var(--ease); }
   .pw__rail:hover .pw__knob, .pw__rail.is-drag .pw__knob { transform: scale(1.12); }
 
