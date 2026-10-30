@@ -7,7 +7,14 @@ const { photo, bw = '', masks, alt = '', ratio = '872 / 1330', blur = 1.2, opaci
 <figure class="tm" style={`--r:${ratio};--blur:${blur};--op:${opacity};--mode:${mode}`}>
   <img src={withBase(photo)} alt={alt} loading="lazy" decoding="async" />
   {bw && <img class="tm__bw" src={withBase(bw)} alt="" loading="lazy" decoding="async" />}
-  {masks.map((m, i) => <i class="tm__l" aria-hidden="true" style={`--m:url(${withBase(m)});--c:var(--c${i})`}></i>)}
+  {masks.map((m, i) => (
+    <>
+      <i class="tm__l tm__l--d" aria-hidden="true" style={`--m:url(${withBase(m)});--c:var(--c${i})`}></i>
+      <i class="tm__l tm__l--a" aria-hidden="true" style={`--m:url(${withBase(m)});--c:var(--c${i})`}></i>
+      <i class="tm__l tm__l--b" aria-hidden="true" style={`--m:url(${withBase(m)});--c:var(--c${i})`}></i>
+      <i class="tm__l tm__l--c" aria-hidden="true" style={`--m:url(${withBase(m)});--c:var(--c${i})`}></i>
+    </>
+  ))}
 </figure>
 
 <style>
@@ -16,5 +23,11 @@ const { photo, bw = '', masks, alt = '', ratio = '872 / 1330', blur = 1.2, opaci
   .tm__bw { border-radius: 8cqw; opacity: 0; transition: opacity 1.4s ease; }
   :global(html[data-pw-bw]) .tm__bw { opacity: 1; }
   :global(html[data-pw-bw]) .tm__l { opacity: 0; }
-  .tm__l { position: absolute; inset: 0; pointer-events: none; background: var(--c); -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat; mix-blend-mode: var(--mode); opacity: var(--op); filter: blur(calc(var(--blur) * 1cqw)); transition: background-color .8s linear; }
+  /* Cada máscara pinta en tres capas para que el color se vea de verdad sobre la piel y la tela, no como un filtro plano:
+     una base «normal» tenue acerca la luz al color elegido (así el amarillo no se ensucia) · «color» cambia el matiz y conserva la luz de la foto · «soft-light» le da cuerpo en los medios tonos · «multiply» suave profundiza las sombras. */
+  .tm__l { position: absolute; inset: 0; pointer-events: none; background: var(--c); -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat; filter: blur(calc(var(--blur) * 1cqw)); transition: background-color .8s linear, opacity 1.4s ease; }
+  .tm__l--d { mix-blend-mode: normal; opacity: calc(var(--op) * .42); }
+  .tm__l--a { mix-blend-mode: color; opacity: var(--op); }
+  .tm__l--b { mix-blend-mode: soft-light; opacity: calc(var(--op) * .7); }
+  .tm__l--c { mix-blend-mode: multiply; opacity: calc(var(--op) * .22); }
 </style>

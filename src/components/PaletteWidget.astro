@@ -31,7 +31,7 @@ const t = {
 </style>
 <style>
   /* Vertical, centrado en la altura de la pantalla y pegado al borde derecho */
-  .pw { position: fixed; right: 1rem; transition: opacity .5s ease, transform .9s var(--ease); top: 50%; transform: translate(var(--pw-dx, 0px), -50%); z-index: 55; display: flex; align-items: center; gap: .5rem; }
+  .pw { position: fixed; right: 1rem; transition: opacity .5s ease, transform .9s var(--ease); top: 50%; transform: translate(var(--pw-dx, 0px), calc(-50% + var(--pw-dy, 0px))); z-index: 55; display: flex; align-items: center; gap: .5rem; }
   .pw__panel { order: 2; display: flex; flex-direction: column; align-items: center; gap: .7rem; padding: .9rem 1rem; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 50px rgb(0 0 0 / .4);
     background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
     transition: transform .6s var(--ease), opacity .4s ease; }
@@ -58,7 +58,8 @@ const t = {
   .pw__tab:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
   .pw__tab i { width: 1.1rem; height: .7rem; border-radius: 3px; }
   /* En el pie de la web el widget se oculta */
-  .pw.is-away { opacity: 0; pointer-events: none; transform: translate(calc(var(--pw-dx, 0px) + 1.5rem), -50%); }
+  .pw.is-away { opacity: 0; pointer-events: none; transform: translate(calc(var(--pw-dx, 0px) + 1.5rem), calc(-50% + var(--pw-dy, 0px))); }
+  .pw.is-docked { transition: opacity .5s ease, transform .35s ease-out; }
   @media (max-width: 760px) { .pw { right: .5rem; } .pw__rails { height: min(40vh, 18rem); gap: .6rem; } .pw__rail { width: 1.7rem; } .pw__knob { width: 2.4rem; margin-left: -1.2rem; } }
   @media (prefers-reduced-motion: reduce) { .pw__panel, .pw__knob { transition: none; } }
 </style>
@@ -116,6 +117,7 @@ const t = {
       const C0 = [0.27, 0.25];
       const hue = base.map((b) => b[2]);
       let touched = false;
+      let fixed: string[] | null = null; // colores exactos elegidos desde una paleta de prueba (se sueltan al mover las barras)
       rails.forEach((rail, i) => {
         rail.style.background = `linear-gradient(to bottom, ${Array.from({ length: 25 }, (_, k) => toHex([L0[i], C0[i], (k / 24) * 360])).join(', ')})`;
       });
@@ -134,7 +136,7 @@ const t = {
       let bw = false, busy = false, presses = 0, intensity = 1;
       const GRAYS = ['#000000', '#CFCFCF']; // principal: negro; mechón: gris pálido
       const render = () => {
-        const hex = bw ? GRAYS : hue.map((h, i) => toHex([L0[i], C0[i], h]));
+        const hex = bw ? GRAYS : fixed ?? hue.map((h, i) => toHex([L0[i], C0[i], h]));
         rails.forEach((rail, i) => {
           rail.querySelector<HTMLElement>('.pw__knob')!.style.setProperty('--k', hex[i]);
           rail.querySelector<HTMLElement>('.pw__knob')!.style.top = `${(hue[i] / 360) * 100}%`;
@@ -147,8 +149,8 @@ const t = {
           const set = (k: string, v: string) => { hero.style.setProperty(k, v); scope?.style.setProperty(k, v); };
           set('--pw-0', hex[0]);
           set('--pw-1', hex[1]);
-          set('--ga', bw ? '#D8D8D8' : toHex([0.58, C0[0] * 0.9, hue[0]]));
-          set('--gb', bw ? '#8A8A8A' : toHex([0.54, C0[1] * 0.9, hue[1]]));
+          set('--ga', bw ? '#D8D8D8' : fixed ? fixed[0] : toHex([0.58, C0[0] * 0.9, hue[0]]));
+          set('--gb', bw ? '#8A8A8A' : fixed ? fixed[1] : toHex([0.54, C0[1] * 0.9, hue[1]]));
           set('--gi', String(intensity));
           set('--ax', `${ax.toFixed(1)}%`); set('--ay', `${ay.toFixed(1)}%`);
           set('--bx', `${bx.toFixed(1)}%`); set('--by', `${by.toFixed(1)}%`);
@@ -160,7 +162,7 @@ const t = {
           if (busy) return;
           const r = rail.getBoundingClientRect();
           hue[i] = clamp((clientY - r.top) / r.height, 0, 1) * 360;
-          touched = true;
+          fixed = null; touched = true;
           render();
         };
         let id = -1;
@@ -174,7 +176,7 @@ const t = {
           if (e.key === 'ArrowDown' || e.key === 'ArrowRight') hue[i] = clamp(hue[i] + step, 0, 360);
           else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') hue[i] = clamp(hue[i] - step, 0, 360);
           else return;
-          e.preventDefault(); touched = true; render();
+          e.preventDefault(); fixed = null; touched = true; render();
         });
       });
 
@@ -182,28 +184,35 @@ const t = {
       const randomize = () => {
         const base = rand(0, 360);
         const rel = [() => rand(24, 38) * (Math.random() < 0.5 ? -1 : 1), () => 180 + rand(-12, 12), () => 120 * (Math.random() < 0.5 ? -1 : 1) + rand(-10, 10)][Math.floor(Math.random() * 3)]();
-        hue[0] = base; hue[1] = ((base + rel) % 360 + 360) % 360;
+        hue[0] = base; hue[1] = ((base + rel) % 360 + 360) % 360; fixed = null;
         reroll();
         rails.forEach((r) => r.querySelector('.pw__knob')!.classList.add('is-slide'));
         touched = true; render();
       };
       // Paletas de prueba (desde la página): fijan los dos matices sin pasar por el contador del azar
       window.addEventListener('pw:set', (e) => {
-        const h = (e as CustomEvent<{ hues: number[] }>).detail.hues;
+        const cols = (e as CustomEvent<{ colors: string[] }>).detail.colors;
         if (busy) return;
-        hue[0] = h[0]; hue[1] = h[1]; reroll();
+        fixed = cols.map((c) => c.toUpperCase());
+        hue[0] = hexToLch(cols[0])[2]; hue[1] = hexToLch(cols[1])[2]; reroll();
         rails.forEach((r) => r.querySelector('.pw__knob')!.classList.add('is-slide'));
         touched = true; render();
       });
       // En la sección con hueco (data-pw-slot) el widget viaja hasta allí e invita a jugar
       const slot = document.querySelector<HTMLElement>('[data-pw-slot]');
       const dock = () => {
-        if (!slot || matchMedia('(max-width: 860px)').matches) { pw.style.removeProperty('--pw-dx'); return; }
-        const r = slot.getBoundingClientRect(), vis = r.top < innerHeight * 0.8 && r.bottom > innerHeight * 0.2;
-        if (!vis) { pw.style.removeProperty('--pw-dx'); return; }
-        const p = pw.getBoundingClientRect(), cur = parseFloat(pw.style.getPropertyValue('--pw-dx') || '0');
-        const want = r.right - p.width / 2 - 8 - (p.left - cur + p.width / 2) + (p.width / 2) * 0;
-        pw.style.setProperty('--pw-dx', `${Math.round(want)}px`);
+        const off = () => { pw.style.removeProperty('--pw-dx'); pw.style.removeProperty('--pw-dy'); pw.classList.remove('is-docked'); };
+        if (!slot || matchMedia('(max-width: 860px)').matches) return off();
+        const r = slot.getBoundingClientRect(), vh = innerHeight;
+        if (!(r.top < vh * 0.85 && r.bottom > vh * 0.15)) return off();
+        // Posición de reposo (sin desplazamiento): pegado al borde derecho de la ventana, centrado en vertical
+        const w = pw.offsetWidth, h = pw.offsetHeight, vw = document.documentElement.clientWidth;
+        const restX = vw - 16 - w / 2, restY = vh / 2;
+        const dx = r.right - 10 - w / 2 - restX;
+        const lim = Math.max(0, vh / 2 - h / 2 - 12);
+        const dy = Math.max(-lim, Math.min(lim, r.top + r.height / 2 - restY));
+        pw.classList.add('is-docked');
+        pw.style.setProperty('--pw-dx', `${Math.round(dx)}px`); pw.style.setProperty('--pw-dy', `${Math.round(dy)}px`);
       };
       if (slot) { addEventListener('scroll', dock, { passive: true }); addEventListener('resize', dock); dock(); }
       const wait = (ms: number) => new Promise<void>((res) => setTimeout(res, ms));
