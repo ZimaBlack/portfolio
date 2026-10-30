@@ -5,8 +5,6 @@
     "location": "Mendoza, Argentina",
     "email": "zma.blk.design@gmail.com",
     "whatsapp": "5492614712481",
-    "cvEs": "/Pablo-Ponce-Garcia-CV.pdf",
-    "cvEn": "/Pablo-Ponce-Garcia-CV.pdf",
     "social": [
       {
         "icon": "linkedin",
@@ -16,12 +14,12 @@
       {
         "icon": "behance",
         "label": "Behance",
-        "href": "https://www.behance.net/BkRoom"
+        "href": "https://www.behance.net/zmaBLK"
       },
       {
         "icon": "substack",
         "label": "Substack",
-        "href": "https://substack.com/"
+        "href": "https://substack.com/@exuvias"
       }
     ]
   },

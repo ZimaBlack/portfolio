@@ -121,8 +121,6 @@ export default config({
             location: fields.text({ label: 'Ubicación' }),
             email: fields.text({ label: 'Correo' }),
             whatsapp: fields.text({ label: 'WhatsApp', description: 'Formato internacional sin "+": 54 9 + característica + número.' }),
-            cvEs: fields.file({ label: 'CV en PDF (español)', directory: 'public', publicPath: '/' }),
-            cvEn: fields.file({ label: 'CV en PDF (inglés)', directory: 'public', publicPath: '/' }),
             social: fields.array(
               fields.object({
                 icon: fields.select({ label: 'Icono', options: [{ label: 'LinkedIn', value: 'linkedin' }, { label: 'Behance', value: 'behance' }, { label: 'Substack', value: 'substack' }, { label: 'GitHub', value: 'github' }], defaultValue: 'linkedin' }),

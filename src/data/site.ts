@@ -10,7 +10,6 @@ export const site = {
   email: a.email,
   // Formato internacional sin "+": 54 9 + característica + número
   whatsapp: a.whatsapp.replace(/\D/g, ''),
-  cv: { es: a.cvEs, en: a.cvEn },
   social: a.social,
 };
 
