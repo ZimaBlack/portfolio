@@ -21,7 +21,7 @@ const cx = 250;
 </section>
 
 <style is:global>
-  .gcz { background: #020403; padding-top: clamp(3rem, 8vw, 6rem); height: clamp(30rem, 70vw, 46rem); overflow: hidden; display: grid; justify-items: center; align-items: start; }
+  .gcz { background: var(--bg); padding-top: clamp(3rem, 8vw, 6rem); height: clamp(30rem, 70vw, 46rem); overflow: hidden; display: grid; justify-items: center; align-items: start; }
   .gcz svg { width: min(100%, 24rem); height: auto; overflow: visible; display: block; }
   .gcz__m { opacity: 0; fill: #5db98a; }
   .gcz__m--1, .gcz__m--2 { fill: #dfefe5; }
@@ -29,8 +29,7 @@ const cx = 250;
   .gcz.is-in .gcz__m--0 { animation-delay: .1s; }
   .gcz.is-in .gcz__m--1 { animation-delay: .6s; } .gcz.is-in .gcz__m--2 { animation-delay: 1.1s; }
   .gcz__m--1 path { fill-opacity: .3; } .gcz__m--2 path { fill-opacity: .18; }
-  /* Modo claro: el cierre del proyecto pasa a fondo blanco, con el isotipo y los módulos en verde */
-  :root[data-gc-theme='light'] .gcz { background: #fff; }
+  /* Modo claro: el isotipo y los módulos pasan a verde; el fondo es siempre el del proyecto */
   :root[data-gc-theme='light'] .gcz__m--0 { fill: #74b992; }
   :root[data-gc-theme='light'] .gcz__m--1, :root[data-gc-theme='light'] .gcz__m--2 { fill: #8fc9a8; }
   :root[data-gc-theme='light'] .gcz__m--1 path { fill-opacity: .4; } :root[data-gc-theme='light'] .gcz__m--2 path { fill-opacity: .28; }
