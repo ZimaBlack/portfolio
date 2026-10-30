@@ -29,7 +29,7 @@ const closer = tinted('cierre.svg', 'Colorada', true);
 const marble = [...readFileSync(join(process.cwd(), 'public/works/colorada/manual/cierre.svg'), 'utf8').matchAll(/<path d="([^"]+)" fill="(?:black|url\([^)]*\))"/g)].map((m) => m[1]).filter((d) => /C/.test(d) && !/^M[\d. ]+[HV]/.test(d)).slice(0, 22);
 const crops = ['380 560 1500 1500', '1180 320 1500 1500', '640 640 1500 1500'];
 // Paletas de prueba: colores exactos (el primero va al pelo y los fondos, el segundo al mechón y al isotipo); no activan el modo blanco y negro
-const presets: [string, string][] = [['#F9BA00', '#D10605'], ['#945120', '#DB9568'], ['#DB74AE', '#701B62'], ['#333E95', '#E4B7DC'], ['#1D1D1F', '#E19D0B'], ['#5DBE64', '#1D201B']]; // [color 1, color 2] exactos de la referencia
+const presets: [string, string][] = [['#E03B7A', '#6CE829'], ['#6A3FE0', '#2FE0C4'], ['#D6213C', '#FFB627'], ['#2F52E0', '#E3C4FF'], ['#0E8C8F', '#FF7A59'], ['#23232B', '#F4C7DD']]; // [color 1, color 2]: pares armónicos (análogo/complementario) elegidos por contraste y por cómo se ven sobre piel y pelo
 const character = inline('logo.svg', 'Colorada — character');
 const wordmark = inline('mark.svg', 'Colorada — logotipo');
 
