@@ -2,6 +2,7 @@
 // Resumen del manual de identidad de Omega Shields para el portfolio, con el estilo del sitio (sin tipografías ni fondos del manual).
 // Los recortes del manual están en /works/omega-shields/manual/
 import { withBase, type Lang } from '../lib/i18n';
+import OmegaArt from './OmegaArt.astro';
 
 const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
@@ -63,13 +64,15 @@ const t = es ? {
     <ul class="om__tags">{t.tags.map((x) => <li>{x}</li>)}</ul>
   </div>
 
+  <figure class="wrap om__scene" data-reveal><div class="om__sceneb"><OmegaArt kind="scene" label="Omega Shields" /></div></figure>
+
   <div class="wrap om__row" data-reveal>
     <div class="om__side">
       <h2 class="h2">{t.iso}</h2>
       <p class="om__txt">{t.isoA}</p>
       <p class="om__txt">{t.isoB}</p>
     </div>
-    <figure class="om__fade"><img src={img('emblemas')} alt={`${t.ess} · ${t.forged}`} loading="lazy" decoding="async" /><figcaption class="om__cap"><span>{t.ess}</span><span>{t.forged}</span></figcaption></figure>
+    <figure class="om__fade"><OmegaArt kind="emblems" label={`${t.ess} · ${t.forged}`} /><figcaption class="om__cap"><span>{t.ess}</span><span>{t.forged}</span></figcaption></figure>
   </div>
 
   <div class="wrap om__row om__row--rev" data-reveal>
@@ -85,11 +88,11 @@ const t = es ? {
       <h2 class="h2">{t.weave}</h2>
       <p class="om__txt">{t.weaveA}</p>
     </div>
-    <figure class="om__fade"><img src={img('trama')} alt={t.weave} loading="lazy" decoding="async" /></figure>
+    <figure class="om__fade"><OmegaArt kind="weave" label={t.weave} /></figure>
   </div>
 
   <div class="wrap om__row om__row--rev" data-reveal>
-    <figure class="om__photo om__photo--tall"><img src={img('neon')} alt={t.neon} loading="lazy" decoding="async" /><figcaption class="muted">{t.neon}</figcaption></figure>
+    <figure class="om__photo om__photo--tall"><OmegaArt kind="neon" label={t.neon} /><figcaption class="muted">{t.neon}</figcaption></figure>
     <div class="om__side">
       <h2 class="h2">{t.palette}</h2>
       <p class="om__txt">{t.paletteA}</p>
@@ -100,20 +103,20 @@ const t = es ? {
     </div>
   </div>
 
-  <figure class="om__bleed" data-reveal><img src={img('patron')} alt={t.pattern} loading="lazy" decoding="async" /></figure>
+  <figure class="om__bleed" data-reveal><OmegaArt kind="pattern" label={t.pattern} /></figure>
 
   <div class="wrap om__row" data-reveal>
     <div class="om__side">
       <h2 class="h2">{t.pattern}</h2>
       <p class="om__txt">{t.patternA}</p>
     </div>
-    <figure class="om__photo"><img src={img('textura')} alt={t.pattern} loading="lazy" decoding="async" /></figure>
+    <figure class="om__photo"><OmegaArt kind="texture" label={t.pattern} /></figure>
   </div>
 
-  <figure class="om__bleed" data-reveal><img src={img('empaque')} alt={t.pack} loading="lazy" decoding="async" /></figure>
+  <figure class="om__bleed" data-reveal><OmegaArt kind="pack" label={t.pack} /></figure>
 
   <div class="wrap om__row om__row--rev" data-reveal>
-    <figure class="om__photo"><img src={img('caja')} alt={t.pack} loading="lazy" decoding="async" /></figure>
+    <figure class="om__photo"><OmegaArt kind="box" label={t.pack} /></figure>
     <div class="om__side">
       <h2 class="h2">{t.pack}</h2>
       <p class="om__txt">{t.packA}</p>
@@ -122,15 +125,15 @@ const t = es ? {
   </div>
 
   <figure class="wrap om__fade om__fade--wide" data-reveal>
-    <img src={img('reflejo')} alt={t.reflect} loading="lazy" decoding="async" />
+    <OmegaArt kind="reflect" label={t.reflect} />
     <figcaption class="muted">{t.reflect}</figcaption>
   </figure>
 
   <div class="wrap om__apps" data-reveal>
     <div class="om__side"><h2 class="h2">{t.apps}</h2><p class="om__txt">{t.appsA}</p></div>
     <div class="om__pair">
-      <figure class="om__photo"><img src={img('deck1')} alt="DeckBOX" loading="lazy" decoding="async" /></figure>
-      <figure class="om__photo"><img src={img('deck2')} alt="DeckBOX" loading="lazy" decoding="async" /></figure>
+      <figure class="om__photo"><OmegaArt kind="deck" v={1} label="DeckBOX" /></figure>
+      <figure class="om__photo"><OmegaArt kind="deck" v={2} label="DeckBOX" /></figure>
     </div>
   </div>
 </section>
@@ -156,6 +159,8 @@ const t = es ? {
   .om__photo--tall { max-width: 24rem; justify-self: center; }
   .om__bleed img { width: 100%; }
   /* Recortes con fondo azul del manual: se difuminan hacia los bordes para fundirse con la página */
+  .om__scene { display: grid; justify-items: center; }
+  .om__sceneb { width: min(100%, 30rem); aspect-ratio: 636 / 886; overflow: hidden; border-radius: 4px; box-shadow: 0 30px 80px rgb(0 0 0 / .5); }
   .om__fade img { -webkit-mask-image: radial-gradient(closest-side at 50% 50%, #000 60%, transparent); mask-image: radial-gradient(closest-side at 50% 50%, #000 60%, transparent); }
   .om__fade--wide { max-width: 64rem; }
   .om__cap { display: grid; grid-template-columns: 1fr 1fr; text-align: center; letter-spacing: .24em; text-transform: uppercase; font-size: .7rem !important; color: var(--muted); }

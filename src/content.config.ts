@@ -43,7 +43,7 @@ const works = defineCollection({
     homeOrder: z.number().optional(), // posición en la Home (si es destacado); por defecto, `order`
     order: z.number().default(99),
     cover: z.string().optional(), // tarjeta vertical 2:3 (índice y Home)
-    coverKind: z.enum(['logofolio', 'gc']).optional(), // portada armada en código (SVG) en lugar de una imagen
+    coverKind: z.enum(['logofolio', 'gc', 'omega']).optional(), // portada armada en código (SVG) en lugar de una imagen
     logo: z.string().optional(),  // logotipo centrado en la portada animada (/works/<slug>/logo.svg)
     mark: z.string().optional(),  // isotipo / símbolo, preparado para animar junto al logotipo
     widget: z.enum(['palette']).optional(), // widget propio de la página del proyecto (fijo abajo a la derecha)

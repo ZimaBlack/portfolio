@@ -2,6 +2,7 @@
 import Frame from './Frame.astro';
 import LogofolioCover from './LogofolioCover.astro';
 import GcCover from './GcCover.astro';
+import OmegaArt from './OmegaArt.astro';
 import { loc, paths, copy } from '../lib/i18n';
 const { work, lang, index = 0, ratio = '2 / 3' } = Astro.props;
 const d = work.data;
@@ -12,6 +13,7 @@ const disc = loc(d.discipline, lang);
     {d.badge && <span class="badge card__badge">{d.badge}</span>}
     <div class="card__zoom">
       {d.coverKind === 'logofolio' ? <div class="card__vec" style={`aspect-ratio:${ratio}`}><LogofolioCover /></div>
+        : d.coverKind === 'omega' ? <div class="card__vec" style={`aspect-ratio:${ratio}`}><OmegaArt kind="scene" label="Omega Shields" /></div>
         : d.coverKind === 'gc' ? <div class="card__vec" style={`aspect-ratio:${ratio}`}><GcCover /></div>
         : <Frame src={d.cover} alt={d.title} tones={d.tones} ratio={ratio} label={`${copy[lang].detail.coverLabel} · ${disc}`} />}
     </div>

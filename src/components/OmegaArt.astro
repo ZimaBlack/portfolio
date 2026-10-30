@@ -1,0 +1,177 @@
+---
+// Piezas gráficas de Omega Shields construidas en código con los ornamentos y emblemas del proyecto (public/works/omega-shields/ornaments/):
+// reemplazan las capturas del manual. Azure Deep #020814 y Solemn Gold #E0C58E, con el bronce #8E7748 de los degradados.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+const { kind = 'scene', v = 1, label = 'Omega Shields' } = Astro.props as { kind?: string; v?: number; label?: string };
+const rd = (f: string) => readFileSync(join(process.cwd(), 'public/works/omega-shields/ornaments', f), 'utf8');
+const ds = (raw: string) => [...raw.matchAll(/\bd="([^"]+)"/g)].map((m) => m[1]);
+const body = (raw: string) => raw.replace(/<svg[^>]*>/, '').replace('</svg>', '');
+const arch = ds(rd('arch.svg'))[0];        // 425 × 940: arco Art Déco
+const side = ds(rd('side.svg'))[0];        // 160 × 546: ornamento lateral
+const [cardA, cardB] = ds(rd('card.svg')); // 496 × 903: marco de ficha
+const ess = rd('emblem-essentials.svg');   // 273 × 306
+const forged = rd('emblem-forged.svg');    // 290 × 402
+const gold = (raw: string) => [...raw.matchAll(/<path d="([^"]+)" fill="#E0C58E"\/>/g)].map((m) => m[1]); // el cuerpo dorado del emblema
+const eg = gold(ess);                      // cuerpo del emblema Essentials (centro ≈ 137, 170)
+const id = `oa-${kind}-${v}`;
+---
+{kind === 'scene' && (
+  <svg class="oa oa--scene" viewBox="0 0 636 886" preserveAspectRatio="xMidYMid slice" role="img" aria-label={label} focusable="false">
+    <defs>
+      <radialGradient id={`${id}-bg`} cx="50%" cy="60%" r="78%"><stop offset="0" stop-color="#091329" /><stop offset="1" stop-color="#01040c" /></radialGradient>
+      <radialGradient id={`${id}-gl`} cx="318" cy="540" r="270" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ecd6a0" stop-opacity=".42" /><stop offset=".45" stop-color="#8e7748" stop-opacity=".17" /><stop offset="1" stop-color="#8e7748" stop-opacity="0" /></radialGradient>
+      <linearGradient id={`${id}-au`} x1="0" y1="118" x2="0" y2="770" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#8e7748" stop-opacity=".16" /><stop offset=".4" stop-color="#7d6a41" stop-opacity=".6" /><stop offset="1" stop-color="#bfa56a" /></linearGradient>
+      <filter id={`${id}-bl`} x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="16" /></filter>
+    </defs>
+    <rect width="636" height="886" fill={`url(#${id}-bg)`} />
+    <rect width="636" height="886" fill={`url(#${id}-gl)`} />
+    <g class="oa__frame">
+      <g transform="translate(281 118) scale(-1.18 1.18)"><path d={side} fill={`url(#${id}-au)`} /></g>
+      <g transform="translate(355 118) scale(1.18)"><path d={side} fill={`url(#${id}-au)`} /></g>
+      <path d="M214 673H410L388 766H236Z" fill="none" stroke={`url(#${id}-au)`} stroke-width="4" stroke-linejoin="round" />
+      <path d="M214 673H410" stroke="#d2ba7e" stroke-width="6" />
+      <path d="M92 772H544M104 792H532M92 772V804M544 772V804M104 792V804" stroke={`url(#${id}-au)`} stroke-width="3.5" fill="none" />
+    </g>
+    <g class="oa__em" transform="translate(318 505) scale(.86) translate(-137 -170)">
+      <g filter={`url(#${id}-bl)`} opacity=".55">{eg.map((d) => <path d={d} fill="#e0c58e" />)}</g>
+      {eg.map((d) => <path d={d} fill="#e3cd97" />)}
+    </g>
+  </svg>
+)}
+
+{kind === 'emblems' && (
+  <svg class="oa" viewBox="0 0 700 440" role="img" aria-label={label} focusable="false">
+    <defs>
+      <radialGradient id={`${id}-bg`} cx="50%" cy="50%" r="60%"><stop offset="0" stop-color="#0a1530" /><stop offset="1" stop-color="#020814" /></radialGradient>
+      <radialGradient id={`${id}-gl`} cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#e0c58e" stop-opacity=".22" /><stop offset="1" stop-color="#e0c58e" stop-opacity="0" /></radialGradient>
+    </defs>
+    <rect width="700" height="440" fill={`url(#${id}-bg)`} />
+    <circle cx="175" cy="210" r="170" fill={`url(#${id}-gl)`} /><circle cx="525" cy="210" r="170" fill={`url(#${id}-gl)`} />
+    <g class="oa__em" transform="translate(52 52) scale(1.06)" set:html={body(ess)} />
+    <g class="oa__em oa__em--b" transform="translate(406 14) scale(.82)" set:html={body(forged)} />
+  </svg>
+)}
+
+{kind === 'weave' && (
+  <svg class="oa" viewBox="0 0 760 520" role="img" aria-label={label} focusable="false">
+    <defs>
+      <linearGradient id={`${id}-au`} x1="0" y1="0" x2="0" y2="520" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#8e7748" stop-opacity=".25" /><stop offset=".5" stop-color="#a48c57" /><stop offset="1" stop-color="#c9b27a" /></linearGradient>
+      <radialGradient id={`${id}-bg`} cx="50%" cy="50%" r="65%"><stop offset="0" stop-color="#091329" /><stop offset="1" stop-color="#020814" /></radialGradient>
+    </defs>
+    <rect width="760" height="520" fill={`url(#${id}-bg)`} />
+    <g class="oa__w" transform="translate(30 30) scale(.5)"><path d={arch} fill={`url(#${id}-au)`} /></g>
+    <g class="oa__w" transform="translate(290 24) scale(.52)"><path d={cardA} fill={`url(#${id}-au)`} /><path d={cardB} fill={`url(#${id}-au)`} /></g>
+    <g class="oa__w" transform="translate(590 30) scale(.84)"><path d={side} fill={`url(#${id}-au)`} /></g>
+  </svg>
+)}
+
+{kind === 'neon' && (
+  <svg class="oa" viewBox="0 0 400 560" role="img" aria-label={label} focusable="false">
+    <defs>
+      <radialGradient id={`${id}-bg`} cx="50%" cy="50%" r="70%"><stop offset="0" stop-color="#0b1633" /><stop offset="1" stop-color="#01040c" /></radialGradient>
+      <filter id={`${id}-n`} x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="9" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+    </defs>
+    <rect width="400" height="560" fill={`url(#${id}-bg)`} />
+    <g transform="translate(200 280) scale(1.6) translate(-137 -170)" fill="none" stroke="#f2deaa" stroke-width="2.2" stroke-linejoin="round" filter={`url(#${id}-n)`} class="oa__neon">
+      {eg.map((d) => <path d={d} />)}
+    </g>
+  </svg>
+)}
+
+{(kind === 'pattern' || kind === 'texture') && (
+  <svg class={`oa ${kind === 'pattern' ? 'oa--wide' : ''}`} viewBox={kind === 'pattern' ? '0 0 1400 420' : '0 0 560 560'} preserveAspectRatio="xMidYMid slice" role="img" aria-label={label} focusable="false">
+    <defs>
+      <pattern id={`${id}-p`} width={kind === 'pattern' ? 120 : 160} height={kind === 'pattern' ? 140 : 190} patternUnits="userSpaceOnUse">
+        <g transform={kind === 'pattern' ? 'translate(60 70) scale(.3) translate(-137 -170)' : 'translate(80 95) scale(.46) translate(-137 -170)'}>{eg.map((d) => <path d={d} fill="#e0c58e" />)}</g>
+      </pattern>
+      <pattern id={`${id}-q`} width={kind === 'pattern' ? 120 : 160} height={kind === 'pattern' ? 140 : 190} patternTransform={kind === 'pattern' ? 'translate(60 70)' : 'translate(80 95)'} patternUnits="userSpaceOnUse">
+        <g transform={kind === 'pattern' ? 'translate(60 70) scale(.3) translate(-137 -170)' : 'translate(80 95) scale(.46) translate(-137 -170)'}>{eg.map((d) => <path d={d} fill="#8e7748" />)}</g>
+      </pattern>
+      <radialGradient id={`${id}-bg`} cx="50%" cy="50%" r="75%"><stop offset="0" stop-color="#0a1530" /><stop offset="1" stop-color="#020814" /></radialGradient>
+      <radialGradient id={`${id}-m`} cx="50%" cy="50%" r="55%"><stop offset="0" stop-color="#fff" /><stop offset="1" stop-color="#fff" stop-opacity=".18" /></radialGradient>
+      <mask id={`${id}-mk`}><rect width="1400" height="560" fill={`url(#${id}-m)`} /></mask>
+    </defs>
+    <rect width="1400" height="560" fill={`url(#${id}-bg)`} />
+    <rect width="1400" height="560" fill={`url(#${id}-p)`} opacity=".2" mask={`url(#${id}-mk)`} />
+  </svg>
+)}
+
+{kind === 'pack' && (
+  <svg class="oa" viewBox="0 0 900 460" role="img" aria-label={label} focusable="false">
+    <defs>
+      <linearGradient id={`${id}-au`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a48c57" /><stop offset="1" stop-color="#c9b27a" /></linearGradient>
+      <radialGradient id={`${id}-bg`} cx="50%" cy="50%" r="70%"><stop offset="0" stop-color="#0a1530" /><stop offset="1" stop-color="#020814" /></radialGradient>
+      {[0, 1, 2].map((i) => <clipPath id={`${id}-c${i}`}><rect x={i * 270} y="0" width="270" height="460" /></clipPath>)}
+    </defs>
+    <rect width="900" height="460" fill={`url(#${id}-bg)`} />
+    {[0, 1, 2].map((i) => (
+      <g class="oa__card" style={`--i:${i}`} transform={`translate(${30 + i * 290} 30)`}>
+        <rect width="250" height="400" rx="6" fill="#030b1c" stroke="#13203c" />
+        <g transform="translate(14 22) scale(.4)"><path d={cardA} fill={`url(#${id}-au)`} /><path d={cardB} fill={`url(#${id}-au)`} /></g>
+        <g clip-path={`url(#${id}-c${i})`} transform={`translate(${-30 - i * 290 - i * 0} -30)`}>
+          <g transform="translate(450 235) scale(1.55) translate(-137 -170)">{eg.map((d) => <path d={d} fill="#e0c58e" opacity=".92" />)}</g>
+        </g>
+      </g>
+    ))}
+  </svg>
+)}
+
+{kind === 'box' && (
+  <svg class="oa" viewBox="0 0 520 420" role="img" aria-label={label} focusable="false">
+    <defs>
+      <linearGradient id={`${id}-f`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0c1a38" /><stop offset="1" stop-color="#020814" /></linearGradient>
+      <linearGradient id={`${id}-t`} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#14264a" /><stop offset="1" stop-color="#0a1630" /></linearGradient>
+      <linearGradient id={`${id}-au`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8e7748" /><stop offset="1" stop-color="#d2ba7e" /></linearGradient>
+      <radialGradient id={`${id}-bg`} cx="50%" cy="60%" r="70%"><stop offset="0" stop-color="#0a1530" /><stop offset="1" stop-color="#01040c" /></radialGradient>
+    </defs>
+    <rect width="520" height="420" fill={`url(#${id}-bg)`} />
+    <ellipse cx="260" cy="372" rx="190" ry="16" fill="#000" opacity=".45" />
+    <path d="M80 120 L440 120 L470 80 L110 80 Z" fill={`url(#${id}-t)`} /><path d="M80 120 H440 V350 H80 Z" fill={`url(#${id}-f)`} stroke="#1a2c52" /><path d="M440 120 L470 80 V310 L440 350 Z" fill="#050d22" stroke="#1a2c52" />
+    <path d="M80 120 H440" stroke="#d2ba7e" stroke-width="3" />
+    <g transform="translate(120 132) scale(.2)"><path d={cardA} fill={`url(#${id}-au)`} /><path d={cardB} fill={`url(#${id}-au)`} /></g>
+    <g transform="translate(260 235) scale(.6) translate(-137 -170)">{eg.map((d) => <path d={d} fill="#e0c58e" />)}</g>
+  </svg>
+)}
+
+{kind === 'reflect' && (
+  <svg class="oa" viewBox="0 0 800 440" role="img" aria-label={label} focusable="false">
+    <defs>
+      <linearGradient id={`${id}-m`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6d5b38" /><stop offset=".3" stop-color="#e8d6a4" /><stop offset=".48" stop-color="#8e7748" /><stop offset=".7" stop-color="#f1e2b4" /><stop offset="1" stop-color="#6d5b38" /></linearGradient>
+      <radialGradient id={`${id}-bg`} cx="50%" cy="50%" r="70%"><stop offset="0" stop-color="#0a1530" /><stop offset="1" stop-color="#020814" /></radialGradient>
+      <linearGradient id={`${id}-sh`} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0" /><stop offset=".5" stop-color="#fff" stop-opacity=".45" /><stop offset="1" stop-color="#fff" stop-opacity="0" /></linearGradient>
+      <clipPath id={`${id}-e`}><g transform="translate(400 220) scale(1.3) translate(-137 -170)">{eg.map((d) => <path d={d} />)}</g></clipPath>
+    </defs>
+    <rect width="800" height="440" fill={`url(#${id}-bg)`} />
+    <g transform="translate(400 220) scale(1.3) translate(-137 -170)">{eg.map((d) => <path d={d} fill={`url(#${id}-m)`} />)}</g>
+    <g clip-path={`url(#${id}-e)`}><rect class="oa__shine" x="-300" y="0" width="240" height="440" fill={`url(#${id}-sh)`} transform="skewX(-20)" /></g>
+  </svg>
+)}
+
+{kind === 'deck' && (
+  <svg class="oa oa--deck" viewBox="0 0 420 560" role="img" aria-label={label} focusable="false">
+    <defs>
+      <linearGradient id={`${id}-au`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8e7748" /><stop offset="1" stop-color="#d2ba7e" /></linearGradient>
+      <radialGradient id={`${id}-bg`} cx="50%" cy="38%" r="80%"><stop offset="0" stop-color="#0c1a38" /><stop offset="1" stop-color="#020814" /></radialGradient>
+    </defs>
+    <rect width="420" height="560" fill={`url(#${id}-bg)`} />
+    <g transform="translate(28 40) scale(.58)"><path d={cardA} fill={`url(#${id}-au)`} opacity=".75" /><path d={cardB} fill={`url(#${id}-au)`} opacity=".75" /></g>
+    <g transform={`translate(210 ${v === 1 ? 210 : 190}) scale(${v === 1 ? .8 : .62}) translate(-137 -170)`}>{eg.map((d) => <path d={d} fill="#e0c58e" />)}</g>
+    <text x="210" y={v === 1 ? 380 : 332} text-anchor="middle" class="oa__t" font-size="26" letter-spacing="9">DECKBOX</text>
+    <g class="oa__ln">
+      {v === 1 ? <><path d="M120 410H300M140 436H280M160 462H260" /></> : <><path d="M80 372H340M80 400H340M80 428H250M80 456H300M80 484H210" /></>}
+    </g>
+  </svg>
+)}
+
+<style is:global>
+  .oa { display: block; width: 100%; height: auto; }
+  .oa--scene { height: 100%; }
+  .oa__t { fill: #e3d0a6; font-family: var(--sans); font-weight: 500; }
+  .oa__ln path { stroke: #8e7748; stroke-width: 2; stroke-linecap: round; fill: none; }
+  .oa__shine { animation: oa-shine 7s ease-in-out infinite; }
+  @keyframes oa-shine { 0%, 40% { transform: translateX(0) skewX(-20deg); } 80%, 100% { transform: translateX(1200px) skewX(-20deg); } }
+  .oa__neon path { stroke-dasharray: 1400; stroke-dashoffset: 0; }
+  @media (prefers-reduced-motion: reduce) { .oa__shine { animation: none; } }
+</style>
