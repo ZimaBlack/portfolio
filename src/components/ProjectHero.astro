@@ -117,7 +117,7 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
     {halftone && <canvas class="pjh__ht" data-pj-ht aria-hidden="true"></canvas>}
     {orn.map((s) => <Fragment set:html={s} />)}
     {modular && <GcHero part="field" />}
-    {omega && <div class="pjh__omega" aria-hidden="true"><div class="pjh__ompw"><OmegaPattern uid="hero" par="xMidYMid meet" /></div><i class="pjh__vig2"></i><i class="pjh__grain"></i></div>}
+    {omega && <div class="pjh__omega" aria-hidden="true"><div class="pjh__ompw"><OmegaPattern uid="hero" par="xMidYMax meet" /></div><i class="pjh__vig2"></i><i class="pjh__grain"></i></div>}
     <div class="pjh__stage" data-pj-stage>
       {omega ? (
         <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">{title}</span>
@@ -160,14 +160,17 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
 </section>
 
 <style>
-  .pjh[data-omega] { background: #0d0b14; }
+  .pjh[data-omega] { background: #030308; }
   .pjh[data-omega] .pjh__bg { display: none; }
-  .pjh__omega { position: absolute; inset: 0; z-index: 0; }
-  .pjh__ompw { position: absolute; left: 50%; top: 52%; width: min(78vw, 112vh * 1.385); aspect-ratio: 658 / 475; transform: translate(-50%, -50%) scale(.82); opacity: .95; }
-  .pjh__ompw .omp { animation: omp-zoom 16s 0s ease-out both; transform-origin: 50% 70%; }
-  .pjh__vig2 { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 58% 62% at 50% 54%, transparent 0, rgb(7 6 12 / .55) 62%, rgb(5 4 9 / .96) 100%); }
-  @keyframes omp-zoom { from { transform: scale(1.06); } to { transform: scale(1); } }
-  .pjh__grain { position: absolute; inset: 0; opacity: .22; mix-blend-mode: screen; pointer-events: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .75  0 0 0 0 .7  0 0 0 0 .85  0 0 0 .9 -.3'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+  .pjh__omega { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+  /* Fondo negro con degradados: arranca azul oscuro y vira a dorado cuando se enciende el corte central */
+  .pjh__omega::before, .pjh__omega::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
+  .pjh__omega::before { background: radial-gradient(ellipse 70% 75% at 50% 78%, rgb(18 36 100 / .6), transparent 70%); animation: pjo-fade-out 1s 1.5s ease forwards; }
+  .pjh__omega::after { background: radial-gradient(ellipse 70% 75% at 50% 78%, rgb(120 90 36 / .42), transparent 70%); opacity: 0; animation: pjo-fade-in 1.2s 1.5s ease forwards; }
+  @keyframes pjo-fade-out { to { opacity: 0; } } @keyframes pjo-fade-in { to { opacity: 1; } }
+  /* La estructura es mayor que la ventana: se sale por los bordes y la carta central queda centrada abajo */
+  .pjh__ompw { position: absolute; left: 50%; bottom: 0; width: max(104vw, 132vh); aspect-ratio: 665 / 484; transform: translateX(-50%); }
+  .pjh__vig2 { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 85% 85% at 50% 70%, transparent 40%, rgb(3 3 8 / .75) 100%); }
   @media (prefers-reduced-motion: reduce) { .pjh__omega .omp { animation: none; } }
   .pjh { position: relative; width: 100%; min-height: 100vh; min-height: 100svh; overflow: hidden; isolation: isolate; }
   /* La escena ocupa toda la portada y se desvanece (2 s, con desenfoque) en cuanto se empieza a hacer scroll; al volver arriba, regresa */

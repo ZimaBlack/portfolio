@@ -11,7 +11,7 @@ const vb = /viewBox="([^"]+)"/.exec(raw)![1];
 const dim = [...inner.matchAll(/<path d="([^"]+)" fill="#232131"\/>/g)].map((m) => m[1]);
 const lit = [...inner.matchAll(/<path d="([^"]+)" fill="url\(#paint\d+_linear[^"]*\)"\/>/g)].map((m) => m[1]);
 const lg = readFileSync(join(root, 'logo-glow.svg'), 'utf8');
-const lgBody = lg.replace(/<svg[^>]*>/, '').replace('</svg>', '').replace(/id="([^"]+)"/g, `id="${uid}-$1"`).replace(/url\(#([^)]+)\)/g, `url(#${uid}-$1)`);
+const lgBody = lg.replace(/<svg[^>]*>/, '').replace('</svg>', '').replace(/<circle[^>]*\/>/g, '').replace(/id="([^"]+)"/g, `id="${uid}-$1"`).replace(/url\(#([^)]+)\)/g, `url(#${uid}-$1)`);
 const [, , VW, VH] = vb.split(' ').map(Number);
 const cx = 330, cy = 352; // centro de la celda encendida
 ---
@@ -20,22 +20,33 @@ const cx = 330, cy = 352; // centro de la celda encendida
     <linearGradient id={`${uid}-g`} x1="332" y1="0" x2="332" y2="484" gradientUnits="userSpaceOnUse"><stop offset=".2" stop-color="#f4e7b2" stop-opacity="0" /><stop offset=".55" stop-color="#f1e3a8" /><stop offset=".8" stop-color="#b9a46a" /><stop offset="1" stop-color="#e9efe3" /></linearGradient>
     <radialGradient id={`${uid}-r`} cx="330" cy="352" r="150" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#e9d49a" stop-opacity=".55" /><stop offset=".5" stop-color="#8e7748" stop-opacity=".18" /><stop offset="1" stop-color="#8e7748" stop-opacity="0" /></radialGradient>
   </defs>
-  <g class="omp__dim">{dim.map((d, i) => <path d={d} fill="#262339" style={`--i:${i}`} />)}</g>
-  <circle class="omp__halo" cx={cx} cy={cy} r="150" fill={`url(#${uid}-r)`} />
-  <g class="omp__solid">{lit.slice(0, Math.ceil(lit.length / 2)).map((d, i) => <path d={d} fill="#262339" style={`--i:${i}`} />)}</g>
+  <g class="omp__dim">{dim.map((d, i) => <path d={d} fill="#1d2542" style={`--i:${i}`} />)}</g>
+  <g class="omp__solid">{lit.slice(0, Math.ceil(lit.length / 2)).map((d, i) => <path d={d} fill="#1d2542" style={`--i:${i}`} />)}</g>
   <g class="omp__lit">{lit.slice(0, Math.ceil(lit.length / 2)).map((d, i) => <path d={d} fill={`url(#${uid}-g)`} style={`--i:${i}`} />)}</g>
-  {logo && <g class="omp__logo" transform={`translate(${cx - 31 * 0.82} ${cy - 37 * 0.82 - 12}) scale(.82)`} set:html={lgBody} />}
+  {logo && <g class="omp__logo" transform={`translate(${332.5 - 30.5 * 1.9} ${352 - 37 * 1.9 - 6}) scale(1.9)`} set:html={lgBody} />}
 </svg>
 
 <style is:global>
   .omp { display: block; width: 100%; height: 100%; }
-  .omp__logo { filter: drop-shadow(0 0 6px rgb(233 212 154 / .5)); }
-  /* Secuencia: 1) todas las piezas, en un solo color sólido · 2) un brillo recorre la celda y revela el dorado · 3) el halo · 4) el logo, al final */
-  .omp--a .omp__dim path, .omp--a .omp__solid path { opacity: 0; animation: omp-in 1.6s calc(.2s + var(--i) * .1s) var(--gc-ease, ease) forwards; }
-  .omp--a .omp__lit path { opacity: 0; animation: omp-lit 2.2s calc(3.2s + var(--i) * .22s) ease forwards; }
-  .omp--a .omp__halo { opacity: 0; animation: omp-in 3s 4s ease forwards; }
-  .omp--a .omp__logo { opacity: 0; animation: omp-in 2.4s 5.6s ease forwards; }
-  @keyframes omp-in { to { opacity: 1; } }
-  @keyframes omp-lit { 0% { opacity: 0; filter: brightness(2.2); } 45% { opacity: 1; filter: brightness(1.7); } 100% { opacity: .92; filter: none; } }
+  /* Secuencia rápida: 1) las piezas se colocan en cascada, en azul oscuro · 2) el corte central se enciende en dorado · 3) el logo se arma desde los bordes de la carta */
+  .omp--a .omp__dim path, .omp--a .omp__solid path { opacity: 0; animation: omp-pop .45s calc(.05s + var(--i) * .035s) cubic-bezier(.2, .9, .3, 1) forwards; }
+  .omp--a .omp__lit path { opacity: 0; animation: omp-lit .7s calc(1.5s + var(--i) * .07s) ease-out forwards; }
+  .omp--a .omp__logo path { opacity: 0; transform-box: fill-box; animation: omp-asm .8s calc(2.3s + var(--j) * .045s) cubic-bezier(.2, .9, .3, 1) forwards; }
+  @keyframes omp-pop { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+  @keyframes omp-lit { 0% { opacity: 0; filter: brightness(2.4); } 45% { opacity: 1; filter: brightness(1.8); } 100% { opacity: .95; filter: none; } }
+  @keyframes omp-asm { from { opacity: 0; transform: translate(var(--fx), var(--fy)); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .omp--a * { animation: none !important; opacity: 1 !important; } }
 </style>
+
+<script>
+  // El logo se arma desde los bordes de la carta: cada pieza parte hacia afuera, según su posición respecto del centro
+  const initO = () => document.querySelectorAll<SVGGElement>('.omp__logo:not([data-on])').forEach((g) => {
+    g.setAttribute('data-on', '');
+    const ps = [...g.querySelectorAll<SVGPathElement>('path')];
+    ps.forEach((p, j) => {
+      const b = p.getBBox(); const dx = b.x + b.width / 2 - 30.5, dy = b.y + b.height / 2 - 37, m = Math.hypot(dx, dy) || 1;
+      p.style.setProperty('--fx', `${(dx / m) * 60}px`); p.style.setProperty('--fy', `${(dy / m) * 60}px`); p.style.setProperty('--j', String(j));
+    });
+  });
+  document.addEventListener('astro:page-load', initO); initO();
+</script>
