@@ -4,7 +4,7 @@
 //   «color» pone el matiz y la saturación y deja la luz de la foto (las sombras y brillos del pelo siguen siendo suyos);
 //   «overlay» / «hard-light» / «multiply» ajustan el cuerpo del tono para que el color elegido se lea con su valor real.
 import { withBase } from '../lib/i18n';
-type Layer = { n?: string; m: string; c: '--c0' | '--c1'; b: [string, number][] };
+type Layer = { n?: string; bl?: number; m: string; c: '--c0' | '--c1'; b: [string, number][] };
 // Tras la pila base, cada sector suma «multiply» si el color elegido es oscuro y «screen» si es muy claro (sus valores salen del script), para que
 // el color no quede limitado por la luz gris de la foto: un acento casi negro oscurece el flequillo y un lila claro lo aclara.
 const { photo, bw = '', layers, alt = '', ratio = '872 / 1330', blur = 0.5, tune = false } = Astro.props as { photo: string; bw?: string; layers: Layer[]; alt?: string; ratio?: string; blur?: number; tune?: boolean };
@@ -16,7 +16,7 @@ const STEP = ['Capa 1', 'Capa 2', 'Capa 3'];
 <div class="tmw">
 <figure class="tm" data-nozoom style={`--r:${ratio};--blur:${blur}`}>
   <img class="tm__base" src={withBase(photo)} alt={alt} loading="lazy" decoding="async" />
-  {layers.map((L, li) => [...L.b, ['multiply', `calc(var(--m${L.c.slice(-1)}, 0) * ${L.c === '--c1' ? 0.8 : 0.5})`], ['screen', `calc(var(--s${L.c.slice(-1)}, 0) * 0.6)`]].map(([mode, op], bi) => <i class="tm__l" aria-hidden="true" data-g={bi === 0 ? (L.c === '--c0' ? 0 : 1) : undefined} data-bm={mode} style={`--m:url(${withBase(L.m)});--c:var(${L.c});--bm:${mode};--bo:${op}`}></i>))}
+  {layers.map((L, li) => [...L.b, ['multiply', `calc(var(--m${L.c.slice(-1)}, 0) * ${L.c === '--c1' ? 0.8 : 0.5})`], ['screen', `calc(var(--s${L.c.slice(-1)}, 0) * 0.6)`]].map(([mode, op], bi) => <i class="tm__l" aria-hidden="true" data-g={bi === 0 ? (L.c === '--c0' ? 0 : 1) : undefined} data-bm={mode} style={`--blur:${L.bl ?? blur};--m:url(${withBase(L.m)});--c:var(${L.c});--bm:${mode};--bo:${op}`}></i>))}
   {bw && <img class="tm__bw" src={withBase(bw)} alt="" loading="lazy" decoding="async" />}
   {bw && <i class="tm__noir" aria-hidden="true"></i>}
 </figure>

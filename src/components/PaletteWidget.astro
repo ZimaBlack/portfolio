@@ -28,6 +28,8 @@ const t = {
   /* Modo blanco y negro: un velo que quita el color a todo el sitio (el widget queda por encima) */
   .pw__bwv { position: fixed; inset: 0; z-index: 54; pointer-events: none; opacity: 0; -webkit-backdrop-filter: grayscale(1) contrast(1.06); backdrop-filter: grayscale(1) contrast(1.06); transition: opacity 1.4s ease; }
   html[data-pw-bw] .pw__bwv { opacity: 1; }
+  /* El widget también pierde el color mientras dura el modo blanco y negro */
+  .pw { --gs: 0; } html[data-pw-bw] .pw { filter: grayscale(1) contrast(1.05); }
 </style>
 <style>
   /* Vertical, centrado en la altura de la pantalla y pegado al borde derecho */
