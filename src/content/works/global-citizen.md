@@ -12,6 +12,7 @@ text:
 heroImage: /works/global-citizen/bg
 heroAnimation: modular
 cover: /works/global-citizen/cover.webp
+coverKind: gc
 logo: /works/global-citizen/logo.svg
 mark: /works/global-citizen/mark.svg
 manual: global-citizen

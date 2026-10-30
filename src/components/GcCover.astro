@@ -1,0 +1,26 @@
+---
+// Portada de Global Citizen (tarjeta 2:3), en código: la trama modular sobre blanco, con el isotipo en el anillo de la fila 4.
+import { halfDouble, fullDouble } from '../lib/gcmods';
+const MID = `M116.914 79.1455V47.0698C85.0753 47.0698 58.2192 68.3743 49.7735 97.5089C47.971 103.677 47.0215 110.225 47.0215 116.963C47.0215 136.274 54.8523 153.736 67.5213 166.358C80.1406 179.027 97.6035 186.856 116.914 186.856C155.539 186.856 186.809 155.539 186.809 116.963H154.733C154.733 137.841 137.794 154.78 116.914 154.78C106.478 154.78 97.0348 150.557 90.2011 143.677C83.3694 136.844 79.1442 127.401 79.1442 116.963C79.1442 109.845 81.0928 103.203 84.5067 97.5089C91.1037 86.5003 103.154 79.1455 116.914 79.1455Z`;
+const OUT = `M232.265 97.5086C228.186 73.025 216.463 51.1029 199.621 34.2583L176.891 56.9871L166.359 67.5203L136.37 97.5086H199.43C200.949 103.725 201.708 110.273 201.708 116.963C201.708 163.795 163.748 201.755 116.914 201.755C93.5215 201.755 72.3599 192.265 56.9885 176.939V176.891C41.6615 161.517 32.1723 140.355 32.1723 116.963C32.1723 110.273 32.9314 103.725 34.4496 97.5086C43.2266 60.0234 76.8205 32.1702 116.914 32.1702V-0.00012207C58.9788 -0.00012207 10.8672 42.1824 1.61471 97.5086C0.568631 103.819 0 110.32 0 116.963C0 149.275 13.0968 178.505 34.2591 199.619C55.3738 220.782 84.6037 233.878 116.914 233.878C181.496 233.878 233.88 181.542 233.88 116.963C233.88 110.32 233.309 103.819 232.265 97.5086Z`;
+const R = 100, PITCH = 220, DY = -46, W = 700, H = 1050;
+const SLOTS = ['L', 'L', 'L', 'F', 'F', 'L', 'L'] as const;
+const cells: { x: number; y: number; d: string }[] = [];
+for (let r = 0; r < 5; r++) {
+  const y = r * PITCH + R + DY;
+  for (let s = 0; s < 7; s++) {
+    if (SLOTS[s] === 'F' && (s === 4 || r === 3)) continue;
+    cells.push({ x: (s + 1) * R, y, d: SLOTS[s] === 'F' ? fullDouble(R) : halfDouble(R, 'l') });
+  }
+}
+const gy = 3 * PITCH + R + DY;
+---
+<svg class="gcv" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" role="img" aria-label="Global Citizen" focusable="false">
+  <rect width={W} height={H} fill="#fafafa" />
+  {cells.map((c) => <path transform={`translate(${c.x} ${c.y})`} d={c.d} fill="#dfece4" />)}
+  <g transform={`translate(${4 * R} ${gy}) scale(${(2 * R / 234).toFixed(4)}) translate(-117 -117)`} fill="#74b992"><path d={MID} /><path d={OUT} /></g>
+</svg>
+
+<style>
+  .gcv { display: block; width: 100%; height: 100%; }
+</style>

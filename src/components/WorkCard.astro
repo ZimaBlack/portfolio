@@ -1,14 +1,20 @@
 ---
 import Frame from './Frame.astro';
+import LogofolioCover from './LogofolioCover.astro';
+import GcCover from './GcCover.astro';
 import { loc, paths, copy } from '../lib/i18n';
 const { work, lang, index = 0, ratio = '2 / 3' } = Astro.props;
 const d = work.data;
 const disc = loc(d.discipline, lang);
 ---
-<a class="card" href={paths.work(lang, work.id)} data-cursor={copy[lang].detail.view} data-reveal>
+<a class:list={['card', { 'card--zoom': d.coverKind === 'gc' }]} href={paths.work(lang, work.id)} data-cursor={copy[lang].detail.view} data-reveal>
   <div class="card__media">
     {d.badge && <span class="badge card__badge">{d.badge}</span>}
-    <div class="card__zoom"><Frame src={d.cover} alt={d.title} tones={d.tones} ratio={ratio} label={`${copy[lang].detail.coverLabel} · ${disc}`} /></div>
+    <div class="card__zoom">
+      {d.coverKind === 'logofolio' ? <div class="card__vec" style={`aspect-ratio:${ratio}`}><LogofolioCover /></div>
+        : d.coverKind === 'gc' ? <div class="card__vec" style={`aspect-ratio:${ratio}`}><GcCover /></div>
+        : <Frame src={d.cover} alt={d.title} tones={d.tones} ratio={ratio} label={`${copy[lang].detail.coverLabel} · ${disc}`} />}
+    </div>
   </div>
   <div class="card__meta">
     <span class="muted">{String(index + 1).padStart(2, '0')}</span>
@@ -24,6 +30,8 @@ const disc = loc(d.discipline, lang);
   .card__zoom { transition: transform 1.1s var(--ease), filter .6s; }
   .card:hover .card__zoom { transform: scale(1.06); }
   .card:hover .card__zoom { filter: brightness(1.12); }
+  .card__vec { position: relative; overflow: hidden; }
+  .card--zoom:hover .card__zoom { filter: none; } /* Global Citizen: solo el zoom sobre la composición */
   .card__meta { display: grid; grid-template-columns: 2.5rem 1fr auto; gap: .5rem 1rem; align-items: baseline; padding-top: 1rem; font-size: .85rem; border-top: 1px solid transparent; }
   .card__title { transition: transform .7s var(--ease); font-size: 1.15rem; }
   .card:hover .card__title { transform: translateX(.6rem); }

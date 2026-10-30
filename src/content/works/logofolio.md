@@ -10,6 +10,7 @@ featured: true
 headerMarquee: true
 order: 1
 cover: /works/logofolio/portada.png
+coverKind: logofolio
 tones: ["#17130f", "#3a2f25"]
 slides:
   - subtitle: { es: "Una selección de 16 proyectos", en: "A selection of 16 projects" }
