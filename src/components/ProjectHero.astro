@@ -170,7 +170,7 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   @keyframes pjo-fade-out { to { opacity: 0; } } @keyframes pjo-fade-in { to { opacity: 1; } }
   /* La estructura es mayor que la ventana: se sale por los bordes y la carta central queda centrada abajo */
   .pjh__ompw { --w: max(84vw, 106vh); position: absolute; left: 50%; top: calc(53% - var(--w) * 352 / 665); width: var(--w); aspect-ratio: 665 / 484; transform: translateX(-50%); }
-  .pjh__vig2 { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 85% 85% at 50% 70%, transparent 40%, rgb(3 3 8 / .75) 100%); }
+  .pjh__vig2 { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, rgb(7 7 13 / .95) 0, rgb(7 7 13 / .55) 14%, transparent 34%), radial-gradient(ellipse 85% 85% at 50% 62%, transparent 40%, rgb(7 7 13 / .75) 100%); }
   @media (prefers-reduced-motion: reduce) { .pjh__omega .omp { animation: none; } }
   .pjh { position: relative; width: 100%; min-height: 100vh; min-height: 100svh; overflow: hidden; isolation: isolate; }
   /* La escena ocupa toda la portada y se desvanece (2 s, con desenfoque) en cuanto se empieza a hacer scroll; al volver arriba, regresa */
