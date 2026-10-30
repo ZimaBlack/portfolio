@@ -9,6 +9,8 @@ const { lang } = Astro.props as { lang: Lang };
 const es = lang === 'es';
 const img = (n: string) => withBase(`/works/omega-shields/manual/${n}.webp`);
 const name = withBase('/works/omega-shields/name.svg');
+const g = (n: string) => withBase(`/works/omega-shields/gallery/${n}.webp`);
+const videoUrl = 'https://www.facebook.com/mtgpirulo/videos/entro-omega-shields-a-pirulouna-l%C3%ADnea-de-accesorios-que-hace-que-proteger-tus-ca/1750145923105637/';
 
 const t = es ? {
   lead: 'Accesorios TCG para proteger mazos, cartas y colecciones.',
@@ -32,6 +34,16 @@ const t = es ? {
   packA: 'Un sistema modular de tramas dobles: cada pieza es una «carta» que, al unirse, forma el Escudo Omega.',
   packB: 'El brillo metálico varía según la aplicación, total o parcial.',
   reflect: 'Reflejo metálico con aplicación total',
+  res: 'Recursos gráficos',
+  resA: 'El arte que acompaña a la marca: un concepto ilustrado, el desarrollo de los detalles gráficos y los desplegables del packaging.',
+  concept: 'Concepto del arte',
+  details: 'Detalles gráficos: textura granulada y marcos mutables',
+  dielines: 'Desplegables de la caja',
+  dielinesA: 'Tres variantes del troquel, con las ventanas que dejan ver el color de las fundas.',
+  scene: 'El producto en escena',
+  video: 'Video de lanzamiento',
+  videoA: 'Omega Shields llega a Pirulo: una línea de accesorios que hace que proteger tus cartas sea parte del juego.',
+  videoCta: 'Ver el video',
   apps: 'Aplicaciones',
   appsA: 'Fichas de producto del DeckBOX.',
 } : {
@@ -56,6 +68,16 @@ const t = es ? {
   packA: 'A modular system of double weaves: each piece is a “card” that, joined, forms the Omega Shield.',
   packB: 'The metallic shine varies with the application, full or partial.',
   reflect: 'Metallic reflection, full application',
+  res: 'Graphic resources',
+  resA: 'The art that accompanies the brand: an illustrated concept, the development of the graphic details and the packaging dielines.',
+  concept: 'Art concept',
+  details: 'Graphic details: subtle grain texture and mutable frames',
+  dielines: 'Box dielines',
+  dielinesA: 'Three die-cut variants, with windows that show the color of the sleeves.',
+  scene: 'The product in scene',
+  video: 'Launch video',
+  videoA: 'Omega Shields arrives at Pirulo: a line of accessories that makes protecting your cards part of the game.',
+  videoCta: 'Watch the video',
   apps: 'Applications',
   appsA: 'DeckBOX product sheets.',
 };
@@ -117,7 +139,7 @@ const t = es ? {
   <figure class="om__bleed" data-reveal><OmegaArt kind="pack" label={t.pack} /></figure>
 
   <div class="wrap om__row om__row--rev" data-reveal>
-    <figure class="om__photo"><OmegaArt kind="box" label={t.pack} /></figure>
+    <figure class="om__photo"><img src={g('box-front')} alt={t.pack} width="1493" height="2000" loading="lazy" decoding="async" /></figure>
     <div class="om__side">
       <h2 class="h2">{t.pack}</h2>
       <p class="om__txt">{t.packA}</p>
@@ -130,11 +152,42 @@ const t = es ? {
     <figcaption class="muted">{t.reflect}</figcaption>
   </figure>
 
+  <div class="wrap om__res" data-reveal>
+    <div class="om__side"><h2 class="h2">{t.res}</h2><p class="om__txt">{t.resA}</p></div>
+    <div class="om__resg">
+      <figure class="om__photo om__photo--tall om__c1"><img src={g('concept-art')} alt={t.concept} width="1310" height="1904" loading="lazy" decoding="async" /><figcaption class="muted">{t.concept}</figcaption></figure>
+      <figure class="om__photo om__c2"><img src={g('detalles')} alt={t.details} width="1920" height="1080" loading="lazy" decoding="async" /><figcaption class="muted">{t.details}</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="wrap om__res" data-reveal>
+    <div class="om__side"><h2 class="h2">{t.dielines}</h2><p class="om__txt">{t.dielinesA}</p></div>
+    <div class="om__dl">
+      <img src={g('dieline-red')} alt={t.dielines} loading="lazy" decoding="async" />
+      <img src={g('dieline-blue')} alt={t.dielines} loading="lazy" decoding="async" />
+      <img src={g('dieline-blue2')} alt={t.dielines} loading="lazy" decoding="async" />
+    </div>
+  </div>
+
+  <figure class="om__bleed" data-reveal><img src={g('scene')} alt={t.scene} width="2000" height="840" loading="lazy" decoding="async" /></figure>
+
+  <div class="wrap om__row" data-reveal>
+    <div class="om__side">
+      <h2 class="h2">{t.video}</h2>
+      <p class="om__txt">{t.videoA}</p>
+      <a class="om__btn" href={videoUrl} target="_blank" rel="noopener noreferrer">{t.videoCta} <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="om__bags">
+      <figure class="om__photo"><img src={g('bag-sleeves')} alt="Sleeves" width="1601" height="2000" loading="lazy" decoding="async" /></figure>
+      <figure class="om__photo"><img src={g('bag-magnetic')} alt="Magnetic case" width="1493" height="2000" loading="lazy" decoding="async" /></figure>
+    </div>
+  </div>
+
   <div class="wrap om__apps" data-reveal>
     <div class="om__side"><h2 class="h2">{t.apps}</h2><p class="om__txt">{t.appsA}</p></div>
     <div class="om__pair">
-      <figure class="om__photo"><OmegaArt kind="deck" v={1} label="DeckBOX" /></figure>
-      <figure class="om__photo"><OmegaArt kind="deck" v={2} label="DeckBOX" /></figure>
+      <figure class="om__photo"><img src={g('card-essentials')} alt="Essentials card sleeves" width="1200" height="1333" loading="lazy" decoding="async" /></figure>
+      <figure class="om__photo"><img src={g('card-magnetic')} alt="Magnetic card holder" width="1200" height="1333" loading="lazy" decoding="async" /></figure>
     </div>
   </div>
 </section>
@@ -189,6 +242,15 @@ const t = es ? {
   .om__pal span:last-child { display: grid; line-height: 1.35; }
   .om__pal em { font-style: normal; font-size: .82rem; color: var(--muted); }
   .om__dot { width: 3.2rem; aspect-ratio: 1; border-radius: 50%; flex: none; box-shadow: 0 0 0 1px var(--line); }
+  .om__res { display: grid; gap: clamp(2rem, 5vw, 3.5rem); }
+  .om__resg { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--gutter); align-items: center; }
+  .om__c1 { max-width: none; justify-self: stretch; }
+  .om__dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); }
+  .om__dl img { width: 100%; height: auto; }
+  .om__bags { display: grid; align-items: center; grid-template-columns: 1fr 1fr; gap: var(--gutter); }
+  .om__btn { justify-self: start; display: inline-flex; gap: .6rem; align-items: center; margin-top: .6rem; padding: .85rem 1.5rem; border: 1px solid var(--gold); border-radius: 999px; color: var(--gold); font-size: .95rem; letter-spacing: .06em; transition: background .4s, color .4s; }
+  .om__btn:hover { background: var(--gold); color: #0d0b14; }
+  @media (max-width: 860px) { .om__resg, .om__dl, .om__bags { grid-template-columns: 1fr; } }
   .om__apps { display: grid; gap: 2rem; }
   .om__pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); }
   @media (max-width: 860px) {
