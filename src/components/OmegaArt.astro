@@ -7,7 +7,7 @@ import { join } from 'node:path';
 const { kind = 'scene', v = 1, label = 'Omega Shields' } = Astro.props as { kind?: string; v?: number; label?: string };
 const rd = (f: string) => readFileSync(join(process.cwd(), 'public/works/omega-shields/ornaments', f), 'utf8');
 const ds = (raw: string) => [...raw.matchAll(/\bd="([^"]+)"/g)].map((m) => m[1]);
-const body = (raw: string) => raw.replace(/<svg[^>]*>/, '').replace('</svg>', '');
+const body = (raw: string) => raw.replace(/<svg[^>]*>/, '').replace('</svg>', '').replace(/#020814/gi, '#0d0b14');
 const arch = ds(rd('arch.svg'))[0];        // 425 × 940: arco Art Déco
 const side = ds(rd('side.svg'))[0];        // 160 × 546: ornamento lateral
 const [cardA, cardB] = ds(rd('card.svg')); // 496 × 903: marco de ficha
@@ -170,7 +170,7 @@ const id = `oa-${kind}-${v}`;
   .oa--scene { height: 100%; }
   .oa__t { fill: #e3d0a6; font-family: var(--sans); font-weight: 500; }
   .oa__ln path { stroke: #8e7748; stroke-width: 2; stroke-linecap: round; fill: none; }
-  .oa__shine { animation: oa-shine 7s ease-in-out infinite; }
+  .oa__shine { animation: oa-shine 9s ease-in-out infinite; }
   @keyframes oa-shine { 0%, 40% { transform: translateX(0) skewX(-20deg); } 80%, 100% { transform: translateX(1200px) skewX(-20deg); } }
   .oa__neon path { stroke-dasharray: 1400; stroke-dashoffset: 0; }
   @media (prefers-reduced-motion: reduce) { .oa__shine { animation: none; } }

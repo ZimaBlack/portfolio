@@ -22,18 +22,20 @@ const cx = 330, cy = 352; // centro de la celda encendida
   </defs>
   <g class="omp__dim">{dim.map((d, i) => <path d={d} fill="#262339" style={`--i:${i}`} />)}</g>
   <circle class="omp__halo" cx={cx} cy={cy} r="150" fill={`url(#${uid}-r)`} />
+  <g class="omp__solid">{lit.slice(0, Math.ceil(lit.length / 2)).map((d, i) => <path d={d} fill="#262339" style={`--i:${i}`} />)}</g>
   <g class="omp__lit">{lit.slice(0, Math.ceil(lit.length / 2)).map((d, i) => <path d={d} fill={`url(#${uid}-g)`} style={`--i:${i}`} />)}</g>
   {logo && <g class="omp__logo" transform={`translate(${cx - 31 * 0.82} ${cy - 37 * 0.82 - 12}) scale(.82)`} set:html={lgBody} />}
 </svg>
 
 <style is:global>
   .omp { display: block; width: 100%; height: 100%; }
-  .omp__logo { filter: drop-shadow(0 0 7px rgb(233 212 154 / .55)); }
-  .omp--a .omp__dim path { opacity: 0; animation: omp-in 1.8s calc(.2s + var(--i) * .12s) var(--gc-ease, ease) forwards; }
-  .omp--a .omp__lit path { opacity: 0; animation: omp-lit 2.4s calc(1.5s + var(--i) * .18s) ease forwards; }
-  .omp--a .omp__halo { opacity: 0; animation: omp-in 3s 1.8s ease forwards; }
-  .omp--a .omp__logo { opacity: 0; animation: omp-in 2.2s 2.4s ease forwards; }
+  .omp__logo { filter: drop-shadow(0 0 6px rgb(233 212 154 / .5)); }
+  /* Secuencia: 1) todas las piezas, en un solo color sólido · 2) un brillo recorre la celda y revela el dorado · 3) el halo · 4) el logo, al final */
+  .omp--a .omp__dim path, .omp--a .omp__solid path { opacity: 0; animation: omp-in 1.6s calc(.2s + var(--i) * .1s) var(--gc-ease, ease) forwards; }
+  .omp--a .omp__lit path { opacity: 0; animation: omp-lit 2.2s calc(3.2s + var(--i) * .22s) ease forwards; }
+  .omp--a .omp__halo { opacity: 0; animation: omp-in 3s 4s ease forwards; }
+  .omp--a .omp__logo { opacity: 0; animation: omp-in 2.4s 5.6s ease forwards; }
   @keyframes omp-in { to { opacity: 1; } }
-  @keyframes omp-lit { 0% { opacity: 0; } 55% { opacity: 1; } 100% { opacity: .92; } }
+  @keyframes omp-lit { 0% { opacity: 0; filter: brightness(2.2); } 45% { opacity: 1; filter: brightness(1.7); } 100% { opacity: .92; filter: none; } }
   @media (prefers-reduced-motion: reduce) { .omp--a * { animation: none !important; opacity: 1 !important; } }
 </style>
