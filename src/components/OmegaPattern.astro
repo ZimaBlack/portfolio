@@ -20,10 +20,12 @@ const cx = 330, cy = 352; // centro de la celda encendida
     <linearGradient id={`${uid}-g`} x1="332" y1="0" x2="332" y2="484" gradientUnits="userSpaceOnUse"><stop offset=".2" stop-color="#f4e7b2" stop-opacity="0" /><stop offset=".55" stop-color="#f1e3a8" /><stop offset=".8" stop-color="#b9a46a" /><stop offset="1" stop-color="#e9efe3" /></linearGradient>
     <radialGradient id={`${uid}-r`} cx="330" cy="352" r="150" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#e9d49a" stop-opacity=".55" /><stop offset=".5" stop-color="#8e7748" stop-opacity=".18" /><stop offset="1" stop-color="#8e7748" stop-opacity="0" /></radialGradient>
   </defs>
+  <g class="omp__bgw">
   <g class="omp__dim">{dim.map((d, i) => <path d={d} fill="#1d2542" style={`--i:${i}`} />)}</g>
   <g class="omp__solid">{lit.slice(0, Math.ceil(lit.length / 2)).map((d, i) => <path d={d} fill="#1d2542" style={`--i:${i}`} />)}</g>
   <g class="omp__lit">{lit.slice(0, Math.ceil(lit.length / 2)).map((d, i) => <path d={d} fill={`url(#${uid}-g)`} style={`--i:${i}`} />)}</g>
-  {logo && <g class="omp__logo" transform={`translate(${332.5 - 30.5 * 1.9} ${352 - 37 * 1.9 - 6}) scale(1.9)`} set:html={lgBody} />}
+  </g>
+  {logo && <g class="omp__logo" transform={`translate(${332.5 - 30.5 * 1.3} ${352 - 37 * 1.3}) scale(1.3)`} set:html={lgBody} />}
 </svg>
 
 <style is:global>
@@ -32,6 +34,9 @@ const cx = 330, cy = 352; // centro de la celda encendida
   .omp--a .omp__dim path, .omp--a .omp__solid path { opacity: 0; animation: omp-pop .45s calc(.05s + var(--i) * .035s) cubic-bezier(.2, .9, .3, 1) forwards; }
   .omp--a .omp__lit path { opacity: 0; animation: omp-lit .7s calc(1.5s + var(--i) * .07s) ease-out forwards; }
   .omp--a .omp__logo path { opacity: 0; transform-box: fill-box; animation: omp-asm .8s calc(2.3s + var(--j) * .045s) cubic-bezier(.2, .9, .3, 1) forwards; }
+  .omp__logo { filter: brightness(1.3) saturate(1.1); }
+  .omp--a .omp__bgw { animation: omp-dimbg 1.2s 3.2s ease forwards; }
+  @keyframes omp-dimbg { to { opacity: .32; } }
   @keyframes omp-pop { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
   @keyframes omp-lit { 0% { opacity: 0; filter: brightness(2.4); } 45% { opacity: 1; filter: brightness(1.8); } 100% { opacity: .95; filter: none; } }
   @keyframes omp-asm { from { opacity: 0; transform: translate(var(--fx), var(--fy)); } to { opacity: 1; transform: none; } }
