@@ -176,7 +176,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
       <div class="np__dev">
         <div class="np__scr">
           <div class="np__boot"><i></i><i></i><img src={mk('favicon-light')} alt="" /></div>
-          <div class="np__shotimg"><img src={shot('m1')} alt={t.recep} loading="lazy" decoding="async" /><i class="np__hl" style={hl('m1')} aria-hidden="true"></i></div>
+          <div class="np__shotimg"><img src={shot('m1')} alt={t.recep} width="1170" height="2532" loading="lazy" decoding="async" /><i class="np__hl" style={hl('m1')} aria-hidden="true"></i></div>
         </div>
         <span class="np__notch"></span>
       </div>
@@ -199,7 +199,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
       {t.ps.map(([h, p], i) => (
         <li style={`--i:${i}`}>
           {phoneShots[i] ? (
-            <div class="np__phone"><div class="np__hlwrap"><img src={shot(phoneShots[i])} alt={h} loading="lazy" decoding="async" /><i class="np__hl" style={hl(phoneShots[i])} aria-hidden="true"></i></div></div>
+            <div class="np__phone"><div class="np__hlwrap"><img src={shot(phoneShots[i])} alt={h} width="1170" height="2532" loading="lazy" decoding="async" /><i class="np__hl" style={hl(phoneShots[i])} aria-hidden="true"></i></div></div>
           ) : (
             <div class="np__phone"><div class="np__mp" role="img" aria-label="Mercado Pago"><i style={`--m:url(${brand('mercadopago')})`}></i></div></div>
           )}
@@ -248,7 +248,7 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
       <div class="np__track" data-track tabindex="0" role="region" aria-roledescription="carousel" aria-label={t.region}>
         {slides.map((x, i) => (
           <article class:list={['np__slide', `np__slide--${x.kind}`]} data-sec={x.sec} data-i={i} aria-label={`${i + 1} / ${slides.length}`}>
-            <figure class="np__shot"><div class="np__scroll"><div class="np__hlwrap"><img src={shot(x.key)} alt={x.h} loading="lazy" decoding="async" /><i class="np__hl" style={hl(x.key)} aria-hidden="true"></i></div></div><figcaption><strong>{x.h}</strong><span>{x.p}</span></figcaption></figure>
+            <figure class="np__shot"><div class="np__scroll"><div class="np__hlwrap"><img src={shot(x.key)} alt={x.h} width="2200" height="1520" loading="eager" decoding="async" /><i class="np__hl" style={hl(x.key)} aria-hidden="true"></i></div></div><figcaption><strong>{x.h}</strong><span>{x.p}</span></figcaption></figure>
           </article>
         ))}
       </div>
@@ -296,10 +296,10 @@ const brandIcon = (k: string) => k === 'mp' ? brand('mercadopago') : k === 'mail
     <h2 class="h2">{t.brand}</h2>
     <p class="np__txt">{t.brandA}</p>
     <div class="np__bgrid" data-rv>
-      <figure class="np__tile np__tile--light" style="--i:0"><img src={mk('logo-black')} alt="NovaPsi" loading="lazy" /><figcaption>{t.bLogo} · <span>{t.bLogoA}</span></figcaption></figure>
-      <figure class="np__tile np__tile--dark" style="--i:1"><img src={mk('logo-white')} alt="NovaPsi" loading="lazy" /><figcaption>{t.bLogo} · <span>{t.bLogoA}</span></figcaption></figure>
-      <figure class="np__tile np__tile--dark np__tile--iso" style="--i:2"><img src={mk('favicon-light')} alt="Isotipo" loading="lazy" /><figcaption>{t.bIso} · <span>{t.bIsoA}</span></figcaption></figure>
-      <figure class="np__tile np__tile--light np__tile--iso" style="--i:3"><img src={mk('favicon-dark')} alt="Isotipo" loading="lazy" /><figcaption>{t.bIso} · <span>{t.bIsoA}</span></figcaption></figure>
+      <figure class="np__tile np__tile--light" style="--i:0"><img src={mk('logo-black')} alt="NovaPsi" loading="eager" /><figcaption>{t.bLogo} · <span>{t.bLogoA}</span></figcaption></figure>
+      <figure class="np__tile np__tile--dark" style="--i:1"><img src={mk('logo-white')} alt="NovaPsi" loading="eager" /><figcaption>{t.bLogo} · <span>{t.bLogoA}</span></figcaption></figure>
+      <figure class="np__tile np__tile--dark np__tile--iso" style="--i:2"><img src={mk('favicon-light')} alt="Isotipo" loading="eager" /><figcaption>{t.bIso} · <span>{t.bIsoA}</span></figcaption></figure>
+      <figure class="np__tile np__tile--light np__tile--iso" style="--i:3"><img src={mk('favicon-dark')} alt="Isotipo" loading="eager" /><figcaption>{t.bIso} · <span>{t.bIsoA}</span></figcaption></figure>
     </div>
     <div class="np__type">
       <div class="np__spec" aria-hidden="true"><span>NovaPsi</span><small>{t.bGlyph}</small></div>
