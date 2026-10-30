@@ -49,6 +49,9 @@ const t = es ? {
   resA: 'Un mármol líquido de formas orgánicas que se usa en blanco y negro, en color o con el isotipo encima.',
   mother: 'La paleta madre',
   motherA: 'Estos tonos son la base de todas las aplicaciones: fondos, retratos y piezas que conservan el rosa como protagonista.',
+  cmp: 'Comparación de métodos',
+  cmpA: 'La misma foto con el método de las fotos laterales, para compararlo con el retrato de arriba.',
+  cmpCap: 'Color · 67 % · desenfoque 1,6',
   portrait: 'Una imagen, muchas versiones',
   portraitA: 'El pelo, el isotipo y los fondos se pintan con los dos colores de la marca: al mover el widget, la fotografía cambia entera y conserva su textura.',
   tint: 'La marca tiñe la imagen',
@@ -80,6 +83,9 @@ const t = es ? {
   resA: 'A liquid marble of organic shapes used in black and white, in color or with the isotype on top.',
   mother: 'The mother palette',
   motherA: 'These tones are the base of every application: backgrounds, portraits and pieces that keep pink as the lead.',
+  cmp: 'Method comparison',
+  cmpA: 'The same photo with the side photos’ method, to compare against the portrait above.',
+  cmpCap: 'Color · 67% · blur 1.6',
   portrait: 'One image, many versions',
   portraitA: 'The hair, the isotype and the backdrops are painted with the brand’s two colors: move the widget and the whole photograph changes while keeping its texture.',
   tint: 'The brand tints the image',
@@ -133,6 +139,21 @@ const t = es ? {
         ))}
       </ul>
       <div class="cm__slot" data-pw-slot aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div class="wrap cm__cmp" id="cm-compare" data-reveal>
+    <h2 class="h2">{t.cmp}</h2>
+    <p class="cm__txt">{t.cmpA}</p>
+    <div class="cm__cmpgrid">
+      <figure class="cm__photo cm__photo--big"><TintMask photo="/works/colorada/manual/r3.webp" bw="/works/colorada/manual/r3.webp" plain={true} tune={true} alt={t.cmp} ratio="1391 / 1830" layers={[
+          { n: 'Campera', m: '/works/colorada/manual/r3-cloth.webp', c: '--c0', bl: 1.6, b: [['color', 0.67]] },
+          { n: 'Pelo', m: '/works/colorada/manual/r3-hairMain.webp', c: '--c0', bl: 1.6, b: [['color', 0.67]] },
+          { n: 'Mechones', m: '/works/colorada/manual/r3-hairAcc.webp', c: '--c1', bl: 1.6, b: [['color', 0.67]] },
+          { n: 'Flequillo', m: '/works/colorada/manual/r3-front.webp', c: '--c1', bl: 1.6, b: [['color', 0.67]] },
+          { n: 'Logos', m: '/works/colorada/manual/r3-logoMain.webp', c: '--c0', bl: 1.6, b: [['color', 0.67]] },
+          { n: 'Logos acento', m: '/works/colorada/manual/r3-logoAcc.webp', c: '--c1', bl: 1.6, b: [['color', 0.67]] },
+        ]} /><figcaption class="muted">{t.cmpCap}</figcaption></figure>
     </div>
   </div>
 
@@ -243,6 +264,7 @@ const t = es ? {
   .cm__base p { margin: 0 0 0 .5rem; font-size: .82rem; }
   .cm__sw { width: 1.6rem; height: 1.6rem; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
   /* Let's blend: la foto, las paletas de prueba y el hueco al que viaja el widget */
+  .cm__cmp { display: grid; gap: 1.25rem; } .cm__cmpgrid { max-width: 32rem; }
   .cm__blend { display: grid; gap: 1.25rem; }
   .cm__blend .cm__photo--big { max-width: 28rem; justify-self: start; }
   .cm__blendgrid { display: grid; grid-template-columns: minmax(0, 28rem) minmax(0, 13rem) auto minmax(11rem, 1fr); gap: clamp(1.2rem, 3vw, 3rem); align-items: center; margin-top: 1rem; }
