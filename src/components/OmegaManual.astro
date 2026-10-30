@@ -95,7 +95,14 @@ const t = es ? {
       <p class="om__txt">{t.isoA}</p>
       <p class="om__txt">{t.isoB}</p>
     </div>
-    <figure class="om__fade omf"><OmegaArt kind="emblems" label={`${t.ess} · ${t.forged}`} /><figcaption class="om__cap"><span>{t.ess}</span><span>{t.forged}</span></figcaption></figure>
+    <div class="omv" data-omv role="group" aria-label={`${t.ess} · ${t.forged}`}>
+      {[['ess', 'variant-essentials', 'shield-essentials', t.ess, 979, 1459], ['forged', 'variant-forged', 'shield-forged', t.forged, 961, 1479]].map(([k, img, sh, label, w, h], i) => (
+        <button type="button" class:list={['omv__c', { 'is-active': i === 0 }]} data-omv-c aria-pressed={i === 0 ? 'true' : 'false'}>
+          <span class="omv__flat" aria-hidden="true"><i style={`--m:url(${withBase(`/works/omega-shields/brand/${sh}.svg`)})`}></i><b>{String(label).toUpperCase()}</b></span>
+          <img class="omv__live" src={g(String(img))} alt={String(label)} width={Number(w)} height={Number(h)} loading="lazy" decoding="async" />
+        </button>
+      ))}
+    </div>
   </div>
 
   <div class="wrap om__row om__row--rev" data-reveal>
@@ -186,6 +193,20 @@ const t = es ? {
   document.addEventListener('astro:page-load', init); init();
 </script>
 
+<script>
+  const initV = () => {
+    document.querySelectorAll<HTMLElement>('[data-omv]:not([data-on])').forEach((w) => {
+      w.setAttribute('data-on', '');
+      const cs = [...w.querySelectorAll<HTMLButtonElement>('[data-omv-c]')];
+      cs.forEach((c) => c.addEventListener('click', () => {
+        if (c.classList.contains('is-active')) return;
+        cs.forEach((o) => { const on = o === c; o.classList.toggle('is-active', on); o.setAttribute('aria-pressed', String(on)); });
+      }));
+    });
+  };
+  document.addEventListener('astro:page-load', initV); initV();
+</script>
+
 <style>
   /* Contenedor común: el contenido vive en un ancho centrado (72 rem), alineado con el encabezado */
   .om > .wrap { max-width: 72rem; }
@@ -239,6 +260,16 @@ const t = es ? {
   .om__deco { max-width: 72rem; }
   .om__cards { display: grid; gap: var(--gutter); }
   .om__card img { width: 100%; aspect-ratio: 2000 / 800; object-fit: cover; object-position: 50% 50%; }
+  /* Variantes como cartas: una activa (con relieve y oro) y la otra plana; un clic las intercambia */
+  .omv { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.8rem, 2vw, 1.4rem); align-items: center; }
+  .omv__c { all: unset; box-sizing: border-box; position: relative; display: block; aspect-ratio: 2 / 3; border-radius: 14px; overflow: hidden; cursor: pointer; background: #0f1523; box-shadow: 0 0 0 1px rgb(91 132 168 / .35); transition: transform .7s var(--ease), box-shadow .7s, opacity .7s; transform: scale(.94); opacity: .8; }
+  .omv__c:focus-visible { outline: 2px solid #5b84a8; outline-offset: 3px; }
+  .omv__c.is-active { transform: scale(1) translateY(-4px); opacity: 1; box-shadow: 0 0 0 1px rgb(216 196 140 / .55), 0 26px 50px rgb(0 0 0 / .5); }
+  .omv__flat { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 22%; background: #0c1320; }
+  .omv__flat i { width: 56%; aspect-ratio: 64 / 80; background: #232131; -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; margin-top: -8%; }
+  .omv__flat b { position: absolute; bottom: 10%; font: 500 clamp(.6rem, 1.1vw, .8rem) var(--sans); letter-spacing: .5em; padding-left: .5em; color: #2c2a40; }
+  .omv__live { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .7s; }
+  .omv__c.is-active .omv__live { opacity: 1; }
   .om__scene { display: grid; justify-items: center; }
   .om__sceneb { width: min(100%, 30rem); aspect-ratio: 636 / 886; overflow: hidden; border-radius: 4px; box-shadow: 0 30px 80px rgb(0 0 0 / .5); }
   .om__fade img { -webkit-mask-image: radial-gradient(closest-side at 50% 50%, #000 60%, transparent); mask-image: radial-gradient(closest-side at 50% 50%, #000 60%, transparent); }
