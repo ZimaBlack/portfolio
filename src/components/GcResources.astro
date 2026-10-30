@@ -1,21 +1,12 @@
 ---
-// Recursos gráficos (manual de marca): los módulos individuales de la marca. Dos filas de piezas (la primera es siempre el logo, que no gira),
-// y la trama modular completa, donde cada módulo gira al azar y se enciende al pasar el cursor.
+// Recursos gráficos (manual de marca): la trama modular completa. Entra en ondas concéntricas desde el logo y responde al cursor con una onda sutil.
 import { halfDouble, fullDouble, fullMid } from '../lib/gcmods';
 const { label = 'Recursos' } = Astro.props as { label?: string };
 const MID = `M116.914 79.1455V47.0698C85.0753 47.0698 58.2192 68.3743 49.7735 97.5089C47.971 103.677 47.0215 110.225 47.0215 116.963C47.0215 136.274 54.8523 153.736 67.5213 166.358C80.1406 179.027 97.6035 186.856 116.914 186.856C155.539 186.856 186.809 155.539 186.809 116.963H154.733C154.733 137.841 137.794 154.78 116.914 154.78C106.478 154.78 97.0348 150.557 90.2011 143.677C83.3694 136.844 79.1442 127.401 79.1442 116.963C79.1442 109.845 81.0928 103.203 84.5067 97.5089C91.1037 86.5003 103.154 79.1455 116.914 79.1455Z`;
 const OUT = `M232.265 97.5086C228.186 73.025 216.463 51.1029 199.621 34.2583L176.891 56.9871L166.359 67.5203L136.37 97.5086H199.43C200.949 103.725 201.708 110.273 201.708 116.963C201.708 163.795 163.748 201.755 116.914 201.755C93.5215 201.755 72.3599 192.265 56.9885 176.939V176.891C41.6615 161.517 32.1723 140.355 32.1723 116.963C32.1723 110.273 32.9314 103.725 34.4496 97.5086C43.2266 60.0234 76.8205 32.1702 116.914 32.1702V-0.00012207C58.9788 -0.00012207 10.8672 42.1824 1.61471 97.5086C0.568631 103.819 0 110.32 0 116.963C0 149.275 13.0968 178.505 34.2591 199.619C55.3738 220.782 84.6037 233.878 116.914 233.878C181.496 233.878 233.88 181.542 233.88 116.963C233.88 110.32 233.309 103.819 232.265 97.5086Z`;
-const R = 60;
-const k = (2 * R / 234).toFixed(4);
-// Piezas del isotipo (anillo medio / exterior, mitad izquierda / derecha): se recortan del vector real
-type P = 'ML' | 'MR' | 'OL' | 'OR';
-const PD: Record<P, [string, 'L' | 'R']> = { ML: [MID, 'L'], MR: [MID, 'R'], OL: [OUT, 'L'], OR: [OUT, 'R'] };
-const rowA: P[][] = [['ML', 'MR', 'OL', 'OR'], ['ML', 'OL', 'OR'], ['ML', 'MR', 'OL'], ['MR', 'OR'], ['OL', 'MR'], ['ML', 'MR', 'OR'], ['ML', 'MR'], ['MR']];
-const rowB: P[][] = [['ML', 'MR'], ['ML', 'OL', 'MR'], ['OL', 'OR'], ['ML'], ['OL', 'ML'], ['OR', 'MR'], ['ML', 'MR', 'OL'], ['MR', 'OL']];
+
 let seed = 11;
 const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-const mk = (rows: P[][]) => rows.map((ps, i) => ({ ps, rot: [0, 90, 180, 270][Math.floor(rnd() * 4)], t: 7 + rnd() * 7, d: rnd() * 6, i }));
-const A = mk(rowA), B = mk(rowB);
 
 // Trama (como en el manual): cinco filas de seis módulos, con el anillo completo en la cuarta posición; el logo ocupa la fila 4
 const U = 40; // radio del módulo (ancho de un módulo: U; alto: 2U)
@@ -37,30 +28,6 @@ const TW = tiles.reduce((m, t) => Math.max(m, t.x + (t.kind === 'F' ? U : 0)), 0
 const TH = 5 * (2 * U + GAP) - GAP;
 ---
 <div class="gcr" data-gc aria-label={label}>
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-    <defs>
-      <clipPath id="gcr-L"><rect x="-60" y="-60" width="176.914" height="360" /></clipPath>
-      <clipPath id="gcr-R"><rect x="116.914" y="-60" width="180" height="360" /></clipPath>
-    </defs>
-  </svg>
-
-  {[A, B].map((row, ri) => (
-    <ul class="gcr__row" style={`--r:${ri}`}>
-      <li class="gcr__cell gcr__cell--logo" style={`--i:0`}>
-        <svg viewBox="-70 -70 140 140" aria-hidden="true" focusable="false"><g transform={`scale(${k}) translate(-117 -117)`}><path d={MID} /><path d={OUT} /></g></svg>
-      </li>
-      {row.map((c) => (
-        <li class="gcr__cell" style={`--rot:${c.rot}deg`}>
-          <svg viewBox="-70 -70 140 140" aria-hidden="true" focusable="false">
-            <g class="gcr__turn"><g transform={`scale(${k}) translate(-117 -117)`}>
-              {c.ps.map((p) => <path d={PD[p][0]} clip-path={`url(#gcr-${PD[p][1]})`} />)}
-            </g></g>
-          </svg>
-        </li>
-      ))}
-    </ul>
-  ))}
-
   <div class="gcr__tapiz-wrap">
     <svg class="gcr__tapiz" viewBox={`-6 -6 ${TW + 12} ${TH + 12}`} role="img" aria-label={label}>
       {tiles.map((t, i) => (
@@ -80,14 +47,6 @@ const TH = 5 * (2 * U + GAP) - GAP;
 
 <style is:global>
   .gcr { display: grid; gap: clamp(2.5rem, 6vw, 5rem); --gc-soft: var(--gc-mod, #92cdb6); }
-  /* Filas de módulos: composición fija, sin movimiento */
-  .gcr__row { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: clamp(.1rem, .8vw, .6rem); }
-  .gcr__cell { display: grid; place-items: center; }
-  .gcr__cell svg { width: 100%; height: auto; overflow: visible; }
-  .gcr__cell path { fill: var(--gc-soft); fill-opacity: .55; }
-  .gcr__cell--logo path { fill: #5db98a; fill-opacity: 1; }
-  .gcr__turn { transform: rotate(var(--rot, 0deg)); }
-
   /* Trama: entra en onda radial desde el logo y responde al cursor con una onda sutil */
   .gcr__tapiz-wrap { width: 100%; max-width: 40rem; justify-self: center; }
   .gcr__tapiz { width: 100%; height: auto; overflow: visible; display: block; }
@@ -101,6 +60,5 @@ const TH = 5 * (2 * U + GAP) - GAP;
   .gcr__t:not(.gcr__t--logo):hover path { fill: #5db98a; fill-opacity: 1; transition-duration: .3s; }
   .gcr__t.is-rip:not(:hover) path { animation: gcr-rip 1.3s calc(var(--rd, 0) * 1ms) ease-out; }
   @keyframes gcr-rip { 0%, 100% { fill-opacity: .55; } 35% { fill-opacity: .95; fill: #74c096; } }
-  @media (max-width: 640px) { .gcr__row { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   @media (prefers-reduced-motion: reduce) { .gcr__t { opacity: 1; animation: none !important; } .gcr__tin { animation: none !important; } .gcr__t.is-rip path { animation: none !important; } }
 </style>
