@@ -43,8 +43,6 @@ const t = es ? {
   photo2Cap: 'Retrato teñido con los colores de la marca',
   blend: 'Let’s blend!',
   blendA: 'Una sola imagen, muchas versiones. El pelo, el isotipo y los fondos se pintan con los dos colores de la marca: probá una paleta o mové las barras y la fotografía cambia entera, sin perder su textura.',
-  blendHint: '¡Jugá con los colores!',
-  blendHintA: 'Mové las barras o elegí una paleta de prueba.',
   varPal: 'Paleta variable',
   varPalA: 'Dos colores madre, #E03B7A y #6CE829, de los que nace todo el sistema: el rosa lleva el peso y el verde acentúa.',
   res: 'Recursos gráficos',
@@ -76,8 +74,6 @@ const t = es ? {
   photo2Cap: 'Portrait tinted with the brand colors',
   blend: 'Let’s blend!',
   blendA: 'One image, many versions. The hair, the isotype and the backdrops are painted with the brand’s two colors: try a palette or move the bars and the whole photograph changes while keeping its texture.',
-  blendHint: 'Play with the colors!',
-  blendHintA: 'Move the bars or pick a test palette.',
   varPal: 'Variable palette',
   varPalA: 'Two mother colors, #E03B7A and #6CE829, from which the whole system is born: pink carries the weight and green accents.',
   res: 'Graphic resources',
@@ -135,12 +131,12 @@ const t = es ? {
     <p class="cm__txt">{t.blendA}</p>
     <div class="cm__blendgrid">
       <figure class="cm__photo cm__photo--big"><TintMask photo="/works/colorada/manual/retrato.webp" bw="/works/colorada/manual/retrato-bw.webp" masks={['/works/colorada/manual/retrato-m1.webp', '/works/colorada/manual/retrato-m0.webp']} alt={t.blend} ratio="872 / 1330" opacity={0.96} /></figure>
-      <ul class="cm__presets" role="group" aria-label={t.blendHintA}>
+      <ul class="cm__presets" role="group" aria-label={t.blend}>
         {presets.map(([a, b]) => (
           <li><button type="button" data-cm-preset={`${a},${b}`} aria-label={`${a} · ${b}`}><i style={`background:${b}`}></i><i style={`background:${a}`}></i></button></li>
         ))}
       </ul>
-      <div class="cm__slot" data-pw-slot><p><b>{t.blendHint}</b><span>{t.blendHintA}</span></p></div>
+      <div class="cm__slot" data-pw-slot aria-hidden="true"></div>
     </div>
   </div>
 
@@ -239,17 +235,14 @@ const t = es ? {
   .cm__sw { width: 1.6rem; height: 1.6rem; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
   /* Let's blend: la foto, las paletas de prueba y el hueco al que viaja el widget */
   .cm__blend { display: grid; gap: 1.25rem; }
-  .cm__blend .cm__photo--big { max-width: 29rem; justify-self: start; }
-  .cm__blendgrid { display: grid; grid-template-columns: minmax(0, 29rem) auto minmax(18rem, 1fr); gap: clamp(1.2rem, 3vw, 3rem); align-items: center; margin-top: 1rem; }
+  .cm__blend .cm__photo--big { max-width: 46rem; justify-self: start; }
+  .cm__blendgrid { display: grid; grid-template-columns: minmax(0, 46rem) auto minmax(11rem, 1fr); gap: clamp(1.2rem, 3vw, 3rem); align-items: center; margin-top: 1rem; }
   .cm__presets { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
   .cm__presets button { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 3.2rem; height: 3.2rem; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, #fff 6%); cursor: pointer; position: relative; transition: border-color .4s, transform .4s var(--ease); }
   .cm__presets button:hover, .cm__presets button:focus-visible { border-color: var(--fg); transform: translateX(3px); }
   .cm__presets i { grid-area: 1 / 1; width: 1.35rem; height: 1.35rem; border-radius: 5px; }
   .cm__presets i:first-child { transform: translate(-.35rem, -.35rem); } .cm__presets i:last-child { transform: translate(.35rem, .35rem); }
   .cm__slot { align-self: stretch; display: flex; align-items: center; min-height: 26rem; }
-  .cm__slot p { margin: 0; display: grid; gap: .3rem; font-size: .9rem; color: var(--muted); max-width: 8.5rem; }
-  .cm__slot b { color: var(--fg); font-weight: 600; font-size: 1.05rem; letter-spacing: .02em; }
-  .cm__slot p::after { content: '→'; font-size: 1.6rem; color: var(--c0); transition: color .8s linear; }
   /* Paleta variable, recursos y paleta madre */
   .cm__res, .cm__mother { display: grid; gap: 1.25rem; }
   /* Paleta variable: la lámina va contra la derecha (junto al widget) y el título y el texto se montan sobre ella, alineados a la izquierda */
