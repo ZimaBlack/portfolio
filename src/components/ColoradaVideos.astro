@@ -27,6 +27,8 @@ type Layer = { kind: 'brackets' | 'chips' | 'tag' | 'sticker'; a: number; b: num
 type Stop = { at: number; c0: string; c1: string };
 type Clip = { n: string; title: string; src: string; poster: string; words: Word[]; layers: Layer[]; loop?: boolean; stops: Stop[] };
 
+// Paleta madre fija para las tarjetas de marca (entrada, cierre y placeholder): rosa #E03B7A y verde #6CE829
+const MOTHER = '--ga:#E03B7A;--gb:#6CE829;--ax:36%;--ay:42%;--bx:64%;--by:58%;';
 const IN_TO = 1.25;  // 2 pulsos del beat (96 BPM): la tarjeta de entrada se va
 const OUT_AT = 7.5;  // inicio del 4.º compás del beat: llega la tarjeta de cierre
 
@@ -122,12 +124,15 @@ const L = {
           {/* Clip 3: logotipo sin isotipo con los colores del pelo. Clips 1 y 2: la misma tarjeta (líquido del hero + logo) de entrada y de cierre */}
           {c.loop ? (
             <div class="ly ly--logo" data-a="0.15" data-b="5.8" aria-hidden="true"><div class="logo3" set:html={wordmark} /></div>
+            <div class="ly ly--card ly--out is-leaving" data-a="999" data-b="999" data-hold data-pj-out data-liquid-on style={MOTHER} aria-hidden="true">
+              <canvas class="card__liq" data-pj-liquid></canvas><div class="card__logo" set:html={character} />
+            </div>
           ) : (
             <>
-              <div class="ly ly--card ly--in is-leaving" data-a="0" data-b={IN_TO} data-pj-out data-liquid-on style="--ax:36%;--ay:42%;--bx:64%;--by:58%;" aria-hidden="true">
+              <div class="ly ly--card ly--in is-leaving" data-a="0" data-b={IN_TO} data-pj-out data-liquid-on style={MOTHER} aria-hidden="true">
                 <canvas class="card__liq" data-pj-liquid></canvas><div class="card__logo" set:html={character} />
               </div>
-              <div class="ly ly--card ly--out is-leaving" data-a={OUT_AT} data-b="99" data-pj-out data-liquid-on style="--ax:36%;--ay:42%;--bx:64%;--by:58%;" aria-hidden="true">
+              <div class="ly ly--card ly--out is-leaving" data-a={OUT_AT} data-b="99" data-hold data-pj-out data-liquid-on style={MOTHER} aria-hidden="true">
                 <canvas class="card__liq" data-pj-liquid></canvas><div class="card__logo" set:html={character} />
               </div>
             </>
@@ -161,8 +166,6 @@ const L = {
   const lum = (hex: string) => { const n = parseInt(hex.slice(1), 16); const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
 
   const initVideos = () => {
-    const hero = document.querySelector<HTMLElement>('[data-pj-hero]');
-
     document.querySelectorAll<HTMLElement>('[data-vp]:not([data-on])').forEach((vp) => {
       vp.setAttribute('data-on', '');
       const v = vp.querySelector('video')!;
@@ -175,16 +178,15 @@ const L = {
       const prog = vp.querySelector<HTMLElement>('.ly--prog i')!;
       let raf = 0, stopAt = -1;
 
-      // El líquido del hero, con los colores del widget de la página
+      // El líquido del hero, siempre con la paleta madre (no sigue al widget)
       cards.forEach(initLiquid);
-      const mirror = () => { if (!hero) return; ['--ga', '--gb', '--ax', '--ay', '--bx', '--by'].forEach((k) => { const val = hero.style.getPropertyValue(k); if (val) cards.forEach((c) => c.style.setProperty(k, val)); }); };
-      if (hero && cards.length) { mirror(); new MutationObserver(mirror).observe(hero, { attributes: true, attributeFilter: ['style'] }); }
 
       const tick = () => {
         const t = v.currentTime, d = v.duration || 10;
         prog.style.transform = `scaleX(${Math.min(1, t / d)})`;
         for (const l of layers) {
-          const on = t >= l.a && t < l.b;
+          // La tarjeta de marca (data-hold) también es el placeholder: se ve siempre que el video está frenado
+          const on = (t >= l.a && t < l.b) || (v.paused && l.el.hasAttribute('data-hold'));
           if (on !== l.on) { l.on = on; l.el.classList.toggle('is-on', on); if (l.el.hasAttribute('data-pj-out')) l.el.classList.toggle('is-leaving', !on); }
         }
         // Subtítulos: la palabra que suena se resalta
@@ -306,6 +308,8 @@ const L = {
   .ly--prog i { display: block; height: 100%; background: linear-gradient(90deg, var(--c0), var(--c1)); transform-origin: left; transform: scaleX(0); }
   .ly:not(.ly--prog):not(.ly--card) { opacity: 0; transition: opacity .35s var(--ease); }
   .ly.is-on:not(.ly--prog):not(.ly--card) { opacity: 1; }
+  /* Frenado: queda solo la tarjeta de marca (placeholder) */
+  .vp.is-paused .ly:not(.ly--card):not(.ly--prog), .vp.is-paused .sub { opacity: 0 !important; }
 
   /* Subtítulos: lo que dice el audio, palabra por palabra */
   .sub { position: absolute; left: 7cqw; right: 7cqw; bottom: 13cqw; z-index: 8; margin: 0; text-align: center; text-wrap: balance; font-weight: 800; font-size: 5.6cqw; line-height: 1.3; letter-spacing: .005em; color: #fff; paint-order: stroke fill; -webkit-text-stroke: 1.1cqw rgb(8 4 10 / .9); opacity: 0; transition: opacity .3s; pointer-events: none; }
@@ -331,7 +335,7 @@ const L = {
   @keyframes sticker { from { transform: rotate(-26deg) scale(.2); } to { transform: rotate(-7deg) scale(1); } }
 
   /* Entrada y cierre: la misma tarjeta, con la misma activación (el líquido del hero y el logo que aparece de golpe) */
-  .ly--card { --c0: var(--pw-0, #e03b7a); --c1: var(--pw-1, #6ce829); z-index: 7; display: grid; place-items: center; opacity: 0; visibility: hidden; overflow: hidden; }
+  .ly--card { --c0: #e03b7a; --c1: #6ce829; z-index: 7; display: grid; place-items: center; opacity: 0; visibility: hidden; overflow: hidden; }
   .ly--card.is-on { opacity: 1; visibility: visible; }
   .ly--in { background: rgb(10 5 8 / .5); }
   .ly--out { background: #0a0508; }
