@@ -40,7 +40,7 @@ const OUT = `M232.265 97.5086C228.186 73.025 216.463 51.1029 199.621 34.2583L176
   .gcs__op { align-self: center; font-size: clamp(1.2rem, 2.4vw, 2rem); color: var(--muted); margin-top: -3rem; opacity: 0; }
   .gcs.is-in .gcs__op { animation: gcs-fade .8s calc(var(--n) * .45s) ease forwards; }
   @keyframes gcs-fade { to { opacity: 1; } }
-  .gcs__m { opacity: 0; fill: #dfefe5; fill-opacity: .6; }
+  .gcs__m { opacity: 0; fill: var(--gc-mod, #dfefe5); fill-opacity: .7; }
   .gcs.is-in .gcs__c:nth-child(1) .gcs__m { animation: gc-radial 1.4s 0s var(--gc-ease) forwards; }
   .gcs.is-in .gcs__c:nth-child(3) .gcs__m { animation: gc-radial 1.4s .5s var(--gc-ease) forwards; }
   .gcs.is-in .gcs__c:nth-child(5) .gcs__m { animation: gc-radial 1.4s 1.5s var(--gc-ease) forwards; }

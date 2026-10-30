@@ -1,0 +1,63 @@
+---
+// Widget de modo (solo Global Citizen): alterna entre el modo claro (Pure Snow) y el oscuro (blueprint), con los colores del manual de marca.
+// El botón es un módulo de medio anillo que gira al cambiar de modo.
+const { lang = 'es' } = Astro.props as { lang?: 'es' | 'en' };
+const t = lang === 'es' ? { light: 'Modo claro', dark: 'Modo oscuro (blueprint)', region: 'Modo de color' } : { light: 'Light mode', dark: 'Dark mode (blueprint)', region: 'Color mode' };
+---
+<script is:inline>
+  (function () { try { var m = localStorage.getItem('gc-mode') || 'dark'; document.documentElement.setAttribute('data-gc-theme', m); } catch (e) { document.documentElement.setAttribute('data-gc-theme', 'dark'); } })();
+</script>
+<aside class="gcw" data-gcw aria-label={t.region} data-light={t.light} data-dark={t.dark}>
+  <button type="button" class="gcw__btn" data-gcw-btn>
+    <svg viewBox="-20 -20 40 40" aria-hidden="true" focusable="false">
+      <g class="gcw__ring">
+        <path class="gcw__half" d="M0 -16A16 16 0 0 1 0 16L0 8A8 8 0 0 0 0 -8Z" />
+        <path class="gcw__line" d="M0 -16A16 16 0 0 0 0 16L0 8A8 8 0 0 1 0 -8Z" />
+      </g>
+    </svg>
+    <span class="gcw__lbl" data-gcw-lbl></span>
+  </button>
+</aside>
+
+<style is:global>
+  .gcw { position: fixed; left: .9rem; bottom: .9rem; z-index: 55; }
+  .gcw__btn { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: .6rem; height: 3rem; padding: 0 .8rem 0 .55rem; cursor: pointer; border-radius: 999px; border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); color: var(--fg); font-size: .78rem; letter-spacing: .06em; transition: border-color .4s, background .4s; }
+  .gcw__btn:hover, .gcw__btn:focus-visible { border-color: #5db98a; }
+  .gcw__btn:focus-visible { outline: 1px solid #5db98a; outline-offset: 3px; }
+  .gcw__btn svg { width: 1.9rem; height: 1.9rem; flex: none; overflow: visible; }
+  .gcw__ring { transition: transform .9s cubic-bezier(.22, 1, .36, 1); }
+  :root[data-gc-theme='light'] .gcw__ring { transform: rotate(180deg); }
+  .gcw__half { fill: #5db98a; } .gcw__line { fill: none; stroke: currentColor; stroke-opacity: .5; stroke-width: 1.2; }
+  .gcw__lbl { white-space: nowrap; }
+  @media (max-width: 640px) { .gcw { bottom: .7rem; left: .7rem; } .gcw__lbl { display: none; } .gcw__btn { padding: 0 .55rem; } }
+  @media (prefers-reduced-motion: reduce) { .gcw__ring { transition: none; } }
+</style>
+
+<script>
+  const setup = () => {
+    const w = document.querySelector<HTMLElement>('[data-gcw]');
+    if (!w) { document.documentElement.removeAttribute('data-gc-theme'); return; }
+    const btn = w.querySelector<HTMLButtonElement>('[data-gcw-btn]')!;
+    const lbl = w.querySelector<HTMLElement>('[data-gcw-lbl]')!;
+    const apply = (m: string) => {
+      document.documentElement.setAttribute('data-gc-theme', m);
+      lbl.textContent = m === 'dark' ? w.dataset.dark! : w.dataset.light!;
+      btn.setAttribute('aria-label', m === 'dark' ? w.dataset.light! : w.dataset.dark!);
+      btn.title = m === 'dark' ? w.dataset.light! : w.dataset.dark!;
+    };
+    let m = 'dark'; try { m = localStorage.getItem('gc-mode') || 'dark'; } catch { /* sin almacenamiento */ }
+    apply(m);
+    if (!btn.dataset.on) {
+      btn.dataset.on = '1';
+      btn.addEventListener('click', () => {
+        m = document.documentElement.getAttribute('data-gc-theme') === 'dark' ? 'light' : 'dark';
+        try { localStorage.setItem('gc-mode', m); } catch { /* sin almacenamiento */ }
+        apply(m);
+      });
+    }
+  };
+  document.addEventListener('astro:before-swap', () => document.documentElement.removeAttribute('data-gc-theme'));
+  document.addEventListener('astro:page-load', setup);
+  setup();
+</script>

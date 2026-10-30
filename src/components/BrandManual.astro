@@ -6,6 +6,7 @@ import GcConcept from './GcConcept.astro';
 import GcGrid from './GcGrid.astro';
 import GcSynth from './GcSynth.astro';
 import GcResources from './GcResources.astro';
+import GcClose from './GcClose.astro';
 import markRaw from '../../public/works/global-citizen/mark.svg?raw';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -244,20 +245,6 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     <figcaption class="wrap muted">{t.fence}</figcaption>
   </figure>
 
-  <div class="gcm__dark" data-reveal>
-    <div class="wrap gcm__dark-in">
-      <svg class="gcm__bp" viewBox="-6 -6 246 246" aria-hidden="true">
-        <g class="gcm__grid"><path d="M117 -6V240M-6 117H240M-6 240L240 -6"/></g>
-        <path d={iso} class="gcm__iso" />
-      </svg>
-      <div>
-        <h2 class="gcm__dark-title">{t.dark}</h2>
-        <p>{t.darkA}</p>
-        <p>{t.darkB}</p>
-        <p>{t.darkC}</p>
-      </div>
-    </div>
-  </div>
   <figure class="gcm__bleed gcm__bleed--flush" data-reveal>
     <img src={img('banner-wide')} alt="Global Citizen" loading="lazy" decoding="async" />
   </figure>
@@ -270,6 +257,7 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     <h2 class="h2">{t.end}</h2>
     <div><p>{t.endA}</p><p>{t.endB}</p></div>
   </div>
+  <GcClose />
 </section>
 
 <style>

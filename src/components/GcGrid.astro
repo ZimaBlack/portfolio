@@ -45,14 +45,14 @@ const dots: [number, number][] = [[0, -ringOut], [0, -ringMid], [0, ringMid], [0
   @property --lo { syntax: '<number>'; inherits: true; initial-value: 1; }
   @property --fo { syntax: '<number>'; inherits: true; initial-value: 0; }
   .gcg { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.8rem, 2.4vw, 1.6rem); }
-  .gcg__card { position: relative; border: 1px solid rgb(93 185 138 / .28); border-radius: 6px; padding: clamp(.6rem, 2vw, 1.4rem); color: #5db98a;
-    background: #0c1a14 linear-gradient(rgb(93 185 138 / .07) 1px, transparent 1px) 0 0 / 100% 22px, linear-gradient(90deg, rgb(93 185 138 / .07) 1px, transparent 1px) 0 0 / 22px 100%; --lo: 1; --fo: 0; transition: --lo .9s ease, --fo .9s ease, border-color .6s; }
+  .gcg__card { position: relative; border: 1px solid rgb(93 185 138 / .28); border-radius: 6px; padding: clamp(.6rem, 2vw, 1.4rem); color: var(--gc-ink, #5db98a);
+    background: var(--gc-card, #0c1a14) linear-gradient(rgb(93 185 138 / .09) 1px, transparent 1px) 0 0 / 100% 22px, linear-gradient(90deg, rgb(93 185 138 / .09) 1px, transparent 1px) 0 0 / 22px 100%; --lo: 1; --fo: 0; transition: --lo .9s ease, --fo .9s ease, border-color .6s; }
   .gcg__card:hover { border-color: rgb(93 185 138 / .7); --lo: 1 !important; --fo: .12 !important; }
   .gcg svg { width: 100%; height: auto; overflow: visible; display: block; }
-  .gcg__iso path { fill: #5db98a; fill-opacity: var(--fo); }
-  .gcg__ln * { fill: none; stroke: #5db98a; stroke-opacity: var(--lo); stroke-width: 1.2; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .gcg__iso path { fill: var(--gc-ink, #5db98a); fill-opacity: var(--fo); }
+  .gcg__ln * { fill: none; stroke: var(--gc-ink, #5db98a); stroke-opacity: var(--lo); stroke-width: 1.2; stroke-dasharray: 1; stroke-dashoffset: 1; }
   .gcg__card:hover .gcg__ln * { stroke-width: 1.7; filter: drop-shadow(0 0 3px rgb(93 185 138 / .8)); }
-  .gcg__tx text { font: 500 9px/1 ui-monospace, 'SF Mono', Menlo, monospace; fill: #5db98a; fill-opacity: calc(var(--lo) * .9); letter-spacing: .08em; opacity: 0; }
+  .gcg__tx text { font: 500 9px/1 ui-monospace, 'SF Mono', Menlo, monospace; fill: var(--gc-ink, #5db98a); fill-opacity: calc(var(--lo) * .9); letter-spacing: .08em; opacity: 0; }
   .gcg.is-in .gcg__ln * { animation: gcg-draw 1.6s calc(var(--i) * .45s) cubic-bezier(.4, 0, .2, 1) forwards; }
   .gcg.is-in .gcg__tx text { animation: gcg-show .8s 3.2s ease forwards; }
   .gcg.is-in .gcg__card { animation: gcg-fill 1.6s 4s ease forwards, gcg-calm 2s 5.8s ease forwards; }

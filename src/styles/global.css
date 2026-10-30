@@ -85,3 +85,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 :root { --gc-bg: #1c1c1c; --gc-ease: cubic-bezier(.22, 1, .36, 1); }
 @keyframes gc-radial { from { opacity: 0; transform: rotate(var(--fr, -180deg)) scale(.3); } 40% { opacity: 1; } to { opacity: 1; transform: none; } }
 @keyframes gc-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } } /* las letras entran con un fundido sutil: los giros son solo de los monogramas */
+
+/* Global Citizen: modo claro y modo oscuro propios del proyecto (los activa el widget de modo). Ambos con trazo de plano (blueprint), con los
+   colores del manual: Pure Snow #FAFAFA / Deep Onyx #1C1C1C y los verdes de la marca. */
+:root[data-gc-theme='light'] { --bg: #fafafa; --fg: #1c1c1c; --muted: #66706a; --line: rgb(28 28 28 / .14); --accent: #1c1c1c; color-scheme: light;
+  --gc-mod: #bcdccb; --gc-card: #f1f7f3; --gc-ink: #2c8a5b; --gc-grid: rgb(93 185 138 / .13); }
+:root[data-gc-theme='dark'] { --bg: #0e1512; --fg: #ecebe6; --muted: #8a938e; --line: rgb(236 235 230 / .14); --accent: #ecebe6; color-scheme: dark;
+  --gc-mod: #dfefe5; --gc-card: #0c1a14; --gc-ink: #5db98a; --gc-grid: rgb(93 185 138 / .07); }
+:root[data-gc-theme] body { background-image: linear-gradient(var(--gc-grid) 1px, transparent 1px), linear-gradient(90deg, var(--gc-grid) 1px, transparent 1px); background-size: 56px 56px; transition: background-color .6s ease, color .6s ease; }
+/* Sobre la portada (foto oscura) el encabezado conserva los colores claros, también en modo claro */
+:root[data-gc-theme='light'] .header:not(.is-solid) { color: #ecebe6; --fg: #ecebe6; --muted: #c9ccc8; --bg: #0b0b0a; --line: rgb(236 235 230 / .18); }

@@ -79,12 +79,12 @@ const TH = 5 * (2 * U + GAP) - GAP;
 </div>
 
 <style is:global>
-  .gcr { display: grid; gap: clamp(2.5rem, 6vw, 5rem); --gc-soft: #92cdb6; }
+  .gcr { display: grid; gap: clamp(2.5rem, 6vw, 5rem); --gc-soft: var(--gc-mod, #92cdb6); }
   /* Filas de módulos: composición fija, sin movimiento */
   .gcr__row { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: clamp(.1rem, .8vw, .6rem); }
   .gcr__cell { display: grid; place-items: center; }
   .gcr__cell svg { width: 100%; height: auto; overflow: visible; }
-  .gcr__cell path { fill: var(--gc-soft); fill-opacity: .3; }
+  .gcr__cell path { fill: var(--gc-soft); fill-opacity: .55; }
   .gcr__cell--logo path { fill: #5db98a; fill-opacity: 1; }
   .gcr__turn { transform: rotate(var(--rot, 0deg)); }
 
@@ -92,7 +92,7 @@ const TH = 5 * (2 * U + GAP) - GAP;
   .gcr__tapiz-wrap { width: 100%; max-width: 40rem; justify-self: center; }
   .gcr__tapiz { width: 100%; height: auto; overflow: visible; display: block; }
   .gcr__t { opacity: 0; transform-box: fill-box; }
-  .gcr__t path { fill: var(--gc-soft); fill-opacity: .3; transition: fill-opacity 1.8s ease, fill 1.8s ease; }
+  .gcr__t path { fill: var(--gc-soft); fill-opacity: .55; transition: fill-opacity 1.8s ease, fill 1.8s ease; }
   .gcr__t--logo path { fill: #5db98a; fill-opacity: 1; }
   .gcr.is-in .gcr__t { animation: gcr-in 1.3s calc(var(--e) * .13s) var(--gc-ease) forwards; --fr: -90deg; }
   @keyframes gcr-in { from { opacity: 0; } to { opacity: 1; } }
@@ -101,7 +101,7 @@ const TH = 5 * (2 * U + GAP) - GAP;
   .gcr__t:not(.gcr__t--logo):hover .gcr__tin { transform: rotate(180deg); }
   .gcr__t:not(.gcr__t--logo):hover path { fill: #5db98a; fill-opacity: 1; transition-duration: .3s; }
   .gcr__t.is-rip:not(:hover) path { animation: gcr-rip 1.3s calc(var(--rd, 0) * 1ms) ease-out; }
-  @keyframes gcr-rip { 0%, 100% { fill-opacity: .3; } 35% { fill-opacity: .62; fill: #74c096; } }
+  @keyframes gcr-rip { 0%, 100% { fill-opacity: .55; } 35% { fill-opacity: .95; fill: #74c096; } }
   @media (max-width: 640px) { .gcr__row { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   @media (prefers-reduced-motion: reduce) { .gcr__t { opacity: 1; animation: none !important; } .gcr__tin { animation: none !important; } .gcr__t.is-rip path { animation: none !important; } }
 </style>
