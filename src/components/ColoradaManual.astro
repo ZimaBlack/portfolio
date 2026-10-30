@@ -19,12 +19,13 @@ const inline = (file: string, label: string) => readFileSync(join(process.cwd(),
   .replace(/fill="#6CE829"/gi, 'style="fill:var(--c1)"')
   .replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')} role="img" aria-label="${label}">`);
 // SVG de una sección: los rosas y verdes de la marca leen --c0 / --c1; los rellenos de degradado también
-const tinted = (file: string, label: string, slice = false) => readFileSync(join(process.cwd(), 'public/works/colorada/manual', file), 'utf8')
-  .replace(/fill="#E03B7A"/gi, 'style="fill:var(--c0)"').replace(/fill="#6CE829"/gi, 'style="fill:var(--c1)"')
-  .replace(/stop-color="#E03B7A"/gi, 'style="stop-color:var(--c0)"')
+const tinted = (file: string, label: string, slice = false, fixed = false) => readFileSync(join(process.cwd(), 'public/works/colorada/manual', file), 'utf8')
+  .replace(/fill="#E03B7A"/gi, (m) => (fixed ? m : 'style="fill:var(--c0)"')).replace(/fill="#6CE829"/gi, (m) => (fixed ? m : 'style="fill:var(--c1)"'))
+  .replace(/stop-color="#E03B7A"/gi, (m) => (fixed ? m : 'style="stop-color:var(--c0)"'))
   .replace(/<svg\b([^>]*)>/i, (_m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, '')}${slice ? ' preserveAspectRatio="xMidYMax slice"' : ''} role="img" aria-label="${label}">`);
 const variable = tinted('paleta-variable.svg', 'Colorada — paleta variable');
-const closer = tinted('cierre.svg', 'Colorada', true);
+// El cierre del proyecto respeta siempre la paleta madre (#E03B7A y #6CE829), sin seguir al widget
+const closer = tinted('cierre.svg', 'Colorada', true, true);
 // Formas del mármol de la lámina de cierre: se reutilizan en las tres piezas de "Recursos gráficos"
 const marble = [...readFileSync(join(process.cwd(), 'public/works/colorada/manual/cierre.svg'), 'utf8').matchAll(/<path d="([^"]+)" fill="(?:black|url\([^)]*\))"/g)].map((m) => m[1]).filter((d) => /C/.test(d) && !/^M[\d. ]+[HV]/.test(d)).slice(0, 22);
 const crops = ['380 560 1500 1500', '1180 320 1500 1500', '640 640 1500 1500'];
@@ -250,7 +251,13 @@ const t = es ? {
   .cm__sw { width: 1.6rem; height: 1.6rem; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
   /* Let's blend: la foto, las paletas de prueba y el hueco al que viaja el widget */
   .cm__cmp { display: grid; gap: 1.25rem; } .cm__cmpgrid { max-width: 32rem; }
-  .cm__blend { display: grid; gap: 1.25rem; }
+  /* Fondo muy sutil, como el del hero: luz de color desde el lado del widget y, apenas, desde el lado contrario */
+  .cm__blend { position: relative; isolation: isolate; display: grid; gap: 1.25rem; }
+  .cm__blend::before { content: ''; position: absolute; z-index: -1; pointer-events: none; top: -4rem; bottom: -4rem; left: 50%; width: 100vw; transform: translateX(-50%);
+    background:
+      radial-gradient(ellipse 46% 62% at 88% 50%, color-mix(in srgb, var(--c0) 26%, transparent), transparent 70%),
+      radial-gradient(ellipse 34% 48% at 8% 60%, color-mix(in srgb, var(--c1) 11%, transparent), transparent 70%);
+    transition: background .8s linear; }
   .cm__blend .cm__photo--big { max-width: 34rem; justify-self: start; }
   .cm__blendgrid { display: grid; grid-template-columns: minmax(0, 34rem) minmax(0, 6.5rem) auto minmax(8rem, 1fr); gap: clamp(1.2rem, 3vw, 3rem); align-items: center; margin-top: 1rem; }
   .cm__presets { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
