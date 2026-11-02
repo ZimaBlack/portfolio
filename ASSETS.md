@@ -105,3 +105,9 @@ El proyecto está cargado completo pero con `locked: true` (mismo formato que Pi
 ### Beats de fondo (originales, libres de copyright)
 
 `demo-src/beats/make_beats.py` sintetiza tres beats desde cero con numpy (sin samples ni melodías de terceros): 01 La menor y 02 Do mayor, a 96 BPM y 10 s exactos (4 compases), y 03 un loop de 8 pulsos (5,92 s) con un arpegio que sube mientras cambia el color del pelo. Van mezclados dentro del audio de cada `prueba-0N.mp4` (la voz de los clips 1 y 2 queda por encima), así que no hay nada que sincronizar. La entrada del logo dura 2 pulsos (1,25 s) y el cierre entra en el 4.º compás (7,5 s). Para regenerarlos: `python3 demo-src/beats/make_beats.py <carpeta>`.
+
+## 8. NovaPsi · capturas regeneradas (2026-11-02)
+
+Las 38 capturas de `public/works/novapsi/shots/` (19 pantallas × español e inglés) se volvieron a sacar de la demostración de NovaPsi con el diseño nuevo (portada «Servicios», fondo blanco del paciente, íconos sólidos, bordes más rectos, ficha con turnos asignados, perfil con foto, etc.). Nuevas: `pro-ficha`, `pro-asignar`, `pro-detalle`, `pro-notificaciones`, `pro-legales`. El procedimiento y el script están en `demo-src/novapsi-capturas/`. Todo con datos ficticios (Lic. Ana Torres, Sofía y Diego de ejemplo); no hay datos reales. Las capturas anteriores no se conservan en el sitio (siguen en el historial de git).
+
+El paso «Servicio técnico» (puesta en marcha guiada, acceso acotado y «ver como el profesional») no tiene captura: esa sesión necesita las credenciales del servicio técnico, que no están en la demostración; se explica con texto.
