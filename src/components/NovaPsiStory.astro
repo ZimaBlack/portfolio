@@ -162,7 +162,7 @@ const t = es ? {
   want: 'Need something like this?', wantA: 'An appointment system, a brand or a custom product: tell me what you have in mind.', wantBtn: 'I want a similar product', wantMsg: 'Hi Pablo, I saw NovaPsi in your portfolio and I want a similar product.',
 };
 const combos = [['Grafito y celeste', '#334155', '#38bdf8'], ['Violeta y verde agua', '#6d28d9', '#0d9488'], ['Azul y coral', '#2563eb', '#f97316'], ['Verde salvia y arena', '#4d7c5f', '#c8a96a'], ['Índigo y rosa', '#4338ca', '#db2777'], ['Petróleo y durazno', '#0f766e', '#f59e0b']];
-const demo = withBase('/demo/novapsi/');
+const demo = 'https://psi-turnos-app.netlify.app/';
 const waHref = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(t.wantMsg)}`;
 type Node = { id: string; r: number; c: number; kind: 'icon' | 'img' | 'logo'; ref: string; color: string; up?: boolean; dev?: boolean };
 const nodes: Node[] = [
