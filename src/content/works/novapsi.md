@@ -14,7 +14,7 @@ heroAnimation: iso
 cover: /works/novapsi/cover.webp
 logo: /works/novapsi/logo.svg
 links:
-  - { label: "Ver el sistema en línea", url: "https://psi-turnos-app.netlify.app/" }
+  - { label: "Ver el sistema en línea", url: "/demo/novapsi/" }
 manual: novapsi
 featured: true
 homeOrder: 3
