@@ -15,12 +15,6 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   color-scheme: dark;
 }
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme='dark']) {
-    --bg: #f4f2ec; --fg: #0e0e0c; --muted: #77756d; --line: rgb(14 14 12 / 0.14); --accent: #0e0e0c;
-    color-scheme: light;
-  }
-}
 
 *, *::before, *::after { box-sizing: border-box; }
 html { overflow-x: clip; -webkit-text-size-adjust: 100%; scroll-behavior: auto; }

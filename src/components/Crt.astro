@@ -23,6 +23,5 @@
   @keyframes crt-noise { 0% { transform: translate(0, 0); } 17% { transform: translate(-3%, 2%); } 33% { transform: translate(2%, -4%); } 50% { transform: translate(-4%, -1%); } 67% { transform: translate(3%, 3%); } 83% { transform: translate(-1%, 4%); } 100% { transform: translate(0, 0); } }
   @keyframes crt-flicker { 0%, 100% { opacity: .9; } 8% { opacity: .72; } 9% { opacity: .95; } 41% { opacity: .8; } 42% { opacity: .92; } 73% { opacity: .78; } 74% { opacity: .9; } }
   /* Pensada para fondo oscuro */
-  @media (prefers-color-scheme: light) { :global(:root:not([data-theme='dark'])) .crt { display: none; } }
   @media (prefers-reduced-motion: reduce) { .crt { display: none; } }
 </style>
