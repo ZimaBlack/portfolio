@@ -23,6 +23,7 @@ const person = {
   knowsAbout: cv.software.flat().map(([n]) => n),
   sameAs: site.social.map((x) => x.href),
 };
+const og = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/og.png`, Astro.site ?? Astro.url).href;
 const full = title ? `${title} — ${site.studio}` : `${site.studio} — ${c.role}`;
 ---
 <!doctype html>
@@ -42,7 +43,12 @@ const full = title ? `${title} — ${site.studio}` : `${site.studio} — ${c.rol
     <meta property="og:type" content="website" />
     <meta property="og:url" content={url} />
     <meta property="og:site_name" content={site.studio} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={og} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="ZMA BLK, Director de Arte · Visual Designer · UX/UI" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={og} />
     <meta property="og:locale" content={lang === 'es' ? 'es_AR' : 'en_US'} />
     {esHref && <link rel="alternate" hreflang="es" href={esHref} />}
     {enHref && <link rel="alternate" hreflang="en" href={enHref} />}
