@@ -24,6 +24,22 @@ const person = {
   sameAs: site.social.map((x) => x.href),
 };
 const og = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/og.png`, Astro.site ?? Astro.url).href;
+// GitHub Pages no permite cabeceras propias: la política va en una etiqueta meta. Sin servidor ni formularios,
+// lo que se restringe es de dónde puede cargar cosas la página (y a dónde puede enviar datos).
+const endpoint = import.meta.env.PUBLIC_QUESTION_ENDPOINT ? new URL(import.meta.env.PUBLIC_QUESTION_ENDPOINT).origin : '';
+const csp = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "media-src 'self' blob:",
+  "font-src 'self' data:",
+  `connect-src 'self'${endpoint ? ' ' + endpoint : ''}`,
+  "frame-src 'self' https://www.youtube-nocookie.com https://player.vimeo.com https://challenges.cloudflare.com",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ');
 const full = title ? `${title} — ${site.studio}` : `${site.studio} — ${c.role}`;
 ---
 <!doctype html>
@@ -32,6 +48,8 @@ const full = title ? `${title} — ${site.studio}` : `${site.studio} — ${c.rol
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/favicon.svg`} />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#0b0b0a" />
     <title>{full}</title>

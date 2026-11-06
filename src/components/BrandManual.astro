@@ -1,6 +1,9 @@
 ---
 // Manual de marca de Global Citizen adaptado al sitio: texto nativo (bilingüe) + piezas recortadas del manual original en /works/global-citizen/manual/
 import { withBase, type Lang } from '../lib/i18n';
+import '@fontsource/nunito-sans/300.css';
+import '@fontsource/nunito-sans/400.css';
+import '@fontsource/nunito-sans/800.css';
 import GcLogos from './GcLogos.astro';
 import GcConcept from './GcConcept.astro';
 import GcGrid from './GcGrid.astro';
@@ -348,9 +351,6 @@ const rows: { b: boolean; chips: Chip[] }[] = [
     .gcm__pair { grid-template-columns: 1fr; }
   }
 </style>
-
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;800&display=swap" />
 
 <script>
   // Las piezas geométricas del manual (logos, módulos, grillas y paleta) se animan al entrar en pantalla

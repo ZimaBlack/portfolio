@@ -29,6 +29,8 @@ const src = provider === 'vimeo'
       f.title = el.dataset.title!;
       f.allow = 'autoplay; fullscreen; picture-in-picture';
       f.allowFullscreen = true;
+      f.referrerPolicy = 'strict-origin-when-cross-origin';
+      f.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups');
       el.replaceChildren(f);
     });
   });
