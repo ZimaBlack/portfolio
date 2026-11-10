@@ -1,4 +1,5 @@
 ---
+import AwHero from './wander/AwHero.astro';
 // Portada animada de un proyecto: pantalla completa, con el logotipo centrado. Tres modos, según el proyecto:
 //  · simple: el logotipo (imagen) entra con un fundido; el isotipo (`mark`) queda oculto y centrado, listo para animar;
 //  · reactivo (`reactive`): el SVG se inserta en la página y los colores indicados siguen al widget de paleta;
@@ -12,8 +13,8 @@ import { wavesSvg } from '../lib/waves';
 import GcHero from './GcHero.astro';
 import OmegaPattern from './OmegaPattern.astro';
 
-const { logo = '', mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, liquid = false, assemble = false, ornament = '', pattern = '', photo = '', glass = false, modular = false, omega = false, draw = false, isoAnim = false } = Astro.props as {
-  logo?: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; liquid?: boolean; assemble?: boolean; ornament?: string; pattern?: string; photo?: string; glass?: boolean; modular?: boolean; omega?: boolean; draw?: boolean; isoAnim?: boolean;
+const { logo = '', mark, title, tones = ['#1a1a1a', '#2b2b2b'], reactive = [], halftone = false, liquid = false, assemble = false, ornament = '', pattern = '', photo = '', glass = false, modular = false, omega = false, draw = false, isoAnim = false, screens = false, ring = false } = Astro.props as {
+  logo?: string; mark?: string; title: string; tones?: string[]; reactive?: string[]; halftone?: boolean; liquid?: boolean; assemble?: boolean; ornament?: string; pattern?: string; photo?: string; glass?: boolean; modular?: boolean; omega?: boolean; draw?: boolean; isoAnim?: boolean; screens?: boolean; ring?: boolean;
 };
 const src = (p: string) => (p.startsWith('/') ? withBase(p) : p);
 const isSvg = (p?: string) => !!p && p.toLowerCase().endsWith('.svg');
@@ -88,7 +89,7 @@ if (isoAnim && isSvg(logo)) {
 const wavesMarkup = pattern === 'waves' ? wavesSvg([tones[0], tones[1]]) : '';
 const stageSvg = assemble ? logoSvg : reactiveSvg;
 ---
-<section class="pjh" data-modular={modular ? '' : undefined} data-omega={omega ? '' : undefined} data-pj-hero data-halftone={halftone ? '' : undefined} data-liquid-on={liquid ? '' : undefined} data-assemble={assemble ? '' : undefined} data-pattern={pattern ? '' : undefined} data-photo={photo ? '' : undefined} data-glass={glass ? '' : undefined} data-draw={draw ? '' : undefined} data-orn={orn.length ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]};${liquid ? '--ax:36%;--ay:42%;--bx:64%;--by:58%;' : ''}${timingVars()}`} aria-label={title}>
+<section class="pjh" data-modular={modular ? '' : undefined} data-omega={omega ? '' : undefined} data-pj-hero data-halftone={halftone ? '' : undefined} data-liquid-on={liquid ? '' : undefined} data-assemble={assemble ? '' : undefined} data-pattern={pattern ? '' : undefined} data-photo={photo ? '' : undefined} data-glass={glass ? '' : undefined} data-draw={draw ? '' : undefined} data-screens={screens ? '' : undefined} data-ring={ring ? '' : undefined} data-orn={orn.length ? '' : undefined} style={`--ga:${tones[1]};--gb:${tones[0]};${liquid ? '--ax:36%;--ay:42%;--bx:64%;--by:58%;' : ''}${timingVars()}`} aria-label={title}>
   {defs && <Fragment set:html={defs} />}
   <!-- La escena entera (fondo, ornamento y logotipo) es un solo grupo: al hacer scroll se desvanece junta -->
   <div class="pjh__scene" data-pj-scene>
@@ -129,6 +130,16 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
         <div class="pjh__drawwrap">
           <Fragment set:html={drawSvg} />
           <span class="pjh__sheen pjh__sheen--draw" aria-hidden="true" style={`--logo:url(${src(logo)})`}></span>
+        </div>
+      ) : ring ? (
+        <div class="pjh__awbox" data-pj-logo><AwHero label={title} /></div>
+      ) : screens && logo ? (
+        <div class="pjh__wl" role="img" aria-label={title}>
+          <span class="pjh__wlm">
+            <img src={src(logo)} alt="" decoding="async" draggable="false" data-pj-logo />
+            <i class="pjh__wls" aria-hidden="true" style={`--m:url(${src(logo)})`}></i>
+          </span>
+          <span class="pjh__wlt">{title}</span>
         </div>
       ) : glass && logo && mark ? (
         <div class="pjh__glass" role="img" aria-label={title}>
@@ -281,6 +292,20 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
   .pjh__mark { opacity: 0; } /* en su lugar, listo para animar */
   @keyframes logo-in { from { opacity: 0; filter: blur(16px); transform: scale(1.04); } to { opacity: 1; filter: none; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .pjh__stage > .pjh__logo, .pjh__ht { animation: none; } .pjh__scene, .pjh.is-leaving .pjh__scene { filter: none; transition: opacity .6s linear; } }
+
+  /* ── Muro de capturas (Wander · Plataforma): el isologo entra desenfocado, se enfoca y recibe un destello periódico */
+  .pjh__wl { grid-area: 1 / 1; display: grid; justify-items: center; gap: 1.3rem; }
+  .pjh__wlm { position: relative; display: block; width: min(70vw, 27rem); animation: wl-in 1.9s .5s cubic-bezier(.2, .7, .2, 1) both, wl-float 7s ease-in-out 2.4s infinite; filter: drop-shadow(0 .8rem 2.2rem rgb(20 8 26 / .6)); }
+  .pjh__wlm img { display: block; width: 100%; height: auto; }
+  .pjh__wls { position: absolute; inset: 0; -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat;
+    background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / .95) 50%, transparent 62%) 160% 0 / 260% 100% no-repeat; animation: wl-shine 5.5s ease-in-out 2.6s infinite; }
+  .pjh__wlt { font-size: .74rem; letter-spacing: .5em; padding-left: .5em; text-transform: uppercase; color: rgb(255 255 255 / .85); animation: wl-tag 1.4s 1.3s ease-out both; }
+  @keyframes wl-in { from { opacity: 0; transform: translateY(22px) scale(.88); filter: blur(16px) drop-shadow(0 .8rem 2.2rem rgb(20 8 26 / .6)); } to { opacity: 1; transform: none; filter: blur(0) drop-shadow(0 .8rem 2.2rem rgb(20 8 26 / .6)); } }
+  @keyframes wl-float { 50% { transform: translateY(-.5rem); } }
+  @keyframes wl-shine { 0% { background-position: 160% 0; } 38%, 100% { background-position: -60% 0; } }
+  @keyframes wl-tag { from { opacity: 0; letter-spacing: .95em; } to { opacity: 1; letter-spacing: .5em; } }
+  .pjh[data-screens] .pjh__bg { display: none; }
+  @media (prefers-reduced-motion: reduce) { .pjh__wlm, .pjh__wls, .pjh__wlt { animation: none !important; } .pjh__wls { display: none; } }
 </style>
 
 <!-- El SVG se inserta como HTML, así que sus estilos son globales (siempre bajo .pjh) -->
@@ -342,6 +367,9 @@ const stageSvg = assemble ? logoSvg : reactiveSvg;
 
   /* ── Movimiento reducido: todo se ve ya armado */
   @media (prefers-reduced-motion: reduce) { .pj-piece, .pj-late, .pj-shine, .pj-tone { animation: none !important; } .pj-shine { display: none; } }
+
+  .pjh[data-ring] .pjh__bg { opacity: .2; }
+  .pjh__awbox { grid-area: 1 / 1; display: grid; place-items: center; }
 </style>
 
 <script>

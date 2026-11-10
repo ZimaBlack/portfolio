@@ -51,12 +51,12 @@ const works = defineCollection({
     ornament: z.string().optional(), // vector decorativo (media pieza, lado derecho) que la portada anima a ambos lados del logotipo
     heroImage: z.string().optional(), // foto de fondo de la portada: ruta base (/works/<slug>/bg); se esperan bg-1280.webp, bg-1920.webp, bg-2560.webp y bg.jpg
     heroPattern: z.enum(['waves']).optional(), // trama de fondo de la portada (waves: ondas fluidas de diseño plano, con los colores de `tones`)
-    heroAnimation: z.enum(['assemble', 'glass', 'draw', 'iso', 'modular', 'omega']).optional(), // animación de entrada de la portada (assemble: las piezas del logotipo llegan de los lados y se arman)
+    heroAnimation: z.enum(['assemble', 'glass', 'draw', 'iso', 'modular', 'omega', 'screens', 'ring']).optional(), // animación de entrada de la portada (assemble: las piezas del logotipo llegan de los lados y se arman)
     heroLights: z.enum(['soft', 'halftone', 'liquid']).default('soft'), // luces de la portada: degradado suave, trama de semitono o líquido realista
     reactiveColors: z.array(z.string()).default([]), // colores del logotipo que siguen al widget de paleta (1.º = elegido, 2.º = automático)
     paletteColors: z.array(z.string()).default([]), // colores de la marca para el widget de paleta
     links: z.array(z.object({ label: z.string(), url: z.string() })).default([]), // enlaces del proyecto (redes del cliente, sitio…)
-    manual: z.enum(['global-citizen', 'cdxx', 'colorada', 'omega-shields', 'pirulo', 'novapsi', 'wanderlust']).optional(), // sección «Manual de marca» del proyecto (piezas en /works/<slug>/manual/)
+    manual: z.enum(['global-citizen', 'cdxx', 'colorada', 'omega-shields', 'pirulo', 'novapsi', 'wanderlust', 'wanderlust-alt', 'after-wrap']).optional(), // sección «Manual de marca» del proyecto (piezas en /works/<slug>/manual/)
     headerMarquee: z.boolean().default(false), // cabecera con marquesina de logos (b) sin color, en lugar de la imagen
     hero: z.string().optional(),  // cabecera panorámica 21:9 de la página del proyecto
     tones: z.array(z.string()).default(['#1a1a1a', '#2b2b2b']).transform((a) => [a[0] ?? '#1a1a1a', a[1] ?? a[0] ?? '#2b2b2b'] as [string, string]),

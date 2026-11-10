@@ -1,0 +1,83 @@
+---
+// Portada de afterWRAP para el hero del proyecto: anillo de espectro que gira despacio, con tramos desenfocados,
+// el logo (SVG) y la tira de película corriendo dentro de una banda a todo el ancho. Todo se mide contra el
+// diámetro del anillo (--s). Entrada: el color llega desde los bordes del navegador y se cierra sobre el anillo
+// mientras aparece el logo; después se abre la banda con el carrete.
+import { withBase } from '../../lib/i18n';
+const { label = 'afterWRAP' } = Astro.props as { label?: string };
+const logo = withBase('/works/after-wrap/marca/afterwrap.svg');
+---
+<div class="awh" role="img" aria-label={label}>
+  <div class="awh__st" aria-hidden="true">
+    <div class="awh__rw">
+      <span class="awh__bl awh__bl--g"><i class="awh__r awh__r--full"></i></span>
+      <i class="awh__gr"></i>
+      <i class="awh__r awh__r--sharp"></i>
+      <span class="awh__bl awh__bl--1"><i class="awh__r awh__r--b1"></i></span>
+      <span class="awh__bl awh__bl--g1"><i class="awh__r awh__r--b1"></i></span>
+      <span class="awh__bl awh__bl--2"><i class="awh__r awh__r--b2"></i></span>
+      <span class="awh__bl awh__bl--g2"><i class="awh__r awh__r--b2"></i></span>
+      <i class="awh__r awh__r--bot"></i>
+    </div>
+    <img class="awh__logo" src={logo} alt="" width="691" height="160" decoding="async" />
+    <div class="awh__reel"><i></i></div>
+  </div>
+</div>
+<script is:inline>document.documentElement.setAttribute('data-aw','')</script>
+
+<style is:global>
+  /* La página de afterWRAP usa el fondo del modelo (#161515), también el pie */
+  :root[data-aw] { --bg: #161515; }
+  :root[data-aw] .footer { --bg: #161515; background: #161515; }
+</style>
+
+<style>
+  @property --awh-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+  @property --awh-b { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+  .awh { --s: min(82vw, 66vh, 46rem); --t: calc(var(--s) * .0214); position: relative; width: var(--s); aspect-ratio: 1; color: #fdfff6; }
+  .awh__st { position: absolute; inset: 0; }
+  .awh__rw { position: absolute; inset: 0; transform-origin: 50% 50%; animation: awh-in 3.6s cubic-bezier(.16, .8, .24, 1) both; }
+
+  /* Anillo: el espectro avanza (--awh-a); los tramos desenfocados giran al revés (--awh-b) */
+  .awh__r { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from var(--awh-a), #16a977 0deg, #1b9c9a 30deg, #1668d4 80deg, #4b2f9c 125deg, #b02466 165deg, #d12a52 185deg, #e0672a 238deg, #f2a31b 270deg, #ffe600 305deg, #b9e43a 338deg, #16a977 360deg); animation: awh-spin 56s linear infinite; --ring: radial-gradient(farthest-side, transparent calc(100% - var(--t)), #000 calc(100% - var(--t) + 1px)); --fade: linear-gradient(to bottom, #000 0, #000 30%, transparent 62%); -webkit-mask-composite: source-in; mask-composite: intersect; }
+  .awh__r--sharp { -webkit-mask-image: var(--ring), var(--fade), conic-gradient(from var(--awh-b), #000 0 8deg, transparent 28deg 62deg, #000 85deg 192deg, transparent 212deg 228deg, #000 250deg 360deg); mask-image: var(--ring), var(--fade), conic-gradient(from var(--awh-b), #000 0 8deg, transparent 28deg 62deg, #000 85deg 192deg, transparent 212deg 228deg, #000 250deg 360deg); animation: awh-spin 56s linear infinite, awh-turn 70s linear infinite reverse; }
+  .awh__bl { position: absolute; inset: 0; }
+  .awh__bl--1 { filter: blur(calc(var(--s) * .0065)); }
+  .awh__bl--2 { filter: blur(calc(var(--s) * .016)); opacity: .9; }
+  .awh__r--b1 { -webkit-mask-image: var(--ring), var(--fade), conic-gradient(from var(--awh-b), transparent 0 8deg, #000 28deg 62deg, transparent 85deg 360deg); mask-image: var(--ring), var(--fade), conic-gradient(from var(--awh-b), transparent 0 8deg, #000 28deg 62deg, transparent 85deg 360deg); animation: awh-spin 56s linear infinite, awh-turn 70s linear infinite reverse; }
+  .awh__r--b2 { -webkit-mask-image: var(--ring), var(--fade), conic-gradient(from var(--awh-b), transparent 0 192deg, #000 212deg 228deg, transparent 250deg 360deg); mask-image: var(--ring), var(--fade), conic-gradient(from var(--awh-b), transparent 0 192deg, #000 212deg 228deg, transparent 250deg 360deg); animation: awh-spin 56s linear infinite, awh-turn 70s linear infinite reverse; }
+  .awh__r--bot { opacity: .8; filter: blur(calc(var(--s) * .0015)); -webkit-mask-image: var(--ring), linear-gradient(to bottom, transparent 0, transparent 87%, #000 100%), linear-gradient(to right, transparent 26%, #000 50%, transparent 74%); mask-image: var(--ring), linear-gradient(to bottom, transparent 0, transparent 87%, #000 100%), linear-gradient(to right, transparent 26%, #000 50%, transparent 74%); }
+  .awh__r--full { -webkit-mask-image: var(--ring), var(--fade); mask-image: var(--ring), var(--fade); }
+  /* Glow de color: copias muy desenfocadas y más saturadas, el arco entero y los tramos desenfocados */
+  .awh__bl--g { filter: blur(calc(var(--s) * .03)) saturate(1.5); opacity: .5; }
+  .awh__bl--g1 { filter: blur(calc(var(--s) * .028)) saturate(1.8) brightness(1.2); opacity: .95; }
+  .awh__bl--g2 { filter: blur(calc(var(--s) * .05)) saturate(1.8) brightness(1.2); opacity: .95; }
+  /* Línea gris fina pegada al borde interior del anillo (como en el modelo) */
+  .awh__gr { position: absolute; inset: var(--t); border-radius: 50%; background: #343434; -webkit-mask-image: radial-gradient(farthest-side, transparent calc(100% - var(--s) * .0055), #000 calc(100% - var(--s) * .0055 + 1px)), var(--fade); mask-image: radial-gradient(farthest-side, transparent calc(100% - var(--s) * .0055), #000 calc(100% - var(--s) * .0055 + 1px)), var(--fade); -webkit-mask-composite: source-in; mask-composite: intersect; --fade: linear-gradient(to bottom, #000 0, #000 30%, transparent 62%); }
+  @keyframes awh-spin { to { --awh-a: 360deg; } }
+  @keyframes awh-turn { to { --awh-b: 360deg; } }
+
+  /* Entrada: un color difuso desde los bordes del navegador se cierra sobre el anillo */
+  @keyframes awh-in {
+    0% { transform: scale(4.6); opacity: 0; filter: blur(calc(var(--s) * .05)); }
+    22% { transform: scale(4.2); opacity: .5; filter: blur(calc(var(--s) * .05)); }
+    72% { filter: blur(calc(var(--s) * .006)); }
+    100% { transform: scale(1); opacity: 1; filter: blur(0); }
+  }
+
+  /* Logo (SVG): aparece mientras el color se cierra */
+  .awh__logo { position: absolute; left: 50%; top: 50%; width: calc(var(--s) * .68); height: auto; translate: -50% -50%; animation: awh-logo 1.8s ease 1.6s both; }
+  @keyframes awh-logo { from { opacity: 0; filter: blur(8px); } to { opacity: 1; filter: blur(0); } }
+
+  /* Carrete: banda a todo el ancho, del color de fondo, con sombra gris clara; las perforaciones corren dentro */
+  .awh__reel { position: absolute; left: 50%; top: calc(var(--s) * .745); width: 120vw; height: calc(var(--s) * .12); translate: -50% 0; overflow: hidden; background: var(--bg); /* sombra solo hacia abajo: el desplazamiento y el spread negativo dejan limpio el borde superior */ box-shadow: 0 calc(var(--s) * .035) calc(var(--s) * .06) calc(var(--s) * -.025) rgb(160 160 160 / .3); animation: awh-reel 1.8s ease 3.4s both; }
+  .awh__reel i { position: absolute; inset: 0 0 0 calc(var(--s) * -.109); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 40' preserveAspectRatio='none'%3E%3Crect x='23' y='0' width='66' height='40' rx='21' fill='%23ffffff' fill-opacity='.06'/%3E%3C/svg%3E") 0 50% / calc(var(--s) * .109) calc(var(--s) * .039) repeat-x; animation: awh-film 3.6s linear infinite 3.6s; }
+  @keyframes awh-film { to { translate: calc(var(--s) * .109) 0; } }
+  @keyframes awh-reel { from { opacity: 0; } to { opacity: .55; } }
+
+  @media (max-width: 640px) {
+    .awh { --s: min(94vw, 56vh); }
+    .awh__logo { width: calc(var(--s) * .72); }
+  }
+  @media (prefers-reduced-motion: reduce) { .awh__rw, .awh__logo, .awh__reel, .awh__reel i, .awh__r { animation: none !important; } }
+</style>

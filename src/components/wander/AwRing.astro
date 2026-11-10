@@ -1,0 +1,98 @@
+---
+import { awLogo } from '../../data/afterwrap-logo';
+// Cierre de afterWRAP: el anillo cromático del hero, más chico y solo. Gira despacio, con tramos desenfocados y glow;
+// al entrar en pantalla el color llega girando desde lejos y se cierra sobre el anillo; después el logo sale desde el inicio de la «W»
+// (el mismo corte que la pieza «Cut · Color · Adaptation») con un glow que se estabiliza.
+const k = awLogo.wmW, slope = 142 / 601, midX = awLogo.cutX - awLogo.wmX0, midY = awLogo.midY - awLogo.wmY0;
+const pc = (x: number) => `${((x / k) * 100).toFixed(2)}%`;
+const ct = pc(midX - slope * midY), cb = pc(midX + slope * (awLogo.wmH - midY));
+---
+<div class="awr" data-awr role="img" aria-label="afterWRAP">
+  <div class="awr__st" aria-hidden="true">
+    <span class="awr__bl awr__bl--g"><i class="awr__r awr__r--full"></i></span>
+    <i class="awr__r awr__r--sharp"></i>
+    <span class="awr__bl awr__bl--1"><i class="awr__r awr__r--b1"></i></span>
+    <span class="awr__bl awr__bl--g1"><i class="awr__r awr__r--b1"></i></span>
+    <span class="awr__bl awr__bl--2"><i class="awr__r awr__r--b2"></i></span>
+    <span class="awr__bl awr__bl--g2"><i class="awr__r awr__r--b2"></i></span>
+    <i class="awr__bk awr__bk--1"></i><i class="awr__bk awr__bk--2"></i><i class="awr__bk awr__bk--3"></i>
+    <div class="awr__orb"><i class="awr__fl"></i><i class="awr__gh awr__gh--1"></i><i class="awr__gh awr__gh--2"></i><i class="awr__gh awr__gh--3"></i></div>
+    <div class="awr__lw"><svg class="awr__lg" viewBox={awLogo.wmVb} style={`--t:${ct};--b:${cb}`}>{awLogo.letters.map((d, i) => <path d={d} style={`--i:${i}`} />)}</svg></div>
+  </div>
+</div>
+
+<style>
+  @property --awh-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+  @property --awh-b { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+  .awr { --s: clamp(11rem, 20vw, 17rem); --t: calc(var(--s) * .062); width: var(--s); aspect-ratio: 1; margin-inline: auto; }
+  .awr__st { position: relative; width: 100%; height: 100%; }
+  .awr.is-armed .awr__st { opacity: 0; }
+  .awr.is-in .awr__st { animation: awr-in 3.2s cubic-bezier(.16, .8, .24, 1) both; }
+  /* El color llega desde lejos, se cierra con un pequeño rebote y deja un destello que se asienta (sin giro) */
+  @keyframes awr-in {
+    0% { opacity: 0; transform: scale(3.4); filter: blur(calc(var(--s) * .09)) saturate(1.8); }
+    22% { opacity: .65; }
+    62% { transform: scale(.9); filter: blur(calc(var(--s) * .01)) saturate(1.5) brightness(1.4); }
+    80% { transform: scale(1.04); filter: brightness(1.15); }
+    100% { opacity: 1; transform: none; filter: none; }
+  }
+  .awr__lw { position: absolute; left: 50%; top: 50%; width: 80%; translate: -50% -50%; }
+  .awr__lg { display: block; width: 100%; height: auto; fill: #fdfff6; overflow: visible; --p: 1; clip-path: polygon(calc(var(--t) * (1 - var(--p))) -20%, calc(var(--t) + (100% - var(--t)) * var(--p)) -20%, calc(var(--b) + (100% - var(--b)) * var(--p)) 120%, calc(var(--b) * (1 - var(--p))) 120%); }
+  @property --p { syntax: '<number>'; inherits: false; initial-value: 1; }
+  .awr.is-armed .awr__lg { --p: 0; opacity: 0; }
+  /* El logo surge desde el inicio de la «W» (corte en diagonal) y su glow se estabiliza al final */
+  .awr.is-in .awr__lg { animation: awr-logo 1.5s cubic-bezier(.3, .6, .2, 1) 1.7s both; }
+  .awr.is-in .awr__lw { animation: awr-glow 3.4s ease-out 1.7s both, awr-breathe 4.2s ease-in-out 5.1s infinite; }
+  @keyframes awr-logo { from { --p: 0; opacity: 1; } to { --p: 1; opacity: 1; } }
+  @keyframes awr-breathe { 0%, 100% { filter: drop-shadow(0 0 calc(var(--s) * .02) rgb(255 255 255 / .28)); } 50% { filter: drop-shadow(0 0 calc(var(--s) * .05) rgb(255 225 170 / .6)) drop-shadow(0 0 calc(var(--s) * .1) rgb(255 120 170 / .22)); } }
+  /* Tipografía cinética sutil: una onda lenta recorre las letras (sube un poco y se inclina apenas) */
+  .awr__lg path { transform-box: fill-box; transform-origin: 50% 100%; }
+  .awr.is-in .awr__lg path { animation: awr-k 5.4s ease-in-out calc(5.1s + var(--i) * .16s) infinite; }
+  @keyframes awr-k { 0%, 55%, 100% { transform: none; } 22% { transform: translateY(-5%) skewX(-3deg); } 38% { transform: translateY(1.5%) skewX(1.2deg); } }
+  /* Destello de lente: un punto de luz orbita sobre el anillo, con rayo horizontal y reflejos que cruzan hacia el centro */
+  .awr__orb { position: absolute; inset: 0; mix-blend-mode: screen; pointer-events: none; animation: awr-orb 16s linear infinite; opacity: 0; }
+  .awr.is-in .awr__orb, .awr:not(.is-armed) .awr__orb { opacity: 1; transition: opacity 1.6s ease 2.6s; }
+  @keyframes awr-orb { to { rotate: 360deg; } }
+  .awr__fl { position: absolute; left: 50%; top: calc(var(--t) / 2); width: calc(var(--s) * .2); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(circle, #fff 0 7%, rgb(255 238 200 / .85) 13%, rgb(255 190 120 / .28) 34%, transparent 62%); filter: blur(calc(var(--s) * .004)); animation: awr-fl 3.2s ease-in-out infinite; }
+  .awr__fl::before, .awr__fl::after { content: ''; position: absolute; left: 50%; top: 50%; translate: -50% -50%; border-radius: 99px; filter: blur(calc(var(--s) * .004)); }
+  .awr__fl::before { width: calc(var(--s) * .78); height: calc(var(--s) * .014); background: linear-gradient(90deg, transparent, rgb(150 200 255 / .55) 22%, #fff 50%, rgb(255 165 120 / .55) 78%, transparent); }
+  .awr__fl::after { width: calc(var(--s) * .01); height: calc(var(--s) * .24); background: linear-gradient(transparent, rgb(255 255 255 / .55), transparent); }
+  @keyframes awr-fl { 0%, 100% { opacity: .8; scale: .92; } 50% { opacity: 1; scale: 1.08; } }
+  .awr__gh { position: absolute; left: 50%; translate: -50% -50%; border-radius: 50%; filter: blur(calc(var(--s) * .006)); }
+  .awr__gh--1 { top: 22%; width: calc(var(--s) * .07); aspect-ratio: 1; background: radial-gradient(circle, rgb(120 255 220 / .55), transparent 70%); }
+  .awr__gh--2 { top: 38%; width: calc(var(--s) * .11); aspect-ratio: 1; background: radial-gradient(circle, rgb(255 110 190 / .38), transparent 70%); }
+  .awr__gh--3 { top: 63%; width: calc(var(--s) * .05); aspect-ratio: 1; border: 1px solid rgb(255 220 120 / .5); background: radial-gradient(circle, rgb(255 220 120 / .16), transparent 70%); filter: blur(calc(var(--s) * .003)); }
+  /* Bokeh: orbes desenfocados que flotan alrededor */
+  .awr__bk { position: absolute; border-radius: 50%; mix-blend-mode: screen; pointer-events: none; filter: blur(calc(var(--s) * .018)); opacity: .55; }
+  .awr__bk--1 { left: -4%; top: 16%; width: calc(var(--s) * .16); aspect-ratio: 1; background: radial-gradient(circle, rgb(255 200 80 / .75), transparent 70%); animation: awr-bk1 9s ease-in-out infinite; }
+  .awr__bk--2 { right: -6%; top: 52%; width: calc(var(--s) * .22); aspect-ratio: 1; background: radial-gradient(circle, rgb(80 150 255 / .7), transparent 70%); animation: awr-bk2 12s ease-in-out infinite; }
+  .awr__bk--3 { left: 30%; bottom: -8%; width: calc(var(--s) * .13); aspect-ratio: 1; background: radial-gradient(circle, rgb(255 90 170 / .7), transparent 70%); animation: awr-bk1 10s ease-in-out infinite reverse; }
+  @keyframes awr-bk1 { 0%, 100% { translate: 0 0; opacity: .35; } 50% { translate: 8% -10%; opacity: .7; } }
+  @keyframes awr-bk2 { 0%, 100% { translate: 0 0; opacity: .7; } 50% { translate: -10% 8%; opacity: .35; } }
+  @keyframes awr-glow { 0% { filter: drop-shadow(0 0 0 rgb(255 215 120 / 0)); } 40% { filter: drop-shadow(0 0 calc(var(--s) * .07) rgb(255 215 120 / .95)) drop-shadow(0 0 calc(var(--s) * .16) rgb(255 120 160 / .55)); } 100% { filter: drop-shadow(0 0 calc(var(--s) * .02) rgb(255 255 255 / .28)); } }
+  .awr__r { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from var(--awh-a), #16a977 0deg, #1b9c9a 30deg, #1668d4 80deg, #4b2f9c 125deg, #b02466 165deg, #d12a52 185deg, #e0672a 238deg, #f2a31b 270deg, #ffe600 305deg, #b9e43a 338deg, #16a977 360deg); animation: awr-spin 22s linear infinite; --ring: radial-gradient(farthest-side, transparent calc(100% - var(--t)), #000 calc(100% - var(--t) + 1px)); --fade: linear-gradient(to bottom, #000 0, #000 62%, transparent 100%); -webkit-mask-composite: source-in; mask-composite: intersect; }
+  .awr__r--full { -webkit-mask-image: var(--ring), var(--fade); mask-image: var(--ring), var(--fade); }
+  .awr__r--sharp { -webkit-mask-image: var(--ring), var(--fade), conic-gradient(from var(--awh-b), #000 0 8deg, transparent 28deg 62deg, #000 85deg 192deg, transparent 212deg 228deg, #000 250deg 360deg); mask-image: var(--ring), var(--fade), conic-gradient(from var(--awh-b), #000 0 8deg, transparent 28deg 62deg, #000 85deg 192deg, transparent 212deg 228deg, #000 250deg 360deg); animation: awr-spin 22s linear infinite, awr-turn 30s linear infinite reverse; }
+  .awr__r--b1 { -webkit-mask-image: var(--ring), var(--fade), conic-gradient(from var(--awh-b), transparent 0 8deg, #000 28deg 62deg, transparent 85deg 360deg); mask-image: var(--ring), var(--fade), conic-gradient(from var(--awh-b), transparent 0 8deg, #000 28deg 62deg, transparent 85deg 360deg); animation: awr-spin 22s linear infinite, awr-turn 30s linear infinite reverse; }
+  .awr__r--b2 { -webkit-mask-image: var(--ring), var(--fade), conic-gradient(from var(--awh-b), transparent 0 192deg, #000 212deg 228deg, transparent 250deg 360deg); mask-image: var(--ring), var(--fade), conic-gradient(from var(--awh-b), transparent 0 192deg, #000 212deg 228deg, transparent 250deg 360deg); animation: awr-spin 22s linear infinite, awr-turn 30s linear infinite reverse; }
+  .awr__bl { position: absolute; inset: 0; }
+  .awr__bl--1 { filter: blur(calc(var(--s) * .0065)); animation: awr-f1 6s ease-in-out infinite; } .awr__bl--2 { filter: blur(calc(var(--s) * .016)); opacity: .9; animation: awr-f2 8s ease-in-out infinite; }
+  @keyframes awr-f1 { 0%, 100% { filter: blur(calc(var(--s) * .004)); } 50% { filter: blur(calc(var(--s) * .014)); } }
+  @keyframes awr-f2 { 0%, 100% { filter: blur(calc(var(--s) * .022)); } 50% { filter: blur(calc(var(--s) * .008)); } }
+  .awr__bl--g { filter: blur(calc(var(--s) * .03)) saturate(1.5); opacity: .5; }
+  .awr__bl--g1 { filter: blur(calc(var(--s) * .028)) saturate(1.8) brightness(1.2); opacity: .95; }
+  .awr__bl--g2 { filter: blur(calc(var(--s) * .05)) saturate(1.8) brightness(1.2); opacity: .95; }
+  @keyframes awr-spin { to { --awh-a: 360deg; } }
+  @keyframes awr-turn { to { --awh-b: 360deg; } }
+  @media (prefers-reduced-motion: reduce) { .awr__r, .awr__orb, .awr__fl, .awr__bk, .awr__bl, .awr__lg path { animation: none !important; } .awr__orb { opacity: 1; } .awr.is-armed .awr__st, .awr.is-armed .awr__lg { opacity: 1; --p: 1; } .awr.is-in .awr__st, .awr.is-in .awr__lg, .awr.is-in .awr__lw { animation: none; } }
+</style>
+
+<script>
+  const init = () => document.querySelectorAll<HTMLElement>('[data-awr]:not([data-bound])').forEach((el) => {
+    el.dataset.bound = '1';
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    el.classList.add('is-armed');
+    new IntersectionObserver((es, io) => es.forEach((e) => { if (e.isIntersecting) { requestAnimationFrame(() => el.classList.add('is-in')); io.disconnect(); } }), { threshold: 0.5 }).observe(el);
+  });
+  document.addEventListener('astro:page-load', init);
+</script>

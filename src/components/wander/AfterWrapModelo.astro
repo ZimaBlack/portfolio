@@ -1,0 +1,548 @@
+---
+// afterWRAP · el modelo de marca (basado en los PDF), armado como página fluida: conceptos, recursos gráficos en tarjetas,
+// paleta de brillo, tipografía Onest, flyer con selector de color, pieza «Cut · Color · Adaptation» con degradado giratorio,
+// aplicaciones con cintas, inspiraciones, carrusel del sitio web y videos. Los logos son el SVG oficial (src/data/afterwrap-logo.ts).
+import '@fontsource-variable/onest';
+import { awLogo } from '../../data/afterwrap-logo';
+import { withBase, type Lang } from '../../lib/i18n';
+import AwRing from './AwRing.astro';
+
+const { lang } = Astro.props as { lang: Lang };
+const A = '/works/after-wrap';
+const img = (n: string) => withBase(`${A}/modelo/${n}`);
+const vid = (n: string) => withBase(`${A}/video/${n}`);
+const shot = (id: string, d: string) => withBase(`${A}/sitio/${id}-${d}.webp`);
+const t = (es: string, en: string) => (lang === 'es' ? es : en);
+const SITE = 'https://www.afterwrapstudio.com/';
+
+// Conceptos del manual, en cada idioma: [palabras, índice de la resaltada]
+const concepts: [string[], number][] = lang === 'es'
+  ? [[['Brutalismo', 'aplicado'], 0], [['Líneas', 'dinámicas'], 1], [['Plano', 'perceptivo'], 0], [['Cualquier', 'color', 'espectro'], 1], [['Todo', 'sobre', 'movimiento'], 2], [['Una', 'tipografía', 'muchos', 'mensajes'], 1]]
+  : [[['Applied', 'brutalism'], 1], [['Dynamic', 'lines'], 0], [['Perceptive', 'flat'], 1], [['Any', 'color', 'spectrum'], 1], [['All', 'about', 'motion'], 2], [['One', 'typo', 'many', 'messages'], 1]];
+const indent = [0, 0.7, 1.55, 2.4, 3.15, 4.2];
+const wmVb = awLogo.wmVb;
+
+// Recursos gráficos: una tarjeta cada uno
+const cards = [
+  { id: 'mo', a: t('Gráficos', 'Motion'), b: t('en movimiento', 'graphics') },
+  { id: 'an', a: t('Espectro', 'Color'), b: t('de color', 'spectrum') },
+  { id: 'fl', a: t('Plano', 'Enhanced'), b: t('mejorado', 'flat') },
+];
+
+// Flyer: pares de colores del degradado de «WRAP»
+const flyer = [
+  { k: t('Naranja', 'Orange'), a: '#ffd21f', b: '#ff6a00' }, { k: t('Rojo', 'Red'), a: '#ff8a5c', b: '#d81b1b' }, { k: t('Magenta', 'Magenta'), a: '#ff6aa8', b: '#9b1fb0' },
+  { k: t('Violeta', 'Violet'), a: '#c9a2ff', b: '#4a24a8' }, { k: t('Azul', 'Blue'), a: '#5fd0ff', b: '#1239cc' }, { k: t('Verde', 'Green'), a: '#b6f070', b: '#0e9a58' }, { k: t('Amarillo', 'Yellow'), a: '#fffb7a', b: '#f0a800' },
+];
+const first = { a: '#e0206f', b: '#562c8a' };
+
+// Pieza «Cut · Color · Adaptation» (px de diseño): el corte en diagonal pasa justo por el final de la «r» de «after»
+const S = 1082, H = 601, wmW = 600, k = wmW / awLogo.wmW, wmL = 300, wmT = 252, lh = awLogo.wmH * k;
+const slope = 142 / 601;
+const cutX = wmL + (awLogo.cutX - awLogo.wmX0) * k, yMid = wmT + (awLogo.midY - awLogo.wmY0) * k;
+const cutAt = (y: number) => cutX + slope * (y - yMid);
+const pct = (n: number, d: number) => `${((n / d) * 100).toFixed(2)}%`;
+const poly = `polygon(0 0, ${pct(cutAt(0), S)} 0, ${pct(cutAt(H), S)} 100%, 0 100%)`;
+const lb = { l: pct(wmL, S), t: pct(wmT, H), w: pct(wmW, S), ct: pct(cutAt(wmT) - wmL, wmW), cb: pct(cutAt(wmT + lh) - wmL, wmW), sl: pct(cutX + 46, S), st: pct(wmT + lh + 30, H) };
+
+// Cintas (texto de la versión anterior)
+const info = [
+  { a: 'afterWRAP', b: 'POST・PRODUCTION・STUDIO' }, { a: 'SOCIAL MEDIA', b: 'YOUTUBE・PROMOTIONAL' }, { a: '+10 YEARS', b: '+1000 PROJECTS' },
+  { a: '+100 PRO EDITORS', b: 'IT’S A WRAP' }, { a: 'afterwrapstudio.com', b: 'GET A QUOTE' },
+];
+const pages = [
+  { id: 'home', k: 'Home' }, { id: 'services', k: t('Servicios', 'Services') }, { id: 'promotional-videos', k: t('Promocionales', 'Promotional') },
+  { id: 'social-media-videos', k: t('Redes sociales', 'Social media') }, { id: 'youtube-videos', k: 'YouTube' }, { id: 'faqs', k: 'FAQs' }, { id: 'contact-us', k: t('Contacto', 'Contact') },
+];
+const clips = [
+  { f: 'anim-corta', k: t('El aro: entrada del logo', 'The ring: logo entrance'), d: '2 s' },
+  { f: 'avances-animacion', k: t('Avance de la animación', 'Animation progress'), d: '5 s' },
+  { f: 'avances', k: t('Avance: del aro a la espiral', 'Progress: from ring to spiral'), d: '4 s' },
+];
+const faces = [t('Geométrica', 'Geometric'), t('Humanista', 'Humanistic'), t('Grotesca', 'Grotesque')];
+---
+<div class="aw" data-aw data-nozoom>
+<h2 class="aw-sr">{t('afterWRAP: conceptos, recursos gráficos, tipografía, piezas, sitio web y videos', 'afterWRAP: concepts, graphic resources, typography, pieces, website and videos')}</h2>
+<!-- Trazos del logo: se definen una vez y cada pieza los reutiliza con <use> -->
+<svg class="aw-sr" aria-hidden="true"><defs><path id="aw-after" d={awLogo.after} /><path id="aw-wrap" d={awLogo.wrap} /></defs></svg>
+
+<!-- 01 · Conceptos -->
+<section class="aw-s aw-con">
+  <div class="aw-film" aria-hidden="true"><i></i></div>
+  <div class="aw-in">
+    <p class="aw-lb aw-c"><span class="aw-g">{t('Los', 'The')}</span><i class="aw-d"></i><span class="aw-w">{t('conceptos', 'concepts')}</span><i class="aw-d"></i><span class="aw-g">{t('de', 'for')}</span></p>
+    <svg class="aw-wmk" viewBox={wmVb} role="img" aria-label="afterWRAP"><use href="#aw-after" /><use href="#aw-wrap" /></svg>
+    <ul class="aw-cl">
+      {concepts.map(([w, hi], i) => (
+        <li style={`--i:${indent[i]}`}>
+          {w.map((x, j) => <><span class={j === hi ? 'aw-w' : 'aw-g'}>{x}</span>{j < w.length - 1 && <i class="aw-d"></i>}</>)}
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<!-- 02 · Recursos gráficos principales: una tarjeta por recurso, con su animación al pasar el cursor -->
+<section class="aw-s aw-res">
+  <div class="aw-in">
+    <p class="aw-lb aw-c"><span class="aw-g">{t('Recursos', 'Main')}</span><i class="aw-d"></i><span class="aw-w">{t('gráficos', 'graphic')}</span><i class="aw-d"></i><span class="aw-g">{t('principales', 'resources')}</span></p>
+    <ul class="aw-ri">
+      {cards.map((c) => (
+        <li class="aw-rc" tabindex="0">
+          <div class="aw-rc__i" aria-hidden="true">
+            {c.id === 'mo' && <span class="aw-mo"><i></i><i></i><i></i></span>}
+            {c.id === 'an' && <i class="aw-an"></i>}
+            {c.id === 'fl' && <span class="aw-fl"><i></i><i></i><i></i></span>}
+          </div>
+          <p class="aw-lb aw-lb--c aw-c"><span class="aw-g">{c.a}</span><i class="aw-d"></i><span class="aw-w">{c.b}</span></p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<!-- 03 · Paleta de brillo -->
+<section class="aw-s aw-br" data-aw-br>
+  <div class="aw-in">
+    <p class="aw-lb aw-r"><span class="aw-g">{t('Paleta', 'Palette')}</span><i class="aw-d"></i><span class="aw-g">{t('de', 'of')}</span><i class="aw-d"></i><span class="aw-w">{t('brillo', 'brightness')}</span></p>
+    <div class="aw-bs" aria-hidden="true">
+      <i class="aw-bs__r"></i><i class="aw-bs__t aw-bs__t--a"></i><i class="aw-bs__t aw-bs__t--b"></i>
+      <i class="aw-bs__s" style="left:3%;background:transparent;border:1px solid #3a3a3a"></i><i class="aw-bs__s" style="left:50.1%;background:#1b1b1b"></i><i class="aw-bs__s" style="left:76.2%;background:#777"></i><i class="aw-bs__s" style="left:95.8%;background:#fdfff6"></i>
+      <i class="aw-bs__b"></i>
+    </div>
+    <div class="aw-bl">
+      <svg class="aw-bl__lg" viewBox={wmVb} role="img" aria-label="afterWRAP">
+        <defs><linearGradient id="aw-bg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5c5c5c" /><stop offset=".55" stop-color="#b9b9b4" /><stop offset="1" stop-color="#fdfff6" /></linearGradient></defs>
+        <use href="#aw-after" /><use href="#aw-wrap" />
+      </svg>
+      <p class="aw-bl__t">{t('Funciona con sombras', 'Work’s with shadows')}</p>
+    </div>
+  </div>
+</section>
+
+<!-- 04 · Tipografía Onest -->
+<section class="aw-s aw-ty">
+  <div class="aw-in aw-ty__g">
+    <div class="aw-ty__l">
+      <svg class="aw-ty__lg" viewBox={wmVb} role="img" aria-label="afterWRAP"><use href="#aw-after" /><use href="#aw-wrap" /></svg>
+      <p class="aw-lb aw-ty__k">{lang === 'es' ? <><span class="aw-g">Una</span><i class="aw-d"></i><span class="aw-g">tipografía</span><i class="aw-d"></i><b class="aw-w">Onest</b></> : <><span class="aw-g">An</span><i class="aw-d"></i><b class="aw-w">Onest</b><i class="aw-d"></i><span class="aw-g">typography</span></>}</p>
+      <ul class="aw-ty__f">
+        {faces.map((f) => <li><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.2v9.6L10.6 6z" /></svg><span>{f}</span></li>)}
+      </ul>
+    </div>
+    <div class="aw-ty__r">
+      <i class="aw-an aw-an--s" aria-hidden="true"></i>
+      <h3>{t('Tipografía Onest', 'Onest typography')}</h3>
+      <p>{t('Creada por Dmitri Voloshin y su equipo, es una tipografía libre y de código abierto, optimizada tanto para usos formales como creativos. Onest destaca por su claridad y su versatilidad, con siete estilos distintos y una atención meticulosa al detalle.', 'Created by Dmitri Voloshin and his team, it’s a free, open-source typeface optimized for both formal and creative uses. Onest emphasizes clarity and versatility, featuring seven different styles and meticulous attention to detail.')}</p>
+      <p>{t('También es adaptable: se hicieron pequeños ajustes cuando ciertas letras quedan una junto a otra. Onest se distingue por su calidad profesional y sus caracteres distintivos.', 'It’s also adaptable, with slight adjustments made when certain letters are placed next to each other. Onest stands out for its professional quality and distinctive characters.')}</p>
+      <p class="aw-ty__m"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 14.6A8.6 8.6 0 0 1 9.4 3.8a8.6 8.6 0 1 0 10.8 10.8z" /></svg>{t('Modo oscuro', 'Dark mode')}</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 · Flyer con el logo y selector de color (solo «WRAP» cambia) -->
+<section class="aw-s aw-fly" data-aw-fly style={`--g1:${flyer[0].a};--g2:${flyer[0].b}`}>
+  <img class="aw-bg" src={img('editor.webp')} width="1500" height="844" alt="" loading="lazy" decoding="async" />
+  <div class="aw-in aw-fly__in">
+    <svg class="aw-lg" viewBox={awLogo.vb} role="img" aria-label="afterWRAP · Post Production Studio">
+      <defs><linearGradient id="aw-fg" gradientUnits="userSpaceOnUse" x1={awLogo.wrapX0} y1="0" x2={awLogo.wrapX1} y2="100"><stop offset="0" style="stop-color:var(--g1)" /><stop offset="1" style="stop-color:var(--g2)" /></linearGradient></defs>
+      <g class="aw-lg__a"><use href="#aw-after" /></g>
+      <g class="aw-lg__m"><use href="#aw-wrap" /></g>
+      <g class="aw-lg__a"><path d={awLogo.sub} /></g>
+    </svg>
+    <div class="aw-sel" role="group" aria-label={t('Color del degradado', 'Gradient color')}>
+      {flyer.map((c, i) => <button type="button" class="aw-sw" aria-pressed={i === 0 ? 'true' : 'false'} aria-label={c.k} title={c.k} data-a={c.a} data-b={c.b} style={`--a:${c.a};--b:${c.b}`}></button>)}
+    </div>
+  </div>
+</section>
+
+<!-- 06 · Pieza: Cut · Color · Adaptation -->
+<section class="aw-s aw-cut">
+  <div class="aw-in">
+    <p class="aw-lb aw-c"><span class="aw-g">{t('Cortar', 'Cut')}</span><i class="aw-d"></i><span class="aw-w">{t('color', 'color')}</span><i class="aw-d"></i><span class="aw-g">{t('adaptar', 'adaptation')}</span></p>
+    <div class="aw-cc" data-aw-cc style={`--a:${first.a};--b:${first.b};--ga:168deg`}>
+      <div class="aw-cc__p">
+        <i class="aw-cc__g" style={`clip-path:${poly}`}></i>
+        <div class="aw-cc__l" style={`left:${lb.l};top:${lb.t};width:${lb.w};--t:${lb.ct};--b:${lb.cb}`}>
+          <svg viewBox={wmVb} role="img" aria-label="afterWRAP"><use href="#aw-after" /><use href="#aw-wrap" /></svg>
+        </div>
+        <p class="aw-cc__s aw-lb" style={`left:${lb.sl};top:${lb.st}`}><span class="aw-w">Cut</span><i class="aw-d aw-d--w"></i><span class="aw-w">Color</span><i class="aw-d aw-d--w"></i><span class="aw-w">Adaptation</span></p>
+      </div>
+      <button type="button" class="aw-don" data-aw-don aria-label={t('Girar el aro para cambiar el degradado', 'Turn the ring to change the gradient')}><i></i></button>
+    </div>
+  </div>
+</section>
+
+<!-- 07 · Aplicaciones: tarjeta, teléfono y cintas que cruzan toda la página -->
+<section class="aw-s aw-mkw">
+  <div class="aw-film aw-film--r" aria-hidden="true"><i></i></div>
+  <div class="aw-in aw-in--w">
+    <div class="aw-mk">
+      <div class="aw-mk__c"><p class="aw-mk__h" aria-hidden="true">It’s a<br />WRAP!</p><p class="aw-mk__u">www.afterwrapstudio.com</p></div>
+      <div class="aw-mk__p"><img src={img('telefono.webp')} width="1393" height="617" alt={t('afterWRAP sobre un celular apoyado en concreto', 'afterWRAP on a phone resting on concrete')} loading="lazy" decoding="async" /></div>
+    </div>
+  </div>
+  <div class="aw-rbs" data-aw-tape role="img" aria-label={t('Cintas de afterWRAP', 'afterWRAP ribbons')}>
+    <div class="aw-rb aw-rb--k" aria-hidden="true"><div class="aw-rb__t">{[0, 1, 2].flatMap(() => info.map((x) => <><b>{x.a}</b><span>{x.b}</span><i>●</i></>))}</div></div>
+    <div class="aw-rb aw-rb--c" aria-hidden="true"><div class="aw-rb__t aw-rb__t--r">{[0, 1, 2].flatMap(() => [...info].reverse().map((x) => <><b>{x.b}</b><span>{x.a}</span><i>★</i></>))}</div></div>
+  </div>
+</section>
+
+<!-- 08 · Inspiraciones -->
+<section class="aw-s aw-ins">
+  <div class="aw-in aw-in--m"><img src={img('inspiraciones.webp')} width="1700" height="956" alt={t('Tablero de inspiraciones de afterWRAP: tipografía, movimiento, color y retículas', 'afterWRAP inspirations board: typography, motion, color and grids')} loading="lazy" decoding="async" /></div>
+</section>
+
+<!-- 09 · Sitio web: carrusel de landings (escritorio y celular) -->
+<section class="aw-s aw-web" data-aw-web>
+  <div class="aw-in">
+    <p class="aw-lb aw-c"><span class="aw-g">{t('El', 'The')}</span><i class="aw-d"></i><span class="aw-w">{t('sitio', 'website')}</span><i class="aw-d"></i><span class="aw-g">{t('web', 'pages')}</span></p>
+    <div class="aw-wc">
+      <div class="aw-tabs" role="group" aria-label={t('Páginas del sitio', 'Site pages')}>
+        {pages.map((p, i) => <button type="button" aria-pressed={i === 0 ? 'true' : 'false'} data-page={i}>{p.k}</button>)}
+      </div>
+      <div class="aw-dev" role="group" aria-label={t('Formato', 'Format')}>
+        <button type="button" aria-pressed="true" data-dev="escritorio">{t('Escritorio', 'Desktop')}</button>
+        <button type="button" aria-pressed="false" data-dev="celular">Mobile</button>
+      </div>
+    </div>
+    <div class="aw-stage" data-stage="escritorio">
+      <button type="button" class="aw-nav aw-nav--p" data-nav="-1" aria-label={t('Página anterior', 'Previous page')}>‹</button>
+      <div class="aw-fr">
+        <div class="aw-fr__bar"><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i><a href={SITE} target="_blank" rel="noopener noreferrer" data-url>afterwrapstudio.com</a></div>
+        {pages.flatMap((p, i) => ['escritorio', 'celular'].map((d) => (
+          <div class="aw-fr__v" data-slide={`${i}-${d}`} hidden={!(i === 0 && d === 'escritorio')} tabindex="0" role="img" aria-label={t(`Página ${p.k}, ${d === 'escritorio' ? 'escritorio' : 'celular'}. Se desplaza.`, `${p.k} page, ${d === 'escritorio' ? 'desktop' : 'mobile'}. Scrollable.`)}>
+            <img src={shot(p.id, d)} alt="" loading="lazy" decoding="async" />
+          </div>
+        )))}
+      </div>
+      <button type="button" class="aw-nav aw-nav--n" data-nav="1" aria-label={t('Página siguiente', 'Next page')}>›</button>
+    </div>
+    <p class="aw-cap"><span data-count>01 / 07</span> · <a href={SITE} target="_blank" rel="noopener noreferrer">afterwrapstudio.com ↗</a></p>
+  </div>
+</section>
+
+<!-- 10 · Videos + cierre con el isologo -->
+<section class="aw-s aw-vid">
+  <div class="aw-film" aria-hidden="true"><i></i></div>
+  <div class="aw-in">
+    <p class="aw-lb aw-c"><span class="aw-g">{t('Todo', 'All')}</span><i class="aw-d"></i><span class="aw-g">{t('sobre', 'about')}</span><i class="aw-d"></i><span class="aw-w">{t('movimiento', 'motion')}</span></p>
+    <figure class="aw-vf">
+      <video autoplay muted loop playsinline preload="metadata" poster={vid('muestra-web-poster.webp')} aria-label={t('Muestra del sitio de afterWRAP, en bucle', 'afterWRAP site preview, looped')}><source src={vid('muestra-web.mp4')} type="video/mp4" /></video>
+      <figcaption>{t('Muestra del sitio', 'Site preview')} <span>· loop</span></figcaption>
+    </figure>
+    <div class="aw-vc">
+      {clips.map((c) => (
+        <figure>
+          <video controls muted loop playsinline preload="none" poster={vid(`${c.f}-poster.webp`)} aria-label={c.k}><source src={vid(`${c.f}.mp4`)} type="video/mp4" /></video>
+          <figcaption>{c.k} <span>· {c.d}</span></figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 11 · Cierre: el anillo cromático -->
+<section class="aw-s aw-end"><AwRing /></section>
+
+</div>
+
+<style>
+  /* Página fluida a todo el ancho; los tamaños de rótulos y textos siguen la escala de la tipografía del proyecto (rem/vw acotados) */
+  .aw { --bg: #161515; --ink: #fdfff6; --gray: #5a5a5a; --cap: #8a8a8a; --r: 14px; --gut: clamp(1.25rem, 5vw, 3rem); --lb: clamp(.72rem, 1.2vw, 1.3rem); --pad: clamp(4.5rem, 9vw, 8rem); position: relative; left: 50%; width: 100vw; transform: translateX(-50%); margin-top: clamp(2rem, 5vw, 4rem); color: var(--ink); background: var(--bg); font-family: 'Onest Variable', 'Onest', system-ui, sans-serif; overflow-x: clip; }
+  .aw-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .aw-s { position: relative; padding-block: var(--pad); overflow: hidden; }
+  .aw-in { width: min(100% - 2 * var(--gut), 72rem); margin-inline: auto; position: relative; }
+  .aw-in--w { width: min(100% - 2 * var(--gut), 88rem); }
+
+  /* Fondos: cada franja tiene su tono, sin destellos */
+  .aw-con { background: #161515; } .aw-res { background: #1b1a1a; } .aw-br { background: #151414; } .aw-ty { background: #1a1919; }
+  .aw-cut { background: #121111; } .aw-mkw { background: #1b1a1a; padding-block: calc(var(--pad) * 1.1); } .aw-ins { background: #161515; }
+  .aw-web { background: #121111; } .aw-vid { background: #161515; } .aw-end { background: #121111; padding-block: clamp(3.5rem, 8vw, 7rem); display: grid; place-items: center; }
+
+  /* Rótulos en versalitas con aire: gris y blanco alternados, puntos como separador */
+  .aw-lb { margin: 0 0 clamp(1.8rem, 4vw, 3.6rem); font-size: var(--lb); line-height: 1.2; letter-spacing: .5em; text-transform: uppercase; font-weight: 400; color: var(--gray); }
+  .aw-c { text-align: center; padding-left: .5em; } .aw-r { text-align: right; }
+  .aw-lb .aw-w, .aw-w { color: var(--ink); } .aw-lb .aw-g, .aw-g { color: var(--gray); }
+  .aw-lb--c { margin: 0; font-size: clamp(.62rem, .95vw, 1rem); letter-spacing: .26em; padding-left: .26em; }
+  .aw-d { display: inline-block; width: .17em; height: .17em; margin: 0 .55em 0 .1em; border-radius: 50%; background: var(--gray); vertical-align: .22em; }
+  .aw-d--w { background: var(--ink); }
+
+  /* Tira de película (igual que la del hero): banda del color de fondo, sombra gris solo hacia abajo y perforaciones corriendo, al 55 % */
+  .aw-film { --p: 4.05rem; position: absolute; left: 0; right: 0; top: 0; height: 4.4rem; overflow: hidden; background: var(--bg); opacity: .55; box-shadow: 0 1.3rem 2.2rem -.9rem rgb(160 160 160 / .3); z-index: 3; }
+  .aw-film i { position: absolute; inset: 0 0 0 calc(var(--p) * -1); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 40' preserveAspectRatio='none'%3E%3Crect x='23' y='0' width='66' height='40' rx='21' fill='%23ffffff' fill-opacity='.06'/%3E%3C/svg%3E") 0 50% / var(--p) 1.45rem repeat-x; animation: aw-film 3.6s linear infinite; }
+  .aw-film--r i { animation-direction: reverse; }
+  @keyframes aw-film { to { translate: var(--p) 0; } }
+  .aw-con, .aw-vid { padding-top: calc(var(--pad) + 3rem); } .aw-mkw { padding-top: calc(var(--pad) * 1.1 + 3rem); }
+
+  /* 01 Conceptos */
+  .aw-wmk { display: block; width: clamp(12rem, 26vw, 24rem); height: auto; margin: 0 auto clamp(2rem, 4vw, 3.6rem); fill: var(--ink); }
+  .aw-cl { list-style: none; margin: 0 auto; padding: 0; width: max-content; max-width: 100%; display: grid; gap: clamp(.9rem, 1.9vw, 1.9rem); }
+  .aw-cl li { padding-left: calc(var(--i) * 1em); font-size: var(--lb); line-height: 1.2; letter-spacing: .5em; text-transform: uppercase; color: var(--gray); }
+  .aw-cl li .aw-w { color: var(--ink); }
+
+  /* 02 Recursos: tarjetas centradas; cada una anima al pasar el cursor (o al enfocarla) */
+  .aw-ri { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2.4vw, 2rem); }
+  .aw-rc { display: grid; justify-items: center; align-content: center; gap: clamp(.9rem, 1.6vw, 1.4rem); padding: clamp(2rem, 4vw, 3.4rem) 1.2rem; text-align: center; border-radius: var(--r); background: #161515; border: 1px solid rgb(255 255 255 / .09); transition: border-color .35s, transform .35s, background .35s; outline: none; }
+  .aw-rc:hover, .aw-rc:focus-visible { border-color: rgb(255 255 255 / .3); background: #1d1c1c; transform: translateY(-4px); }
+  .aw-rc__i { height: clamp(3.6rem, 6vw, 5.4rem); display: grid; place-items: center; }
+  .aw-mo { position: relative; display: block; width: clamp(3rem, 5.4vw, 5.4rem); height: clamp(1.4rem, 2.5vw, 2.5rem); }
+  .aw-mo i { position: absolute; top: 0; height: 100%; background: #d8d8d8; transition: transform .9s cubic-bezier(.3, .7, .2, 1); }
+  .aw-mo i:nth-child(1) { left: 0; width: 14%; border-radius: 100% 0 0 100% / 50% 0 0 50%; }
+  .aw-mo i:nth-child(2) { left: 22.5%; width: 25%; border-radius: 100% 0 0 100% / 50% 0 0 50%; }
+  .aw-mo i:nth-child(3) { left: 55%; width: 45%; border-radius: 50%; }
+  .aw-rc:hover .aw-mo i:nth-child(1), .aw-rc:focus-visible .aw-mo i:nth-child(1) { transform: translateX(210%); }
+  .aw-rc:hover .aw-mo i:nth-child(2), .aw-rc:focus-visible .aw-mo i:nth-child(2) { transform: translateX(90%); }
+  .aw-rc:hover .aw-mo i:nth-child(3), .aw-rc:focus-visible .aw-mo i:nth-child(3) { transform: scale(1.1); }
+  .aw-an { display: block; width: clamp(2.6rem, 4.2vw, 4rem); aspect-ratio: 1; border-radius: 50%; background: conic-gradient(from 320deg, #d6e52b, #26b26e 55deg, #1aa6b8 95deg, #1a63e0 140deg, #5b2fb0 185deg, #e0245e 225deg, #ff3b1f 255deg, #ff9d1a 290deg, #d6e52b 360deg); -webkit-mask: radial-gradient(farthest-side, transparent 58%, #000 59%); mask: radial-gradient(farthest-side, transparent 58%, #000 59%); transition: filter .4s; }
+  .aw-rc:hover .aw-an, .aw-rc:focus-visible .aw-an { animation: aw-spin 1.8s cubic-bezier(.4, 0, .2, 1); filter: drop-shadow(0 0 .8rem rgb(255 200 80 / .5)); }
+  @keyframes aw-spin { to { rotate: 360deg; } }
+  .aw-fl { position: relative; display: block; width: clamp(4rem, 6.6vw, 6.6rem); height: clamp(1.2rem, 1.9vw, 1.9rem); }
+  .aw-fl i { position: absolute; top: 0; width: 29%; height: 100%; border-radius: 24%; background: #2e2e2e; }
+  .aw-fl i:nth-child(1) { left: 0; } .aw-fl i:nth-child(2) { left: 35.5%; background: #ececec; box-shadow: 0 0 .9rem rgb(255 255 255 / .7); } .aw-fl i:nth-child(3) { left: 71%; }
+  .aw-rc:hover .aw-fl i, .aw-rc:focus-visible .aw-fl i { animation: aw-flat 1.8s ease-in-out; }
+  .aw-rc:hover .aw-fl i:nth-child(2), .aw-rc:focus-visible .aw-fl i:nth-child(2) { animation-delay: .3s; } .aw-rc:hover .aw-fl i:nth-child(3), .aw-rc:focus-visible .aw-fl i:nth-child(3) { animation-delay: .6s; }
+  @keyframes aw-flat { 0%, 100% { background: #2e2e2e; box-shadow: none; } 30%, 55% { background: #ececec; box-shadow: 0 0 .9rem rgb(255 255 255 / .7); } }
+
+  /* 03 Paleta de brillo */
+  .aw-bs { position: relative; width: 100%; aspect-ratio: 1354 / 290; margin-bottom: clamp(2rem, 5vw, 4rem); container-type: inline-size; }
+  .aw-bs__r { position: absolute; left: 0; right: 0; top: 24%; height: 1px; background: #2a2a2a; }
+  .aw-bs__r::before, .aw-bs__r::after { content: ''; position: absolute; top: -4px; width: 1px; height: 9px; background: #2a2a2a; } .aw-bs__r::before { left: 0; } .aw-bs__r::after { right: 0; }
+  .aw-bs__t { position: absolute; top: 0; width: 0; height: 0; border-left: .45rem solid transparent; border-right: .45rem solid transparent; border-top: .6rem solid #fdfff6; translate: -50% 0; }
+  .aw-bs__t--a { left: 64.4%; border-top-color: #5a5a5a; } .aw-bs__t--b { left: 95.8%; }
+  .aw-bs__s { position: absolute; top: 42%; width: 2.2cqw; aspect-ratio: 1; min-width: 1.3rem; border-radius: 22%; translate: -50% 0; }
+  .aw-bs__b { position: absolute; left: 0; right: 0; bottom: 0; height: 8.6%; min-height: 1rem; border-radius: 99px; border: 1px solid #262525; background: linear-gradient(90deg, #171616 0, #1c1b1b 48%, rgb(255 255 255 / .22) 66%, #b9bab5 88%, #f3f4ee 100%); box-shadow: 1.2rem 0 2.6rem -.8rem rgb(255 255 255 / .3); }
+  .aw-bs::before { content: ''; position: absolute; left: 64.4%; width: 31.4%; top: 24%; height: 1px; background: #fdfff6; }
+  /* Revelado al entrar: la regla se dibuja, aparecen los marcadores y las muestras, y la barra se enciende de izquierda a derecha */
+  .aw-br.is-armed .aw-bs__r { clip-path: inset(-6px 100% -6px 0); } .aw-br.is-armed .aw-bs::before { transform: scaleX(0); transform-origin: left; }
+  .aw-br.is-armed .aw-bs__t, .aw-br.is-armed .aw-bs__s { opacity: 0; } .aw-br.is-armed .aw-bs__s { scale: .5; } .aw-br.is-armed .aw-bs__t { margin-top: -.8rem; }
+  .aw-br.is-armed .aw-bs__b { clip-path: inset(-2rem 100% -2rem 0); } .aw-br.is-armed .aw-bl__lg, .aw-br.is-armed .aw-bl__t { opacity: 0; translate: 0 1rem; }
+  .aw-br.is-in .aw-bs__r { clip-path: inset(-6px 0 -6px 0); transition: clip-path 1.4s cubic-bezier(.3, .6, .2, 1); }
+  .aw-br.is-in .aw-bs::before { transform: none; transition: transform 1.2s cubic-bezier(.3, .6, .2, 1) .9s; }
+  .aw-br.is-in .aw-bs__t { opacity: 1; margin-top: 0; transition: opacity .6s ease 1.1s, margin-top .6s ease 1.1s; }
+  .aw-br.is-in .aw-bs__s { opacity: 1; scale: 1; transition: opacity .6s ease, scale .6s cubic-bezier(.3, 1.4, .5, 1); }
+  .aw-br.is-in .aw-bs__s:nth-of-type(4) { transition-delay: .5s; } .aw-br.is-in .aw-bs__s:nth-of-type(5) { transition-delay: .75s; } .aw-br.is-in .aw-bs__s:nth-of-type(6) { transition-delay: 1s; } .aw-br.is-in .aw-bs__s:nth-of-type(7) { transition-delay: 1.25s; }
+  .aw-br.is-in .aw-bs__b { clip-path: inset(-2rem -3rem -2rem 0); transition: clip-path 2.2s cubic-bezier(.4, .1, .2, 1) .6s; }
+  .aw-br.is-in .aw-bl__lg, .aw-br.is-in .aw-bl__t { opacity: 1; translate: 0; transition: opacity 1s ease 1.8s, translate 1s ease 1.8s; }
+  .aw-bl { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.4rem clamp(2rem, 6vw, 5.5rem); }
+  .aw-bl__lg { width: clamp(11rem, 17vw, 18rem); height: auto; fill: url(#aw-bg); }
+  .aw-bl__t { margin: 0; font-size: var(--lb); letter-spacing: .5em; text-transform: uppercase; color: var(--ink); }
+
+  /* 04 Tipografía Onest */
+  .aw-ty__g { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2.4rem, 7vw, 7rem); align-items: center; }
+  .aw-ty__lg { display: block; width: min(100%, 34rem); height: auto; fill: var(--ink); }
+  .aw-ty__k { margin: clamp(.8rem, 2vw, 1.6rem) 0 clamp(2rem, 5vw, 4.4rem); padding-left: clamp(1rem, 4vw, 4rem); letter-spacing: .5em; }
+  .aw-ty__k b { font-weight: 800; }
+  .aw-ty__f { list-style: none; margin: 0; padding: 0 0 0 clamp(1.4rem, 5vw, 5rem); display: grid; gap: clamp(.8rem, 1.7vw, 1.6rem); }
+  .aw-ty__f li { display: flex; align-items: center; gap: clamp(1rem, 3vw, 3rem); font-size: var(--lb); font-weight: 800; letter-spacing: .5em; text-transform: uppercase; color: #5f5f5f; transition: color .3s, translate .3s; }
+  .aw-ty__f li:hover { color: var(--ink); translate: .4rem 0; }
+  .aw-ty__f svg { width: .8em; fill: currentColor; flex: none; }
+  .aw-ty__r h3 { margin: .9rem 0 clamp(1.4rem, 3vw, 2.4rem); font-size: clamp(1.4rem, 2.2vw, 2.2rem); font-weight: 800; letter-spacing: -.01em; }
+  .aw-ty__r p { margin: 0 0 clamp(1rem, 2vw, 1.6rem); font-size: clamp(.9rem, 1.15vw, 1.15rem); line-height: 2.1; font-weight: 400; }
+  .aw-an--s { width: clamp(2.4rem, 3.2vw, 3.2rem); }
+  .aw-ty__m { display: flex; align-items: center; gap: .9rem; margin-top: clamp(1.8rem, 4vw, 3.4rem) !important; font-size: var(--lb) !important; letter-spacing: .4em; text-transform: uppercase; color: #2b2a2a; line-height: 1 !important; }
+  .aw-ty__m svg { width: 1.5em; fill: currentColor; }
+
+  /* 05 Flyer: logo SVG; el selector cambia el degradado completo de «WRAP» */
+  .aw-fly { min-height: clamp(24rem, 52vw, 44rem); display: grid; place-items: center; padding-block: var(--pad); }
+  .aw-fly .aw-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .aw-fly__in { display: grid; justify-items: center; gap: clamp(1.4rem, 3vw, 2.6rem); z-index: 1; }
+  .aw-lg { width: min(100%, 52rem); height: auto; overflow: visible; }
+  .aw-lg__m { fill: url(#aw-fg); } .aw-lg__a { fill: var(--ink); }
+  .aw-sel { display: flex; gap: .7rem; padding: .55rem .8rem; border-radius: 99px; background: rgb(22 21 21 / .55); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgb(255 255 255 / .08); }
+  .aw-sw { width: clamp(1.4rem, 2.2vw, 1.9rem); aspect-ratio: 1; border-radius: 50%; border: 2px solid transparent; background: linear-gradient(135deg, var(--a), var(--b)); cursor: pointer; padding: 0; transition: transform .25s, border-color .25s; }
+  .aw-sw:hover { transform: scale(1.12); } .aw-sw[aria-pressed='true'] { border-color: #fff; transform: scale(1.12); } .aw-sw:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+  /* 06 Pieza: bloque de degradado, logo que sale del corte y aro giratorio */
+  @property --aw-bd { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+  @keyframes aw-bd { to { --aw-bd: 360deg; } }
+  @property --aw-p { syntax: '<number>'; inherits: false; initial-value: 1; }
+  @property --aw-a { syntax: '<color>'; inherits: true; initial-value: #e0206f; }
+  @property --aw-b { syntax: '<color>'; inherits: true; initial-value: #562c8a; }
+  @property --aw-ga { syntax: '<angle>'; inherits: true; initial-value: 168deg; }
+  .aw-cc { --aw-a: #e0206f; --aw-b: #562c8a; --aw-ga: 168deg; container-type: inline-size; position: relative; width: min(100%, 67.6rem); margin-inline: auto; aspect-ratio: 1082 / 601; transition: --aw-a 1.6s ease, --aw-b 1.6s ease, --aw-ga 1.6s ease; }
+  .aw-cc__p { position: absolute; inset: 0; background: #1b1b1b; border-radius: 4px; overflow: hidden; }
+  .aw-cc__g { position: absolute; inset: 0; background: linear-gradient(var(--aw-ga), var(--aw-a), var(--aw-b)); }
+  .aw-cc__l { position: absolute; --aw-p: 1; clip-path: polygon(calc(var(--t) * (1 - var(--aw-p))) 0, calc(var(--t) + (100% - var(--t)) * var(--aw-p)) 0, calc(var(--b) + (100% - var(--b)) * var(--aw-p)) 100%, calc(var(--b) * (1 - var(--aw-p))) 100%); }
+  .aw-cc__l svg { display: block; width: 100%; height: auto; fill: var(--ink); }
+  .aw-cc__s { position: absolute; margin: 0; font-size: 1.27cqw; letter-spacing: .4em; font-weight: 700; color: var(--ink); white-space: nowrap; }
+  .aw-cc.is-armed .aw-cc__g { transform: translateX(-105%); }
+  .aw-cc.is-armed .aw-cc__l { --aw-p: 0; } .aw-cc.is-armed .aw-cc__s { opacity: 0; }
+  .aw-cc.is-in .aw-cc__g { transform: none; transition: transform 1.2s cubic-bezier(.2, .7, .2, 1); }
+  .aw-cc.is-in .aw-cc__l { --aw-p: 1; transition: --aw-p 1.2s cubic-bezier(.3, .6, .2, 1) 1.1s; }
+  .aw-cc.is-in .aw-cc__s { opacity: 1; transition: opacity .8s ease 2s; }
+  .aw-cc.is-reset .aw-cc__g, .aw-cc.is-reset .aw-cc__l, .aw-cc.is-reset .aw-cc__s { transition: none !important; }
+  .aw-don { position: absolute; left: -9.15%; top: 35.9%; width: 18.2%; aspect-ratio: 1; padding: 0; border: 0; border-radius: 50%; cursor: grab; touch-action: none; z-index: 2; background: radial-gradient(circle, #161515 0 59%, transparent 60%), conic-gradient(from 20deg, #2a2a2a, #1f1f1f 25%, #3d3d3d 55%, #5b5b5b 70%, #2d2d2d 85%, #2a2a2a); box-shadow: 0 .6rem 2rem rgb(0 0 0 / .45); transition: rotate .8s cubic-bezier(.3, .8, .3, 1); }
+  .aw-don.is-drag { cursor: grabbing; transition: none; }
+  .aw-don i { position: absolute; left: 50%; top: 4%; width: 6%; height: 12%; translate: -50% 0; border-radius: 99px; background: rgb(255 255 255 / .55); }
+  .aw-don:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+
+  /* 07 Aplicaciones: tarjeta y teléfono; las cintas cruzan toda la página, fuera de cualquier contenedor */
+  .aw-mk { position: relative; aspect-ratio: 1708 / 617; }
+  .aw-mk__c { position: absolute; left: 0; top: 7.6%; width: 42.4%; height: 85.7%; z-index: 2; border-radius: var(--r); overflow: hidden; border: 3px solid transparent; background: linear-gradient(#000, #000) padding-box, conic-gradient(from var(--aw-bd), #ffe600, #b9e43a, #16a977, #1668d4, #7a2fd0, #d12a52, #ff6a00, #ffe600) border-box; animation: aw-bd 14s linear infinite; box-shadow: 0 .6rem 2.4rem rgb(0 0 0 / .5); container-type: inline-size; }
+  .aw-mk__h { position: absolute; left: 4.2%; top: 4.4%; margin: 0; font-size: 21.5cqw; line-height: .93; letter-spacing: -.045em; font-weight: 800; color: var(--ink); }
+  .aw-mk__u { position: absolute; left: 4.4%; bottom: 6%; margin: 0; font-size: 3.7cqw; font-weight: 700; letter-spacing: -.01em; color: var(--ink); }
+  .aw-mk__p { position: absolute; right: 0; top: 0; width: 81.5%; height: 100%; overflow: hidden; border-radius: 4px; }
+  .aw-mk__p img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .aw-rbs { position: absolute; inset: 0; pointer-events: none; z-index: 4; --rc: #ac48ff; }
+  .aw-rb { position: absolute; left: -10vw; width: 120vw; height: clamp(2.4rem, 4.6vw, 4.8rem); display: flex; align-items: center; overflow: hidden; box-shadow: 0 .5rem 1.6rem rgb(0 0 0 / .4); }
+  .aw-rb::before, .aw-rb::after { content: ''; position: absolute; left: 0; right: 0; height: .22rem; background: repeating-linear-gradient(90deg, rgb(255 255 255 / .55) 0 .55rem, transparent .55rem 1rem); }
+  .aw-rb::before { top: .3rem; } .aw-rb::after { bottom: .3rem; }
+  .aw-rb--k { top: 79%; transform: rotate(-2.5deg); background: #161515; color: var(--ink); }
+  .aw-rb--c { top: 86%; transform: rotate(2deg); background: var(--rc); color: #161515; transition: background 1.1s ease; }
+  .aw-rb--c::before, .aw-rb--c::after { background: repeating-linear-gradient(90deg, rgb(22 21 21 / .55) 0 .55rem, transparent .55rem 1rem); }
+  .aw-rb__t { display: flex; align-items: center; gap: 1.6rem; white-space: nowrap; font-size: clamp(.62rem, .95vw, .9rem); letter-spacing: .14em; text-transform: uppercase; padding-left: 1.6rem; animation: aw-marq 38s linear infinite; }
+  .aw-rb__t--r { animation-direction: reverse; animation-duration: 44s; }
+  .aw-rb__t b { font-weight: 800; } .aw-rb__t span { font-weight: 500; } .aw-rb__t i { font-style: normal; font-size: .7em; opacity: .8; }
+  @keyframes aw-marq { to { transform: translateX(-33.333%); } }
+
+  /* 08 Inspiraciones */
+  .aw-in--m { width: min(100% - 2 * var(--gut), 62rem); }
+  .aw-ins img { display: block; width: 100%; height: auto; border-radius: 6px; }
+
+  /* 09 Sitio web: carrusel de landings, en negro con borde multicolor */
+  .aw-wc { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: center; justify-content: space-between; margin-bottom: clamp(1.2rem, 2.4vw, 2rem); }
+  .aw-tabs { display: flex; gap: .45rem; flex-wrap: wrap; }
+  .aw-tabs button, .aw-dev button { font: 500 clamp(.72rem, .95vw, .85rem)/1 'Onest Variable', 'Onest', system-ui, sans-serif; letter-spacing: .04em; color: var(--cap); background: transparent; border: 1px solid rgb(255 255 255 / .14); border-radius: 99px; padding: .6rem 1rem; cursor: pointer; transition: color .25s, border-color .25s, background .25s; }
+  .aw-tabs button:hover, .aw-dev button:hover { color: var(--ink); border-color: rgb(255 255 255 / .35); }
+  .aw-tabs button[aria-pressed='true'], .aw-dev button[aria-pressed='true'] { color: #161515; background: var(--ink); border-color: var(--ink); }
+  .aw-dev { display: flex; gap: .45rem; }
+  .aw-tabs button:focus-visible, .aw-dev button:focus-visible, .aw-nav:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .aw-stage { position: relative; display: grid; justify-items: center; }
+  .aw-fr { width: 100%; max-width: 68rem; border-radius: var(--r); border: 3px solid transparent; background: linear-gradient(#000, #000) padding-box, conic-gradient(from var(--aw-bd), #ffe600, #b9e43a, #16a977, #1668d4, #7a2fd0, #d12a52, #ff6a00, #ffe600) border-box; animation: aw-bd 14s linear infinite; overflow: hidden; box-shadow: 0 1.4rem 4rem rgb(0 0 0 / .55); }
+  .aw-fr__bar { display: flex; align-items: center; gap: .4rem; padding: .7rem .9rem; background: #000; border-bottom: 1px solid rgb(255 255 255 / .1); }
+  .aw-fr__bar i { width: .6rem; height: .6rem; border-radius: 50%; background: rgb(255 255 255 / .18); }
+  .aw-fr__bar a { margin-left: .7rem; font-size: .75rem; color: var(--cap); letter-spacing: .03em; text-decoration: none; transition: color .25s; } .aw-fr__bar a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: .2em; }
+  .aw-fr__v { height: clamp(22rem, 46vw, 36rem); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; background: #000; }
+  .aw-fr__v[hidden] { display: none; }
+  .aw-fr__v img { display: block; width: 100%; height: auto; }
+  .aw-stage[data-stage='celular'] .aw-fr { max-width: clamp(15rem, 24vw, 21rem); border-radius: 2.2rem; border-width: 4px; }
+  .aw-stage[data-stage='celular'] .aw-fr__bar { justify-content: center; padding: .5rem; }
+  .aw-stage[data-stage='celular'] .aw-fr__bar i, .aw-stage[data-stage='celular'] .aw-fr__bar a { display: none; }
+  .aw-stage[data-stage='celular'] .aw-fr__bar::after { content: ''; width: 28%; height: .35rem; border-radius: 99px; background: rgb(255 255 255 / .18); }
+  .aw-stage[data-stage='celular'] .aw-fr__v { height: clamp(26rem, 46vw, 36rem); }
+  .aw-nav { position: absolute; top: 50%; translate: 0 -50%; z-index: 2; width: clamp(2.4rem, 3.4vw, 3.2rem); aspect-ratio: 1; border-radius: 50%; border: 1px solid rgb(255 255 255 / .18); background: rgb(22 21 21 / .7); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); color: var(--ink); font: 400 1.6rem/1 'Onest Variable', system-ui, sans-serif; cursor: pointer; transition: background .25s; }
+  .aw-nav:hover { background: rgb(255 255 255 / .16); } .aw-nav--p { left: 0; } .aw-nav--n { right: 0; }
+  .aw-cap { margin: 1.2rem 0 0; text-align: center; font-size: .8rem; color: var(--cap); letter-spacing: .04em; }
+  .aw-cap a { color: var(--ink); text-decoration: underline; text-underline-offset: .2em; }
+
+  /* 10 Videos y cierre: un aro chico en la esquina inferior derecha con el isologo */
+  .aw-vf, .aw-vc figure { margin: 0; }
+  .aw-vf video, .aw-vc video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: var(--r); object-fit: cover; }
+  .aw-vf figcaption, .aw-vc figcaption { margin-top: .8rem; font-size: clamp(.78rem, 1vw, .9rem); line-height: 1.2; color: var(--cap); letter-spacing: .02em; }
+  .aw-vf figcaption span, .aw-vc figcaption span { opacity: .7; }
+  .aw-vf { max-width: 56rem; margin-inline: auto; margin-bottom: clamp(1.4rem, 3vw, 2.4rem); }
+  .aw-vc { max-width: 56rem; margin-inline: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.8rem, 1.6vw, 1.4rem); }
+  .aw-vc video { border-radius: 10px; }
+
+  @media (prefers-reduced-motion: reduce) { .aw-film i, .aw-rb__t, .aw-fr { animation: none; } .aw-cc.is-armed .aw-cc__g { transform: none; } .aw-cc.is-armed .aw-cc__l { --aw-p: 1; } .aw-cc.is-armed .aw-cc__s { opacity: 1; } }
+
+  @media (max-width: 860px) {
+    .aw-ri { grid-template-columns: minmax(0, 1fr); }
+    .aw-ty__g { grid-template-columns: minmax(0, 1fr); }
+    .aw-ty__k { padding-left: 0; } .aw-ty__f { padding-left: 0; } .aw-ty__lg { margin-inline: auto; } .aw-ty__k { text-align: center; }
+    .aw-cl { width: auto; justify-items: center; text-align: center; }
+    .aw-cl li { padding-left: 0; letter-spacing: .32em; }
+    .aw-lb { letter-spacing: .32em; } .aw-r { text-align: center; }
+    .aw-don { left: -3%; width: 22%; }
+    .aw-mk { aspect-ratio: auto; display: grid; gap: 1rem; }
+    .aw-mk__c { position: relative; left: auto; top: auto; width: 100%; height: auto; aspect-ratio: 724 / 529; }
+    .aw-mk__p { position: relative; right: auto; width: 100%; height: auto; aspect-ratio: 1393 / 617; }
+    .aw-rb--k { top: 74%; } .aw-rb--c { top: 82%; }
+    .aw-wc { justify-content: center; } .aw-tabs { justify-content: center; }
+    .aw-nav { top: auto; bottom: -3.4rem; translate: 0; } .aw-nav--p { left: calc(50% - 3.4rem); } .aw-nav--n { right: calc(50% - 3.4rem); }
+    .aw-cap { margin-top: 4.6rem; }
+    .aw-vc { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+
+<script>
+  // Interacciones: selector de color del flyer, aro giratorio de la pieza, cintas de color y carrusel del sitio.
+  const init = () => document.querySelectorAll<HTMLElement>('[data-aw]:not([data-bound])').forEach((root) => {
+    root.dataset.bound = '1';
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Flyer: el selector cambia los dos colores del degradado de «WRAP»
+    const fly = root.querySelector<HTMLElement>('[data-aw-fly]');
+    fly?.querySelectorAll<HTMLButtonElement>('.aw-sw').forEach((b) => b.addEventListener('click', () => {
+      fly.style.setProperty('--g1', b.dataset.a!); fly.style.setProperty('--g2', b.dataset.b!);
+      fly.querySelectorAll('.aw-sw').forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+    }));
+
+    // Pieza: el bloque de degradado entra, el logo sale del corte; el aro gira y elige el modelo (cambio suave).
+    // Con cada giro completo, la animación de entrada vuelve a correr.
+    const cc = root.querySelector<HTMLElement>('[data-aw-cc]');
+    if (cc) {
+      const models = ['#e0206f|#562c8a', '#ffa21d|#f2431f', '#1d6bf0|#199198', '#1aab70|#dff051', '#ac48ff|#3a1d6e', '#ffed00|#e01f1a'];
+      const n = models.length, step = 360 / n;
+      const play = () => {
+        cc.classList.remove('is-in'); cc.classList.add('is-reset', 'is-armed');
+        void cc.offsetWidth;
+        cc.classList.remove('is-reset');
+        requestAnimationFrame(() => requestAnimationFrame(() => cc.classList.add('is-in')));
+      };
+      if (!calm) {
+        cc.classList.add('is-armed');
+        new IntersectionObserver((es, io) => es.forEach((e) => { if (e.isIntersecting) { requestAnimationFrame(() => cc.classList.add('is-in')); io.disconnect(); } }), { threshold: 0.4 }).observe(cc);
+      }
+      const don = cc.querySelector<HTMLButtonElement>('[data-aw-don]')!;
+      let rot = 0, turns = 0;
+      const apply = (r: number) => {
+        rot = r; don.style.rotate = `${r}deg`;
+        const idx = ((Math.round(r / step) % n) + n) % n;
+        const [a, b] = models[idx].split('|');
+        cc.style.setProperty('--aw-a', a); cc.style.setProperty('--aw-b', b); cc.style.setProperty('--aw-ga', `${168 + r / 3}deg`);
+        const t = Math.trunc(r / 360);
+        if (t !== turns) { turns = t; if (!calm) play(); }
+      };
+      don.addEventListener('click', () => { if (!don.dataset.moved) apply(rot + step); don.dataset.moved = ''; });
+      don.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); apply(rot + step); } if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); apply(rot - step); } });
+      const ang = (e: PointerEvent) => { const r = don.getBoundingClientRect(); return (Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180) / Math.PI; };
+      let a0 = 0, r0 = 0, down = false;
+      don.addEventListener('pointerdown', (e) => { down = true; a0 = ang(e); r0 = rot; don.setPointerCapture(e.pointerId); don.classList.add('is-drag'); don.dataset.moved = ''; });
+      don.addEventListener('pointermove', (e) => { if (!down) return; let d = ang(e) - a0; while (d > 180) d -= 360; while (d < -180) d += 360; if (Math.abs(d) > 3) don.dataset.moved = '1'; a0 = ang(e); r0 += d; apply(r0); });
+      const up = () => { if (!down) return; down = false; don.classList.remove('is-drag'); if (don.dataset.moved) apply(Math.round(rot / step) * step); };
+      don.addEventListener('pointerup', up); don.addEventListener('pointercancel', up);
+    }
+
+    // Paleta de brillo: se revela al entrar en pantalla
+    const br = root.querySelector<HTMLElement>('[data-aw-br]');
+    if (br && !calm) {
+      br.classList.add('is-armed');
+      new IntersectionObserver((es, io) => es.forEach((e) => { if (e.isIntersecting) { requestAnimationFrame(() => br.classList.add('is-in')); io.disconnect(); } }), { threshold: 0.4 }).observe(br);
+    }
+
+    // Cintas: la de color cambia sola cada 5 s
+    const tape = root.querySelector<HTMLElement>('[data-aw-tape]');
+    if (tape) {
+      const cols = ['#e01f1a', '#ff6128', '#fda208', '#ffed00', '#1aab70', '#1b8f9c', '#015aff', '#ac48ff', '#ff1b71'];
+      let last = '';
+      const rnd = () => { let c = last; while (c === last) c = cols[Math.floor(Math.random() * cols.length)]; last = c; tape.style.setProperty('--rc', c); };
+      rnd();
+      if (!calm) setInterval(() => { if (tape.isConnected) rnd(); }, 5000);
+    }
+
+    // Carrusel del sitio: páginas y formato (escritorio / celular)
+    const web = root.querySelector<HTMLElement>('[data-aw-web]');
+    if (web) {
+      const tabs = [...web.querySelectorAll<HTMLButtonElement>('[data-page]')];
+      const devs = [...web.querySelectorAll<HTMLButtonElement>('button[data-dev]')];
+      const stage = web.querySelector<HTMLElement>('.aw-stage')!;
+      const urls = ['', 'services', 'promotional-videos', 'social-media-videos', 'youtube-videos', 'faqs', 'contact-us'];
+      let page = 0, dev = 'escritorio';
+      const show = () => {
+        web.querySelectorAll<HTMLElement>('[data-slide]').forEach((s) => { s.hidden = s.dataset.slide !== `${page}-${dev}`; });
+        tabs.forEach((b, i) => b.setAttribute('aria-pressed', String(i === page)));
+        devs.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dev === dev)));
+        stage.dataset.stage = dev;
+        const u = web.querySelector('[data-url]'); if (u) u.textContent = `afterwrapstudio.com${urls[page] ? '/' + urls[page] : ''}`;
+        const c = web.querySelector('[data-count]'); if (c) c.textContent = `${String(page + 1).padStart(2, '0')} / ${String(tabs.length).padStart(2, '0')}`;
+        const cur = web.querySelector<HTMLElement>(`[data-slide="${page}-${dev}"]`); if (cur) cur.scrollTop = 0;
+      };
+      tabs.forEach((b, i) => b.addEventListener('click', () => { page = i; show(); }));
+      devs.forEach((b) => b.addEventListener('click', () => { dev = b.dataset.dev!; show(); }));
+      web.querySelectorAll<HTMLButtonElement>('[data-nav]').forEach((b) => b.addEventListener('click', () => { page = (page + Number(b.dataset.nav) + tabs.length) % tabs.length; show(); }));
+    }
+  });
+  document.addEventListener('astro:page-load', init);
+</script>

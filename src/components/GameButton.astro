@@ -1,0 +1,75 @@
+---
+// «Probar juego»: botón con desplegable para el juego en proceso (public/juego, una app web instalable).
+// Opciones: jugarlo en el navegador o instalarlo en el celular (QR + pasos; en el celular, abre el juego directamente).
+import Icon from './Icon.astro';
+import { withBase, type Lang } from '../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const t = (es: string, en: string) => (lang === 'es' ? es : en);
+const game = withBase('/juego/');
+const qr = withBase('/juego-qr.svg');
+---
+<div class="gb" data-gb>
+  <button type="button" class="btn gb__t" aria-haspopup="true" aria-expanded="false" aria-controls="gb-menu">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+    {t('Probar juego', 'Try the game')}
+    <span class="gb__wip">{t('en proceso', 'in progress')}</span>
+    <svg class="gb__c" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+  </button>
+  <div class="gb__m" id="gb-menu" hidden>
+    <a class="gb__o" href={game} target="_blank" rel="noopener">
+      <b>{t('Jugar en el navegador', 'Play in the browser')}</b>
+      <span>{t('Se abre en una pestaña nueva', 'Opens in a new tab')}</span>
+      <Icon name="arrow-up-right" />
+    </a>
+    <button type="button" class="gb__o" data-gb-install aria-expanded="false" aria-controls="gb-install">
+      <b>{t('Instalar en el celular', 'Install on your phone')}</b>
+      <span>{t('Queda como una app, sin tienda', 'Works like an app, no store')}</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14" /></svg>
+    </button>
+    <div class="gb__i" id="gb-install" hidden>
+      <img src={qr} width="148" height="148" alt={t('Código QR para abrir el juego en el celular', 'QR code to open the game on your phone')} loading="lazy" decoding="async" />
+      <ol>
+        <li>{t('Escaneá el código con la cámara del celular.', 'Scan the code with your phone camera.')}</li>
+        <li><b>Android:</b> {t('menú ⋮ → «Instalar app».', 'menu ⋮ → “Install app”.')}</li>
+        <li><b>iPhone:</b> {t('Compartir → «Agregar a inicio».', 'Share → “Add to Home Screen”.')}</li>
+      </ol>
+      <a class="gb__d" href={game} target="_blank" rel="noopener">{t('Abrir el juego en este dispositivo', 'Open the game on this device')} ↗</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .gb { position: relative; display: inline-block; }
+  .gb__t { cursor: pointer; background: transparent; color: inherit; font: inherit; font-size: .9rem; }
+  .gb__t svg { width: 1em; height: 1em; } .gb__t > svg:first-child { fill: currentColor; stroke: none; }
+  .gb__wip { font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; padding: .2rem .5rem; border: 1px solid currentColor; border-radius: 99px; opacity: .6; }
+  .gb__c { transition: rotate .3s var(--ease); } .gb__t[aria-expanded='true'] .gb__c { rotate: 180deg; }
+  .gb__m { position: absolute; left: 0; top: calc(100% + .6rem); z-index: 30; width: min(22rem, calc(100vw - 2 * var(--gutter))); padding: .5rem; border: 1px solid var(--line); border-radius: 1rem; background: color-mix(in srgb, var(--bg) 94%, var(--fg)); box-shadow: 0 1.2rem 3rem rgb(0 0 0 / .5); animation: gb-in .25s var(--ease); }
+  .gb__m[hidden], .gb__i[hidden] { display: none; }
+  @keyframes gb-in { from { opacity: 0; translate: 0 -.4rem; } }
+  .gb__o { display: grid; grid-template-columns: 1fr auto; gap: .1rem 1rem; align-items: center; width: 100%; padding: .85rem 1rem; border: 0; border-radius: .7rem; background: transparent; color: inherit; font: inherit; text-align: left; text-decoration: none; cursor: pointer; transition: background .25s; }
+  .gb__o:hover, .gb__o:focus-visible { background: color-mix(in srgb, var(--fg) 9%, transparent); outline: none; }
+  .gb__o b { font-weight: 500; font-size: .95rem; } .gb__o span { grid-column: 1; font-size: .78rem; color: var(--muted); }
+  .gb__o svg, .gb__o :global(svg) { grid-row: 1 / span 2; grid-column: 2; width: 1.1rem; height: 1.1rem; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .gb__i { display: grid; grid-template-columns: auto 1fr; gap: .9rem 1rem; align-items: center; margin: .3rem .5rem .5rem; padding: 1rem; border-radius: .7rem; background: color-mix(in srgb, var(--fg) 6%, transparent); }
+  .gb__i img { width: 7rem; height: auto; border-radius: .5rem; background: #fff; }
+  .gb__i ol { margin: 0; padding-left: 1.1rem; display: grid; gap: .4rem; font-size: .78rem; color: var(--muted); } .gb__i ol b { color: var(--fg); font-weight: 500; }
+  .gb__d { grid-column: 1 / -1; font-size: .8rem; text-decoration: underline; text-underline-offset: .2em; }
+  @media (max-width: 520px) { .gb__i { grid-template-columns: 1fr; justify-items: start; } .gb__i img { display: none; } .gb__i ol li:first-child { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .gb__m { animation: none; } .gb__c { transition: none; } }
+</style>
+
+<script>
+  const init = () => document.querySelectorAll<HTMLElement>('[data-gb]:not([data-bound])').forEach((gb) => {
+    gb.dataset.bound = '1';
+    const t = gb.querySelector<HTMLButtonElement>('.gb__t')!, m = gb.querySelector<HTMLElement>('.gb__m')!;
+    const ib = gb.querySelector<HTMLButtonElement>('[data-gb-install]')!, ip = gb.querySelector<HTMLElement>('.gb__i')!;
+    const set = (open: boolean) => { m.hidden = !open; t.setAttribute('aria-expanded', String(open)); if (!open) { ip.hidden = true; ib.setAttribute('aria-expanded', 'false'); } };
+    t.addEventListener('click', () => set(m.hidden));
+    ib.addEventListener('click', () => { ip.hidden = !ip.hidden; ib.setAttribute('aria-expanded', String(!ip.hidden)); });
+    document.addEventListener('click', (e) => { if (!gb.contains(e.target as Node)) set(false); });
+    gb.addEventListener('keydown', (e) => { if (e.key === 'Escape') { set(false); t.focus(); } });
+  });
+  document.addEventListener('astro:page-load', init);
+</script>

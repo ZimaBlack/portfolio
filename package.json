@@ -23,11 +23,7 @@
     "@keystatic/core": "^0.6.9",
     "astro": "^7.3.8",
     "gsap": "^3.15.0",
-    "lucide-static": "^1.56.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
-  },
-  "devDependencies": {
-    "sass": "^1.107.0"
   }
 }
