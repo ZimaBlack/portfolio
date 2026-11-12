@@ -1,0 +1,18 @@
+---
+// Portada de afterWRAP para la grilla de trabajos: el logo (SVG oficial) sobre el anillo cromático del hero, quieto.
+import { withBase } from '../../lib/i18n';
+---
+<div class="awc" role="img" aria-label="afterWRAP">
+  <span class="awc__g" aria-hidden="true"><i class="awc__r"></i></span>
+  <i class="awc__r" aria-hidden="true"></i>
+  <img class="awc__l" src={withBase('/works/after-wrap/marca/afterwrap.svg')} alt="" loading="lazy" decoding="async" />
+</div>
+
+<style>
+  .awc { --s: 74cqmin; --t: calc(var(--s) * .024); position: relative; width: 100%; height: 100%; overflow: hidden; container-type: size; background: #161515; }
+  /* El anillo: arco superior intenso que se apaga hacia la mitad, como en el hero */
+  .awc__r { position: absolute; left: 50%; top: 50%; width: var(--s); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: conic-gradient(#16a977 0deg, #1b9c9a 30deg, #1668d4 80deg, #4b2f9c 125deg, #b02466 165deg, #d12a52 185deg, #e0672a 238deg, #f2a31b 270deg, #ffe600 305deg, #b9e43a 338deg, #16a977 360deg); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--t)), #000 calc(100% - var(--t) + 1px)), linear-gradient(to bottom, #000 0, #000 30%, transparent 62%); -webkit-mask-composite: source-in; mask: radial-gradient(farthest-side, transparent calc(100% - var(--t)), #000 calc(100% - var(--t) + 1px)), linear-gradient(to bottom, #000 0, #000 30%, transparent 62%); mask-composite: intersect; }
+  /* Glow: una copia del anillo, desenfocada desde afuera para que el halo no quede recortado */
+  .awc__g { position: absolute; inset: 0; filter: blur(calc(var(--s) * .03)) saturate(1.5); opacity: .55; }
+  .awc__l { position: absolute; left: 50%; top: 50%; width: calc(var(--s) * .68); height: auto; translate: -50% -50%; }
+</style>

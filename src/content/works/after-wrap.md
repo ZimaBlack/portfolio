@@ -13,6 +13,7 @@ text:
   en: "“Wrap” is the set word for “we finished filming”; “after” is what comes next. A weight-contrast wordmark, a play-button isotype and a dark site where every service has its own colour."
 cover: /works/after-wrap/sitio/home-hero.webp
 heroAnimation: ring
+coverKind: afterwrap
 manual: after-wrap
 draft: false
 featured: false
