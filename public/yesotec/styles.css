@@ -142,3 +142,23 @@ dl.kv>div:last-child{border-bottom:0}dl.kv dt{color:rgb(var(--fg-muted))}dl.kv d
   .hoja{box-shadow:none;max-width:none;padding:0}
   body{background:#fff}
 }
+
+/* pestañas, modal y recordatorio de precio */
+.tabs{display:flex;gap:4px;border-bottom:1px solid rgb(var(--line));margin:-6px 0 16px}
+.tabs a{padding:8px 14px;border-radius:10px 10px 0 0;text-decoration:none;color:rgb(var(--fg-muted));font-weight:600;font-size:14px;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs a:hover{background:rgb(var(--surface-2))}
+.tabs a.on{color:rgb(var(--brand));border-bottom-color:rgb(var(--brand))}
+.modal-bg{position:fixed;inset:0;z-index:90;background:rgb(15 23 42/.55);display:flex;align-items:flex-start;justify-content:center;padding:6vh 14px;overflow:auto}
+.modal{background:rgb(var(--surface));border:1px solid rgb(var(--line));border-radius:16px;box-shadow:0 20px 60px rgb(0 0 0/.35);width:100%;max-width:520px;padding:22px 24px}
+.modal h2{font-size:20px;margin-bottom:4px}
+details.card>summary{cursor:pointer;font-weight:700;font-size:15px;list-style:none}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::before{content:"▸";display:inline-block;margin-right:8px;color:rgb(var(--fg-subtle));transition:transform .15s}
+details.card[open]>summary::before{transform:rotate(90deg)}
+ol.pasos{list-style:none;margin:0;padding:0;font-size:14px}
+ol.pasos li{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px dashed rgb(var(--line))}
+ol.pasos li:last-child{border-bottom:0}
+ol.pasos .n{width:24px;height:24px;border-radius:99px;background:rgb(var(--surface-2));display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:rgb(var(--fg-muted))}
+ol.pasos .t small{display:block;color:rgb(var(--fg-subtle));font-size:12px;font-weight:400}
+ol.pasos .v{font-weight:600;text-align:right}
+.badge{max-width:100%}
